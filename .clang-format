@@ -1,0 +1,11 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+AlignTrailingComments: Always
+AllowAllArgumentsOnNextLine: true
+ColumnLimit:     80
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+SortIncludes: CaseInsensitive

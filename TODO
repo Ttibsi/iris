@@ -1,0 +1,114 @@
+Goals:
+    - A TUI text editor akin to vim, nano
+    - Uses UNIX tools where possible (eg calling out to grep, find)
+    - Otherwise requires as few dependancies installed as possible
+        - Either through using libraries I include in include/
+        - Or through manually recreating them
+    - Vim style extensibility
+
+Milestones:
+
+v0.1.0
+    - [ ] An alternate window is opened
+    - [ ] Allow the user to pass a filename to specify a file to open
+    - [ ] Display the contents of the specified file in the buffer
+        - I think for this I'll need to decide on a data structure to store the
+        file in - especially if I want to add undo later on down the road
+        - Also of note here is to make sure `\t` displays as a specified number
+        of spaces instead of a single character
+    - [ ] The window can be closed (without resorting to CTRL+C)
+    - [ ] Edit/insert text
+    - [ ] The window doesn't crash when the terminal is resized
+        - I don't know if this is something I need to account for
+    - [ ] If no file is specified, instead open an "empty" buffer to write in
+    - [ ] `h`, `j`, `k`, `l` motion
+        - Might as well build in vim motions, it's what I'm used to using already
+        - This will need to split the editor into a "read" mode (vim normal mode
+        entered with `esc`) and a "write" mode (vim insert mode entered with `i`)
+    - [ ] Write the buffer to the named file (save feature)
+    - [ ] If a file name wasn't specified, allow the user to save with a new
+        file name (save as)
+
+v0.2.0
+    - [ ] Proper status bar at the bottom of the screen, displaying:
+        [ ] name of the open file
+        [ ] a marker as to if the file is modified (I like `[+]`)
+        [ ] the mode they're in (read/write)
+        [ ] the total length of the file
+            - This can be expanded later to include less useful features - I
+            like seeing the current line my cursor is on, and the current git
+            branch I'm on if I'm in a git repo
+    - [ ] Syntax highlighting
+        - I think I can get around doing this by just embedding `treesitter`
+        for this? I don't exactly know how that works.
+    - [ ] Some more simple vim motions
+        [ ] `a` to go to write mode one ahead of the current character
+        [ ] `A` to go to write mode at the end of the line
+        [ ] `x` deletes the current character the cursor is over
+        [ ] `e` moves the cursor to the character before the next whitespace
+            character
+        [ ] `b` moves the cursor to the character after the previous whitespace
+            character
+
+v0.3.0
+    - [ ] "Command pallete" on `;` (vim uses `:` - same key, but we don't need
+        to use shift)
+            - I think the best approach here is to build up a code framework
+            to match a pattern of text entered in here (always leading with a
+            `;`) to a function or other part of code. That way, it can be
+            extended later on down the line
+
+        [ ] `;w` to save
+        [ ] `;q` to quit
+        [ ] `;q!` to quit without saving
+        [ ] `;h` to open a read-only help file
+
+    - [ ] Handle viewing files you don't currently have the rights to edit
+    - [ ] Line numbers, possibly with a different background to show that
+        they're not just part of the text
+
+v0.4.0
+    - [ ] From the command pallete, use `;!` to run a shell command (ex `;!ls`)
+    - [ ] Move the output from a command to a text buffer (ex `;.!ls`)
+    - [ ] Find and replace (using sed somehow - I'd rather build this one in
+        than send it out to the shell sed because I can update the buffer
+        instead of the saved file)
+    - [ ] Show the current cursor position in the status bar
+
+Further on down the line:
+* lua extensibility - I like lua, think it's a simple, easy to work with language
+    * Along with a few plugins that might be easier to write in lua than c++
+    * These will need distributing somewhere on the user's system when installing
+        potentially something cmake can do? Or at least execute_command()
+* Add an config file in a standard format (JSON? TOML? Not Yaml) to enable
+or set specific variables (tabstop length, for example)
+    * Including enabling chosen lua plugins
+* expandtab - turn tabs to spaces on entry (or disable it for filetypes that
+want tabs, such as makefiles)
+* multiple tabs
+* vertical and horizontal split
+* A way to open files based on a fuzzy find (IE telescope)
+* live grep through the current file or directory (use unix `grep -rn`)
+* undo
+    - This will 100% be more complcated than it seems - I know there's a
+    specific data structure that's really good at this - Potentially we save
+    every pattern of movement to an array and remove those changes one at a
+    time?
+* colorcolumn - a line as part of the display that is a sligtly different colour
+to tell you when you're going over a specific length (ie 80 chars)
+    - where it's set is through a variable that can be set in the config file
+* A framework for setting up different colour schemes - if I'm clever, I'll
+just use something that lets me steal from vim or VScode color schemes? I think
+the latter just uses a json file of hex codes
+    - Include settings for "apply a random colour scheme now" and "pick a random
+    one every time I start up the editor"
+* Some kind of autocomplete? I don't know if using the Language Server Protocol
+is the right approach here -- it relies on external libraries/installs which I
+want to avoid
+    - Potentially some kind of autocorrect completion based on a generated list
+    of keywords for the language based on the file type? I know there's a data
+    structure for this, some kind of tree. This could be extended by also
+    indexing the file for autocomplete of function/class names, or maybe git
+    repo wide? That sounds like it could be slow
+* A way to show very visibly where trailing whitespace is.
+    * Potentially a command palete function to remove them
