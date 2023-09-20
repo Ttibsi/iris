@@ -1,7 +1,14 @@
 #include <iostream>
 #include <string>
 
+#include <chrono>
+#include <thread>
 #include <argparse/argparse.hpp>
+
+#include "editor.h"
+#define RAWTERM_IMPLEMENTATION
+#include <rawterm/rawterm.h>
+
 
 int main(int argc, char *argv[]) {
     argparse::ArgumentParser parser("Iris", "v0.1.0");
@@ -16,6 +23,13 @@ int main(int argc, char *argv[]) {
     } else {
         std::cout << "No file specified\n";
     }
+
+    enter_alt_screen();
+    enable_raw_mode();
+
+    Editor e(file);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    exit_alt_screen();
 
     return 0;
 }
