@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include "buffer.h"
+#include "constants.h"
 #include "file_manip.h"
 
 Buffer::Buffer() {
@@ -47,13 +49,21 @@ Buffer::Buffer(std::string file) {
 }
 
 void Buffer::display() {
-    // TODO: TABS
     std::string copy = data;
-    size_t startPos = 0;
 
-    while ((startPos = copy.find("\n", startPos)) != std::string::npos) {
-        copy.replace(startPos, 1, "\r\n");
-        startPos += 2;
+    std::unordered_map<std::string, std::string> pairs = {
+        { "\n", "\r\n" }, { "\t", std::string(TABSTOP, ' ') }
+    };
+
+    for (int i = 0; i < copy.length();) {
+        std::string s = &copy.at(i);
+        if (auto it = pairs.find({ copy.at(i) }); it != pairs.end()) {
+            std::string val = it->second;
+            copy.replace(i, 1, val);
+            i += val.length();
+        } else {
+            i++;
+        }
     }
 
     std::cout << copy;
