@@ -5,7 +5,7 @@
 #include "file_manip.h"
 
 Buffer::Buffer() {
-    this->lines = {Line()};
+    this->lines = { Line() };
     this->data = "";
     this->length = 1;
     this->file = "NO FILE";
@@ -21,7 +21,6 @@ Buffer::Buffer(std::string file) {
 
     this->data = open_file(file);
     this->file = file;
-    this->cursor = Cursor();
     this->readonly = is_Readonly(file);
     this->modified = false;
     this->undo = {};
@@ -43,11 +42,12 @@ Buffer::Buffer(std::string file) {
 
     this->lines = lines;
     this->length = lines.size();
-
     display();
+    this->cursor = Cursor();
 }
 
 void Buffer::display() {
+    // TODO: TABS
     std::string copy = data;
     size_t startPos = 0;
 

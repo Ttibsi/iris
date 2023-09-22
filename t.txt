@@ -1,0 +1,3 @@
+This is a file with some text
+	And here's a tab char
+    this one has four spaces

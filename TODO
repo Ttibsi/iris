@@ -9,8 +9,8 @@ Goals:
 Milestones:
 
 v0.1.0
-    - [ ] An alternate window is opened
-    - [ ] Allow the user to pass a filename to specify a file to open
+    - [x] An alternate window is opened
+    - [~] Allow the user to pass a filename to specify a file to open
     - [ ] Display the contents of the specified file in the buffer
         - I think for this I'll need to decide on a data structure to store the
         file in - especially if I want to add undo later on down the road

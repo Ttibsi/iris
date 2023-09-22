@@ -19,7 +19,7 @@ struct Buffer {
     std::vector<Line> lines;
     std::string data;
     int length;
-    
+
     std::string file;
     Cursor cursor;
     bool readonly;

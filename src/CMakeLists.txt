@@ -3,6 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_library(lib SHARED
     buffer.cpp
+    rawterm_wrapper.cpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp)

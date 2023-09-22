@@ -1,14 +1,12 @@
+#include <chrono>
 #include <iostream>
 #include <string>
-
-#include <chrono>
 #include <thread>
-#include <argparse/argparse.hpp>
 
-#include "editor.h"
-#define RAWTERM_IMPLEMENTATION
+#include <argparse/argparse.hpp>
 #include <rawterm/rawterm.h>
 
+#include "editor.h"
 
 int main(int argc, char *argv[]) {
     argparse::ArgumentParser parser("Iris", "v0.1.0");
@@ -28,7 +26,7 @@ int main(int argc, char *argv[]) {
     enable_raw_mode();
 
     Editor e(file);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     exit_alt_screen();
 
     return 0;

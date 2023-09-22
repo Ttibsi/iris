@@ -4,24 +4,24 @@
 #include <string>
 #include <vector>
 
-struct Line{
+#include <rawterm/rawterm.h>
+
+struct Line {
     int start;
     int end;
 
     Line() : start(0), end(0) {}
 };
 
-struct Cursor{
+struct Cursor {
     int row;
     int col;
 
-    Cursor();
+    Cursor() : row(0), col(0) { set_pos(0, 0); };
+    void set_pos(int r, int c) { move_cursor(r, c); };
 };
 
-// TODO
-Cursor::Cursor() {}
-
-struct Change{
+struct Change {
     int start_pos;
     int end_pos;
     std::vector<char> content;

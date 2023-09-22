@@ -9,12 +9,9 @@
 
 #include "buffer.h"
 
-enum class Mode{
-    Read,
-    Write
-};
+enum class Mode { Read, Write };
 
-struct Editor{
+struct Editor {
     std::vector<Buffer> buffers;
     int active_buffer;
     Mode mode;
@@ -26,17 +23,17 @@ struct Editor{
 };
 
 Editor::Editor(std::string file) {
+    clear_screen();
     Buffer b = file.empty() ? Buffer() : Buffer(file);
 
     // Create buffer
-    this->buffers = {b};
+    this->buffers = { b };
     this->active_buffer = 0;
     this->mode = Mode::Read;
     this->clipboard = "";
     this->term_size = get_term_size();
 }
 
-Editor::~Editor() {
-}
+Editor::~Editor() {}
 
 #endif // EDITOR_H

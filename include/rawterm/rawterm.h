@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v1.1.0
+// Version: v1.2.0
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -64,6 +64,8 @@ void enter_alt_screen();
 void exit_alt_screen();
 Key process_keypress();
 std::pair<int, int> get_term_size();
+void move_cursor(int line, int col);
+void clear_screen();
 
 #endif // RAWTERM_H
 
@@ -153,64 +155,62 @@ Key handle_escape(std::vector<std::string> substrings, std::string raw) {
         asciiLetters.end()) {
         int placeholder;
         std::istringstream(substrings[1].substr(2)) >> std::hex >> placeholder;
-        return {char(placeholder), {Mod::Alt_L}, raw};
+        return { char(placeholder), { Mod::Alt_L }, raw };
     } else if (substrings[1] == "\\x5b") {
         // ARROWS
         if (substrings[2] == "\\x41")
-            return {'A', {Mod::Arrow}, raw}; // up
+            return { 'A', { Mod::Arrow }, raw }; // up
         if (substrings[2] == "\\x42")
-            return {'B', {Mod::Arrow}, raw}; // down
+            return { 'B', { Mod::Arrow }, raw }; // down
         if (substrings[2] == "\\x43")
-            return {'C', {Mod::Arrow}, raw}; // right
+            return { 'C', { Mod::Arrow }, raw }; // right
         if (substrings[2] == "\\x44")
-            return {'D', {Mod::Arrow}, raw}; // left
+            return { 'D', { Mod::Arrow }, raw }; // left
         if (substrings[2] == "\\x33")
-            return {' ', {Mod::Delete}, raw}; // delete
+            return { ' ', { Mod::Delete }, raw }; // delete
 
         // FUNCTIONS pt 2
         if (substrings[2] == "\\x31") {
             if (substrings[3] == "\\x35")
-                return {'5', {Mod::Function}, raw}; // f5
+                return { '5', { Mod::Function }, raw }; // f5
             if (substrings[3] == "\\x37")
-                return {'6', {Mod::Function}, raw}; // f6
+                return { '6', { Mod::Function }, raw }; // f6
             if (substrings[3] == "\\x38")
-                return {'7', {Mod::Function}, raw}; // f7
+                return { '7', { Mod::Function }, raw }; // f7
             if (substrings[3] == "\\x39")
-                return {'8', {Mod::Function}, raw}; // f8
+                return { '8', { Mod::Function }, raw }; // f8
         } else if (substrings[2] == "\\x32") {
             if (substrings[3] == "\\x30")
-                return {'9', {Mod::Function}, raw}; // f9
+                return { '9', { Mod::Function }, raw }; // f9
             if (substrings[3] == "\\x31")
-                return {'0', {Mod::Function}, raw}; // f10
+                return { '0', { Mod::Function }, raw }; // f10
             if (substrings[3] == "\\x33")
-                return {'1', {Mod::Function}, raw}; // f11
+                return { '1', { Mod::Function }, raw }; // f11
             if (substrings[3] == "\\x34")
-                return {'2', {Mod::Function}, raw}; // f12
+                return { '2', { Mod::Function }, raw }; // f12
         }
     } else if (substrings[1] == "\\x4f") {
         // FUNCTIONS pt 1
         if (substrings[2] == "\\x50")
-            return {'1', {Mod::Function}, raw}; // f1
+            return { '1', { Mod::Function }, raw }; // f1
         if (substrings[2] == "\\x51")
-            return {'2', {Mod::Function}, raw}; // f2
+            return { '2', { Mod::Function }, raw }; // f2
         if (substrings[2] == "\\x52")
-            return {'3', {Mod::Function}, raw}; // f3
+            return { '3', { Mod::Function }, raw }; // f3
         if (substrings[2] == "\\x53")
-            return {'4', {Mod::Function}, raw}; // f4
+            return { '4', { Mod::Function }, raw }; // f4
     }
 
-    return {' ', {Mod::Escape}, raw}; // esc
+    return { ' ', { Mod::Escape }, raw }; // esc
 }
-
 Key process_keypress() {
     Key k;
     char seq[32];
 
     int ret = read(STDIN_FILENO, seq, sizeof(seq));
     if (ret < 0) {
-        std::cerr
-            << "ERROR: something went wrong during reading user input: "
-            << std::strerror(errno) << std::endl;
+        std::cerr << "ERROR: something went wrong during reading user input: "
+                  << std::strerror(errno) << std::endl;
         return k;
     }
 
@@ -555,5 +555,12 @@ std::pair<int, int> get_term_size() {
     ioctl(0, TIOCGWINSZ, &w);
     return std::make_pair(w.ws_row, w.ws_col);
 }
+
+void move_cursor(int line, int col) {
+    std::cout << "\033[" << std::to_string(line) << ";" << std::to_string(col)
+              << "H" << std::flush;
+}
+
+void clear_screen() { std::cout << "\033[2J"; }
 
 #endif // RAWTERM_IMPLEMENTATION
