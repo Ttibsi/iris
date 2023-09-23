@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 
 #include "buffer.h"
 #include "constants.h"
 #include "file_manip.h"
 
-Buffer::Buffer() {
+Buffer::Buffer(std::pair<int, int> size) {
     this->lines = { Line() };
     this->data = "";
     this->length = 1;
@@ -16,11 +18,12 @@ Buffer::Buffer() {
     this->modified = false;
     this->undo = {};
     this->redo = {};
+    this->buf_size = size;
 
     handle_keypress();
 }
 
-Buffer::Buffer(std::string file) {
+Buffer::Buffer(std::string file, std::pair<int, int> size) {
     // TODO: What if the given path is a directory?
 
     this->data = open_file(file);
@@ -29,6 +32,7 @@ Buffer::Buffer(std::string file) {
     this->modified = false;
     this->undo = {};
     this->redo = {};
+    this->buf_size = size;
 
     std::vector<Line> lines;
     Line l = Line();
@@ -54,6 +58,7 @@ Buffer::Buffer(std::string file) {
 
 void Buffer::display() {
     std::string copy = data;
+    int count;
 
     std::unordered_map<std::string, std::string> pairs = {
         { "\n", "\r\n" }, { "\t", std::string(TABSTOP, ' ') }
@@ -65,10 +70,13 @@ void Buffer::display() {
             std::string val = it->second;
             copy.replace(i, 1, val);
             i += val.length();
+            count += (val.length() - it->first.length());
         } else {
             i++;
         }
     }
 
-    std::cout << copy;
+    // WARN: Not sure this is working -- too high
+    std::string_view sv = copy.substr(0, lines[buf_size.first - 1].end - count);
+    std::cout << sv;
 }

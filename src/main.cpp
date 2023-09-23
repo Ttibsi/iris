@@ -14,11 +14,6 @@ int main(int argc, char *argv[]) {
     parser.parse_args(argc, argv);
 
     std::string file = parser.get<std::string>("file");
-    if (file != "") {
-        std::cout << "File specified: " << file << "\n";
-    } else {
-        std::cout << "No file specified\n";
-    }
 
     enter_alt_screen();
     enable_raw_mode();

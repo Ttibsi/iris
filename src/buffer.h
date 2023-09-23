@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <rawterm/rawterm.h>
@@ -52,9 +53,13 @@ struct Buffer {
     bool modified;
     std::vector<Change> undo;
     std::vector<Change> redo;
+    std::pair<int, int> buf_size;
 
-    Buffer();
-    Buffer(std::string file);
+    Buffer() : Buffer(get_term_size()) {}
+    Buffer(std::pair<int, int> size);
+
+    Buffer(std::string file) : Buffer(file, get_term_size()) {}
+    Buffer(std::string file, std::pair<int, int> size);
     void display();
     void handle_keypress();
 };
