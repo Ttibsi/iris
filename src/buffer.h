@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -17,8 +18,21 @@ struct Cursor {
     int row;
     int col;
 
-    Cursor() : row(0), col(0) { set_pos(0, 0); };
-    void set_pos(int r, int c) { move_cursor(r, c); };
+    Cursor() : row(0), col(0) { set_pos_abs(0, 0); };
+    void set_pos_abs(int r, int c) {
+        row = r;
+        col = c;
+        move_cursor(r, c);
+    };
+    void set_pos_rel(int r, int c) {
+        row += r;
+        col += c;
+        move_cursor(row, col);
+    };
+    friend std::ostream &operator<<(std::ostream &os, const Cursor &c) {
+        os << "Cursor{row: " << c.row << ", col: " << c.col << "}";
+        return os;
+    };
 };
 
 struct Change {
@@ -42,6 +56,7 @@ struct Buffer {
     Buffer();
     Buffer(std::string file);
     void display();
+    void handle_keypress();
 };
 
 #endif // BUFFER_H

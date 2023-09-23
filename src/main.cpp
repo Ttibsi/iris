@@ -1,7 +1,5 @@
-#include <chrono>
 #include <iostream>
 #include <string>
-#include <thread>
 
 #include <argparse/argparse.hpp>
 #include <rawterm/rawterm.h>
@@ -26,7 +24,6 @@ int main(int argc, char *argv[]) {
     enable_raw_mode();
 
     Editor e(file);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
     exit_alt_screen();
 
     return 0;

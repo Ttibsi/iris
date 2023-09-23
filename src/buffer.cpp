@@ -16,6 +16,8 @@ Buffer::Buffer() {
     this->modified = false;
     this->undo = {};
     this->redo = {};
+
+    handle_keypress();
 }
 
 Buffer::Buffer(std::string file) {
@@ -46,6 +48,8 @@ Buffer::Buffer(std::string file) {
     this->length = lines.size();
     display();
     this->cursor = Cursor();
+
+    handle_keypress();
 }
 
 void Buffer::display() {
