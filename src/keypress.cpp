@@ -18,7 +18,7 @@ void Buffer::handle_keypress() {
                 cursor.set_pos_rel(-1, 0);
             }
         } else if (k.code == 'l' && k.mod.empty()) {
-            if (cursor.col < lines[cursor.row].end) {
+            if (cursor.col < lines[cursor.row].size()) {
                 cursor.set_pos_rel(0, 1);
             }
         }

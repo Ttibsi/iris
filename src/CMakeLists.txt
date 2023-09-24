@@ -5,6 +5,7 @@ add_library(lib SHARED
     buffer.cpp
     keypress.cpp
     rawterm_wrapper.cpp
+    text.cpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp)

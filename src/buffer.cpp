@@ -9,8 +9,7 @@
 #include "file_manip.h"
 
 Buffer::Buffer(std::pair<int, int> size) {
-    this->lines = { Line() };
-    this->data = "";
+    this->lines = { "" };
     this->length = 1;
     this->file = "NO FILE";
     this->cursor = Cursor();
@@ -26,7 +25,8 @@ Buffer::Buffer(std::pair<int, int> size) {
 Buffer::Buffer(std::string file, std::pair<int, int> size) {
     // TODO: What if the given path is a directory?
 
-    this->data = open_file(file);
+    this->lines = open_file(file);
+    this->length = lines.size();
     this->file = file;
     this->readonly = is_Readonly(file);
     this->modified = false;
@@ -34,22 +34,6 @@ Buffer::Buffer(std::string file, std::pair<int, int> size) {
     this->redo = {};
     this->buf_size = size;
 
-    std::vector<Line> lines;
-    Line l = Line();
-    for (std::size_t i = 0; i < this->data.length(); i++) {
-        if (this->data.at(i) == '\n') {
-            l.end = i;
-            lines.push_back(l);
-
-            if (!(i == this->data.length() - 1)) {
-                l = Line();
-                l.start = i++;
-            }
-        }
-    }
-
-    this->lines = lines;
-    this->length = lines.size();
     display();
     this->cursor = Cursor();
 
@@ -57,26 +41,7 @@ Buffer::Buffer(std::string file, std::pair<int, int> size) {
 }
 
 void Buffer::display() {
-    std::string copy = data;
-    int count;
-
-    std::unordered_map<std::string, std::string> pairs = {
-        { "\n", "\r\n" }, { "\t", std::string(TABSTOP, ' ') }
-    };
-
-    for (int i = 0; i < copy.length();) {
-        std::string s = &copy.at(i);
-        if (auto it = pairs.find({ copy.at(i) }); it != pairs.end()) {
-            std::string val = it->second;
-            copy.replace(i, 1, val);
-            i += val.length();
-            count += (val.length() - it->first.length());
-        } else {
-            i++;
-        }
+    for (auto it = lines.begin(); it != lines.begin() + buf_size.first; it++) {
+        std::cout << *it << "\r\n";
     }
-
-    // WARN: Not sure this is working -- too high
-    std::string_view sv = copy.substr(0, lines[buf_size.first - 1].end - count);
-    std::cout << sv;
 }

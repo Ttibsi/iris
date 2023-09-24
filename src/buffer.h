@@ -43,10 +43,8 @@ struct Change {
 };
 
 struct Buffer {
-    std::vector<Line> lines;
-    std::string data;
+    std::vector<std::string> lines;
     int length;
-
     std::string file;
     Cursor cursor;
     bool readonly;

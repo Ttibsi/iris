@@ -4,14 +4,21 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <vector>
 
-std::string open_file(std::string f) {
+#include "text.h"
+
+std::vector<std::string> open_file(std::string f) {
     std::ifstream ifs(f);
-    std::string content(
-        (std::istreambuf_iterator<char>(ifs)), // Beginning of file
-        (std::istreambuf_iterator<char>())     // End of file
-    );
-    return content;
+    std::string line;
+    std::vector<std::string> lines;
+
+    while (std::getline(ifs, line)) {
+        lines.push_back(line);
+    }
+
+    filter_for_sensible_whitespace(lines);
+    return lines;
 }
 
 enum class File_Permission { Directory, Readonly, Writable };
