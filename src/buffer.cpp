@@ -10,7 +10,6 @@
 
 Buffer::Buffer(std::pair<int, int> size) {
     this->lines = { "" };
-    this->length = 1;
     this->file = "NO FILE";
     this->cursor = Cursor();
     this->readonly = false;
@@ -26,7 +25,6 @@ Buffer::Buffer(std::string file, std::pair<int, int> size) {
     // TODO: What if the given path is a directory?
 
     this->lines = open_file(file);
-    this->length = lines.size();
     this->file = file;
     this->readonly = is_Readonly(file);
     this->modified = false;

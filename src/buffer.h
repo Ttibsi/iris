@@ -16,8 +16,8 @@ struct Line {
 };
 
 struct Cursor {
-    int row;
-    int col;
+    std::size_t row;
+    std::size_t col;
 
     Cursor() : row(0), col(0) { set_pos_abs(0, 0); };
     void set_pos_abs(int r, int c) {
@@ -44,7 +44,6 @@ struct Change {
 
 struct Buffer {
     std::vector<std::string> lines;
-    int length;
     std::string file;
     Cursor cursor;
     bool readonly;

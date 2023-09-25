@@ -10,7 +10,7 @@ void Buffer::handle_keypress() {
                 cursor.set_pos_rel(0, -1);
             }
         } else if (k.code == 'j' && k.mod.empty()) {
-            if (cursor.row < length) {
+            if (cursor.row < lines.size()) {
                 cursor.set_pos_rel(1, 0);
             }
         } else if (k.code == 'k' && k.mod.empty()) {
