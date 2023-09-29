@@ -9,22 +9,22 @@ Goals:
 Milestones:
 
 v0.1.0
-    - [ ] An alternate window is opened
-    - [ ] Allow the user to pass a filename to specify a file to open
-    - [ ] Display the contents of the specified file in the buffer
+    - [x] An alternate window is opened
+    - [x] Allow the user to pass a filename to specify a file to open
+    - [x] Display the contents of the specified file in the buffer
         - I think for this I'll need to decide on a data structure to store the
         file in - especially if I want to add undo later on down the road
         - Also of note here is to make sure `\t` displays as a specified number
         of spaces instead of a single character
-    - [ ] The window can be closed (without resorting to CTRL+C)
-    - [ ] Edit/insert text
-    - [ ] The window doesn't crash when the terminal is resized
-        - I don't know if this is something I need to account for
-    - [ ] If no file is specified, instead open an "empty" buffer to write in
-    - [ ] `h`, `j`, `k`, `l` motion
+    - [x] The window can be closed (without resorting to CTRL+C)
+    - [x] `h`, `j`, `k`, `l` motion
         - Might as well build in vim motions, it's what I'm used to using already
         - This will need to split the editor into a "read" mode (vim normal mode
         entered with `esc`) and a "write" mode (vim insert mode entered with `i`)
+    - [x] The window doesn't crash when the terminal is resized
+        - I don't know if this is something I need to account for
+    - [ ] Edit/insert text
+    - [x] If no file is specified, instead open an "empty" buffer to write in
     - [ ] Write the buffer to the named file (save feature)
     - [ ] If a file name wasn't specified, allow the user to save with a new
         file name (save as)
