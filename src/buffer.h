@@ -1,64 +1,25 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include <rawterm/rawterm.h>
-
-struct Line {
-    int start;
-    int end;
-
-    Line() : start(0), end(0) {}
-};
-
-struct Cursor {
-    std::size_t row;
-    std::size_t col;
-
-    Cursor() : row(0), col(0) { set_pos_abs(0, 0); };
-    void set_pos_abs(int r, int c) {
-        row = r;
-        col = c;
-        move_cursor(r, c);
-    };
-    void set_pos_rel(int r, int c) {
-        row += r;
-        col += c;
-        move_cursor(row, col);
-    };
-    friend std::ostream &operator<<(std::ostream &os, const Cursor &c) {
-        os << "Cursor{row: " << c.row << ", col: " << c.col << "}";
-        return os;
-    };
-};
-
-struct Change {
-    int start_pos;
-    int end_pos;
-    std::vector<char> content;
-};
+struct Editor;
 
 struct Buffer {
-    std::vector<std::string> lines;
+    Editor *editor;
     std::string file;
-    Cursor cursor;
+    std::vector<std::string> lines;
     bool readonly;
     bool modified;
-    std::vector<Change> undo;
-    std::vector<Change> redo;
-    std::pair<int, int> buf_size;
+    std::size_t current_line;
 
-    Buffer() : Buffer(get_term_size()) {}
-    Buffer(std::pair<int, int> size);
-
-    Buffer(std::string file) : Buffer(file, get_term_size()) {}
-    Buffer(std::string file, std::pair<int, int> size);
-    void display();
-    void handle_keypress();
+    Buffer(Editor *e, std::pair<std::size_t, std::size_t> view_size);
+    Buffer(Editor *e, std::string filename,
+           std::pair<std::size_t, std::size_t> view_size);
+    std::string render_status_bar(std::size_t width);
+    std::size_t line_size(std::size_t idx);
+    void reset_status_bar(std::pair<std::size_t, std::size_t> dimensions);
 };
 
 #endif // BUFFER_H

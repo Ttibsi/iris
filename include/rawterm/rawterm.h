@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v1.2.0
+// Version: v1.4.0
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -63,9 +63,21 @@ int enable_raw_mode();
 void enter_alt_screen();
 void exit_alt_screen();
 Key process_keypress();
+
 std::pair<int, int> get_term_size();
-void move_cursor(int line, int col);
 void clear_screen();
+
+void move_cursor(int line, int col);
+void save_cursor_position();
+void load_cursor_position();
+
+std::string bold(std::string s);
+std::string italic(std::string s);
+std::string underline(std::string s);
+std::string blink(std::string s);
+std::string inverse(std::string s);
+std::string hidden(std::string s);
+std::string strikethrough(std::string s);
 
 #endif // RAWTERM_H
 
@@ -555,12 +567,24 @@ std::pair<int, int> get_term_size() {
     ioctl(0, TIOCGWINSZ, &w);
     return std::make_pair(w.ws_row, w.ws_col);
 }
+void clear_screen() { std::cout << "\033[2J"; }
 
 void move_cursor(int line, int col) {
     std::cout << "\033[" << std::to_string(line) << ";" << std::to_string(col)
               << "H" << std::flush;
 }
+void save_cursor_position() { std::cout << "\033[s" << std::flush; }
+void load_cursor_position() { std::cout << "\033[u" << std::flush; }
 
-void clear_screen() { std::cout << "\033[2J"; }
+// Text formatting
+std::string bold(std::string s) { return "\033[1m" + s + "\033[22m"; }
+std::string italic(std::string s) { return "\033[3m" + s + "\033[23m"; }
+std::string underline(std::string s) { return "\033[4m" + s + "\033[24m"; }
+std::string blink(std::string s) { return "\033[5m" + s + "\033[25m"; }
+std::string inverse(std::string s) { return "\033[7m" + s + "\033[27m"; }
+std::string hidden(std::string s) { return "\033[8m" + s + "\033[28m"; }
+std::string strikethrough(std::string s) { return "\033[9m" + s + "\033[29m"; }
+
+// Cursor positioning
 
 #endif // RAWTERM_IMPLEMENTATION

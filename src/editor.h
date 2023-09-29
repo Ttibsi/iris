@@ -13,27 +13,37 @@ enum class Mode { Read, Write };
 
 struct Editor {
     std::vector<Buffer> buffers;
-    int active_buffer;
+    std::size_t active_buffer;
     Mode mode;
     std::string clipboard;
-    std::pair<int, int> term_size;
+    std::pair<std::size_t, std::size_t> term_size;
 
     Editor(std::string file);
-    ~Editor();
+    void switch_mode(Mode m);
+    std::string get_mode();
 };
 
-Editor::Editor(std::string file) {
+inline Editor::Editor(std::string file)
+    : active_buffer(0), mode(Mode::Read), clipboard(""),
+      term_size(get_term_size()) {
     clear_screen();
-    Buffer b = file.empty() ? Buffer() : Buffer(file);
+    std::pair<std::size_t, std::size_t> view_size{ term_size.first - 2,
+                                                   term_size.second };
 
-    // Create buffer
-    this->buffers = { b };
-    this->active_buffer = 0;
-    this->mode = Mode::Read;
-    this->clipboard = "";
-    this->term_size = get_term_size();
+    Buffer b =
+        file.empty() ? Buffer(this, view_size) : Buffer(this, file, view_size);
+    buffers = { b };
 }
 
-Editor::~Editor() {}
+inline void Editor::switch_mode(Mode m) { mode = m; }
+
+inline std::string Editor::get_mode() {
+    switch (mode) {
+    case Mode::Read:
+        return "READ";
+    case Mode::Write:
+        return "WRITE";
+    }
+}
 
 #endif // EDITOR_H

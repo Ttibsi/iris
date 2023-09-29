@@ -6,6 +6,8 @@
 
 #include "editor.h"
 
+// TODO: Work our what copies could be references
+
 int main(int argc, char *argv[]) {
     argparse::ArgumentParser parser("Iris", "v0.1.0");
 
