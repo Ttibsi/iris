@@ -44,6 +44,8 @@ inline std::string Editor::get_mode() {
     case Mode::Write:
         return "WRITE";
     }
+
+    return "";
 }
 
 #endif // EDITOR_H
