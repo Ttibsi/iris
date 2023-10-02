@@ -15,8 +15,8 @@ target_link_libraries(GTest INTERFACE gtest_main)
 
 
 add_executable(test_exe
-    # test files here
     file_manip_test.cpp
+    text_manip_test.cpp
 )
 
 target_link_libraries(test_exe PRIVATE lib GTest)
