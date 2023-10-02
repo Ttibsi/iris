@@ -1,0 +1,5 @@
+foo, bar
+	baz with a tab
+  two trailing spaces
+
+empty line above

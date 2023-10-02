@@ -1,4 +1,5 @@
 ---
+AlignArrayOfStructures: Left
 BasedOnStyle: LLVM
 IndentWidth: 4
 AlignTrailingComments: Always

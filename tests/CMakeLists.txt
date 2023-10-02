@@ -13,10 +13,11 @@ include(GoogleTest)
 add_library(GTest INTERFACE IMPORTED)
 target_link_libraries(GTest INTERFACE gtest_main)
 
+
 add_executable(test_exe
     # test files here
-    main.cpp
+    file_manip_test.cpp
 )
 
 target_link_libraries(test_exe PRIVATE lib GTest)
-gtest_discover_tests(test_exe)
+gtest_discover_tests(test_exe WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
