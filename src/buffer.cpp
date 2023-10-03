@@ -1,5 +1,3 @@
-
-
 #include "buffer.h"
 #include "constants.h"
 #include "editor.h"
@@ -8,21 +6,17 @@
 #include "viewport.h"
 
 // TODO: opening rawterm_wrapper.h seems to have weird encoding
-Buffer::Buffer(Editor *e, std::pair<std::size_t, std::size_t> view_size)
+Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
-      modified(false), current_line(1) {
-    Viewport view = { this, view_size };
-    view.draw(0);
-    view.cursor.set_pos_abs(0, 0);
-    view.handle_keypress();
-}
+      modified(false), current_line(1) {}
 
-Buffer::Buffer(Editor *e, std::string filename,
-               std::pair<std::size_t, std::size_t> view_size)
-    : // TODO: What if the given path is a directory?
-      // TODO: Handle opening an empty file - it segfaults otherwise
-      editor(e), file(filename), lines(open_file(filename)),
-      readonly(is_readonly(filename)), modified(false), current_line(1) {
+// TODO: What if the given path is a directory?
+// TODO: Handle opening an empty file - it segfaults otherwise
+Buffer::Buffer(Editor *e, std::string filename)
+    : editor(e), file(filename), lines(open_file(filename)),
+      readonly(is_readonly(filename)), modified(false), current_line(1) {}
+
+void Buffer::start(std::pair<std::size_t, std::size_t> view_size) {
     Viewport view = { this, view_size };
     view.draw(0);
     view.cursor.set_pos_abs(0, 0);
@@ -69,7 +63,7 @@ void Buffer::reset_status_bar(std::pair<std::size_t, std::size_t> dimensions) {
 std::size_t Buffer::line_size(std::size_t idx) {
     std::size_t ret = lines[idx].size();
     if (lines[idx].find("\t") != std::string::npos) {
-        ret += TABSTOP;
+        ret += (TABSTOP - 1);
     }
 
     return ret;

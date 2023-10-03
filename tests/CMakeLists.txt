@@ -15,7 +15,9 @@ target_link_libraries(GTest INTERFACE gtest_main)
 
 
 add_executable(test_exe
+    buffer_test.cpp
     cursor_test.cpp
+    editor_test.cpp
     file_manip_test.cpp
     text_manip_test.cpp
 )
