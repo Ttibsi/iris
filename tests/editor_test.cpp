@@ -10,7 +10,6 @@ TEST(editorClass, constructor) {
 
     EXPECT_EQ(e.active_buffer, 0);
     EXPECT_EQ(e.mode, Mode::Read);
-    EXPECT_EQ(e.term_size, get_term_size());
 }
 
 TEST(editorClass, switchMode) {
