@@ -2,15 +2,10 @@
 #include <vector>
 
 #include "buffer.h"
-#include "editor.h"
+#include "test_utils.h"
 #include "gtest/gtest.h"
 
-Buffer setup(std::string f) {
-    Editor e(f);
-    return e.buffers[0];
-}
-
-TEST(bufferSuite, constructorEmpty) {
+TEST(bufferClass, constructorEmpty) {
     Buffer b = setup("");
     std::vector<std::string> lines{ "" };
 
@@ -21,7 +16,7 @@ TEST(bufferSuite, constructorEmpty) {
     EXPECT_EQ(b.current_line, 1);
 }
 
-TEST(bufferSuite, constructorWithFile) {
+TEST(bufferClass, constructorWithFile) {
     Buffer b = setup("fixture/example_file.txt");
 
     std::vector<std::string> expected = {
@@ -36,7 +31,7 @@ TEST(bufferSuite, constructorWithFile) {
     EXPECT_EQ(b.current_line, 1);
 }
 
-TEST(bufferSuite, renderStatusBar) {
+TEST(bufferClass, renderStatusBar) {
     Buffer b = setup("fixture/example_file.txt");
 
     std::string bar = b.render_status_bar(79);
@@ -64,7 +59,7 @@ TEST(bufferSuite, renderStatusBar) {
     EXPECT_EQ(split[6], " 1/5 \x1B[27m");
 }
 
-TEST(bufferSuite, lineSize) {
+TEST(bufferClass, lineSize) {
     Buffer b = setup("fixture/example_file.txt");
     EXPECT_EQ(b.line_size(0), 8);
     EXPECT_EQ(b.line_size(1), 18);

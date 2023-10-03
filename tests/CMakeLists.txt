@@ -20,6 +20,7 @@ add_executable(test_exe
     editor_test.cpp
     file_manip_test.cpp
     text_manip_test.cpp
+    viewport_test.cpp
 )
 
 target_link_libraries(test_exe PRIVATE lib GTest)

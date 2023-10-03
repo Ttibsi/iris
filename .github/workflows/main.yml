@@ -17,4 +17,4 @@ jobs:
       - name: Build the project
         run: cmake --build build
       - name: Test the project
-        run: ctest --test-dir build
+        run: ctest --test-dir build/tests
