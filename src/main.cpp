@@ -21,6 +21,8 @@ int main(int argc, char *argv[]) {
     enable_raw_mode();
 
     Editor e(file);
+    e.start();
+
     exit_alt_screen();
 
     return 0;

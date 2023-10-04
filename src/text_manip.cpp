@@ -13,7 +13,7 @@
 
 void filter_for_sensible_whitespace(std::vector<std::string> &lines) {
     std::unordered_map<std::string, std::string> pairs = {
-        { "\t", std::string(TABSTOP, ' ') }
+        {"\t", std::string(TABSTOP, ' ')}
     };
 
     for (auto line : lines) {

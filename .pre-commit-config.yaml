@@ -13,7 +13,15 @@ repos:
     hooks:
       - id: clang-format
         exclude: ".json"
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+      - id: clang-tidy
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.2
     hooks:
       - id: cmakelint
+  - repo: https://github.com/sco1/brie-commit
+    rev: v1.1.0
+    hooks:
+    -   id: brie-commit

@@ -64,7 +64,7 @@ void enter_alt_screen();
 void exit_alt_screen();
 Key process_keypress();
 
-std::pair<int, int> get_term_size();
+std::pair<std::size_t, std::size_t> get_term_size();
 void clear_screen();
 
 void move_cursor(int line, int col);
@@ -562,7 +562,7 @@ Key process_keypress() {
     return k;
 }
 
-std::pair<int, int> get_term_size() {
+std::pair<std::size_t, std::size_t> get_term_size() {
     struct winsize w;
     ioctl(0, TIOCGWINSZ, &w);
     return std::make_pair(w.ws_row, w.ws_col);

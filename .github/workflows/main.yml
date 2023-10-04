@@ -8,13 +8,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
+      - run: sudo apt-get install clang-tidy
+      - uses: threeal/cmake-action@v1.3.0
+        with:
+          run-build: true
       - uses: pre-commit/action@v3.0.0
   ctest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: threeal/cmake-action@v1.3.0
-      - name: Build the project
-        run: cmake --build build
-      - name: Test the project
-        run: ctest --test-dir build
+        with:
+          run-build: true
+          run-test: true
