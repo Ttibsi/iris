@@ -8,22 +8,22 @@
 // TODO: opening rawterm_wrapper.h seems to have weird encoding
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
-      modified(false), current_line(1) {}
+      modified(false), current_line(0) {}
 
 // TODO: What if the given path is a directory?
 // TODO: Handle opening an empty file - it segfaults otherwise
 Buffer::Buffer(Editor *e, std::string filename)
     : editor(e), file(filename), lines(open_file(filename)),
-      readonly(is_readonly(filename)), modified(false), current_line(1) {}
+      readonly(is_readonly(filename)), modified(false), current_line(0) {}
 
-void Buffer::start(std::pair<std::size_t, std::size_t> view_size) {
+void Buffer::init(rawterm::Pos view_size) {
     Viewport view = { this, view_size };
     view.draw(0);
     view.cursor.set_pos_abs(0, 0);
     view.handle_keypress();
 }
 
-std::string Buffer::render_status_bar(std::size_t width) {
+std::string Buffer::render_status_bar(const std::size_t &width) {
     // Left - Mode, filename, modified/readonly, git branch
     // Right - file type, current/total line number
 
@@ -47,20 +47,20 @@ std::string Buffer::render_status_bar(std::size_t width) {
         std::to_string(current_line) + "/" + std::to_string(lines.size()) + " ";
 
     std::string ret =
-        left + std::string(width - 1 - left.length() - right.length(), ' ') +
-        right;
+        left + std::string(width - left.length() - right.length(), ' ') + right;
+
     return rawterm::inverse(ret);
 }
 
-void Buffer::reset_status_bar(std::pair<std::size_t, std::size_t> dimensions) {
+void Buffer::reset_status_bar(rawterm::Pos dimensions) {
     rawterm::save_cursor_position();
     // go to statusline pos
-    rawterm::move_cursor({ dimensions.first + 1, 0 });
-    std::cout << render_status_bar(dimensions.second);
+    rawterm::move_cursor({ dimensions.vertical + 1, 0 });
+    std::cout << render_status_bar(dimensions.horizontal);
     rawterm::load_cursor_position();
 }
 
-std::size_t Buffer::line_size(std::size_t idx) {
+std::size_t Buffer::line_size(const std::size_t &idx) {
     std::size_t ret = lines[idx].size();
     if (lines[idx].find("\t") != std::string::npos) {
         ret += (TABSTOP - 1);

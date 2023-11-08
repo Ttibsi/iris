@@ -6,11 +6,14 @@
 
 #include <rawterm/rawterm.h>
 
+// NOTE: Cursor represents the location in the terminal that the cursor is
+// This isn't the location in the file, or the location in the string vector
+// Cursor should be 1-indexed
 struct Cursor {
     std::size_t row;
     std::size_t col;
 
-    Cursor() : row(0), col(0) { set_pos_abs(0, 0); }
+    Cursor() : row(1), col(1) { set_pos_abs(1, 1); }
     void set_pos_abs(std::size_t r, std::size_t c);
     void set_pos_rel(std::size_t r, std::size_t c);
     friend std::ostream &operator<<(std::ostream &os, const Cursor &c);
