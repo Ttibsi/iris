@@ -49,15 +49,15 @@ std::string Buffer::render_status_bar(std::size_t width) {
     std::string ret =
         left + std::string(width - 1 - left.length() - right.length(), ' ') +
         right;
-    return inverse(ret);
+    return rawterm::inverse(ret);
 }
 
 void Buffer::reset_status_bar(std::pair<std::size_t, std::size_t> dimensions) {
-    save_cursor_position();
+    rawterm::save_cursor_position();
     // go to statusline pos
-    move_cursor(dimensions.first + 1, 0);
+    rawterm::move_cursor({ dimensions.first + 1, 0 });
     std::cout << render_status_bar(dimensions.second);
-    load_cursor_position();
+    rawterm::load_cursor_position();
 }
 
 std::size_t Buffer::line_size(std::size_t idx) {

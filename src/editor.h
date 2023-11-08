@@ -16,7 +16,7 @@ struct Editor {
     std::size_t active_buffer;
     Mode mode;
     std::string clipboard;
-    std::pair<std::size_t, std::size_t> term_size;
+    rawterm::Pos term_size;
 
     Editor(std::string file);
     void start();
@@ -26,18 +26,15 @@ struct Editor {
 
 inline Editor::Editor(std::string file)
     : active_buffer(0), mode(Mode::Read), clipboard(""),
-      term_size(get_term_size()) {
-    clear_screen();
+      term_size(rawterm::get_term_size()) {
+    rawterm::clear_screen();
 
     Buffer b = file.empty() ? Buffer(this) : Buffer(this, file);
     buffers = { b };
 }
 
 inline void Editor::start() {
-    std::pair<std::size_t, std::size_t> view_size{ term_size.first - 2,
-                                                   term_size.second };
-
-    buffers[0].start(view_size);
+    buffers[0].start({ term_size.vertical - 2, term_size.horizontal });
 }
 
 inline void Editor::switch_mode(Mode m) { mode = m; }

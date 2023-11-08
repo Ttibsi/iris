@@ -5,7 +5,6 @@ add_library(lib SHARED
     buffer.cpp
     file_manip.cpp
     handle_keypress.cpp
-    rawterm_wrapper.cpp
     text_manip.cpp
 )
 
