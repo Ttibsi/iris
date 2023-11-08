@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> open_file(std::string file);
-bool is_readonly(std::string file);
-std::string filename_only(std::string f);
-std::string get_file_type(std::string file);
+std::vector<std::string> open_file(const std::string &);
+bool is_readonly(const std::string &);
+std::string filename_only(std::string);
+std::string get_file_type(const std::string &);
 
 #endif // FILE_MANIP_H

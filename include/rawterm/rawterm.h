@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v2.2.1
+// Version: v2.2.2
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -72,9 +72,10 @@ struct Key {
     std::string raw;
 };
 
+// 0 == vertical == ^v, 1 == horizontal == <>
 struct Pos {
-    std::size_t horizontal;
     std::size_t vertical;
+    std::size_t horizontal;
 };
 
 struct Color {
@@ -527,22 +528,22 @@ inline rawterm::Pos get_term_size() {
 // Note that terminals sometimes handle 0,0 and 1,1 as the same position
 // TODO: Ovwerload this to take in x and y co-ords as well
 inline void move_cursor(rawterm::Pos pos) {
-    std::cout << "\x1B[" << std::to_string(pos.horizontal) << ';'
-              << std::to_string(pos.vertical) << 'H' << std::flush;
+    std::cout << "\x1B[" << std::to_string(pos.vertical) << ';'
+              << std::to_string(pos.horizontal) << 'H' << std::flush;
 }
 
 // Move the terminal cursor relatively to its current position
 inline void offset_cursor(rawterm::Pos offset) {
-    if (offset.horizontal < 0) {
-        std::cout << "\x1B[" << -offset.horizontal << 'D';
-    } else if (offset.horizontal > 0) {
-        std::cout << "\x1B[" << offset.horizontal << 'C';
+    if (offset.vertical < 0) {
+        std::cout << "\x1B[" << -offset.vertical << 'D';
+    } else if (offset.vertical > 0) {
+        std::cout << "\x1B[" << offset.vertical << 'C';
     }
 
-    if (offset.vertical < 0) {
-        std::cout << "\x1B[" << -offset.vertical << 'A';
-    } else if (offset.vertical > 0) {
-        std::cout << "\x1B[" << offset.vertical << 'B';
+    if (offset.horizontal < 0) {
+        std::cout << "\x1B[" << -offset.horizontal << 'A';
+    } else if (offset.horizontal > 0) {
+        std::cout << "\x1B[" << offset.horizontal << 'B';
     }
 }
 
@@ -619,14 +620,14 @@ inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 
 // clear screen from beginning until position
 inline void clear_screen_until(const Pos pos) {
-    std::cout << "\x1B[s\x1B[" << std::to_string(pos.horizontal) << ';'
-              << std::to_string(pos.vertical) << "H\x1B[1J\x1B[u";
+    std::cout << "\x1B[s\x1B[" << std::to_string(pos.vertical) << ';'
+              << std::to_string(pos.horizontal) << "H\x1B[1J\x1B[u";
 }
 
 // clear screen from position until end
 inline void clear_screen_from(const Pos pos) {
-    std::cout << "\x1B[s\x1B[" << std::to_string(pos.horizontal) << ';'
-              << std::to_string(pos.vertical) << "H\x1B[0J\x1B[u";
+    std::cout << "\x1B[s\x1B[" << std::to_string(pos.vertical) << ';'
+              << std::to_string(pos.horizontal) << "H\x1B[0J\x1B[u";
 }
 
 // clear cursor's line entirely
@@ -634,7 +635,7 @@ inline void clear_line() { std::cout << "\x1B[2K\r"; }
 
 // clear position's line entirely
 inline void clear_line(const Pos pos) {
-    std::cout << "\x1B[s\x1B[" << std::to_string(pos.horizontal)
+    std::cout << "\x1B[s\x1B[" << std::to_string(pos.vertical)
               << "H\x1B[2K\x1B[u";
 }
 
@@ -643,8 +644,8 @@ inline void clear_line_until() { std::cout << "\x1B[1K"; }
 
 // clear position's line from beginning until position's column
 inline void clear_line_until(const Pos pos) {
-    std::cout << "\x1B[s\x1B[" << std::to_string(pos.horizontal) << ';'
-              << std::to_string(pos.vertical) << "H\x1B[1K\x1B[u";
+    std::cout << "\x1B[s\x1B[" << std::to_string(pos.vertical) << ';'
+              << std::to_string(pos.horizontal) << "H\x1B[1K\x1B[u";
 }
 
 // clear cursor's line from cursor's column until end
@@ -652,8 +653,8 @@ inline void clear_line_from() { std::cout << "\x1B[0K"; }
 
 // clear position's line from position's column until end
 inline void clear_line_from(const Pos pos) {
-    std::cout << "\x1B[s\x1B[" << std::to_string(pos.horizontal) << ';'
-              << std::to_string(pos.vertical) << "H\x1B[0K\x1B[u";
+    std::cout << "\x1B[s\x1B[" << std::to_string(pos.vertical) << ';'
+              << std::to_string(pos.horizontal) << "H\x1B[0K\x1B[u";
 }
 
 // Check that the key pressed is a printable character

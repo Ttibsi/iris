@@ -20,24 +20,24 @@ struct Editor {
 
     Editor(std::string file);
     void start();
-    void switch_mode(Mode m);
+    void set_mode(Mode m);
     std::string get_mode();
 };
 
 inline Editor::Editor(std::string file)
     : active_buffer(0), mode(Mode::Read), clipboard(""),
       term_size(rawterm::get_term_size()) {
-    rawterm::clear_screen();
 
+    rawterm::clear_screen();
     Buffer b = file.empty() ? Buffer(this) : Buffer(this, file);
     buffers = { b };
 }
 
 inline void Editor::start() {
-    buffers[0].start({ term_size.vertical - 2, term_size.horizontal });
+    buffers[0].init({ term_size.vertical - 2, term_size.horizontal });
 }
 
-inline void Editor::switch_mode(Mode m) { mode = m; }
+inline void Editor::set_mode(Mode m) { mode = m; }
 
 inline std::string Editor::get_mode() {
     switch (mode) {
@@ -45,9 +45,9 @@ inline std::string Editor::get_mode() {
         return "READ";
     case Mode::Write:
         return "WRITE";
+    default:
+        return "";
     }
-
-    return "";
 }
 
 #endif // EDITOR_H
