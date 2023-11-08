@@ -13,7 +13,7 @@ TEST(bufferClass, constructorEmpty) {
     EXPECT_EQ(b.lines, lines);
     EXPECT_EQ(b.readonly, false);
     EXPECT_EQ(b.modified, false);
-    EXPECT_EQ(b.current_line, 1);
+    EXPECT_EQ(b.current_line, 0);
 }
 
 TEST(bufferClass, constructorWithFile) {
@@ -28,14 +28,14 @@ TEST(bufferClass, constructorWithFile) {
     EXPECT_EQ(b.lines, expected);
     EXPECT_EQ(b.readonly, false);
     EXPECT_EQ(b.modified, false);
-    EXPECT_EQ(b.current_line, 1);
+    EXPECT_EQ(b.current_line, 0);
 }
 
 TEST(bufferClass, renderStatusBar) {
     Buffer b = setup("fixture/example_file.txt");
 
     std::string bar = b.render_status_bar(79);
-    EXPECT_EQ(bar.size(), 87); // This won't be the same due to ascii codes
+    EXPECT_EQ(bar.size(), 88); // This won't be the same due to ascii codes
 
     std::vector<std::string> split;
     std::string tok;

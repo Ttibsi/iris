@@ -43,8 +43,8 @@ std::string Buffer::render_status_bar(const std::size_t &width) {
 
     std::string right = "| ";
     right += get_file_type(file) + " | ";
-    right +=
-        std::to_string(current_line) + "/" + std::to_string(lines.size()) + " ";
+    right += std::to_string(current_line + 1) + "/" +
+             std::to_string(lines.size()) + " ";
 
     std::string ret =
         left + std::string(width - left.length() - right.length(), ' ') + right;
