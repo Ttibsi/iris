@@ -19,13 +19,13 @@ struct Cursor {
 inline void Cursor::set_pos_abs(std::size_t r, std::size_t c) {
     row = r;
     col = c;
-    move_cursor(r, c);
+    rawterm::move_cursor({ r, c });
 };
 
 inline void Cursor::set_pos_rel(std::size_t r, std::size_t c) {
     row += r;
     col += c;
-    move_cursor(row, col);
+    rawterm::move_cursor({ row, col });
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Cursor &c) {
