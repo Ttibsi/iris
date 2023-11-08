@@ -20,13 +20,13 @@ int main(int argc, char *argv[]) {
         return app.exit(e);
     }
 
-    enter_alt_screen();
-    enable_raw_mode();
+    rawterm::enter_alt_screen();
+    rawterm::enable_raw_mode();
 
     Editor e(file);
     e.start();
 
-    exit_alt_screen();
+    rawterm::exit_alt_screen();
 
     return 0;
 }

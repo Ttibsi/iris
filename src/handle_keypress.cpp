@@ -4,7 +4,7 @@
 
 void Viewport::handle_keypress() {
     while (true) {
-        Key k = process_keypress();
+        rawterm::Key k = rawterm::process_keypress();
         if (k.code == 'q' && k.mod.empty()) {
             break;
         } else if (k.code == 'h' && k.mod.empty()) {
@@ -14,7 +14,7 @@ void Viewport::handle_keypress() {
         } else if (k.code == 'j' && k.mod.empty()) {
             if (cursor.row == view_size.first &&
                 buffer->current_line < buffer->lines.size()) {
-                clear_screen();
+                rawterm::clear_screen();
                 std::size_t col = cursor.col;
                 cursor.set_pos_rel(0, -col);
                 buffer->current_line++;
@@ -37,7 +37,7 @@ void Viewport::handle_keypress() {
             if (cursor.row == 0 && buffer->current_line > 1) {
                 std::size_t col = cursor.col;
                 buffer->current_line--;
-                clear_screen();
+                rawterm::clear_screen();
                 cursor.set_pos_abs(0, 0);
                 draw(buffer->current_line);
                 cursor.set_pos_abs(0, col);
