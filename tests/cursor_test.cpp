@@ -4,8 +4,8 @@
 TEST(cursorClass, constructor) {
     Cursor c;
 
-    EXPECT_EQ(c.row, 0);
-    EXPECT_EQ(c.col, 0);
+    EXPECT_EQ(c.row, 1);
+    EXPECT_EQ(c.col, 1);
 }
 
 TEST(cursorClass, setPosAbs) {
@@ -20,10 +20,10 @@ TEST(cursorClass, setPosRel) {
     Cursor c;
 
     c.set_pos_rel(3, 2);
-    EXPECT_EQ(c.row, 3);
-    EXPECT_EQ(c.col, 2);
+    EXPECT_EQ(c.row, 4);
+    EXPECT_EQ(c.col, 3);
 
     c.set_pos_rel(-1, 0);
-    EXPECT_EQ(c.row, 2);
-    EXPECT_EQ(c.col, 2);
+    EXPECT_EQ(c.row, 3);
+    EXPECT_EQ(c.col, 3);
 }

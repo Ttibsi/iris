@@ -9,4 +9,5 @@ ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: false
 KeepEmptyLinesAtTheStartOfBlocks: true
+NamespaceIndentation: All
 SortIncludes: CaseInsensitive
