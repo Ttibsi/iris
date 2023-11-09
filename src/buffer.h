@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "cursor.h"
 #include "rawterm/rawterm.h"
 
 struct Editor;
@@ -19,8 +20,8 @@ struct Buffer {
     Buffer(Editor *);
     Buffer(Editor *, std::string);
     void init(rawterm::Pos);
-    std::string render_status_bar(const std::size_t &);
-    void reset_status_bar(rawterm::Pos);
+    std::string render_status_bar(const std::size_t &, Cursor *);
+    void reset_status_bar(rawterm::Pos, Cursor *);
     std::size_t line_size(const std::size_t &);
 };
 

@@ -13,6 +13,7 @@ void Viewport::handle_keypress() {
         } else if (k.code == 'h' && rawterm::getMod(&k) == rawterm::Mod::None) {
             if (cursor.col > 1) {
                 cursor.set_pos_rel(0, -1);
+                buffer->reset_status_bar(view_size, &cursor);
             }
 
             // Down
@@ -28,12 +29,12 @@ void Viewport::handle_keypress() {
                 // Need to move the cursor back to it's position after
                 // re-printing buffer
                 cursor.set_pos_rel(0, col);
-                buffer->reset_status_bar(view_size);
+                buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row < buffer->lines.size()) {
                 // Move cursor
                 cursor.set_pos_rel(1, 0);
                 buffer->current_line++;
-                buffer->reset_status_bar(view_size);
+                buffer->reset_status_bar(view_size, &cursor);
             }
 
             // Up
@@ -46,12 +47,12 @@ void Viewport::handle_keypress() {
                 cursor.set_pos_abs(1, 1);
                 draw(buffer->current_line);
                 cursor.set_pos_abs(1, col);
-                buffer->reset_status_bar(view_size);
+                buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row > 1) {
                 // Move cursor up
                 cursor.set_pos_rel(-1, 0);
                 buffer->current_line--;
-                buffer->reset_status_bar(view_size);
+                buffer->reset_status_bar(view_size, &cursor);
             }
 
             // Right
@@ -60,6 +61,7 @@ void Viewport::handle_keypress() {
             // u/d
             if (cursor.col < buffer->line_size(buffer->current_line)) {
                 cursor.set_pos_rel(0, 1);
+                buffer->reset_status_bar(view_size, &cursor);
             }
         }
     }
