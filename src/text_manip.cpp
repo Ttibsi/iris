@@ -22,7 +22,7 @@ void filter_for_sensible_whitespace(std::vector<std::string> &lines) {
                 line.replace(line.find(p.first), 1, p.second);
             }
         }
-        line + "\r\n";
+        line += "\r\n";
     }
 }
 
@@ -45,11 +45,5 @@ std::string shell_exec(const std::string &cmd) {
 }
 
 std::size_t tab_count(const std::string &line) {
-    std::size_t ret = 0;
-
-    if (line.find("\t") != std::string::npos) {
-        ret++;
-    }
-
-    return ret;
+    return std::ranges::count(line, '\t');
 }
