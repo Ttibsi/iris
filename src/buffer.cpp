@@ -44,7 +44,8 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     std::string right = "| ";
     right += get_file_type(file) + " | ";
     if (CURSOR_STATUS) {
-        right += std::to_string(c->row) + ":" + std::to_string(c->col) + " | ";
+        right += "Cursor: (" + std::to_string(c->row) + ":" +
+                 std::to_string(c->col) + ") | ";
     }
     right += std::to_string(current_line + 1) + "/" +
              std::to_string(lines.size()) + " ";
