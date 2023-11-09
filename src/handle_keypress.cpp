@@ -1,5 +1,6 @@
 #include <rawterm/rawterm.h>
 
+#include "text_manip.h"
 #include "viewport.h"
 
 void Viewport::handle_keypress() {
@@ -11,7 +12,8 @@ void Viewport::handle_keypress() {
 
             // Left
         } else if (k.code == 'h' && rawterm::getMod(&k) == rawterm::Mod::None) {
-            if (cursor.col > 1) {
+
+            if (cursor.col > tab_count(buffer->lines[buffer->current_line])) {
                 cursor.set_pos_rel(0, -1);
                 buffer->reset_status_bar(view_size, &cursor);
             }
@@ -22,18 +24,24 @@ void Viewport::handle_keypress() {
                 buffer->current_line < buffer->lines.size()) {
                 // Scroll view
                 rawterm::clear_screen();
-                std::size_t col = cursor.col;
-                cursor.set_pos_rel(0, -col); // TODO: Save row position too
+                std::size_t cursor_col = cursor.col;
+                cursor.set_pos_abs(1, 1); // TODO: Save row position too
                 buffer->current_line++;
-                draw((buffer->current_line - view_size.horizontal));
-                // Need to move the cursor back to it's position after
-                // re-printing buffer
-                cursor.set_pos_rel(0, col);
+                draw(buffer->current_line + 1 - view_size.vertical);
+                cursor.set_pos_abs(view_size.vertical, cursor_col);
                 buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row < buffer->lines.size()) {
                 // Move cursor
-                cursor.set_pos_rel(1, 0);
                 buffer->current_line++;
+                if (cursor.col > buffer->lines[buffer->current_line].size()) {
+                    cursor.set_pos_abs(
+                        cursor.row + 1,
+                        std::max(buffer->lines[buffer->current_line].size(),
+                                 static_cast<std::size_t>(1)));
+                } else {
+                    cursor.set_pos_rel(1, 0);
+                }
+
                 buffer->reset_status_bar(view_size, &cursor);
             }
 
@@ -50,8 +58,15 @@ void Viewport::handle_keypress() {
                 buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row > 1) {
                 // Move cursor up
-                cursor.set_pos_rel(-1, 0);
                 buffer->current_line--;
+                if (cursor.col > buffer->lines[buffer->current_line].size()) {
+                    cursor.set_pos_abs(
+                        cursor.row - 1,
+                        std::max(buffer->lines[buffer->current_line].size(),
+                                 static_cast<std::size_t>(1)));
+                } else {
+                    cursor.set_pos_rel(-1, 0);
+                }
                 buffer->reset_status_bar(view_size, &cursor);
             }
 

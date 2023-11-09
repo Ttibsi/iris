@@ -61,7 +61,8 @@ TEST(bufferClass, renderStatusBar) {
     EXPECT_EQ(split[5], " .txt ");
 
     if (CURSOR_STATUS) {
-        EXPECT_EQ(split[6], " 1:1 ");
+        EXPECT_EQ(split[6], " Cursor: (1:1) ");
+
         EXPECT_EQ(split[7], " 1/5 \x1B[27m");
     } else {
         EXPECT_EQ(split[6], " 1/5 \x1B[27m");

@@ -16,7 +16,7 @@ void filter_for_sensible_whitespace(std::vector<std::string> &lines) {
         {"\t", std::string(TABSTOP, ' ')}
     };
 
-    for (auto line : lines) {
+    for (auto &line : lines) {
         for (std::pair<std::string, std::string> p : pairs) {
             if (line.find(p.first) != std::string::npos) {
                 line.replace(line.find(p.first), 1, p.second);
@@ -42,4 +42,14 @@ std::string shell_exec(const std::string &cmd) {
     std::erase_if(result, [](auto ch) { return (ch == '\n' || ch == '\r'); });
 
     return result;
+}
+
+std::size_t tab_count(const std::string &line) {
+    std::size_t ret = 0;
+
+    if (line.find("\t") != std::string::npos) {
+        ret++;
+    }
+
+    return ret;
 }
