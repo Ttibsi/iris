@@ -22,14 +22,20 @@ struct Cursor {
 // TODO: Bounds checking
 // TODO: Do we want these two to take in a rawterm::Pos intead?
 inline void Cursor::set_pos_abs(std::size_t r, std::size_t c) {
-    row = r;
-    col = c;
-    rawterm::move_cursor({ r, c });
+    if (r >= 1 && c >= 1) {
+        row = r;
+        col = c;
+        rawterm::move_cursor({ r, c });
+    }
 };
 
 inline void Cursor::set_pos_rel(std::size_t r, std::size_t c) {
-    row += r;
-    col += c;
+    if (row + r >= 1) {
+        row += r;
+    }
+    if (col + c >= 1) {
+        col += c;
+    }
     rawterm::move_cursor({ row, col });
 };
 

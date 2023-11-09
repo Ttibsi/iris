@@ -19,11 +19,11 @@ Buffer::Buffer(Editor *e, std::string filename)
 void Buffer::init(rawterm::Pos view_size) {
     Viewport view = { this, view_size };
     view.draw(0);
-    view.cursor.set_pos_abs(0, 0);
+    view.cursor.set_pos_abs(1, 1);
     view.handle_keypress();
 }
 
-std::string Buffer::render_status_bar(const std::size_t &width) {
+std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     // Left - Mode, filename, modified/readonly, git branch
     // Right - file type, current/total line number
 
@@ -43,6 +43,9 @@ std::string Buffer::render_status_bar(const std::size_t &width) {
 
     std::string right = "| ";
     right += get_file_type(file) + " | ";
+    if (CURSOR_STATUS) {
+        right += std::to_string(c->row) + ":" + std::to_string(c->col) + " | ";
+    }
     right += std::to_string(current_line + 1) + "/" +
              std::to_string(lines.size()) + " ";
 
@@ -52,12 +55,13 @@ std::string Buffer::render_status_bar(const std::size_t &width) {
     return rawterm::inverse(ret);
 }
 
-void Buffer::reset_status_bar(rawterm::Pos dimensions) {
-    rawterm::save_cursor_position();
+void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     // go to statusline pos
     rawterm::move_cursor({ dimensions.vertical + 1, 0 });
-    std::cout << render_status_bar(dimensions.horizontal);
-    rawterm::load_cursor_position();
+    std::cout << render_status_bar(dimensions.horizontal, c);
+
+    // Restore cursor pos
+    rawterm::move_cursor({ c->row, c->col });
 }
 
 std::size_t Buffer::line_size(const std::size_t &idx) {

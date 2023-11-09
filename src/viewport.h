@@ -28,7 +28,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
         std::cout << *it << "\r\n";
     }
 
-    std::cout << buffer->render_status_bar(view_size.horizontal);
+    std::cout << buffer->render_status_bar(view_size.horizontal, &cursor);
     std::cout << "\r\n"; // TODO: Command palette
 }
 
