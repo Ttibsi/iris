@@ -64,12 +64,3 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     // Restore cursor pos
     rawterm::move_cursor({ c->row, c->col });
 }
-
-std::size_t Buffer::line_size(const std::size_t &idx) {
-    std::size_t ret = lines[idx].size();
-    if (lines[idx].find("\t") != std::string::npos) {
-        ret += (TABSTOP - 1);
-    }
-
-    return ret;
-}

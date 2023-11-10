@@ -12,8 +12,11 @@ void Viewport::handle_keypress() {
 
             // Left
         } else if (k.code == 'h' && rawterm::getMod(&k) == rawterm::Mod::None) {
+            std::size_t tab_count =
+                line_size(buffer->lines[buffer->current_line]) -
+                buffer->lines[buffer->current_line].size();
 
-            if (cursor.col > tab_count(buffer->lines[buffer->current_line])) {
+            if (cursor.col > tab_count) {
                 cursor.set_pos_rel(0, -1);
                 buffer->reset_status_bar(view_size, &cursor);
             }
@@ -33,10 +36,11 @@ void Viewport::handle_keypress() {
             } else if (cursor.row < buffer->lines.size()) {
                 // Move cursor
                 buffer->current_line++;
-                if (cursor.col > buffer->lines[buffer->current_line].size()) {
+                if (cursor.col >
+                    line_size(buffer->lines[buffer->current_line])) {
                     cursor.set_pos_abs(
                         cursor.row + 1,
-                        std::max(buffer->lines[buffer->current_line].size(),
+                        std::max(line_size(buffer->lines[buffer->current_line]),
                                  static_cast<std::size_t>(1)));
                 } else {
                     cursor.set_pos_rel(1, 0);
@@ -59,10 +63,11 @@ void Viewport::handle_keypress() {
             } else if (cursor.row > 1) {
                 // Move cursor up
                 buffer->current_line--;
-                if (cursor.col > buffer->lines[buffer->current_line].size()) {
+                if (cursor.col >
+                    line_size(buffer->lines[buffer->current_line])) {
                     cursor.set_pos_abs(
                         cursor.row - 1,
-                        std::max(buffer->lines[buffer->current_line].size(),
+                        std::max(line_size(buffer->lines[buffer->current_line]),
                                  static_cast<std::size_t>(1)));
                 } else {
                     cursor.set_pos_rel(-1, 0);
@@ -74,7 +79,7 @@ void Viewport::handle_keypress() {
         } else if (k.code == 'l' && rawterm::getMod(&k) == rawterm::Mod::None) {
             // TODO: Jump backwards if it's not in the right place when going
             // u/d
-            if (cursor.col < buffer->line_size(buffer->current_line)) {
+            if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
                 cursor.set_pos_rel(0, 1);
                 buffer->reset_status_bar(view_size, &cursor);
             }

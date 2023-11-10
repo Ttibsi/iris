@@ -11,7 +11,8 @@
 #include "constants.h"
 #include "text_manip.h"
 
-void filter_for_sensible_whitespace(std::vector<std::string> &lines) {
+std::vector<std::string>
+filter_for_sensible_whitespace(std::vector<std::string> lines) {
     std::unordered_map<std::string, std::string> pairs = {
         {"\t", std::string(TABSTOP, ' ')}
     };
@@ -24,6 +25,8 @@ void filter_for_sensible_whitespace(std::vector<std::string> &lines) {
         }
         line += "\r\n";
     }
+
+    return lines;
 }
 
 // https://stackoverflow.com/a/478960
@@ -44,6 +47,6 @@ std::string shell_exec(const std::string &cmd) {
     return result;
 }
 
-std::size_t tab_count(const std::string &line) {
-    return std::ranges::count(line, '\t');
+std::size_t line_size(const std::string &line) {
+    return line.size() + std::ranges::count(line, '\t') * TABSTOP;
 }

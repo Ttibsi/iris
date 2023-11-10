@@ -15,14 +15,14 @@ TEST(textManipSuite, filterForSensibleWhitespace) {
         "    This string starts with 4 spaces\r\n"
     };
 
-    filter_for_sensible_whitespace(fixture);
-    EXPECT_EQ(fixture, expected);
+    auto out = filter_for_sensible_whitespace(fixture);
+    EXPECT_EQ(out, expected);
 }
 
 TEST(textManipSuite, shellExec) { EXPECT_EQ(shell_exec("echo 'hi'"), "hi"); }
 
-TEST(textManipSuite, tabCount) {
-    EXPECT_EQ(tab_count("foo\r"), 0);
-    EXPECT_EQ(tab_count("\tfoo\r"), 1);
-    EXPECT_EQ(tab_count("\t\tfoo\r"), 2);
+TEST(textManipSuite, line_size) {
+    EXPECT_EQ(line_size("foo"), 3);
+    EXPECT_EQ(line_size("\tfoo"), 8);
+    EXPECT_EQ(line_size("\t\tfoo"), 13);
 }
