@@ -15,7 +15,6 @@ std::vector<std::string> open_file(const std::string &file) {
         lines.push_back(line);
     }
 
-    filter_for_sensible_whitespace(lines);
     return lines;
 }
 

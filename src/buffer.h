@@ -22,7 +22,6 @@ struct Buffer {
     void init(rawterm::Pos);
     std::string render_status_bar(const std::size_t &, Cursor *);
     void reset_status_bar(rawterm::Pos, Cursor *);
-    std::size_t line_size(const std::size_t &);
 };
 
 #endif // BUFFER_H

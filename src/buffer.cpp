@@ -5,7 +5,6 @@
 #include "text_manip.h"
 #include "viewport.h"
 
-// TODO: opening rawterm_wrapper.h seems to have weird encoding
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
       modified(false), current_line(0) {}
@@ -35,6 +34,7 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else {
         left += " | [ ] | ";
     }
+    // TODO: What happens if you open iris in a place with no git repo?
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
     if (!(git_branch.empty())) {
@@ -44,7 +44,8 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     std::string right = "| ";
     right += get_file_type(file) + " | ";
     if (CURSOR_STATUS) {
-        right += std::to_string(c->row) + ":" + std::to_string(c->col) + " | ";
+        right += "Cursor: (" + std::to_string(c->row) + ":" +
+                 std::to_string(c->col) + ") | ";
     }
     right += std::to_string(current_line + 1) + "/" +
              std::to_string(lines.size()) + " ";
@@ -62,13 +63,4 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
 
     // Restore cursor pos
     rawterm::move_cursor({ c->row, c->col });
-}
-
-std::size_t Buffer::line_size(const std::size_t &idx) {
-    std::size_t ret = lines[idx].size();
-    if (lines[idx].find("\t") != std::string::npos) {
-        ret += (TABSTOP - 1);
-    }
-
-    return ret;
 }

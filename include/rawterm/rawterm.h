@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v2.2.2
+// Version: v2.2.3
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -531,17 +531,17 @@ namespace rawterm {
     }
 
     // Move the terminal cursor relatively to its current position
-    inline void offset_cursor(rawterm::Pos offset) {
-        if (offset.vertical < 0) {
-            std::cout << "\x1B[" << -offset.vertical << 'D';
-        } else if (offset.vertical > 0) {
-            std::cout << "\x1B[" << offset.vertical << 'C';
+    inline void offset_cursor(std::pair<int, int> offset) {
+        if (offset.first < 0) {
+            std::cout << "\x1B[" << -offset.first << 'D';
+        } else if (offset.first > 0) {
+            std::cout << "\x1B[" << offset.first << 'C';
         }
 
-        if (offset.horizontal < 0) {
-            std::cout << "\x1B[" << -offset.horizontal << 'A';
-        } else if (offset.horizontal > 0) {
-            std::cout << "\x1B[" << offset.horizontal << 'B';
+        if (offset.second < 0) {
+            std::cout << "\x1B[" << -offset.second << 'A';
+        } else if (offset.second > 0) {
+            std::cout << "\x1B[" << offset.second << 'B';
         }
     }
 
