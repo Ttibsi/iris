@@ -11,8 +11,7 @@
 #include "constants.h"
 #include "text_manip.h"
 
-std::vector<std::string>
-filter_for_sensible_whitespace(std::vector<std::string> lines) {
+std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     std::unordered_map<std::string, std::string> pairs = {
         {"\t", std::string(TABSTOP, ' ')}
     };

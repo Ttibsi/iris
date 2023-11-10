@@ -24,16 +24,16 @@ void Viewport::handle_keypress() {
             // Down
         } else if (k.code == 'j' && rawterm::getMod(&k) == rawterm::Mod::None) {
             if (cursor.row == view_size.vertical &&
-                buffer->current_line < buffer->lines.size()) {
+                buffer->current_line < buffer->lines.size() - 1) {
                 // Scroll view
                 rawterm::clear_screen();
                 std::size_t cursor_col = cursor.col;
-                cursor.set_pos_abs(1, 1); // TODO: Save row position too
+                cursor.set_pos_abs(1, 1);
                 buffer->current_line++;
                 draw(buffer->current_line + 1 - view_size.vertical);
                 cursor.set_pos_abs(view_size.vertical, cursor_col);
                 buffer->reset_status_bar(view_size, &cursor);
-            } else if (cursor.row < buffer->lines.size()) {
+            } else if (cursor.row < view_size.vertical) {
                 // Move cursor
                 buffer->current_line++;
                 if (cursor.col >

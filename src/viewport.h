@@ -24,12 +24,13 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
-    std::vector<std::string> lines =
-        filter_for_sensible_whitespace(buffer->lines);
-    auto start = lines.begin() + start_point;
-    auto end = std::min(start_point + view_size.vertical, buffer->lines.size());
+    std::vector<std::string> lines = filter_whitespace(buffer->lines);
+    auto start = lines.begin() + std::min(start_point, lines.size() - 1);
+    std::size_t end =
+        std::max(std::min(view_size.vertical, buffer->lines.size()),
+                 static_cast<unsigned long>(1));
 
-    for (auto it = start; it != start + end; ++it) {
+    for (auto it = start; it < start + end; ++it) {
         std::cout << *it;
     }
 

@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 
-TEST(textManipSuite, filterForSensibleWhitespace) {
+TEST(textManipSuite, filterWhitespace) {
     std::vector<std::string> fixture = {
         "This is a normal string", "\tThis string starts with a tab",
         "    This string starts with 4 spaces"
@@ -15,7 +15,7 @@ TEST(textManipSuite, filterForSensibleWhitespace) {
         "    This string starts with 4 spaces\r\n"
     };
 
-    auto out = filter_for_sensible_whitespace(fixture);
+    auto out = filter_whitespace(fixture);
     EXPECT_EQ(out, expected);
 }
 

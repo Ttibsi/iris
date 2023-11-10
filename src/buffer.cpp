@@ -5,7 +5,6 @@
 #include "text_manip.h"
 #include "viewport.h"
 
-// TODO: opening rawterm_wrapper.h seems to have weird encoding
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
       modified(false), current_line(0) {}
@@ -35,6 +34,7 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else {
         left += " | [ ] | ";
     }
+    // TODO: What happens if you open iris in a place with no git repo?
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
     if (!(git_branch.empty())) {
