@@ -5,10 +5,10 @@
 #include "gtest/gtest.h"
 
 TEST(fileManipSuite, openingFile) {
-    std::vector<std::string> expected = { "foo, bar\r\n",
-                                          "    baz with a tab\r\n",
-                                          "  two trailing spaces\r\n", "\r\n",
-                                          "empty line above\r\n" };
+    std::vector<std::string> expected = {
+        "foo, bar", "\tbaz with a tab", "  two trailing spaces",
+        "",         "empty line above",
+    };
 
     EXPECT_EQ(open_file("fixture/example_file.txt"), expected);
 }

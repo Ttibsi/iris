@@ -21,10 +21,10 @@ TEST(bufferClass, constructorEmpty) {
 TEST(bufferClass, constructorWithFile) {
     Buffer b = setup("fixture/example_file.txt");
 
-    std::vector<std::string> expected = { "foo, bar\r\n",
-                                          "    baz with a tab\r\n",
-                                          "  two trailing spaces\r\n", "\r\n",
-                                          "empty line above\r\n" };
+    std::vector<std::string> expected = {
+        "foo, bar", "\tbaz with a tab", "  two trailing spaces",
+        "",         "empty line above",
+    };
 
     EXPECT_EQ(b.file, "fixture/example_file.txt");
     EXPECT_EQ(b.lines, expected);
@@ -67,13 +67,4 @@ TEST(bufferClass, renderStatusBar) {
     } else {
         EXPECT_EQ(split[6], " 1/5 \x1B[27m");
     }
-}
-
-TEST(bufferClass, lineSize) {
-    Buffer b = setup("fixture/example_file.txt");
-    EXPECT_EQ(b.line_size(0), 10);
-    EXPECT_EQ(b.line_size(1), 20);
-    EXPECT_EQ(b.line_size(2), 23);
-    EXPECT_EQ(b.line_size(3), 2);
-    EXPECT_EQ(b.line_size(4), 18);
 }
