@@ -19,7 +19,6 @@ struct Cursor {
     friend std::ostream &operator<<(std::ostream &os, const Cursor &c);
 };
 
-// TODO: Do we want these two to take in a rawterm::Pos intead?
 inline void Cursor::set_pos_abs(std::size_t r, std::size_t c) {
     if (r >= 1 && c >= 1) {
         row = r;

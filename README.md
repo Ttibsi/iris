@@ -1,6 +1,6 @@
 # IRIS
 Yet another terminal text editor. Taking a ton of inspiration from vim and
-friends as well as other popular text editors (nano, emcacs, VS*ode) to a lesser
+friends as well as other popular text editors (nano, emacs, VS*ode) to a lesser
 extent
 
 #### Why "Iris"?

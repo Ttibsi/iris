@@ -16,7 +16,10 @@ struct Viewport {
 
     Viewport(Buffer *, rawterm::Pos);
     void draw(const std::size_t &);
-    void handle_keypress();
+    void redraw();
+    void keypress_read();
+    void keypress_write();
+    void keypress_command();
 };
 
 inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
@@ -43,5 +46,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
     std::cout << buffer->render_status_bar(view_size.horizontal, &cursor);
     std::cout << "\r\n"; // TODO: Command palette
 }
+
+inline void Viewport::redraw() { draw(buffer->current_line - cursor.row); }
 
 #endif // VIEWPORT_H

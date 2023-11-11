@@ -9,7 +9,7 @@
 
 #include "buffer.h"
 
-enum class Mode { Read, Write };
+enum class Mode { Read, Write, Command };
 
 struct Editor {
     std::vector<Buffer> buffers;
@@ -45,6 +45,8 @@ inline std::string Editor::get_mode() {
         return "READ";
     case Mode::Write:
         return "WRITE";
+    case Mode::Command:
+        return "COMMAND";
     default:
         return "";
     }

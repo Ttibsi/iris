@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <array>
 #include <cstdio>
 #include <iostream>
@@ -28,6 +27,7 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     return lines;
 }
 
+// TODO: Rewrite this instead
 // https://stackoverflow.com/a/478960
 std::string shell_exec(const std::string &cmd) {
     std::array<char, 128> buffer;
@@ -46,6 +46,16 @@ std::string shell_exec(const std::string &cmd) {
     return result;
 }
 
+std::size_t count_char(std::string line, char c) {
+    std::size_t ret = 0;
+    for (char &l : line) {
+        if (l == c)
+            ret++;
+    }
+    return ret;
+}
+
 std::size_t line_size(const std::string &line) {
-    return line.size() + std::ranges::count(line, '\t') * TABSTOP;
+    return line.size() +
+           count_char(line, '\t') * TABSTOP; // NOLINT(clang-diagnostic-error)
 }

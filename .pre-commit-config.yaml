@@ -13,10 +13,14 @@ repos:
     hooks:
       - id: clang-format
         exclude: ".json"
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
+  - repo: local
     hooks:
       - id: clang-tidy
+        name: clang-tidy
+        language: system
+        entry: clang-tidy -p build/compile_commands.json -extra-arg=-std=c++20
+        files: cpp
+        exclude: "^build/"
   # - repo: https://github.com/cmake-lint/cmake-lint
   #   rev: v1.4.1
   #   hooks:

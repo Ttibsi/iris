@@ -1,7 +1,7 @@
 name: main
 on:
   pull_request:
-    branches: [ main, refactor ]
+    branches: [ main ]
 jobs:
   pre_commit_run:
     runs-on: ubuntu-latest

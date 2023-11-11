@@ -21,6 +21,11 @@ TEST(textManipSuite, filterWhitespace) {
 
 TEST(textManipSuite, shellExec) { EXPECT_EQ(shell_exec("echo 'hi'"), "hi"); }
 
+TEST(textManipSuite, countChar) {
+    EXPECT_EQ(count_char("Hello world", 'l'), 3);
+    EXPECT_EQ(count_char("\ttab test", '\t'), 1);
+}
+
 TEST(textManipSuite, line_size) {
     EXPECT_EQ(line_size("foo"), 3);
     EXPECT_EQ(line_size("\tfoo"), 8);

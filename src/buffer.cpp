@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <string_view>
+
 #include "buffer.h"
 #include "constants.h"
 #include "editor.h"
@@ -19,7 +22,7 @@ void Buffer::init(rawterm::Pos view_size) {
     Viewport view = { this, view_size };
     view.draw(0);
     view.cursor.set_pos_abs(1, 1);
-    view.handle_keypress();
+    view.keypress_read();
 }
 
 std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
@@ -63,4 +66,42 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
 
     // Restore cursor pos
     rawterm::move_cursor({ c->row, c->col });
+}
+
+void Buffer::split_lines(const Cursor &c) {
+    lines[current_line].insert(c.col, "\n");
+    const std::string &line = lines[current_line];
+
+    std::string l1;
+    std::string l2;
+    if (line.find("\n") != std::string::npos) {
+        l1 = line.substr(0, line.find("\n"));
+        l1 = line.substr(line.find("\n") + 1, line.size());
+    }
+
+    lines[current_line] = l1;
+    lines.insert(lines.begin() + current_line + 1, l2);
+}
+
+void Buffer::parse_command(const std::string &cmd) {
+    using namespace std::literals;
+    if (cmd.starts_with(";w"sv)) {
+        if (!(cmd.size() == 2)) {
+            file = cmd.substr(3, cmd.size());
+        }
+
+        int bytes = write_to_file(file, lines);
+        std::cout << "\"" << file << "\": " << bytes << " bytes written";
+        modified = false;
+    } else if (cmd == ";q"sv) {
+        if (!(modified)) {
+            quit_buf = true;
+        } else {
+            std::cout << "File unsaved - do ;q! to discard changes";
+        }
+    } else if (cmd == ";q!"sv) {
+        quit_buf = true;
+    }
+
+    return;
 }

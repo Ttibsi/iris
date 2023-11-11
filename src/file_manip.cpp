@@ -63,3 +63,14 @@ std::string get_file_type(const std::string &file) {
         return "UNKNOWN";
     }
 }
+
+std::size_t write_to_file(const std::string &file,
+                          const std::vector<std::string> &lines) {
+    std::ofstream out(file);
+
+    for (auto &&line : lines) {
+        out << line << "\n";
+    }
+
+    return out.tellp();
+}
