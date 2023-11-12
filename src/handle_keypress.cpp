@@ -112,27 +112,35 @@ void Viewport::keypress_read() {
 
 void Viewport::keypress_write() {
     using rawterm::Mod;
+
     while (true) {
         rawterm::Key k = rawterm::process_keypress();
+        Mod modifier = rawterm::getMod(&k);
 
-        if (rawterm::getMod(&k) == Mod::Escape) {
+        if (modifier == Mod::Escape) {
             break;
+            // Not working properly
         } else if (rawterm::getMod(&k) == Mod::Space) {
-            buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
+            buffer->lines[buffer->current_line].insert(cursor.col - 3, 1, ' ');
             redraw();
             cursor.set_pos_rel(0, 1);
             buffer->modified = true;
 
-        } else if (rawterm::getMod(&k) == Mod::Backspace) {
+        } else if (modifier == Mod::Backspace) {
             // TODO: backspace newline char (merge two lines)
             if (cursor.col > 1) {
-                buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
-                redraw();
-                cursor.set_pos_rel(0, -1);
+                buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
+
+                std::size_t cursor_col = cursor.col;
+                rawterm::clear_line();
+                cursor.set_pos_abs(cursor.row, 1);
+                std::cout << buffer->lines[buffer->current_line];
+                cursor.set_pos_abs(cursor.row, cursor_col - 1);
                 buffer->modified = true;
             }
 
-        } else if (rawterm::getMod(&k) == Mod::Delete) {
+            // segfault
+        } else if (modifier == Mod::Delete) {
             // TODO: backspace newline char (merge two lines)
             std::string &line = buffer->lines[buffer->current_line];
             if (cursor.col < line_size(line)) {
@@ -141,7 +149,8 @@ void Viewport::keypress_write() {
                 buffer->modified = true;
             }
 
-        } else if (rawterm::getMod(&k) == Mod::Enter) {
+            // segfault
+        } else if (modifier == Mod::Enter) {
             // TODO: Indent new line to same level as old line
             buffer->split_lines(cursor);
             redraw();
@@ -150,7 +159,7 @@ void Viewport::keypress_write() {
             cursor.set_pos_rel(1, -cursor.col);
             buffer->modified = true;
 
-        } else if (rawterm::getMod(&k) == Mod::Arrow) {
+        } else if (modifier == Mod::Arrow) {
             switch (k.code) {
             case 'A': // Up
                 if (cursor.row == 1 && buffer->current_line > 1) {
@@ -219,8 +228,8 @@ void Viewport::keypress_write() {
                 break;
             }
 
-        } else if (rawterm::getMod(&k) == Mod::Control &&
-                   k.code == 'i') { // Tab
+            // segfault
+        } else if (modifier == Mod::Control && k.code == 'i') { // Tab
             buffer->lines[buffer->current_line].insert(cursor.col, "\t");
             redraw();
             cursor.set_pos_rel(0, TABSTOP);
@@ -234,13 +243,13 @@ void Viewport::keypress_write() {
                 line->push_back(k.code);
             } else {
                 std::size_t pos =
-                    cursor.col + (line->front() == '\t' ? TABSTOP : 0);
+                    cursor.col + (line->front() == '\t' ? TABSTOP : 1);
                 line->insert(pos, std::string(1, k.code));
             }
 
             rawterm::clear_line();
             cursor.set_pos_abs(cursor.row, 1);
-            std::cout << buffer->lines[buffer->current_line - 1];
+            std::cout << buffer->lines[buffer->current_line];
             cursor.set_pos_abs(cursor.row, col + 1);
         }
     }
@@ -252,27 +261,29 @@ void Viewport::keypress_command() {
     std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
 
     while (true) {
-        // Print out command string
+        // Print out current command string
         rawterm::move_cursor({ view_size.horizontal + 2, 1 });
-        std::cout << std::string(view_size.vertical, ' ');
+        // std::cout << std::string(view_size.vertical, ' ');
+        rawterm::clear_line();
 
         rawterm::move_cursor({ view_size.horizontal + 2, 1 });
         std::cout << cmd;
-        rawterm::move_cursor({ view_size.horizontal + 2, cmd.size() });
+        rawterm::move_cursor({ view_size.horizontal + 2, cmd.size() + 1 });
 
         // Read and handle input
         rawterm::Key k = rawterm::process_keypress();
+        rawterm::Mod modifier = rawterm::getMod(&k);
 
-        if (std::find(searchable.begin(), searchable.end(),
-                      rawterm::getMod(&k)) != searchable.end()) {
-            cmd.push_back(k.code);
-        } else if (rawterm::getMod(&k) == Mod::Escape) {
+        if (modifier == Mod::Escape) {
             break;
-        } else if (rawterm::getMod(&k) == Mod::Enter) {
+        } else if (modifier == Mod::Enter) {
             buffer->parse_command(cmd);
             break;
-        } else if (rawterm::getMod(&k) == Mod::Backspace) {
+        } else if (modifier == Mod::Backspace) {
             cmd = cmd.substr(0, cmd.size() - 1);
+        } else if (std::find(searchable.begin(), searchable.end(), modifier) !=
+                   searchable.end()) {
+            cmd.push_back(k.code);
         }
     }
 }

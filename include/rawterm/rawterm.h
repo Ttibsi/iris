@@ -672,6 +672,36 @@ namespace rawterm {
         }
     }
 
+    // Convert a Mod enum to a string
+    inline std::string to_string(Mod m) {
+        switch (m) {
+        case Mod::Alt_L:
+            return "Alt_L";
+        case Mod::Arrow:
+            return "Arrow";
+        case Mod::Backspace:
+            return "Backspace";
+        case Mod::Control:
+            return "Control";
+        case Mod::Delete:
+            return "Delete";
+        case Mod::Enter:
+            return "Enter";
+        case Mod::Escape:
+            return "Escape";
+        case Mod::Function:
+            return "Function";
+        case Mod::None:
+            return "None";
+        case Mod::Shift:
+            return "Shift";
+        case Mod::Space:
+            return "Space";
+        case Mod::Unknown:
+            return "Unknown";
+        }
+    }
+
 } // namespace rawterm
 
 #endif // RAWTERM_H
