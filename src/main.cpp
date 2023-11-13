@@ -6,7 +6,6 @@
 
 #include "editor.h"
 
-// TODO: Work our what copies could be references
 // TODO: Describe each function/method for future review
 
 int main(int argc, char *argv[]) {

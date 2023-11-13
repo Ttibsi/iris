@@ -17,6 +17,9 @@ endif()
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address)
+
 add_subdirectory(src)
 
 if(RUN_TESTS)

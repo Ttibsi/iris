@@ -37,7 +37,8 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else {
         left += " | [ ] | ";
     }
-    // TODO: What happens if you open iris in a place with no git repo?
+
+    // NOTE: No branch/git = empty string
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
     if (!(git_branch.empty())) {

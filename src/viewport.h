@@ -44,7 +44,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
     }
 
     std::cout << buffer->render_status_bar(view_size.horizontal, &cursor);
-    std::cout << "\r\n"; // TODO: Command palette
+    std::cout << "\r\n";
 }
 
 inline void Viewport::redraw_line() {
