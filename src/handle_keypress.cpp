@@ -122,10 +122,12 @@ void Viewport::keypress_write() {
 
         if (modifier == Mod::Escape) {
             break;
-            // Not working properly
-        } else if (rawterm::getMod(&k) == Mod::Space) {
-            buffer->lines[buffer->current_line].insert(cursor.col - 3, 1, ' ');
-            redraw();
+
+        } else if (modifier == Mod::Space) {
+            buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
+            rawterm::clear_line();
+            rawterm::move_cursor({ cursor.row, 1 });
+            std::cout << buffer->lines[buffer->current_line];
             cursor.set_pos_rel(0, 1);
             buffer->modified = true;
 
@@ -142,13 +144,16 @@ void Viewport::keypress_write() {
                 buffer->modified = true;
             }
 
-            // segfault
         } else if (modifier == Mod::Delete) {
             // TODO: backspace newline char (merge two lines)
-            std::string &line = buffer->lines[buffer->current_line];
-            if (cursor.col < line_size(line)) {
-                line.erase(cursor.col, 1);
-                redraw();
+            if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
+                buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
+
+                std::size_t cursor_col = cursor.col;
+                rawterm::clear_line();
+                cursor.set_pos_abs(cursor.row, 1);
+                std::cout << buffer->lines[buffer->current_line];
+                cursor.set_pos_abs(cursor.row, cursor_col);
                 buffer->modified = true;
             }
 

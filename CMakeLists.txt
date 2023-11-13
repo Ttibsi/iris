@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.0)
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if (${APPLE})
     set(CMAKE_CXX_COMPILER "/usr/local/bin/g++")
 endif()
 
