@@ -2,13 +2,11 @@
 #include <string>
 #include <vector>
 
-#include <chrono>
-#include <thread>
-
 #include <rawterm/rawterm.h>
 
 #include "constants.h"
 #include "editor.h"
+#include "file_manip.h"
 #include "text_manip.h"
 #include "viewport.h"
 
@@ -125,9 +123,7 @@ void Viewport::keypress_write() {
 
         } else if (modifier == Mod::Space) {
             buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
-            rawterm::clear_line();
-            rawterm::move_cursor({ cursor.row, 1 });
-            std::cout << buffer->lines[buffer->current_line];
+            redraw_line();
             cursor.set_pos_rel(0, 1);
             buffer->modified = true;
 
@@ -136,11 +132,8 @@ void Viewport::keypress_write() {
             if (cursor.col > 1) {
                 buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
 
-                std::size_t cursor_col = cursor.col;
-                rawterm::clear_line();
-                cursor.set_pos_abs(cursor.row, 1);
-                std::cout << buffer->lines[buffer->current_line];
-                cursor.set_pos_abs(cursor.row, cursor_col - 1);
+                redraw_line();
+                cursor.set_pos_abs(cursor.row, cursor.col - 1);
                 buffer->modified = true;
             }
 
@@ -149,22 +142,20 @@ void Viewport::keypress_write() {
             if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
                 buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
 
-                std::size_t cursor_col = cursor.col;
-                rawterm::clear_line();
-                cursor.set_pos_abs(cursor.row, 1);
-                std::cout << buffer->lines[buffer->current_line];
-                cursor.set_pos_abs(cursor.row, cursor_col);
+                redraw_line();
+                cursor.set_pos_abs(cursor.row, cursor.col);
                 buffer->modified = true;
             }
 
-            // segfault
         } else if (modifier == Mod::Enter) {
             // TODO: Indent new line to same level as old line
             buffer->split_lines(cursor);
-            redraw();
+            rawterm::clear_screen();
+            rawterm::move_cursor({ 1, 1 });
+            draw(buffer->current_line - cursor.row + 1);
             buffer->current_line++;
             buffer->reset_status_bar(view_size, &cursor);
-            cursor.set_pos_rel(1, -cursor.col);
+            cursor.set_pos_abs(cursor.row + 1, 1);
             buffer->modified = true;
 
         } else if (modifier == Mod::Arrow) {
@@ -239,7 +230,7 @@ void Viewport::keypress_write() {
             // segfault
         } else if (modifier == Mod::Control && k.code == 'i') { // Tab
             buffer->lines[buffer->current_line].insert(cursor.col, "\t");
-            redraw();
+            // redraw();
             cursor.set_pos_rel(0, TABSTOP);
             buffer->modified = true;
 

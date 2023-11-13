@@ -69,14 +69,14 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
 }
 
 void Buffer::split_lines(const Cursor &c) {
-    lines[current_line].insert(c.col, "\n");
+    lines[current_line].insert(c.col - 1, "\n");
     const std::string &line = lines[current_line];
 
     std::string l1;
     std::string l2;
     if (line.find("\n") != std::string::npos) {
         l1 = line.substr(0, line.find("\n"));
-        l1 = line.substr(line.find("\n") + 1, line.size());
+        l2 = line.substr(line.find("\n") + 1, line.size());
     }
 
     lines[current_line] = l1;

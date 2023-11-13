@@ -62,9 +62,20 @@ TEST(bufferClass, renderStatusBar) {
 
     if (CURSOR_STATUS) {
         EXPECT_EQ(split[6], " Cursor: (1:1) ");
-
         EXPECT_EQ(split[7], " 1/5 \x1B[27m");
     } else {
         EXPECT_EQ(split[6], " 1/5 \x1B[27m");
     }
+}
+
+TEST(bufferClass, splitLines) {
+    Buffer b = setup("fixture/splitlines_fixture.txt");
+    Cursor c;
+    c.set_pos_abs(1, 4);
+
+    b.split_lines(c);
+
+    std::vector<std::string> expected = { "foo ", "bar baz" };
+
+    EXPECT_EQ(b.lines, expected);
 }
