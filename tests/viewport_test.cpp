@@ -4,8 +4,7 @@
 #include "gtest/gtest.h"
 #include <utility>
 
-TEST(viewportClass, constructor) {
-    Buffer b = setup("fixture/example_file.txt");
+TEST_F(BufferConstructedTestSuite, constructor) {
     Viewport v(&b, { 6, 9 });
 
     EXPECT_EQ(v.view_size.vertical, 6);

@@ -2,13 +2,11 @@
 #include <string>
 #include <vector>
 
-#include <chrono>
-#include <thread>
-
 #include <rawterm/rawterm.h>
 
 #include "constants.h"
 #include "editor.h"
+#include "file_manip.h"
 #include "text_manip.h"
 #include "viewport.h"
 
@@ -117,15 +115,16 @@ void Viewport::keypress_write() {
     using rawterm::Mod;
 
     while (true) {
+        buffer->reset_status_bar(view_size, &cursor);
         rawterm::Key k = rawterm::process_keypress();
         Mod modifier = rawterm::getMod(&k);
 
         if (modifier == Mod::Escape) {
             break;
-            // Not working properly
-        } else if (rawterm::getMod(&k) == Mod::Space) {
-            buffer->lines[buffer->current_line].insert(cursor.col - 3, 1, ' ');
-            redraw();
+
+        } else if (modifier == Mod::Space) {
+            buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
+            redraw_line();
             cursor.set_pos_rel(0, 1);
             buffer->modified = true;
 
@@ -134,32 +133,29 @@ void Viewport::keypress_write() {
             if (cursor.col > 1) {
                 buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
 
-                std::size_t cursor_col = cursor.col;
-                rawterm::clear_line();
-                cursor.set_pos_abs(cursor.row, 1);
-                std::cout << buffer->lines[buffer->current_line];
-                cursor.set_pos_abs(cursor.row, cursor_col - 1);
+                redraw_line();
+                cursor.set_pos_abs(cursor.row, cursor.col - 1);
                 buffer->modified = true;
             }
 
-            // segfault
         } else if (modifier == Mod::Delete) {
             // TODO: backspace newline char (merge two lines)
-            std::string &line = buffer->lines[buffer->current_line];
-            if (cursor.col < line_size(line)) {
-                line.erase(cursor.col, 1);
-                redraw();
+            if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
+                buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
+
+                redraw_line();
+                cursor.set_pos_abs(cursor.row, cursor.col);
                 buffer->modified = true;
             }
 
-            // segfault
         } else if (modifier == Mod::Enter) {
             // TODO: Indent new line to same level as old line
             buffer->split_lines(cursor);
-            redraw();
+            rawterm::clear_screen();
+            rawterm::move_cursor({ 1, 1 });
+            draw(buffer->current_line - cursor.row + 1);
             buffer->current_line++;
-            buffer->reset_status_bar(view_size, &cursor);
-            cursor.set_pos_rel(1, -cursor.col);
+            cursor.set_pos_abs(cursor.row + 1, 1);
             buffer->modified = true;
 
         } else if (modifier == Mod::Arrow) {
@@ -172,7 +168,6 @@ void Viewport::keypress_write() {
                     cursor.set_pos_abs(1, 1);
                     draw(buffer->current_line);
                     cursor.set_pos_abs(1, col);
-                    buffer->reset_status_bar(view_size, &cursor);
                 } else if (cursor.row > 1) {
                     // Move cursor up
                     buffer->current_line--;
@@ -198,7 +193,6 @@ void Viewport::keypress_write() {
                     buffer->current_line++;
                     draw(buffer->current_line + 1 - view_size.vertical);
                     cursor.set_pos_abs(view_size.vertical, cursor_col);
-                    buffer->reset_status_bar(view_size, &cursor);
                 } else if (cursor.row < view_size.vertical) {
                     // Move cursor in view
                     buffer->current_line++;
@@ -213,7 +207,6 @@ void Viewport::keypress_write() {
                         cursor.set_pos_rel(1, 0);
                     }
                 }
-                buffer->reset_status_bar(view_size, &cursor);
                 break;
 
             case 'C': // Right
@@ -231,29 +224,29 @@ void Viewport::keypress_write() {
                 break;
             }
 
-            // segfault
         } else if (modifier == Mod::Control && k.code == 'i') { // Tab
-            buffer->lines[buffer->current_line].insert(cursor.col, "\t");
-            redraw();
+            buffer->lines[buffer->current_line].insert(cursor.col - 1, "\t");
+            buffer->lines[buffer->current_line] =
+                filter_whitespace(std::vector<std::string>(
+                    { buffer->lines[buffer->current_line] }))[0];
+            redraw_line();
             cursor.set_pos_rel(0, TABSTOP);
             buffer->modified = true;
 
         } else {
-            std::size_t col = cursor.col;
             std::string *line = &buffer->lines[buffer->current_line];
 
             if (line->empty()) {
                 line->push_back(k.code);
             } else {
                 std::size_t pos =
-                    cursor.col + (line->front() == '\t' ? TABSTOP : 1);
+                    cursor.col - 1 + (line->front() == '\t' ? TABSTOP : 0);
                 line->insert(pos, std::string(1, k.code));
             }
 
-            rawterm::clear_line();
-            cursor.set_pos_abs(cursor.row, 1);
-            std::cout << buffer->lines[buffer->current_line];
-            cursor.set_pos_abs(cursor.row, col + 1);
+            redraw_line();
+            cursor.set_pos_rel(0, 1);
+            buffer->modified = true;
         }
     }
 }
@@ -280,6 +273,7 @@ void Viewport::keypress_command() {
         if (modifier == Mod::Escape) {
             break;
         } else if (modifier == Mod::Enter) {
+            rawterm::clear_line();
             buffer->parse_command(cmd);
             break;
         } else if (modifier == Mod::Backspace) {

@@ -37,7 +37,8 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else {
         left += " | [ ] | ";
     }
-    // TODO: What happens if you open iris in a place with no git repo?
+
+    // NOTE: No branch/git = empty string
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
     if (!(git_branch.empty())) {
@@ -69,14 +70,14 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
 }
 
 void Buffer::split_lines(const Cursor &c) {
-    lines[current_line].insert(c.col, "\n");
+    lines[current_line].insert(c.col - 1, "\n");
     const std::string &line = lines[current_line];
 
     std::string l1;
     std::string l2;
     if (line.find("\n") != std::string::npos) {
         l1 = line.substr(0, line.find("\n"));
-        l1 = line.substr(line.find("\n") + 1, line.size());
+        l2 = line.substr(line.find("\n") + 1, line.size());
     }
 
     lines[current_line] = l1;

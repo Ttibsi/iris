@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -11,11 +12,15 @@ std::vector<std::string> open_file(const std::string &file) {
     std::string line;
     std::vector<std::string> lines;
 
-    while (std::getline(ifs, line)) {
-        lines.push_back(line);
-    }
+    if (ifs.is_open()) {
+        while (std::getline(ifs, line)) {
+            lines.push_back(line);
+        }
 
-    return lines;
+        return lines;
+    } else {
+        throw std::runtime_error("File failed to open");
+    }
 }
 
 enum class File_Permission { Directory, Readonly, Writable };

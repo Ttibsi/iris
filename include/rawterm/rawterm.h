@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v2.2.3
+// Version: v2.2.4
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -545,26 +545,34 @@ namespace rawterm {
         }
     }
 
-    inline void save_cursor_position() { std::cout << "\x1B[s"; }
+    inline void save_cursor_position() { std::cout << "\x1B[s" << std::flush; }
 
-    inline void load_cursor_position() { std::cout << "\x1B[u"; }
+    inline void load_cursor_position() { std::cout << "\x1B[u" << std::flush; }
 
     // https://stackoverflow.com/a/48449104
-    inline void cursor_block_blink() { std::cout << "\1\x1B[1 q\2"; }
+    inline void cursor_block_blink() {
+        std::cout << "\1\x1B[1 q\2" << std::flush;
+    }
 
-    inline void cursor_block() { std::cout << "\1\x1B[2 q\2"; }
+    inline void cursor_block() { std::cout << "\1\x1B[2 q\2" << std::flush; }
 
-    inline void cursor_underscore_blink() { std::cout << "\1\x1B[3 q\2"; }
+    inline void cursor_underscore_blink() {
+        std::cout << "\1\x1B[3 q\2" << std::flush;
+    }
 
-    inline void cursor_underscore() { std::cout << "\1\x1B[4 q\2"; }
+    inline void cursor_underscore() {
+        std::cout << "\1\x1B[4 q\2" << std::flush;
+    }
 
-    inline void cursor_pipe_blink() { std::cout << "\1\x1B[5 q\2"; }
+    inline void cursor_pipe_blink() {
+        std::cout << "\1\x1B[5 q\2" << std::flush;
+    }
 
-    inline void cursor_pipe() { std::cout << "\1\x1B[6 q\6"; }
+    inline void cursor_pipe() { std::cout << "\1\x1B[6 q\6" << std::flush; }
 
-    inline void cursor_hide() { std::cout << "\x1B[?25l"; }
+    inline void cursor_hide() { std::cout << "\x1B[?25l" << std::flush; }
 
-    inline void cursor_show() { std::cout << "\x1B[?25h"; }
+    inline void cursor_show() { std::cout << "\x1B[?25h" << std::flush; }
 
     // Format text output in bold
     inline std::string bold(const std::string &s) {

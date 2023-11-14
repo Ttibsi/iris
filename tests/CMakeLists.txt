@@ -13,7 +13,6 @@ include(GoogleTest)
 add_library(GTest INTERFACE IMPORTED)
 target_link_libraries(GTest INTERFACE gtest_main)
 
-
 add_executable(test_exe
     buffer_test.cpp
     cursor_test.cpp

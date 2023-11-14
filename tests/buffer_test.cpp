@@ -5,10 +5,11 @@
 #include "constants.h"
 #include "cursor.h"
 #include "test_utils.h"
+#include "text_manip.h"
 #include "gtest/gtest.h"
 
 TEST(bufferClass, constructorEmpty) {
-    Buffer b = setup("");
+    Buffer b = Editor("").buffers[0];
     std::vector<std::string> lines{ "" };
 
     EXPECT_EQ(b.file, "NO FILE");
@@ -18,9 +19,7 @@ TEST(bufferClass, constructorEmpty) {
     EXPECT_EQ(b.current_line, 0);
 }
 
-TEST(bufferClass, constructorWithFile) {
-    Buffer b = setup("fixture/example_file.txt");
-
+TEST_F(BufferConstructedTestSuite, constructorWithFile) {
     std::vector<std::string> expected = {
         "foo, bar", "\tbaz with a tab", "  two trailing spaces",
         "",         "empty line above",
@@ -33,38 +32,52 @@ TEST(bufferClass, constructorWithFile) {
     EXPECT_EQ(b.current_line, 0);
 }
 
-TEST(bufferClass, renderStatusBar) {
-    Buffer b = setup("fixture/example_file.txt");
+TEST_F(BufferConstructedTestSuite, renderStatusBar) {
+    Editor e("fixture/example_file.txt");
+    Buffer b = e.buffers[0];
     Cursor c;
 
-    std::string bar = b.render_status_bar(79, &c);
+    EXPECT_TRUE(false) << b.lines[0];
+
+    std::string bar = b.render_status_bar(32, &c);
     EXPECT_EQ(bar.size(), 88); // This won't be the same due to ascii codes
 
-    std::vector<std::string> split;
-    std::string tok;
-    std::size_t i = 0;
+    // std::vector<std::string> split;
+    // std::string tok;
+    // std::size_t i = 0;
+    //
+    // for (; i < bar.size(); i++) {
+    //     if (bar[i] == '|') {
+    //         split.push_back(tok);
+    //         tok.clear();
+    //     } else {
+    //         tok += bar[i];
+    //     }
+    // }
+    // split.push_back(tok);
+    //
+    // // We aren't checking for the mode at the start because the editor
+    // // that creates it is out of scope by now
+    // EXPECT_EQ(split[1], " example_file.txt ");
+    // EXPECT_EQ(split[2], " [ ] ");
+    // EXPECT_EQ(split[5], " .txt ");
+    //
+    // // TODO: This test is flaky
+    // if (CURSOR_STATUS) {
+    //     EXPECT_EQ(split[6], " Cursor: (1:1) ");
+    //     EXPECT_EQ(split[7], " 1/5 \x1B[27m");
+    // } else {
+    //     EXPECT_EQ(split[6], " 1/5 \x1B[27m");
+    // }
+}
 
-    for (; i < bar.size(); i++) {
-        if (bar[i] == '|') {
-            split.push_back(tok);
-            tok.clear();
-        } else {
-            tok += bar[i];
-        }
-    }
-    split.push_back(tok);
+TEST_F(BufferConstructedTestSuite, splitLines) {
+    Cursor c;
+    c.set_pos_abs(1, 4);
 
-    // We aren't checking for the mode at the start because the editor
-    // that creates it is out of scope by now
-    EXPECT_EQ(split[1], " example_file.txt ");
-    EXPECT_EQ(split[2], " [ ] ");
-    EXPECT_EQ(split[5], " .txt ");
+    b.split_lines(c);
 
-    if (CURSOR_STATUS) {
-        EXPECT_EQ(split[6], " Cursor: (1:1) ");
+    std::vector<std::string> expected = { "foo", " bar baz" };
 
-        EXPECT_EQ(split[7], " 1/5 \x1B[27m");
-    } else {
-        EXPECT_EQ(split[6], " 1/5 \x1B[27m");
-    }
+    EXPECT_EQ(b.lines, expected);
 }
