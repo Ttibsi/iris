@@ -1,29 +1,33 @@
 #include <iostream>
 #include <string>
 
-#include <argparse/argparse.hpp>
+#include <cli11/CLI11.hpp>
 #include <rawterm/rawterm.h>
 
 #include "editor.h"
 
 // TODO: Work our what copies could be references
+// TODO: Describe each function/method for future review
 
 int main(int argc, char *argv[]) {
-    argparse::ArgumentParser parser("Iris", "v0.1.0");
+    CLI::App app{ "Iris text editor" };
 
-    parser.add_argument("file").default_value("").help("Specify file to open");
+    std::string file = "";
+    app.add_option("file", file, "File to open");
 
-    parser.parse_args(argc, argv);
+    try {
+        app.parse(argc, argv);
+    } catch (const CLI::ParseError &e) {
+        return app.exit(e);
+    }
 
-    std::string file = parser.get<std::string>("file");
-
-    enter_alt_screen();
-    enable_raw_mode();
+    rawterm::enter_alt_screen();
+    rawterm::enable_raw_mode();
 
     Editor e(file);
     e.start();
 
-    exit_alt_screen();
+    rawterm::exit_alt_screen();
 
     return 0;
 }

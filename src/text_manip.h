@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-void filter_for_sensible_whitespace(std::vector<std::string> &lines);
-std::string shell_exec(std::string cmd);
+std::vector<std::string> filter_whitespace(std::vector<std::string>);
+std::string shell_exec(const std::string &);
+std::size_t line_size(const std::string &);
+std::size_t count_char(std::string line, char c); // TODO: Unit test
 
 #endif // TEXT_MANIP_H

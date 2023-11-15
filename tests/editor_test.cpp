@@ -12,18 +12,18 @@ TEST(editorClass, constructor) {
     EXPECT_EQ(e.mode, Mode::Read);
 }
 
-TEST(editorClass, switchMode) {
+TEST(editorClass, setMode) {
     Editor e("");
-    e.switch_mode(Mode::Write);
+    e.set_mode(Mode::Write);
     EXPECT_EQ(e.mode, Mode::Write);
 
-    e.switch_mode(Mode::Read);
+    e.set_mode(Mode::Read);
     EXPECT_EQ(e.mode, Mode::Read);
 }
 
 TEST(editorClass, getModeStr) {
     Editor e("");
     EXPECT_EQ(e.get_mode(), "READ");
-    e.switch_mode(Mode::Write);
+    e.set_mode(Mode::Write);
     EXPECT_EQ(e.get_mode(), "WRITE");
 }

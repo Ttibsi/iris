@@ -23,9 +23,9 @@ v0.1.0
         entered with `esc`) and a "write" mode (vim insert mode entered with `i`)
     - [x] The window doesn't crash when the terminal is resized
         - I don't know if this is something I need to account for
-    - [ ] Edit/insert text
+    - [x] Edit/insert text
     - [x] If no file is specified, instead open an "empty" buffer to write in
-    - [ ] Write the buffer to the named file (save feature)
+    - [x] Write the buffer to the named file (save feature)
     - [ ] If a file name wasn't specified, allow the user to save with a new
         file name (save as)
 

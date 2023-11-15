@@ -6,7 +6,7 @@
 #include "file_manip.h"
 #include "text_manip.h"
 
-std::vector<std::string> open_file(std::string file) {
+std::vector<std::string> open_file(const std::string &file) {
     std::ifstream ifs(file);
     std::string line;
     std::vector<std::string> lines;
@@ -15,26 +15,25 @@ std::vector<std::string> open_file(std::string file) {
         lines.push_back(line);
     }
 
-    filter_for_sensible_whitespace(lines);
     return lines;
 }
 
 enum class File_Permission { Directory, Readonly, Writable };
 
-File_Permission check_perms(std::string f) {
+File_Permission check_perms(const std::string &file) {
     namespace fs = std::filesystem;
 
-    auto status = fs::file_status(fs::status(f));
+    auto status = fs::file_status(fs::status(file));
     if (status.type() == fs::file_type::directory)
         return File_Permission::Directory;
 
-    auto perms = fs::status(f).permissions();
+    auto perms = fs::status(file).permissions();
     if ((perms & fs::perms::owner_write) != fs::perms::none)
         return File_Permission::Writable;
     return File_Permission::Readonly;
 }
 
-bool is_readonly(std::string file) {
+bool is_readonly(const std::string &file) {
     return check_perms(file) == File_Permission::Readonly;
 }
 
@@ -52,7 +51,7 @@ std::string filename_only(std::string f) {
     return f;
 }
 
-std::string get_file_type(std::string file) {
+std::string get_file_type(const std::string &file) {
     namespace fs = std::filesystem;
     auto path = fs::path(file);
 
@@ -63,4 +62,15 @@ std::string get_file_type(std::string file) {
     } else {
         return "UNKNOWN";
     }
+}
+
+std::size_t write_to_file(const std::string &file,
+                          const std::vector<std::string> &lines) {
+    std::ofstream out(file);
+
+    for (auto &&line : lines) {
+        out << line << "\n";
+    }
+
+    return out.tellp();
 }

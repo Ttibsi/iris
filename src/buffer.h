@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "cursor.h"
+#include "rawterm/rawterm.h"
+
 struct Editor;
 
 struct Buffer {
@@ -12,14 +15,16 @@ struct Buffer {
     std::vector<std::string> lines;
     bool readonly;
     bool modified;
-    std::size_t current_line;
+    std::size_t current_line; // 0-indexed on the current line of lines
+    bool quit_buf = false;
 
-    Buffer(Editor *e);
-    Buffer(Editor *e, std::string filename);
-    void start(std::pair<std::size_t, std::size_t> view_size);
-    std::string render_status_bar(std::size_t width);
-    std::size_t line_size(std::size_t idx);
-    void reset_status_bar(std::pair<std::size_t, std::size_t> dimensions);
+    Buffer(Editor *);
+    Buffer(Editor *, std::string);
+    void init(rawterm::Pos);
+    std::string render_status_bar(const std::size_t &, Cursor *);
+    void reset_status_bar(rawterm::Pos, Cursor *);
+    void split_lines(const Cursor &);
+    void parse_command(const std::string &);
 };
 
 #endif // BUFFER_H
