@@ -26,7 +26,7 @@ v0.1.0
     - [x] Edit/insert text
     - [x] If no file is specified, instead open an "empty" buffer to write in
     - [x] Write the buffer to the named file (save feature)
-    - [ ] If a file name wasn't specified, allow the user to save with a new
+    - [x] If a file name wasn't specified, allow the user to save with a new
         file name (save as)
 
 v0.2.0
