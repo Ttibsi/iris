@@ -30,24 +30,23 @@ v0.1.0
         file name (save as)
 
 v0.2.0
-    - [ ] Proper status bar at the bottom of the screen, displaying:
-        [ ] name of the open file
-        [ ] a marker as to if the file is modified (I like `[+]`)
-        [ ] the mode they're in (read/write)
-        [ ] the total length of the file
+    - [x] Proper status bar at the bottom of the screen, displaying:
+        [x] name of the open file
+        [x] a marker as to if the file is modified (I like `[+]`)
+        [x] the mode they're in (read/write)
+        [x] the total length of the file
             - This can be expanded later to include less useful features - I
             like seeing the current line my cursor is on, and the current git
             branch I'm on if I'm in a git repo
     - [ ] Syntax highlighting
         - I think I can get around doing this by just embedding `treesitter`
         for this? I don't exactly know how that works.
-    - [ ] Some more simple vim motions
-        [ ] `a` to go to write mode one ahead of the current character
-        [ ] `A` to go to write mode at the end of the line
-        [ ] `x` deletes the current character the cursor is over
-        [ ] `e` moves the cursor to the character before the next whitespace
-            character
-        [ ] `b` moves the cursor to the character after the previous whitespace
+    - [x] Some more simple vim motions
+        [x] `a` to go to write mode one ahead of the current character
+        [x] `A` to go to write mode at the end of the line
+        [x] `x` deletes the current character the cursor is over
+        [x] `w` moves the cursor to the beginning of the next word
+        [x] `b` moves the cursor to the character after the previous whitespace
             character
 
 v0.3.0
@@ -58,9 +57,9 @@ v0.3.0
             `;`) to a function or other part of code. That way, it can be
             extended later on down the line
 
-        [ ] `;w` to save
-        [ ] `;q` to quit
-        [ ] `;q!` to quit without saving
+        [x] `;w` to save
+        [x] `;q` to quit
+        [x] `;q!` to quit without saving
         [ ] `;h` to open a read-only help file
 
     - [ ] Handle viewing files you don't currently have the rights to edit

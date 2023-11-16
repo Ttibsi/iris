@@ -1,4 +1,5 @@
 #include <array>
+#include <cctype>
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -59,4 +60,34 @@ std::size_t count_char(std::string line, char c) {
 std::size_t line_size(const std::string &line) {
     return line.size() +
            count_char(line, '\t') * TABSTOP; // NOLINT(clang-diagnostic-error)
+}
+
+int find_next_whitespace(const std::string &curr_line,
+                         const std::size_t &curr_pos) {
+    // curr_poss is 0-indexed - the string index
+    int ret = 0;
+
+    for (std::size_t i = curr_pos + 1; i <= curr_line.size(); i++) {
+        if (std::isspace(curr_line[i])) {
+            ret += i;
+            return ret;
+        }
+    }
+
+    return curr_line.size();
+}
+
+int find_prev_whitespace(const std::string &curr_line,
+                         const std::size_t &curr_pos) {
+    // curr_poss is 0-indexed - the string index
+    int ret = 0;
+
+    for (std::size_t i = curr_pos; i > 0; i--) {
+        if (std::isspace(curr_line[i])) {
+            ret += i;
+            return ret;
+        }
+    }
+
+    return 1;
 }

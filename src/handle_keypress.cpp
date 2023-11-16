@@ -5,7 +5,6 @@
 #include <rawterm/rawterm.h>
 
 #include "constants.h"
-#include "editor.h"
 #include "text_manip.h"
 #include "viewport.h"
 
@@ -16,18 +15,23 @@ void Viewport::keypress_read() {
         }
 
         rawterm::Key k = rawterm::process_keypress();
+        rawterm::Mod modifier = rawterm::getMod(&k);
         // Insert mode
-        if (k.code == 'i' && rawterm::getMod(&k) == rawterm::Mod::None) {
-            buffer->editor->set_mode(Mode::Write);
-            buffer->reset_status_bar(view_size, &cursor);
-            rawterm::cursor_pipe_blink();
-            keypress_write();
-            buffer->editor->set_mode(Mode::Read);
-            rawterm::cursor_block();
-            buffer->reset_status_bar(view_size, &cursor);
+        if (k.code == 'i' && modifier == rawterm::Mod::None) {
+            switch_to_insert();
+
+        } else if (k.code == 'a' && modifier == rawterm::Mod::None) {
+            cursor.set_pos_rel(0, 1);
+            switch_to_insert();
+
+        } else if (k.code == 'A' && modifier == rawterm::Mod::Shift) {
+            std::size_t col_pos =
+                line_size(buffer->lines[buffer->current_line]) + 1;
+            cursor.set_pos_abs(cursor.row, col_pos);
+            switch_to_insert();
 
             // Left
-        } else if (k.code == 'h' && rawterm::getMod(&k) == rawterm::Mod::None) {
+        } else if (k.code == 'h' && modifier == rawterm::Mod::None) {
             std::size_t tab_count =
                 line_size(buffer->lines[buffer->current_line]) -
                 buffer->lines[buffer->current_line].size();
@@ -38,7 +42,7 @@ void Viewport::keypress_read() {
             }
 
             // Down
-        } else if (k.code == 'j' && rawterm::getMod(&k) == rawterm::Mod::None) {
+        } else if (k.code == 'j' && modifier == rawterm::Mod::None) {
             if (cursor.row == view_size.vertical &&
                 buffer->current_line < buffer->lines.size() - 1) {
                 // Scroll view
@@ -66,7 +70,7 @@ void Viewport::keypress_read() {
             }
 
             // Up
-        } else if (k.code == 'k' && rawterm::getMod(&k) == rawterm::Mod::None) {
+        } else if (k.code == 'k' && modifier == rawterm::Mod::None) {
             if (cursor.row == 1 && buffer->current_line > 0) {
                 // Scroll up
                 std::size_t col = cursor.col; // TODO: Save row position too
@@ -92,7 +96,7 @@ void Viewport::keypress_read() {
             }
 
             // Right
-        } else if (k.code == 'l' && rawterm::getMod(&k) == rawterm::Mod::None) {
+        } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
             if (cursor.col <
                 line_size(buffer->lines[buffer->current_line]) + 1) {
                 cursor.set_pos_rel(0, 1);
@@ -100,13 +104,38 @@ void Viewport::keypress_read() {
             }
 
             // Command mode
-        } else if (k.code == ';' && rawterm::getMod(&k) == rawterm::Mod::None) {
+        } else if (k.code == ';' && modifier == rawterm::Mod::None) {
             buffer->editor->set_mode(Mode::Command);
             buffer->reset_status_bar(view_size, &cursor);
             keypress_command();
             cursor.set_pos_abs(cursor.row, cursor.col);
             buffer->editor->set_mode(Mode::Read);
             buffer->reset_status_bar(view_size, &cursor);
+
+            // cursor manipulation
+        } else if (k.code == 'w' && modifier == rawterm::Mod::None) {
+            std::size_t col = find_next_whitespace(
+                buffer->lines[buffer->current_line], cursor.col - 1);
+            std::size_t line_len =
+                line_size(buffer->lines[buffer->current_line]);
+            if (col != line_len) {
+                cursor.set_pos_abs(cursor.row, col + 2);
+            } else {
+                cursor.set_pos_abs(cursor.row, line_len + 1);
+            }
+
+        } else if (k.code == 'b' && modifier == rawterm::Mod::None) {
+            std::size_t col = find_prev_whitespace(
+                buffer->lines[buffer->current_line], cursor.col - 1);
+            cursor.set_pos_abs(cursor.row, col);
+
+            // Char manipulation
+        } else if (k.code == 'x' && modifier == rawterm::Mod::None) {
+            buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
+
+            redraw_line();
+            cursor.set_pos_abs(cursor.row, cursor.col);
+            buffer->modified = true;
         }
     }
 }
