@@ -12,7 +12,8 @@
 
 std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     std::unordered_map<std::string, std::string> pairs = {
-        {"\t", std::string(TABSTOP, ' ')}
+        { "\t", std::string(TABSTOP, ' ') },
+        { "\n", "_" }
     };
 
     for (auto &line : lines) {
@@ -27,11 +28,11 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     return lines;
 }
 
-// TODO: Rewrite this instead
+// TODO: Rewrite this instead std::system()
 // https://stackoverflow.com/a/478960
 std::string shell_exec(const std::string &cmd) {
     std::array<char, 128> buffer;
-    std::string result;
+    std::string result = "";
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"),
                                                   pclose);
     if (!pipe) {

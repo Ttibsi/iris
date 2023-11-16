@@ -68,3 +68,21 @@ TEST(bufferClass, renderStatusBar) {
         EXPECT_EQ(split[6], " 1/5 \x1B[27m");
     }
 }
+
+TEST(bufferClass, splitLines) {
+    Buffer b = setup("fixture/example_file.txt");
+    Cursor c;
+
+    c.set_pos_abs(1, 5);
+    b.current_line = 0;
+    b.split_lines(c);
+    EXPECT_EQ(b.lines.size(), 6);
+    EXPECT_EQ(b.lines[0], "foo,");
+    EXPECT_EQ(b.lines[1], " bar");
+
+    c.set_pos_abs(4, 22);
+    b.current_line = 3;
+    b.split_lines(c);
+    EXPECT_EQ(b.lines.size(), 7);
+    EXPECT_EQ(b.lines[4], "");
+}

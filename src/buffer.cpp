@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <regex>
 #include <string_view>
 
 #include "buffer.h"
@@ -13,7 +14,6 @@ Buffer::Buffer(Editor *e)
       modified(false), current_line(0) {}
 
 // TODO: What if the given path is a directory?
-// TODO: Handle opening an empty file - it segfaults otherwise
 Buffer::Buffer(Editor *e, std::string filename)
     : editor(e), file(filename), lines(open_file(filename)),
       readonly(is_readonly(filename)), modified(false), current_line(0) {}
@@ -37,7 +37,8 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else {
         left += " | [ ] | ";
     }
-    // TODO: What happens if you open iris in a place with no git repo?
+
+    // NOTE: No branch/git = empty string
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
     if (!(git_branch.empty())) {
@@ -69,14 +70,18 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
 }
 
 void Buffer::split_lines(const Cursor &c) {
-    lines[current_line].insert(c.col, "\n");
+    std::size_t pos =
+        c.col - 1 + (lines[current_line][0] == '\t' ? TABSTOP : 0);
+    lines[current_line].insert(pos, "\n");
     const std::string &line = lines[current_line];
 
     std::string l1;
     std::string l2;
+
     if (line.find("\n") != std::string::npos) {
         l1 = line.substr(0, line.find("\n"));
-        l1 = line.substr(line.find("\n") + 1, line.size());
+        l2 = std::regex_replace(line.substr(line.find("\n") + 1, line.size()),
+                                std::regex("\n"), "");
     }
 
     lines[current_line] = l1;
@@ -91,8 +96,12 @@ void Buffer::parse_command(const std::string &cmd) {
         }
 
         int bytes = write_to_file(file, lines);
-        std::cout << "\"" << file << "\": " << bytes << " bytes written";
-        modified = false;
+        if (bytes == -1) {
+            std::cout << "FAILED: No filename specified";
+        } else {
+            std::cout << "\"" << file << "\": " << bytes << " bytes written";
+            modified = false;
+        }
     } else if (cmd == ";q"sv) {
         if (!(modified)) {
             quit_buf = true;

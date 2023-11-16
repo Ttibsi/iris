@@ -7,6 +7,6 @@
 std::vector<std::string> filter_whitespace(std::vector<std::string>);
 std::string shell_exec(const std::string &);
 std::size_t line_size(const std::string &);
-std::size_t count_char(std::string line, char c); // TODO: Unit test
+std::size_t count_char(std::string line, char c);
 
 #endif // TEXT_MANIP_H

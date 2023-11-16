@@ -614,7 +614,7 @@ namespace rawterm {
     }
 
     // clear screen entirely
-    inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
+    inline void clear_screen() { std::cout << "\x1B[2J\x1B[H" << std::flush; }
 
     // clear screen from beginning until position
     inline void clear_screen_until(const Pos pos) {
