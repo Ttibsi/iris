@@ -11,6 +11,11 @@ std::vector<std::string> open_file(const std::string &file) {
     std::string line;
     std::vector<std::string> lines;
 
+    // empty file
+    if (ifs.peek() == std::ifstream::traits_type::eof()) {
+        return { "" };
+    }
+
     while (std::getline(ifs, line)) {
         lines.push_back(line);
     }
@@ -66,6 +71,9 @@ std::string get_file_type(const std::string &file) {
 
 std::size_t write_to_file(const std::string &file,
                           const std::vector<std::string> &lines) {
+    if (file == "NO FILE") {
+        return -1;
+    }
     std::ofstream out(file);
 
     for (auto &&line : lines) {
