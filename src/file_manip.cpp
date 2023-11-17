@@ -1,6 +1,9 @@
 #include <filesystem>
 #include <fstream>
+#include <string.h>
 #include <string>
+#include <tuple>
+#include <unistd.h>
 #include <vector>
 
 #include "file_manip.h"
@@ -23,23 +26,11 @@ std::vector<std::string> open_file(const std::string &file) {
     return lines;
 }
 
-enum class File_Permission { Directory, Readonly, Writable };
-
-File_Permission check_perms(const std::string &file) {
-    namespace fs = std::filesystem;
-
-    auto status = fs::file_status(fs::status(file));
-    if (status.type() == fs::file_type::directory)
-        return File_Permission::Directory;
-
-    auto perms = fs::status(file).permissions();
-    if ((perms & fs::perms::owner_write) != fs::perms::none)
-        return File_Permission::Writable;
-    return File_Permission::Readonly;
-}
-
 bool is_readonly(const std::string &file) {
-    return check_perms(file) == File_Permission::Readonly;
+    if (access(file.c_str(), W_OK) == -1) {
+        return true;
+    }
+    return false;
 }
 
 std::string filename_only(std::string f) {

@@ -62,7 +62,7 @@ v0.3.0
         [x] `;q!` to quit without saving
         [ ] `;h` to open a read-only help file
 
-    - [ ] Handle viewing files you don't currently have the rights to edit
+    - [x] Handle viewing files you don't currently have the rights to edit
     - [ ] Line numbers, possibly with a different background to show that
         they're not just part of the text
 
