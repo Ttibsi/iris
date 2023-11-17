@@ -56,10 +56,15 @@ inline void Viewport::redraw_line() {
 }
 
 inline void Viewport::switch_to_insert() {
+    if (buffer->readonly)
+        return; // can't edit a readonly file
+
     buffer->editor->set_mode(Mode::Write);
     buffer->reset_status_bar(view_size, &cursor);
     rawterm::cursor_pipe_blink();
+
     keypress_write();
+
     buffer->editor->set_mode(Mode::Read);
     rawterm::cursor_block();
     buffer->reset_status_bar(view_size, &cursor);

@@ -30,10 +30,10 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     // Right - file type, current/total line number
 
     std::string left = " " + editor->get_mode() + " | " + filename_only(file);
-    if (modified) {
-        left += " | [X] | ";
-    } else if (readonly) {
+    if (readonly) {
         left += " | [RO] | ";
+    } else if (modified) {
+        left += " | [X] | ";
     } else {
         left += " | [ ] | ";
     }
