@@ -1,11 +1,13 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
+#include <iomanip>
 #include <utility>
 
 #include <rawterm/rawterm.h>
 
 #include "buffer.h"
+#include "constants.h"
 #include "cursor.h"
 #include "editor.h"
 #include "text_manip.h"
@@ -35,17 +37,30 @@ inline void Viewport::draw(const std::size_t &start_point) {
         std::max(std::min(view_size.vertical, buffer->lines.size()),
                  static_cast<unsigned long>(1));
 
+    int idx;
+    if (LINE_NUMBER) {
+        idx = start_point + 1;
+    }
+
     for (auto it = start; it < start + end; ++it) {
+        if (LINE_NUMBER) {
+            std::cout << std::setw(
+                             buffer->lineno_offset) // unicode vertical line
+                                                    // char is 3 bytes
+                      << std::to_string(idx) + "\u2502";
+            idx++;
+        }
         std::cout << *it;
     }
 
     if (view_size.vertical > end) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
-            std::cout << "\r\n";
+            std::cout << "~\r\n";
         }
     }
 
-    std::cout << buffer->render_status_bar(view_size.horizontal, &cursor);
+    std::cout << buffer->render_status_bar(
+        view_size.horizontal + buffer->lineno_offset, &cursor);
     std::cout << "\r\n";
 }
 

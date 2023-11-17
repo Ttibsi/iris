@@ -72,7 +72,23 @@ v0.4.0
     - [ ] Find and replace (using sed somehow - I'd rather build this one in
         than send it out to the shell sed because I can update the buffer
         instead of the saved file)
-    - [ ] Show the current cursor position in the status bar
+    - [x] Show the current cursor position in the status bar
+
+v0.5.0
+    - [ ] Highlight trailing whitespace with red background
+        - [ ] Command to purge trailing whitespace
+    - [ ] `-l` cli flag to launch from a certain line (like vim's `+x`)
+       - [ ] Enter a number into the command pallete to do this in a buffer
+    - [ ] More vim motions
+       - [ ] `{`  and `}` to move vertically to the next/prev empty line
+       - [ ] `o` to go to insert mode on the next line
+       - [ ] `O` to go to insert mode on the prev line
+       - [ ] `f` to go to the next instance of the next pressed character
+       - [ ] `F` to go to the prev instance of the next pressed character
+       - [ ] `_` to go to the beginning of the line
+       - [ ] `$` to go to the beginning of the line
+            - potentially use a different character?
+
 
 Further on down the line:
 * lua extensibility - I like lua, think it's a simple, easy to work with language
@@ -109,5 +125,3 @@ want to avoid
     structure for this, some kind of tree. This could be extended by also
     indexing the file for autocomplete of function/class names, or maybe git
     repo wide? That sounds like it could be slow
-* A way to show very visibly where trailing whitespace is.
-    * Potentially a command palete function to remove them

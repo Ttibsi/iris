@@ -63,7 +63,9 @@ void Viewport::keypress_read() {
                         std::max(line_size(buffer->lines[buffer->current_line]),
                                  static_cast<std::size_t>(1)));
                 } else {
-                    cursor.set_pos_rel(1, 0);
+                    if (cursor.row < buffer->lines.size() + 1) {
+                        cursor.set_pos_rel(1, 0);
+                    }
                 }
 
                 buffer->reset_status_bar(view_size, &cursor);
