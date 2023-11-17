@@ -31,3 +31,15 @@ TEST(textManipSuite, line_size) {
     EXPECT_EQ(line_size("\tfoo"), 8);
     EXPECT_EQ(line_size("\t\tfoo"), 13);
 }
+
+TEST(textManipSuite, findNextWord) {
+    std::string s = "This is some text";
+    EXPECT_EQ(find_next_whitespace(s, 6), 7) << "char: '" << s[6] << "'";
+    EXPECT_EQ(find_next_whitespace(s, 14), 17) << "char: '" << s[14] << "'";
+}
+
+TEST(textManipSuite, findPrevWord) {
+    std::string s = "This is some text";
+    EXPECT_EQ(find_prev_whitespace(s, 6), 4) << "char: '" << s[6] << "'";
+    EXPECT_EQ(find_prev_whitespace(s, 14), 12) << "char: '" << s[14] << "'";
+}

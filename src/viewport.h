@@ -7,6 +7,7 @@
 
 #include "buffer.h"
 #include "cursor.h"
+#include "editor.h"
 #include "text_manip.h"
 
 struct Viewport {
@@ -20,6 +21,7 @@ struct Viewport {
     void keypress_read();
     void keypress_write();
     void keypress_command();
+    void switch_to_insert();
 };
 
 inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
@@ -51,6 +53,16 @@ inline void Viewport::redraw_line() {
     rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
     std::cout << buffer->lines[buffer->current_line];
+}
+
+inline void Viewport::switch_to_insert() {
+    buffer->editor->set_mode(Mode::Write);
+    buffer->reset_status_bar(view_size, &cursor);
+    rawterm::cursor_pipe_blink();
+    keypress_write();
+    buffer->editor->set_mode(Mode::Read);
+    rawterm::cursor_block();
+    buffer->reset_status_bar(view_size, &cursor);
 }
 
 #endif // VIEWPORT_H
