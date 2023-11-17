@@ -15,6 +15,7 @@ TEST(fileManipSuite, openingFile) {
 
 TEST(fileManipSuite, readonly) {
     EXPECT_EQ(is_readonly("fixture/example_file.txt"), false);
+    EXPECT_EQ(is_readonly("fixture/readonly_file.txt"), true);
 }
 
 TEST(fileManipSuite, filenameOnly) {
