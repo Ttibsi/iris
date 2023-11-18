@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.22.0)
-if (${APPLE})
+if (APPLE)
     set(CMAKE_CXX_COMPILER "/usr/local/bin/g++")
+elseif(UNIX AND NOT APPLE)
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++-13")
 endif()
 
 project(iris LANGUAGES CXX VERSION 0.1.0)

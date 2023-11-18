@@ -35,7 +35,7 @@ TEST(bufferClass, constructorWithFile) {
 
 TEST(bufferClass, renderStatusBar) {
     Buffer b = setup("fixture/example_file.txt");
-    Cursor c;
+    Cursor c(0);
 
     std::string bar = b.render_status_bar(79, &c);
     EXPECT_EQ(bar.size(), 88); // This won't be the same due to ascii codes
@@ -71,16 +71,16 @@ TEST(bufferClass, renderStatusBar) {
 
 TEST(bufferClass, splitLines) {
     Buffer b = setup("fixture/example_file.txt");
-    Cursor c;
+    Cursor c(0);
 
-    c.set_pos_abs(1, 5);
+    c.set_pos_abs(1, 5, 0);
     b.current_line = 0;
     b.split_lines(c);
     EXPECT_EQ(b.lines.size(), 6);
     EXPECT_EQ(b.lines[0], "foo,");
     EXPECT_EQ(b.lines[1], " bar");
 
-    c.set_pos_abs(4, 22);
+    c.set_pos_abs(4, 22, 0);
     b.current_line = 3;
     b.split_lines(c);
     EXPECT_EQ(b.lines.size(), 7);

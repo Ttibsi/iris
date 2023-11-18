@@ -73,6 +73,7 @@ v0.4.0
         than send it out to the shell sed because I can update the buffer
         instead of the saved file)
     - [x] Show the current cursor position in the status bar
+    - [ ] `:e` to open a file for editing
 
 v0.5.0
     - [ ] Highlight trailing whitespace with red background

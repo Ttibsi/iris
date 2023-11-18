@@ -21,13 +21,13 @@ void Viewport::keypress_read() {
             switch_to_insert();
 
         } else if (k.code == 'a' && modifier == rawterm::Mod::None) {
-            cursor.set_pos_rel(0, 1);
+            cursor.set_pos_rel(0, 1, buffer->lineno_offset);
             switch_to_insert();
 
         } else if (k.code == 'A' && modifier == rawterm::Mod::Shift) {
             std::size_t col_pos =
                 line_size(buffer->lines[buffer->current_line]) + 1;
-            cursor.set_pos_abs(cursor.row, col_pos);
+            cursor.set_pos_abs(cursor.row, col_pos, buffer->lineno_offset);
             switch_to_insert();
 
             // Left
@@ -37,7 +37,7 @@ void Viewport::keypress_read() {
                 buffer->lines[buffer->current_line].size();
 
             if (cursor.col > tab_count) {
-                cursor.set_pos_rel(0, -1);
+                cursor.set_pos_rel(0, -1, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
 
@@ -48,23 +48,27 @@ void Viewport::keypress_read() {
                 // Scroll view
                 rawterm::clear_screen();
                 std::size_t cursor_col = cursor.col;
-                cursor.set_pos_abs(1, 1);
+                cursor.set_pos_abs(1, 1, 0);
                 buffer->current_line++;
                 draw(buffer->current_line + 1 - view_size.vertical);
-                cursor.set_pos_abs(view_size.vertical, cursor_col);
+                cursor.set_pos_abs(view_size.vertical, cursor_col,
+                                   buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row < view_size.vertical) {
                 // Move cursor in view
                 buffer->current_line++;
                 if (cursor.col >
-                    line_size(buffer->lines[buffer->current_line])) {
+                    line_size(buffer->lines[buffer->current_line]) +
+                        buffer->lineno_offset) {
                     cursor.set_pos_abs(
                         cursor.row + 1,
                         std::max(line_size(buffer->lines[buffer->current_line]),
-                                 static_cast<std::size_t>(1)));
+                                 static_cast<std::size_t>(1)),
+                        buffer->lineno_offset);
                 } else {
-                    if (cursor.row < buffer->lines.size() + 1) {
-                        cursor.set_pos_rel(1, 0);
+                    if (cursor.row <
+                        buffer->lines.size() + 1 + buffer->lineno_offset) {
+                        cursor.set_pos_rel(1, 0, buffer->lineno_offset);
                     }
                 }
 
@@ -78,9 +82,9 @@ void Viewport::keypress_read() {
                 std::size_t col = cursor.col; // TODO: Save row position too
                 buffer->current_line--;
                 rawterm::clear_screen();
-                cursor.set_pos_abs(1, 1);
+                cursor.set_pos_abs(1, 1, 0);
                 draw(buffer->current_line);
-                cursor.set_pos_abs(1, col);
+                cursor.set_pos_abs(1, col, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row > 1) {
                 // Move cursor up
@@ -90,18 +94,19 @@ void Viewport::keypress_read() {
                     cursor.set_pos_abs(
                         cursor.row - 1,
                         std::max(line_size(buffer->lines[buffer->current_line]),
-                                 static_cast<std::size_t>(1)));
+                                 static_cast<std::size_t>(1)),
+                        buffer->lineno_offset);
                 } else {
-                    cursor.set_pos_rel(-1, 0);
+                    cursor.set_pos_rel(-1, 0, buffer->lineno_offset);
                 }
                 buffer->reset_status_bar(view_size, &cursor);
             }
 
             // Right
         } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
-            if (cursor.col <
-                line_size(buffer->lines[buffer->current_line]) + 1) {
-                cursor.set_pos_rel(0, 1);
+            if (cursor.col < line_size(buffer->lines[buffer->current_line]) +
+                                 1 + buffer->lineno_offset) {
+                cursor.set_pos_rel(0, 1, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
 
@@ -110,7 +115,7 @@ void Viewport::keypress_read() {
             buffer->editor->set_mode(Mode::Command);
             buffer->reset_status_bar(view_size, &cursor);
             keypress_command();
-            cursor.set_pos_abs(cursor.row, cursor.col);
+            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
             buffer->editor->set_mode(Mode::Read);
             buffer->reset_status_bar(view_size, &cursor);
 
@@ -121,22 +126,23 @@ void Viewport::keypress_read() {
             std::size_t line_len =
                 line_size(buffer->lines[buffer->current_line]);
             if (col != line_len) {
-                cursor.set_pos_abs(cursor.row, col + 2);
+                cursor.set_pos_abs(cursor.row, col + 2, buffer->lineno_offset);
             } else {
-                cursor.set_pos_abs(cursor.row, line_len + 1);
+                cursor.set_pos_abs(cursor.row, line_len + 1,
+                                   buffer->lineno_offset);
             }
 
         } else if (k.code == 'b' && modifier == rawterm::Mod::None) {
             std::size_t col = find_prev_whitespace(
                 buffer->lines[buffer->current_line], cursor.col - 1);
-            cursor.set_pos_abs(cursor.row, col);
+            cursor.set_pos_abs(cursor.row, col, buffer->lineno_offset);
 
             // Char manipulation
         } else if (k.code == 'x' && modifier == rawterm::Mod::None) {
             buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
 
             redraw_line();
-            cursor.set_pos_abs(cursor.row, cursor.col);
+            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
             buffer->modified = true;
         }
     }
@@ -156,7 +162,7 @@ void Viewport::keypress_write() {
         } else if (modifier == Mod::Space) {
             buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
             redraw_line();
-            cursor.set_pos_rel(0, 1);
+            cursor.set_pos_rel(0, 1, buffer->lineno_offset);
             buffer->modified = true;
 
         } else if (modifier == Mod::Backspace) {
@@ -165,7 +171,8 @@ void Viewport::keypress_write() {
                 buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
 
                 redraw_line();
-                cursor.set_pos_abs(cursor.row, cursor.col - 1);
+                cursor.set_pos_abs(cursor.row, cursor.col - 1,
+                                   buffer->lineno_offset);
                 buffer->modified = true;
             }
 
@@ -175,7 +182,8 @@ void Viewport::keypress_write() {
                 buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
 
                 redraw_line();
-                cursor.set_pos_abs(cursor.row, cursor.col);
+                cursor.set_pos_abs(cursor.row, cursor.col,
+                                   buffer->lineno_offset);
                 buffer->modified = true;
             }
 
@@ -187,9 +195,8 @@ void Viewport::keypress_write() {
             rawterm::move_cursor({ 1, 1 });
             draw(buffer->current_line - cursor.row + 1);
             buffer->current_line++;
-            // sleep_for(seconds(5));
 
-            cursor.set_pos_abs(cursor.row + 1, 1);
+            cursor.set_pos_abs(cursor.row + 1, 1, buffer->lineno_offset);
             buffer->modified = true;
 
         } else if (modifier == Mod::Arrow) {
@@ -199,9 +206,9 @@ void Viewport::keypress_write() {
                     std::size_t col = cursor.col; // TODO: Save row position too
                     buffer->current_line--;
                     rawterm::clear_screen();
-                    cursor.set_pos_abs(1, 1);
+                    cursor.set_pos_abs(1, 1, buffer->lineno_offset);
                     draw(buffer->current_line);
-                    cursor.set_pos_abs(1, col);
+                    cursor.set_pos_abs(1, col, buffer->lineno_offset);
                 } else if (cursor.row > 1) {
                     // Move cursor up
                     buffer->current_line--;
@@ -211,9 +218,10 @@ void Viewport::keypress_write() {
                             cursor.row - 1,
                             std::max(
                                 line_size(buffer->lines[buffer->current_line]),
-                                static_cast<std::size_t>(1)));
+                                static_cast<std::size_t>(1)),
+                            buffer->lineno_offset);
                     } else {
-                        cursor.set_pos_rel(-1, 0);
+                        cursor.set_pos_rel(-1, 0, buffer->lineno_offset);
                     }
                 }
                 break;
@@ -223,10 +231,11 @@ void Viewport::keypress_write() {
                     // Scroll view
                     rawterm::clear_screen();
                     std::size_t cursor_col = cursor.col;
-                    cursor.set_pos_abs(1, 1);
+                    cursor.set_pos_abs(1, 1, buffer->lineno_offset);
                     buffer->current_line++;
                     draw(buffer->current_line + 1 - view_size.vertical);
-                    cursor.set_pos_abs(view_size.vertical, cursor_col);
+                    cursor.set_pos_abs(view_size.vertical, cursor_col,
+                                       buffer->lineno_offset);
                 } else if (cursor.row < view_size.vertical) {
                     // Move cursor in view
                     buffer->current_line++;
@@ -236,9 +245,10 @@ void Viewport::keypress_write() {
                             cursor.row + 1,
                             std::max(
                                 line_size(buffer->lines[buffer->current_line]),
-                                static_cast<std::size_t>(1)));
+                                static_cast<std::size_t>(1)),
+                            buffer->lineno_offset);
                     } else {
-                        cursor.set_pos_rel(1, 0);
+                        cursor.set_pos_rel(1, 0, buffer->lineno_offset);
                     }
                 }
                 break;
@@ -248,12 +258,12 @@ void Viewport::keypress_write() {
                 // going u/d
                 if (cursor.col <
                     line_size(buffer->lines[buffer->current_line])) {
-                    cursor.set_pos_rel(0, 1);
+                    cursor.set_pos_rel(0, 1, buffer->lineno_offset);
                 }
                 break;
             case 'D': // Left
                 if (cursor.col > 1) {
-                    cursor.set_pos_rel(0, -1);
+                    cursor.set_pos_rel(0, -1, buffer->lineno_offset);
                 }
                 break;
             }
@@ -264,7 +274,7 @@ void Viewport::keypress_write() {
                 filter_whitespace(std::vector<std::string>(
                     { buffer->lines[buffer->current_line] }))[0];
             redraw_line();
-            cursor.set_pos_rel(0, TABSTOP);
+            cursor.set_pos_rel(0, TABSTOP, buffer->lineno_offset);
             buffer->modified = true;
 
         } else {
@@ -279,7 +289,7 @@ void Viewport::keypress_write() {
             }
 
             redraw_line();
-            cursor.set_pos_rel(0, 1);
+            cursor.set_pos_rel(0, 1, buffer->lineno_offset);
             buffer->modified = true;
         }
     }
