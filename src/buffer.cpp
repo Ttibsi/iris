@@ -9,19 +9,30 @@
 #include "text_manip.h"
 #include "viewport.h"
 
+// lineno_offset has +3 because that's the byte length of \u2502
+
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
-      modified(false), current_line(0) {}
+      modified(false), current_line(0) {
+    if (LINE_NUMBER)
+        lineno_offset = 2;
+}
 
 // TODO: What if the given path is a directory?
 Buffer::Buffer(Editor *e, std::string filename)
     : editor(e), file(filename), lines(open_file(filename)),
-      readonly(is_readonly(filename)), modified(false), current_line(0) {}
+      readonly(is_readonly(filename)), modified(false), current_line(0) {
+
+    if (LINE_NUMBER) {
+        lineno_offset = std::to_string(lines.size()).size() + 1;
+    }
+}
 
 void Buffer::init(rawterm::Pos view_size) {
+    view_size.horizontal -= lineno_offset;
     Viewport view = { this, view_size };
     view.draw(0);
-    view.cursor.set_pos_abs(1, 1);
+    view.cursor.set_pos_abs(1, 1, lineno_offset);
     view.keypress_read();
 }
 
@@ -63,10 +74,10 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
 void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     // go to statusline pos
     rawterm::move_cursor({ dimensions.vertical + 1, 0 });
-    std::cout << render_status_bar(dimensions.horizontal, c);
+    std::cout << render_status_bar(dimensions.horizontal + lineno_offset, c);
 
     // Restore cursor pos
-    rawterm::move_cursor({ c->row, c->col });
+    rawterm::move_cursor({ c->row, c->col + lineno_offset });
 }
 
 void Buffer::split_lines(const Cursor &c) {
