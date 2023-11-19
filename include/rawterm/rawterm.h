@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v2.2.3
+// Version: v2.2.5
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -137,10 +137,10 @@ namespace rawterm {
 
     // Switch to an alternative terminal screen -- should be supported on all
     // terminal emulators
-    inline void enter_alt_screen() { std::cout << "\x1B 7\x1B[?47h\x1B[H"; }
+    inline void enter_alt_screen() { std::cout << "\x1B[?1049h" << std::flush; }
 
     // Exit alternate screen mode
-    inline void exit_alt_screen() { std::cout << "\x1B[2J\x1B[?47l\x1B 8"; }
+    inline void exit_alt_screen() { std::cout << "\x1B[?1049l" << std::flush; }
 
     static const std::unordered_set<char> asciiLetters{
         '\x31', '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39',
@@ -545,26 +545,34 @@ namespace rawterm {
         }
     }
 
-    inline void save_cursor_position() { std::cout << "\x1B[s"; }
+    inline void save_cursor_position() { std::cout << "\x1B[s" << std::flush; }
 
-    inline void load_cursor_position() { std::cout << "\x1B[u"; }
+    inline void load_cursor_position() { std::cout << "\x1B[u" << std::flush; }
 
     // https://stackoverflow.com/a/48449104
-    inline void cursor_block_blink() { std::cout << "\1\x1B[1 q\2"; }
+    inline void cursor_block_blink() {
+        std::cout << "\1\x1B[1 q\2" << std::flush;
+    }
 
-    inline void cursor_block() { std::cout << "\1\x1B[2 q\2"; }
+    inline void cursor_block() { std::cout << "\1\x1B[2 q\2" << std::flush; }
 
-    inline void cursor_underscore_blink() { std::cout << "\1\x1B[3 q\2"; }
+    inline void cursor_underscore_blink() {
+        std::cout << "\1\x1B[3 q\2" << std::flush;
+    }
 
-    inline void cursor_underscore() { std::cout << "\1\x1B[4 q\2"; }
+    inline void cursor_underscore() {
+        std::cout << "\1\x1B[4 q\2" << std::flush;
+    }
 
-    inline void cursor_pipe_blink() { std::cout << "\1\x1B[5 q\2"; }
+    inline void cursor_pipe_blink() {
+        std::cout << "\1\x1B[5 q\2" << std::flush;
+    }
 
-    inline void cursor_pipe() { std::cout << "\1\x1B[6 q\6"; }
+    inline void cursor_pipe() { std::cout << "\1\x1B[6 q\6" << std::flush; }
 
-    inline void cursor_hide() { std::cout << "\x1B[?25l"; }
+    inline void cursor_hide() { std::cout << "\x1B[?25l" << std::flush; }
 
-    inline void cursor_show() { std::cout << "\x1B[?25h"; }
+    inline void cursor_show() { std::cout << "\x1B[?25h" << std::flush; }
 
     // Format text output in bold
     inline std::string bold(const std::string &s) {
@@ -614,7 +622,7 @@ namespace rawterm {
     }
 
     // clear screen entirely
-    inline void clear_screen() { std::cout << "\x1B[2J\x1B[H" << std::flush; }
+    inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 
     // clear screen from beginning until position
     inline void clear_screen_until(const Pos pos) {
