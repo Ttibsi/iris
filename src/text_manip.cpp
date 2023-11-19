@@ -13,8 +13,7 @@
 
 std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     std::unordered_map<std::string, std::string> pairs = {
-        { "\t", std::string(TABSTOP, ' ') },
-        { "\n", "_" }
+        {"\t", std::string(TABSTOP, ' ')},
     };
 
     for (auto &line : lines) {
@@ -48,9 +47,9 @@ std::string shell_exec(const std::string &cmd) {
     return result;
 }
 
-std::size_t count_char(std::string line, char c) {
+std::size_t count_char(const std::string &line, char c) {
     std::size_t ret = 0;
-    for (char &l : line) {
+    for (const char &l : line) {
         if (l == c)
             ret++;
     }
@@ -58,8 +57,7 @@ std::size_t count_char(std::string line, char c) {
 }
 
 std::size_t line_size(const std::string &line) {
-    return line.size() +
-           count_char(line, '\t') * TABSTOP; // NOLINT(clang-diagnostic-error)
+    return line.size() + count_char(line, '\t') * TABSTOP;
 }
 
 int find_next_whitespace(const std::string &curr_line,
