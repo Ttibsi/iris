@@ -63,7 +63,7 @@ v0.3.0
         [ ] `;h` to open a read-only help file
 
     - [x] Handle viewing files you don't currently have the rights to edit
-    - [ ] Line numbers, possibly with a different background to show that
+    - [x] Line numbers, possibly with a different background to show that
         they're not just part of the text
 
 v0.4.0

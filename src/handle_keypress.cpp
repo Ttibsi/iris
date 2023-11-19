@@ -56,7 +56,6 @@ void Viewport::keypress_read() {
                 buffer->reset_status_bar(view_size, &cursor);
             } else if (cursor.row < view_size.vertical) {
                 // Move cursor in view
-                buffer->current_line++;
                 if (cursor.col >
                     line_size(buffer->lines[buffer->current_line]) +
                         buffer->lineno_offset) {
@@ -65,14 +64,15 @@ void Viewport::keypress_read() {
                         std::max(line_size(buffer->lines[buffer->current_line]),
                                  static_cast<std::size_t>(1)),
                         buffer->lineno_offset);
-                } else {
-                    if (cursor.row <
-                        buffer->lines.size() + 1 + buffer->lineno_offset) {
-                        cursor.set_pos_rel(1, 0, buffer->lineno_offset);
-                    }
-                }
 
-                buffer->reset_status_bar(view_size, &cursor);
+                    buffer->current_line++;
+                    buffer->reset_status_bar(view_size, &cursor);
+
+                } else if (cursor.row < buffer->lines.size()) {
+                    cursor.set_pos_rel(1, 0, buffer->lineno_offset);
+                    buffer->current_line++;
+                    buffer->reset_status_bar(view_size, &cursor);
+                }
             }
 
             // Up
@@ -238,7 +238,6 @@ void Viewport::keypress_write() {
                                        buffer->lineno_offset);
                 } else if (cursor.row < view_size.vertical) {
                     // Move cursor in view
-                    buffer->current_line++;
                     if (cursor.col >
                         line_size(buffer->lines[buffer->current_line])) {
                         cursor.set_pos_abs(
@@ -247,8 +246,10 @@ void Viewport::keypress_write() {
                                 line_size(buffer->lines[buffer->current_line]),
                                 static_cast<std::size_t>(1)),
                             buffer->lineno_offset);
-                    } else {
+                        buffer->current_line++;
+                    } else if (cursor.row < buffer->lines.size()) {
                         cursor.set_pos_rel(1, 0, buffer->lineno_offset);
+                        buffer->current_line++;
                     }
                 }
                 break;
