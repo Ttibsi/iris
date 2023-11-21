@@ -22,9 +22,16 @@ TEST(textManipSuite, filterWhitespace) {
 TEST(textManipSuite, shellExec) {
     EXPECT_EQ(shell_exec("echo 'hi'", true), "hi");
     EXPECT_EQ(shell_exec("echo 'hi'", false), "");
+
+#ifdef __APPLE__
     EXPECT_EQ(shell_exec("mv", true),
               "usage: mv [-f | -i | -n] [-hv] source target"
               "       mv [-f | -i | -n] [-v] source ... directory");
+#else
+    EXPECT_EQ(shell_exec("mv", true),
+              "mv: missing file operandTry 'mv --help' for more information.");
+
+#endif
 }
 
 TEST(textManipSuite, countChar) {
