@@ -1,11 +1,7 @@
 #include <algorithm>
-#include <array>
 #include <cctype>
 #include <cstdio>
 #include <filesystem>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,7 +17,6 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
 
     for (auto &line : lines) {
         for (std::pair<char, std::string> p : pairs) {
-            // if (line.find(p.first) != std::string::npos) {
             if (std::binary_search(line.begin(), line.end(), p.first)) {
                 line.replace(line.find(p.first), 1, p.second);
             }

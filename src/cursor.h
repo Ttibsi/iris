@@ -2,7 +2,6 @@
 #define CURSOR_H
 
 #include <iostream>
-#include <string>
 
 #include <rawterm/rawterm.h>
 

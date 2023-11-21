@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <regex>
 #include <string_view>
 
@@ -114,9 +113,7 @@ void Buffer::parse_command(const std::string &cmd) {
         shell_cmd += cmd.substr(2, cmd.size());
         std::string ret = shell_exec(shell_cmd, true);
         // TODO: Wrie the output of a command to a buffer
-    }
-
-    if (cmd.starts_with(";w"sv)) {
+    } else if (cmd.starts_with(";w"sv)) {
         if (!(cmd.size() == 2)) {
             file = cmd.substr(3, cmd.size());
         }
