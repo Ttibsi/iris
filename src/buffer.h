@@ -18,6 +18,7 @@ struct Buffer {
     std::size_t current_line; // 0-indexed on the current line of lines
     bool quit_buf = false;
     std::size_t lineno_offset = 0;
+    bool bang_cmd_output = false;
 
     Buffer(Editor *);
     Buffer(Editor *, std::string);

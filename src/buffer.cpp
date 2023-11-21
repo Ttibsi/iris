@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "editor.h"
 #include "file_manip.h"
+#include "rawterm/rawterm.h"
 #include "text_manip.h"
 #include "viewport.h"
 
@@ -103,16 +104,20 @@ void Buffer::parse_command(const std::string &cmd) {
 
     // Bang shell commands (ie `;!ls -la`)
     if (cmd.starts_with(";!"sv)) {
+        // NOTE: Run cmd without output
         std::string shell_cmd = "";
         shell_cmd += cmd.substr(2, cmd.size());
         shell_exec(shell_cmd, false);
-        // TODO: Work out how to display the output of a command
 
     } else if (cmd.starts_with(";.!"sv)) {
-        std::string shell_cmd = "";
-        shell_cmd += cmd.substr(2, cmd.size());
-        std::string ret = shell_exec(shell_cmd, true);
         // TODO: Wrie the output of a command to a buffer
+
+        std::string shell_cmd = "";
+        shell_cmd += cmd.substr(3, cmd.size());
+        std::string ret = shell_exec(shell_cmd, true);
+        std::cout << ret << "\r\n\n" << rawterm::bold("Press ENTER to clear");
+        bang_cmd_output = true;
+
     } else if (cmd.starts_with(";w"sv)) {
         if (!(cmd.size() == 2)) {
             file = cmd.substr(3, cmd.size());

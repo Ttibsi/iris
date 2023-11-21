@@ -16,6 +16,15 @@ void Viewport::keypress_read() {
 
         rawterm::Key k = rawterm::process_keypress();
         rawterm::Mod modifier = rawterm::getMod(&k);
+        if (buffer->bang_cmd_output) {
+            rawterm::clear_screen();
+            cursor.set_pos_abs(1, 1, 0);
+            draw(buffer->current_line);
+            cursor.set_pos_abs(1, cursor.col, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
+            buffer->bang_cmd_output = false;
+            continue;
+        }
         // Insert mode
         if (k.code == 'i' && modifier == rawterm::Mod::None) {
             switch_to_insert();
