@@ -19,7 +19,13 @@ TEST(textManipSuite, filterWhitespace) {
     EXPECT_EQ(out, expected);
 }
 
-TEST(textManipSuite, shellExec) { EXPECT_EQ(shell_exec("echo 'hi'"), "hi"); }
+TEST(textManipSuite, shellExec) {
+    EXPECT_EQ(shell_exec("echo 'hi'", true), "hi");
+    EXPECT_EQ(shell_exec("echo 'hi'", false), "");
+    EXPECT_EQ(shell_exec("mv", true),
+              "usage: mv [-f | -i | -n] [-hv] source target"
+              "       mv [-f | -i | -n] [-v] source ... directory");
+}
 
 TEST(textManipSuite, countChar) {
     EXPECT_EQ(count_char("Hello world", 'l'), 3);

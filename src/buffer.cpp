@@ -51,7 +51,7 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
 
     // NOTE: No branch/git = empty string
     std::string git_branch =
-        shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
+        shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null", true);
     if (!(git_branch.empty())) {
         left += git_branch + " |";
     }
@@ -101,6 +101,21 @@ void Buffer::split_lines(const Cursor &c) {
 
 void Buffer::parse_command(const std::string &cmd) {
     using namespace std::literals;
+
+    // Bang shell commands (ie `;!ls -la`)
+    if (cmd.starts_with(";!"sv)) {
+        std::string shell_cmd = "";
+        shell_cmd += cmd.substr(2, cmd.size());
+        shell_exec(shell_cmd, false);
+        // TODO: Work out how to display the output of a command
+
+    } else if (cmd.starts_with(";.!"sv)) {
+        std::string shell_cmd = "";
+        shell_cmd += cmd.substr(2, cmd.size());
+        std::string ret = shell_exec(shell_cmd, true);
+        // TODO: Wrie the output of a command to a buffer
+    }
+
     if (cmd.starts_with(";w"sv)) {
         if (!(cmd.size() == 2)) {
             file = cmd.substr(3, cmd.size());
