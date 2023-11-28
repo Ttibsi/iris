@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <regex>
 #include <string_view>
 
@@ -53,6 +54,9 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     std::string git_branch =
         shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null", true);
     if (!(git_branch.empty())) {
+        git_branch.erase(
+            std::remove_if(git_branch.begin(), git_branch.end(), isspace),
+            git_branch.end());
         left += git_branch + " |";
     }
 

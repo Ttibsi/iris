@@ -6,8 +6,8 @@
 
 TEST(fileManipSuite, openingFile) {
     std::vector<std::string> expected = {
-        "foo, bar", "\tbaz with a tab", "  two trailing spaces",
-        "",         "empty line above",
+        "foo, bar\r\n", "\tbaz with a tab\r\n", "  two trailing spaces\r\n",
+        "\r\n",         "empty line above\r\n",
     };
 
     EXPECT_EQ(open_file("fixture/example_file.txt"), expected);
