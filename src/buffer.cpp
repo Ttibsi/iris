@@ -101,7 +101,18 @@ void Buffer::split_lines(const Cursor &c) {
 
 void Buffer::parse_command(const std::string &cmd) {
     using namespace std::literals;
-    if (cmd.starts_with(";w"sv)) {
+
+    if (cmd.starts_with(";wq"sv)) {
+        int bytes = write_to_file(file, lines);
+        if (bytes == -1) {
+            std::cout << "FAILED: No filename specified";
+        } else {
+            std::cout << "\"" << file << "\": " << bytes << " bytes written";
+            modified = false;
+            quit_buf = true;
+        }
+
+    } else if (cmd.starts_with(";w"sv)) {
         if (!(cmd.size() == 2)) {
             file = cmd.substr(3, cmd.size());
         }
