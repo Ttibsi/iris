@@ -1,24 +1,23 @@
-#include <array>
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "constants.h"
+#include "file_manip.h"
 #include "text_manip.h"
 
 std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
-    std::unordered_map<std::string, std::string> pairs = {
-        {"\t", std::string(TABSTOP, ' ')},
+    std::unordered_map<char, std::string> pairs = {
+        {'\t', std::string(TABSTOP, ' ')},
     };
 
     for (auto &line : lines) {
-        for (std::pair<std::string, std::string> p : pairs) {
-            if (line.find(p.first) != std::string::npos) {
+        for (std::pair<char, std::string> p : pairs) {
+            if (std::binary_search(line.begin(), line.end(), p.first)) {
                 line.replace(line.find(p.first), 1, p.second);
             }
         }
@@ -28,23 +27,36 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     return lines;
 }
 
-// TODO: Rewrite this instead std::system()
-// https://stackoverflow.com/a/478960
-std::string shell_exec(const std::string &cmd) {
-    std::array<char, 128> buffer;
-    std::string result = "";
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"),
-                                                  pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
+std::string shell_exec(const std::string &cmd, bool output) {
+    namespace fs = std::filesystem;
+    std::string tmp_dir = fs::temp_directory_path();
+    int retcode = std::system((cmd + ">" + tmp_dir + "/iris_cmd_out.txt 2> " +
+                               tmp_dir + "/iris_cmd_err.txt")
+                                  .c_str());
 
-    std::erase_if(result, [](auto ch) { return (ch == '\n' || ch == '\r'); });
+    if (output) {
+        std::vector<std::string> stdout_contents =
+            open_file(tmp_dir + "/iris_cmd_out.txt");
 
-    return result;
+        if (retcode) {
+            std::vector<std::string> stderr_contents =
+                open_file(tmp_dir + "/iris_cmd_err.txt");
+            std::string ret = "";
+            for (auto &l : stderr_contents) {
+                ret += l;
+            }
+            return ret;
+        }
+
+        std::string ret = "";
+        for (auto &l : stdout_contents) {
+            ret += l;
+        }
+        return ret;
+
+    } else {
+        return "";
+    }
 }
 
 std::size_t count_char(const std::string &line, char c) {

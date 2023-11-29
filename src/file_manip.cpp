@@ -2,12 +2,10 @@
 #include <fstream>
 #include <string.h>
 #include <string>
-#include <tuple>
 #include <unistd.h>
 #include <vector>
 
 #include "file_manip.h"
-#include "text_manip.h"
 
 std::vector<std::string> open_file(const std::string &file) {
     std::ifstream ifs(file);
@@ -20,7 +18,7 @@ std::vector<std::string> open_file(const std::string &file) {
     }
 
     while (std::getline(ifs, line)) {
-        lines.push_back(line);
+        lines.push_back(line + "\r\n");
     }
 
     return lines;

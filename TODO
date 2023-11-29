@@ -50,7 +50,7 @@ v0.2.0
             character
 
 v0.3.0
-    - [ ] "Command pallete" on `;` (vim uses `:` - same key, but we don't need
+    - [x] "Command pallete" on `;` (vim uses `:` - same key, but we don't need
         to use shift)
             - I think the best approach here is to build up a code framework
             to match a pattern of text entered in here (always leading with a
@@ -68,7 +68,7 @@ v0.3.0
 
 v0.4.0
     - [ ] From the command pallete, use `;!` to run a shell command (ex `;!ls`)
-    - [ ] Move the output from a command to a text buffer (ex `;.!ls`)
+        - [ ] Move the output from a command to a text buffer (ex `;.!ls`)
     - [ ] Find and replace (using sed somehow - I'd rather build this one in
         than send it out to the shell sed because I can update the buffer
         instead of the saved file)

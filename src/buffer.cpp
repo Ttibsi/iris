@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "editor.h"
 #include "file_manip.h"
+#include "rawterm/rawterm.h"
 #include "text_manip.h"
 #include "viewport.h"
 
@@ -51,8 +52,11 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
 
     // NOTE: No branch/git = empty string
     std::string git_branch =
-        shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null");
+        shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null", true);
     if (!(git_branch.empty())) {
+        git_branch.erase(
+            std::remove_if(git_branch.begin(), git_branch.end(), isspace),
+            git_branch.end());
         left += git_branch + " |";
     }
 
@@ -102,7 +106,23 @@ void Buffer::split_lines(const Cursor &c) {
 void Buffer::parse_command(const std::string &cmd) {
     using namespace std::literals;
 
-    if (cmd.starts_with(";wq"sv)) {
+    // Bang shell commands (ie `;!ls -la`)
+    if (cmd.starts_with(";!"sv)) {
+        // NOTE: Run cmd without output
+        std::string shell_cmd = "";
+        shell_cmd += cmd.substr(2, cmd.size());
+        shell_exec(shell_cmd, false);
+
+    } else if (cmd.starts_with(";.!"sv)) {
+        // TODO: Wrie the output of a command to a buffer
+
+        std::string shell_cmd = "";
+        shell_cmd += cmd.substr(3, cmd.size());
+        std::string ret = shell_exec(shell_cmd, true);
+        std::cout << ret << "\r\n\n" << rawterm::bold("Press ENTER to clear");
+        bang_cmd_output = true;
+
+    } else if (cmd.starts_with(";wq"sv)) {
         int bytes = write_to_file(file, lines);
         if (bytes == -1) {
             std::cout << "FAILED: No filename specified";

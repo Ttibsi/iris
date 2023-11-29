@@ -2,7 +2,6 @@
 #define EDITOR_H
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <rawterm/rawterm.h>

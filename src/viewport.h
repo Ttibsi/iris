@@ -2,7 +2,6 @@
 #define VIEWPORT_H
 
 #include <format>
-#include <utility>
 
 #include <rawterm/rawterm.h>
 
