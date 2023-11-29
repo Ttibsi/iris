@@ -11,7 +11,9 @@ int main(int argc, char *argv[]) {
     CLI::App app{ "Iris text editor" };
 
     std::string file = "";
+    int line_num = 0;
     app.add_option("file", file, "File to open");
+    app.add_option("-l,--line", line_num, "Set line number to start on");
 
     try {
         app.parse(argc, argv);
@@ -23,7 +25,7 @@ int main(int argc, char *argv[]) {
     rawterm::enable_raw_mode();
 
     Editor e(file);
-    e.start();
+    e.start(file.empty() ? 0 : line_num);
 
     rawterm::exit_alt_screen();
 

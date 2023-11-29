@@ -23,6 +23,7 @@ struct Viewport {
     void keypress_write();
     void keypress_command();
     void switch_to_insert();
+    void center(unsigned int);
 };
 
 inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
@@ -52,7 +53,11 @@ inline void Viewport::draw(const std::size_t &start_point) {
 
     if (view_size.vertical > end) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
-            std::cout << "~\r\n";
+            if (i == 1) {
+                std::cout << "\r\n";
+            } else {
+                std::cout << "~\r\n";
+            }
         }
     }
 
@@ -87,6 +92,20 @@ inline void Viewport::switch_to_insert() {
 
     buffer->editor->set_mode(Mode::Read);
     rawterm::cursor_block();
+    buffer->reset_status_bar(view_size, &cursor);
+}
+
+inline void Viewport::center(unsigned int line_num) {
+    if (line_num < view_size.vertical / 2) {
+        draw(0);
+        cursor.set_pos_abs(line_num, cursor.col, buffer->lineno_offset);
+    } else {
+        draw(line_num - (view_size.vertical / 2) - 1);
+        cursor.set_pos_abs(view_size.vertical / 2, cursor.col,
+                           buffer->lineno_offset);
+    }
+
+    buffer->current_line = line_num - 1;
     buffer->reset_status_bar(view_size, &cursor);
 }
 

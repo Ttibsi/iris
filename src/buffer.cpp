@@ -29,11 +29,16 @@ Buffer::Buffer(Editor *e, std::string filename)
     }
 }
 
-void Buffer::init(rawterm::Pos view_size) {
+void Buffer::init(rawterm::Pos view_size, int line_num) {
     view_size.horizontal -= lineno_offset;
     Viewport view = { this, view_size };
-    view.draw(0);
-    view.cursor.set_pos_abs(1, 1, lineno_offset);
+
+    if (line_num) {
+        view.center(line_num);
+    } else {
+        view.draw(0);
+        view.cursor.set_pos_abs(1, 1, lineno_offset);
+    }
     view.keypress_read();
 }
 
@@ -78,6 +83,7 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
 void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     // go to statusline pos
     rawterm::move_cursor({ dimensions.vertical + 1, 0 });
+    rawterm::clear_line();
     std::cout << render_status_bar(dimensions.horizontal + lineno_offset, c);
 
     // Restore cursor pos
