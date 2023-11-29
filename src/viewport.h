@@ -64,13 +64,15 @@ inline void Viewport::draw(const std::size_t &start_point) {
 inline void Viewport::redraw_line() {
     rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
+    std::vector<std::string> lines =
+        filter_whitespace({ buffer->lines[buffer->current_line] });
     if (LINE_NUMBER) {
         std::cout << std::format("{:>{}}", buffer->current_line + 1,
                                  buffer->lineno_offset - 1)
                   << "\u2502";
     }
 
-    std::cout << buffer->lines[buffer->current_line];
+    std::cout << lines[0] << std::flush;
 }
 
 inline void Viewport::switch_to_insert() {

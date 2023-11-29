@@ -21,7 +21,6 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
                 line.replace(line.find(p.first), 1, p.second);
             }
         }
-        line += "\r\n";
     }
 
     return lines;
