@@ -113,6 +113,7 @@ void Viewport::keypress_read() {
 
             // Right
         } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
+            // TODO: This moves 7 too far right in src/buffer.cpp
             if (cursor.col < line_size(buffer->lines[buffer->current_line]) +
                                  1 + buffer->lineno_offset) {
                 cursor.set_pos_rel(0, 1, buffer->lineno_offset);
@@ -140,19 +141,82 @@ void Viewport::keypress_read() {
                 cursor.set_pos_abs(cursor.row, line_len + 1,
                                    buffer->lineno_offset);
             }
+            buffer->reset_status_bar(view_size, &cursor);
 
         } else if (k.code == 'b' && modifier == rawterm::Mod::None) {
             std::size_t col = find_prev_whitespace(
                 buffer->lines[buffer->current_line], cursor.col - 1);
             cursor.set_pos_abs(cursor.row, col, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
 
-            // Char manipulation
+            // Char manipulation / deletion
         } else if (k.code == 'x' && modifier == rawterm::Mod::None) {
             buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
 
             redraw_line();
             cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
             buffer->modified = true;
+
+        } else if (k.code == 'd' && modifier == rawterm::Mod::None) {
+            rawterm::Key k2 = rawterm::process_keypress();
+            rawterm::Mod mod2 = rawterm::getMod(&k);
+            // dl delete line
+            // dw delete word
+            // de delete end
+            // da delete to start
+
+            if (k2.code == 'l' && mod2 == rawterm::Mod::None) {
+                buffer->lines.erase(buffer->lines.begin() +
+                                    buffer->current_line);
+
+                rawterm::clear_screen();
+                rawterm::move_cursor({ 1, 1 });
+                draw(buffer->current_line - cursor.row + 1);
+                buffer->modified = true;
+                cursor.set_pos_abs(cursor.row, cursor.col,
+                                   buffer->lineno_offset);
+                buffer->reset_status_bar(view_size, &cursor);
+
+            } else if (k2.code == 'w' && mod2 == rawterm::Mod::None) {
+                std::string &line = buffer->lines[buffer->current_line];
+
+                int pos1 = line.substr(0, cursor.col).rfind(' ');
+                int pos2 = line.substr(cursor.col, line.size()).find(' ');
+                if (pos2 == -1)
+                    pos2 = line.size();
+
+                line.erase(pos1 + 1, (cursor.col + pos2) - pos1);
+
+                redraw_line();
+                buffer->modified = true;
+                cursor.set_pos_abs(cursor.row, pos1 + 1, buffer->lineno_offset);
+                buffer->reset_status_bar(view_size, &cursor);
+
+            } else if (k2.code == 'e' && mod2 == rawterm::Mod::None) {
+                std::size_t pos =
+                    cursor.col - 1 +
+                    (buffer->lines[buffer->current_line][0] == '\t' ? TABSTOP
+                                                                    : 0);
+                buffer->lines[buffer->current_line].erase(
+                    pos, buffer->lines[buffer->current_line].size());
+
+                redraw_line();
+                buffer->modified = true;
+                buffer->reset_status_bar(view_size, &cursor);
+
+            } else if (k2.code == 'a' && mod2 == rawterm::Mod::None) {
+                std::size_t pos =
+                    cursor.col - 1 +
+                    (buffer->lines[buffer->current_line][0] == '\t' ? TABSTOP
+                                                                    : 0);
+                buffer->lines[buffer->current_line].erase(0, pos);
+
+                redraw_line();
+                buffer->modified = true;
+                cursor.set_pos_rel(0, -pos, buffer->lineno_offset);
+                buffer->reset_status_bar(view_size, &cursor);
+            }
         }
     }
 }

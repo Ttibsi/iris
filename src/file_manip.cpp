@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <string.h>
@@ -59,13 +60,18 @@ std::string get_file_type(const std::string &file) {
 }
 
 std::size_t write_to_file(const std::string &file,
-                          const std::vector<std::string> &lines) {
+                          std::vector<std::string> lines) {
     if (file == "NO FILE") {
         return -1;
     }
     std::ofstream out(file);
 
     for (auto &&line : lines) {
+        line.erase(
+            std::remove_if(line.begin(), line.end(),
+                           [](char x) { return x == '\r' || x == '\n'; }),
+            line.end());
+
         out << line << "\n";
     }
 

@@ -10,9 +10,9 @@ TEST(textManipSuite, filterWhitespace) {
     };
 
     std::vector<std::string> expected = {
-        "This is a normal string\r\n",
-        std::string(TABSTOP, ' ') + "This string starts with a tab\r\n",
-        "    This string starts with 4 spaces\r\n"
+        "This is a normal string",
+        std::string(TABSTOP, ' ') + "This string starts with a tab",
+        "    This string starts with 4 spaces"
     };
 
     auto out = filter_whitespace(fixture);

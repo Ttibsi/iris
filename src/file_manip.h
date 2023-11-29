@@ -8,7 +8,6 @@ std::vector<std::string> open_file(const std::string &);
 bool is_readonly(const std::string &);
 std::string filename_only(std::string);
 std::string get_file_type(const std::string &);
-std::size_t write_to_file(const std::string &,
-                          const std::vector<std::string> &);
+std::size_t write_to_file(const std::string &, std::vector<std::string>);
 
 #endif // FILE_MANIP_H

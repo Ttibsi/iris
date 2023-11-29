@@ -67,7 +67,7 @@ v0.3.0
         they're not just part of the text
 
 v0.4.0
-    - [ ] From the command pallete, use `;!` to run a shell command (ex `;!ls`)
+    - [x] From the command pallete, use `;!` to run a shell command (ex `;!ls`)
         - [ ] Move the output from a command to a text buffer (ex `;.!ls`)
     - [ ] Find and replace (using sed somehow - I'd rather build this one in
         than send it out to the shell sed because I can update the buffer
