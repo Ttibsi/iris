@@ -32,7 +32,7 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
     std::vector<std::string> lines = filter_whitespace(buffer->lines);
-    auto start = lines.begin() + std::min(start_point, lines.size() - 1);
+    auto start = std::min(start_point, lines.size() - 1);
     std::size_t end =
         std::max(std::min(view_size.vertical, buffer->lines.size()),
                  static_cast<unsigned long>(1));
@@ -43,12 +43,17 @@ inline void Viewport::draw(const std::size_t &start_point) {
     }
 
     for (auto it = start; it < start + end; ++it) {
-        if (LINE_NUMBER) {
-            std::cout << std::format("{:>{}}", idx, buffer->lineno_offset - 1)
-                      << "\u2502";
-            idx++;
+        if (it < buffer->lines.size()) {
+            if (LINE_NUMBER) {
+                std::cout << std::format("{:>{}}", idx,
+                                         buffer->lineno_offset - 1)
+                          << "\u2502";
+                idx++;
+            }
+            std::cout << buffer->lines[it];
+        } else {
+            std::cout << "\r\n";
         }
-        std::cout << *it;
     }
 
     if (view_size.vertical > end) {
@@ -96,11 +101,14 @@ inline void Viewport::switch_to_insert() {
 }
 
 inline void Viewport::center(unsigned int line_num) {
+    rawterm::clear_screen();
+
     if (line_num < view_size.vertical / 2) {
         draw(0);
         cursor.set_pos_abs(line_num, cursor.col, buffer->lineno_offset);
-    } else {
-        draw(line_num - (view_size.vertical / 2) - 1);
+
+    } else if (line_num < buffer->lines.size()) {
+        draw(line_num - (view_size.vertical / 2));
         cursor.set_pos_abs(view_size.vertical / 2, cursor.col,
                            buffer->lineno_offset);
     }

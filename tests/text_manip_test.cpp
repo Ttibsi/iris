@@ -25,8 +25,8 @@ TEST(textManipSuite, shellExec) {
 
 #ifdef __APPLE__
     EXPECT_EQ(shell_exec("mv", true),
-              "usage: mv [-f | -i | -n] [-hv] source target"
-              "       mv [-f | -i | -n] [-v] source ... directory");
+              "usage: mv [-f | -i | -n] [-hv] source target\r\n"
+              "       mv [-f | -i | -n] [-v] source ... directory\r\n");
 #else
     EXPECT_EQ(shell_exec("mv", true), "mv: missing file operand\r\nTry 'mv "
                                       "--help' for more information.\r\n");

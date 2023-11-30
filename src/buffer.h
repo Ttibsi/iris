@@ -8,9 +8,11 @@
 #include "rawterm/rawterm.h"
 
 struct Editor;
+struct Viewport;
 
 struct Buffer {
     Editor *editor;
+    Viewport *view;
     std::string file;
     std::vector<std::string> lines;
     bool readonly;
