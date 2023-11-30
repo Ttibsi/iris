@@ -78,8 +78,8 @@ v0.4.0
 v0.5.0
     - [ ] Highlight trailing whitespace with red background
         - [ ] Command to purge trailing whitespace
-    - [ ] `-l` cli flag to launch from a certain line (like vim's `+x`)
-       - [ ] Enter a number into the command pallete to do this in a buffer
+    - [x] `-l` cli flag to launch from a certain line (like vim's `+x`)
+       - [x] Enter a number into the command pallete to do this in a buffer
     - [ ] More vim motions
        - [ ] `{`  and `}` to move vertically to the next/prev empty line
        - [ ] `o` to go to insert mode on the next line

@@ -42,6 +42,7 @@ Likewise, you can switch to `command` with the `;` (semicolon) key.
 | <kbd>A</kbd>  | Go to insert mode at the end of the current line |
 | <kbd>w</kbd>  | Move cursor forward one word                     |
 | <kbd>b</kbd>  | Move cursor back one word                        |
+| <kbd>z</kbd>  | Center the current line in the screen            |
 | <kbd>x</kbd>  | Delete character under the cursor                |
 | <kbd>dl</kbd> | Delete enter line                                |
 | <kbd>dw</kbd> | Delete current word (between whitespace)         |
@@ -58,3 +59,4 @@ All commands start with a semicolon
 | `;q`         | Quit                           |
 | `;q!`        | Quit without saving            |
 | `;wq`        | Write and quit                 |
+| `;1`         | Jump to the given line number  |

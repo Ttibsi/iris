@@ -100,3 +100,12 @@ int find_prev_whitespace(const std::string &curr_line,
 
     return 1;
 }
+
+bool is_numeric(const std::string &s) {
+    for (auto &&letter : s) {
+        if (!(std::isdigit(letter)))
+            return false;
+    }
+
+    return true;
+}

@@ -8,9 +8,11 @@
 #include "rawterm/rawterm.h"
 
 struct Editor;
+struct Viewport;
 
 struct Buffer {
     Editor *editor;
+    Viewport *view;
     std::string file;
     std::vector<std::string> lines;
     bool readonly;
@@ -22,7 +24,7 @@ struct Buffer {
 
     Buffer(Editor *);
     Buffer(Editor *, std::string);
-    void init(rawterm::Pos);
+    void init(rawterm::Pos, int);
     std::string render_status_bar(const std::size_t &, Cursor *);
     void reset_status_bar(rawterm::Pos, Cursor *);
     void split_lines(const Cursor &);

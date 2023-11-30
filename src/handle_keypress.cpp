@@ -149,6 +149,9 @@ void Viewport::keypress_read() {
             cursor.set_pos_abs(cursor.row, col, buffer->lineno_offset);
             buffer->reset_status_bar(view_size, &cursor);
 
+        } else if (k.code == 'z' && modifier == rawterm::Mod::None) {
+            center(buffer->current_line + 1);
+
             // Char manipulation / deletion
         } else if (k.code == 'x' && modifier == rawterm::Mod::None) {
             buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);

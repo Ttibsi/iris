@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <regex>
+#include <string>
 #include <string_view>
 
 #include "buffer.h"
@@ -29,12 +30,18 @@ Buffer::Buffer(Editor *e, std::string filename)
     }
 }
 
-void Buffer::init(rawterm::Pos view_size) {
+void Buffer::init(rawterm::Pos view_size, int line_num) {
     view_size.horizontal -= lineno_offset;
-    Viewport view = { this, view_size };
-    view.draw(0);
-    view.cursor.set_pos_abs(1, 1, lineno_offset);
-    view.keypress_read();
+    Viewport v = { this, view_size };
+    view = &v;
+
+    if (line_num) {
+        view->center(line_num);
+    } else {
+        view->draw(0);
+        view->cursor.set_pos_abs(1, 1, lineno_offset);
+    }
+    view->keypress_read();
 }
 
 std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
@@ -78,12 +85,14 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
 void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     // go to statusline pos
     rawterm::move_cursor({ dimensions.vertical + 1, 0 });
+    rawterm::clear_line();
     std::cout << render_status_bar(dimensions.horizontal + lineno_offset, c);
 
     // Restore cursor pos
     rawterm::move_cursor({ c->row, c->col + lineno_offset });
 }
 
+// TODO: Doesn't work
 void Buffer::split_lines(const Cursor &c) {
     std::size_t pos =
         c.col - 1 + (lines[current_line][0] == '\t' ? TABSTOP : 0);
@@ -121,6 +130,11 @@ void Buffer::parse_command(const std::string &cmd) {
         std::string ret = shell_exec(shell_cmd, true);
         std::cout << ret << "\r\n\n" << rawterm::bold("Press ENTER to clear");
         bang_cmd_output = true;
+
+        // Enter a number to go to that line ex `;24`
+    } else if (is_numeric(cmd.substr(1, cmd.size()))) {
+        unsigned int num = std::stoi(cmd.substr(1, cmd.size()));
+        view->center(num);
 
     } else if (cmd.starts_with(";wq"sv)) {
         int bytes = write_to_file(file, lines);
