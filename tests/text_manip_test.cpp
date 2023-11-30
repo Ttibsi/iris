@@ -56,3 +56,8 @@ TEST(textManipSuite, findPrevWord) {
     EXPECT_EQ(find_prev_whitespace(s, 6), 4) << "char: '" << s[6] << "'";
     EXPECT_EQ(find_prev_whitespace(s, 14), 12) << "char: '" << s[14] << "'";
 }
+
+TEST(textManipSuite, isNumeric) {
+    EXPECT_EQ(is_numeric("123"), true);
+    EXPECT_EQ(is_numeric("foo"), false);
+}
