@@ -53,7 +53,8 @@ std::string get_file_type(const std::string &file) {
     if (file == "NO FILE") {
         return "TEXT";
     } else if (!(path.extension().empty())) {
-        // TODO: Replace this string with actually getting it from the highlighter/languages.h
+        // TODO: Replace this string with actually getting it from the
+        // highlighter/languages.h
         return path.extension();
     } else {
         return "UNKNOWN";

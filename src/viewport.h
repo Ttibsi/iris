@@ -42,9 +42,8 @@ inline void Viewport::draw(const std::size_t &start_point) {
 
     std::vector<std::string> lines = filter_whitespace(buffer->lines);
     auto start = std::min(start_point, lines.size() - 1);
-    std::size_t end =
-        std::max(std::min(view_size.vertical, lines.size()),
-                 static_cast<unsigned long>(1));
+    std::size_t end = std::max(std::min(view_size.vertical, lines.size()),
+                               static_cast<unsigned long>(1));
 
     std::span<std::string> line_span = lines;
     highlight(buffer->lang, line_span.subspan(start, view_size.vertical));

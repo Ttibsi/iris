@@ -20,8 +20,9 @@ Buffer::Buffer(Editor *e)
 
 // TODO: What if the given path is a directory?
 Buffer::Buffer(Editor *e, std::string filename)
-    : editor(e), file(filename), lang(languages[get_file_type(filename)]), lines(open_file(filename)),
-      readonly(is_readonly(filename)), modified(false), current_line(0) {
+    : editor(e), file(filename), lang(languages[get_file_type(filename)]),
+      lines(open_file(filename)), readonly(is_readonly(filename)),
+      modified(false), current_line(0) {
 
     if (LINE_NUMBER) {
         lineno_offset = std::to_string(lines.size()).size() + 1;

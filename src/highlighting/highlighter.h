@@ -7,6 +7,6 @@
 #include "highlighting/regex_groups.h"
 
 void highlight(Language, std::span<std::string>);
-void highlight_line(Language, std::string&);
+void highlight_line(Language, std::string &);
 
 #endif // HIGHLIGHTER_H
