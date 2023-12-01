@@ -19,7 +19,7 @@ std::vector<std::string> open_file(const std::string &file) {
     }
 
     while (std::getline(ifs, line)) {
-        lines.push_back(line + "\r\n");
+        lines.push_back(line);
     }
 
     return lines;

@@ -267,8 +267,6 @@ void Viewport::keypress_write() {
             // TODO: Indent new line to same level as old line
 
             buffer->split_lines(cursor);
-            rawterm::clear_screen();
-            rawterm::move_cursor({ 1, 1 });
             draw(buffer->current_line - cursor.row + 1);
             buffer->current_line++;
 

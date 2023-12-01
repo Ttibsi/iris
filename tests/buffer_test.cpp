@@ -22,8 +22,8 @@ TEST(bufferClass, constructorWithFile) {
     Buffer b = setup("fixture/example_file.txt");
 
     std::vector<std::string> expected = {
-        "foo, bar\r\n", "\tbaz with a tab\r\n", "  two trailing spaces\r\n",
-        "\r\n",         "empty line above\r\n",
+        "foo, bar", "\tbaz with a tab", "  two trailing spaces",
+        "",         "empty line above",
     };
 
     EXPECT_EQ(b.file, "fixture/example_file.txt");
@@ -78,11 +78,11 @@ TEST(bufferClass, splitLines) {
     b.split_lines(c);
     EXPECT_EQ(b.lines.size(), 6);
     EXPECT_EQ(b.lines[0], "foo,");
-    EXPECT_EQ(b.lines[1], " bar\r");
+    EXPECT_EQ(b.lines[1], " bar");
 
     c.set_pos_abs(4, 22, 0);
     b.current_line = 3;
     b.split_lines(c);
     EXPECT_EQ(b.lines.size(), 7);
-    EXPECT_EQ(b.lines[4], "\r");
+    EXPECT_EQ(b.lines[4], "");
 }
