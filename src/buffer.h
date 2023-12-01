@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "cursor.h"
+#include "highlighting/languages.h"
 #include "rawterm/rawterm.h"
 
 struct Editor;
@@ -14,6 +15,7 @@ struct Buffer {
     Editor *editor;
     Viewport *view;
     std::string file;
+    Language lang = UNKNOWN;
     std::vector<std::string> lines;
     bool readonly;
     bool modified;

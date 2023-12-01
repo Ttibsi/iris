@@ -2,6 +2,7 @@
 #define VIEWPORT_H
 
 #include <format>
+#include <span>
 
 #include <rawterm/rawterm.h>
 
@@ -9,6 +10,7 @@
 #include "constants.h"
 #include "cursor.h"
 #include "editor.h"
+#include "highlighting/highlighter.h"
 #include "text_manip.h"
 
 struct Viewport {
@@ -41,8 +43,11 @@ inline void Viewport::draw(const std::size_t &start_point) {
     std::vector<std::string> lines = filter_whitespace(buffer->lines);
     auto start = std::min(start_point, lines.size() - 1);
     std::size_t end =
-        std::max(std::min(view_size.vertical, buffer->lines.size()),
+        std::max(std::min(view_size.vertical, lines.size()),
                  static_cast<unsigned long>(1));
+
+    std::span<std::string> line_span = lines;
+    highlight(buffer->lang, line_span.subspan(start, view_size.vertical));
 
     int idx;
     if (LINE_NUMBER) {
@@ -50,14 +55,14 @@ inline void Viewport::draw(const std::size_t &start_point) {
     }
 
     for (auto it = start; it < start + end; ++it) {
-        if (it < buffer->lines.size()) {
+        if (it < lines.size()) {
             if (LINE_NUMBER) {
                 std::cout << std::format("{:>{}}", idx,
                                          buffer->lineno_offset - 1)
                           << "\u2502";
                 idx++;
             }
-            std::cout << buffer->lines[it] << "\r\n";
+            std::cout << lines[it] << "\r\n";
         } else {
             std::cout << "\r\n";
         }
@@ -83,6 +88,9 @@ inline void Viewport::redraw_line() {
     rawterm::move_cursor({ cursor.row, 1 });
     std::vector<std::string> lines =
         filter_whitespace({ buffer->lines[buffer->current_line] });
+
+    highlight_line(buffer->lang, lines[0]);
+
     if (LINE_NUMBER) {
         std::cout << std::format("{:>{}}", buffer->current_line + 1,
                                  buffer->lineno_offset - 1)

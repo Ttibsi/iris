@@ -11,8 +11,6 @@
 #include "text_manip.h"
 #include "viewport.h"
 
-// lineno_offset has +3 because that's the byte length of \u2502
-
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
       modified(false), current_line(0) {
@@ -22,7 +20,7 @@ Buffer::Buffer(Editor *e)
 
 // TODO: What if the given path is a directory?
 Buffer::Buffer(Editor *e, std::string filename)
-    : editor(e), file(filename), lines(open_file(filename)),
+    : editor(e), file(filename), lang(languages[get_file_type(filename)]), lines(open_file(filename)),
       readonly(is_readonly(filename)), modified(false), current_line(0) {
 
     if (LINE_NUMBER) {

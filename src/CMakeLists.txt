@@ -1,6 +1,8 @@
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+add_subdirectory(highlighting)
+
 add_library(lib SHARED
     buffer.cpp
     file_manip.cpp
@@ -10,4 +12,4 @@ add_library(lib SHARED
 
 add_executable(${PROJECT_NAME} main.cpp)
 set_target_properties(lib PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${PROJECT_NAME} PUBLIC lib)
+target_link_libraries(${PROJECT_NAME} PUBLIC lib highlighter)
