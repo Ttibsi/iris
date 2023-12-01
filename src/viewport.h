@@ -31,6 +31,9 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
+    rawterm::clear_screen();
+    rawterm::move_cursor({ 1, 1 });
+
     std::vector<std::string> lines = filter_whitespace(buffer->lines);
     auto start = std::min(start_point, lines.size() - 1);
     std::size_t end =
@@ -50,7 +53,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
                           << "\u2502";
                 idx++;
             }
-            std::cout << buffer->lines[it];
+            std::cout << buffer->lines[it] << "\r\n";
         } else {
             std::cout << "\r\n";
         }
@@ -105,12 +108,11 @@ inline void Viewport::center(unsigned int line_num) {
 
     if (line_num < view_size.vertical / 2) {
         draw(0);
-        cursor.set_pos_abs(line_num, cursor.col, buffer->lineno_offset);
+        cursor.set_pos_abs(line_num, 1, buffer->lineno_offset);
 
     } else if (line_num < buffer->lines.size()) {
         draw(line_num - (view_size.vertical / 2));
-        cursor.set_pos_abs(view_size.vertical / 2, cursor.col,
-                           buffer->lineno_offset);
+        cursor.set_pos_abs(view_size.vertical / 2, 1, buffer->lineno_offset);
     }
 
     buffer->current_line = line_num - 1;

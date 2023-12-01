@@ -92,8 +92,15 @@ void Buffer::reset_status_bar(rawterm::Pos dimensions, Cursor *c) {
     rawterm::move_cursor({ c->row, c->col + lineno_offset });
 }
 
-// TODO: Doesn't work
 void Buffer::split_lines(const Cursor &c) {
+    if (c.col == 1) {
+        lines.insert(lines.begin() + current_line, "");
+        return;
+    } else if (c.col == lines[current_line].size()) {
+        lines.insert(lines.begin() + current_line + 1, "");
+        return;
+    }
+
     std::size_t pos =
         c.col - 1 + (lines[current_line][0] == '\t' ? TABSTOP : 0);
     lines[current_line].insert(pos, "\n");
