@@ -81,7 +81,7 @@ v0.5.0
     - [x] `-l` cli flag to launch from a certain line (like vim's `+x`)
        - [x] Enter a number into the command pallete to do this in a buffer
     - [ ] More vim motions
-       - [ ] `{`  and `}` to move vertically to the next/prev empty line
+       - [x] `{`  and `}` to move vertically to the next/prev empty line
        - [ ] `o` to go to insert mode on the next line
        - [ ] `O` to go to insert mode on the prev line
        - [ ] `f` to go to the next instance of the next pressed character

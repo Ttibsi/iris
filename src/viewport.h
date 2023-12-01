@@ -19,11 +19,15 @@ struct Viewport {
     Viewport(Buffer *, rawterm::Pos);
     void draw(const std::size_t &);
     void redraw_line();
+    void switch_to_insert();
+    void center(unsigned int);
+    void cursor_up(unsigned int);
+    void cursor_down(unsigned int);
+
+    // handle_keypress.cpp
     void keypress_read();
     void keypress_write();
     void keypress_command();
-    void switch_to_insert();
-    void center(unsigned int);
 };
 
 inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
@@ -119,4 +123,66 @@ inline void Viewport::center(unsigned int line_num) {
     buffer->reset_status_bar(view_size, &cursor);
 }
 
+inline void Viewport::cursor_down(unsigned int count) {
+    for (unsigned int i = 0; i < count; i++) {
+        if (cursor.row == view_size.vertical &&
+            buffer->current_line < buffer->lines.size() - 1) {
+            // Scroll view
+            rawterm::clear_screen();
+            std::size_t cursor_col = cursor.col;
+            cursor.set_pos_abs(1, 1, 0);
+            buffer->current_line++;
+            draw(buffer->current_line + 1 - view_size.vertical);
+            cursor.set_pos_abs(view_size.vertical, cursor_col,
+                               buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
+        } else if (cursor.row < view_size.vertical) {
+            // Move cursor in view
+            if (cursor.col > line_size(buffer->lines[buffer->current_line]) +
+                                 buffer->lineno_offset) {
+                cursor.set_pos_abs(
+                    cursor.row + 1,
+                    std::max(line_size(buffer->lines[buffer->current_line]),
+                             static_cast<std::size_t>(1)),
+                    buffer->lineno_offset);
+
+                buffer->current_line++;
+                buffer->reset_status_bar(view_size, &cursor);
+
+            } else if (cursor.row < buffer->lines.size()) {
+                cursor.set_pos_rel(1, 0, buffer->lineno_offset);
+                buffer->current_line++;
+                buffer->reset_status_bar(view_size, &cursor);
+            }
+        }
+    }
+}
+
+inline void Viewport::cursor_up(unsigned int count) {
+    for (unsigned int i = 0; i < count; i++) {
+        if (cursor.row == 1 && buffer->current_line > 0) {
+            // Scroll up
+            std::size_t col = cursor.col; // TODO: Save row position too
+            buffer->current_line--;
+            rawterm::clear_screen();
+            cursor.set_pos_abs(1, 1, 0);
+            draw(buffer->current_line);
+            cursor.set_pos_abs(1, col, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
+        } else if (cursor.row > 1) {
+            // Move cursor up
+            buffer->current_line--;
+            if (cursor.col > line_size(buffer->lines[buffer->current_line])) {
+                cursor.set_pos_abs(
+                    cursor.row - 1,
+                    std::max(line_size(buffer->lines[buffer->current_line]),
+                             static_cast<std::size_t>(1)),
+                    buffer->lineno_offset);
+            } else {
+                cursor.set_pos_rel(-1, 0, buffer->lineno_offset);
+            }
+            buffer->reset_status_bar(view_size, &cursor);
+        }
+    }
+}
 #endif // VIEWPORT_H

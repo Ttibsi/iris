@@ -52,64 +52,11 @@ void Viewport::keypress_read() {
 
             // Down
         } else if (k.code == 'j' && modifier == rawterm::Mod::None) {
-            if (cursor.row == view_size.vertical &&
-                buffer->current_line < buffer->lines.size() - 1) {
-                // Scroll view
-                rawterm::clear_screen();
-                std::size_t cursor_col = cursor.col;
-                cursor.set_pos_abs(1, 1, 0);
-                buffer->current_line++;
-                draw(buffer->current_line + 1 - view_size.vertical);
-                cursor.set_pos_abs(view_size.vertical, cursor_col,
-                                   buffer->lineno_offset);
-                buffer->reset_status_bar(view_size, &cursor);
-            } else if (cursor.row < view_size.vertical) {
-                // Move cursor in view
-                if (cursor.col >
-                    line_size(buffer->lines[buffer->current_line]) +
-                        buffer->lineno_offset) {
-                    cursor.set_pos_abs(
-                        cursor.row + 1,
-                        std::max(line_size(buffer->lines[buffer->current_line]),
-                                 static_cast<std::size_t>(1)),
-                        buffer->lineno_offset);
-
-                    buffer->current_line++;
-                    buffer->reset_status_bar(view_size, &cursor);
-
-                } else if (cursor.row < buffer->lines.size()) {
-                    cursor.set_pos_rel(1, 0, buffer->lineno_offset);
-                    buffer->current_line++;
-                    buffer->reset_status_bar(view_size, &cursor);
-                }
-            }
+            cursor_down(1);
 
             // Up
         } else if (k.code == 'k' && modifier == rawterm::Mod::None) {
-            if (cursor.row == 1 && buffer->current_line > 0) {
-                // Scroll up
-                std::size_t col = cursor.col; // TODO: Save row position too
-                buffer->current_line--;
-                rawterm::clear_screen();
-                cursor.set_pos_abs(1, 1, 0);
-                draw(buffer->current_line);
-                cursor.set_pos_abs(1, col, buffer->lineno_offset);
-                buffer->reset_status_bar(view_size, &cursor);
-            } else if (cursor.row > 1) {
-                // Move cursor up
-                buffer->current_line--;
-                if (cursor.col >
-                    line_size(buffer->lines[buffer->current_line])) {
-                    cursor.set_pos_abs(
-                        cursor.row - 1,
-                        std::max(line_size(buffer->lines[buffer->current_line]),
-                                 static_cast<std::size_t>(1)),
-                        buffer->lineno_offset);
-                } else {
-                    cursor.set_pos_rel(-1, 0, buffer->lineno_offset);
-                }
-                buffer->reset_status_bar(view_size, &cursor);
-            }
+            cursor_up(1);
 
             // Right
         } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
@@ -119,6 +66,33 @@ void Viewport::keypress_read() {
                 cursor.set_pos_rel(0, 1, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
+
+            // vertical movement
+        } else if (k.code == '[' && modifier == rawterm::Mod::None) {
+            buffer->current_line = 0;
+            draw(0);
+            cursor.set_pos_abs(1, 1, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
+
+        } else if (k.code == ']' && modifier == rawterm::Mod::None) {
+            buffer->current_line = buffer->lines.size() - 1;
+            draw(buffer->current_line - view_size.vertical + 1);
+            cursor.set_pos_abs(view_size.vertical, 1, buffer->lineno_offset);
+            buffer->reset_status_bar(view_size, &cursor);
+
+        } else if (k.code == '{' && modifier == rawterm::Mod::None) {
+            int ptr = buffer->current_line - 1;
+            while (!(buffer->lines[ptr].empty())) {
+                ptr--;
+            }
+            cursor_up(buffer->current_line - ptr);
+
+        } else if (k.code == '}' && modifier == rawterm::Mod::None) {
+            int ptr = buffer->current_line + 1;
+            while (!(buffer->lines[ptr].empty())) {
+                ptr++;
+            }
+            cursor_down(ptr - buffer->current_line);
 
             // Command mode
         } else if (k.code == ';' && modifier == rawterm::Mod::None) {
@@ -276,56 +250,10 @@ void Viewport::keypress_write() {
         } else if (modifier == Mod::Arrow) {
             switch (k.code) {
             case 'A': // Up
-                if (cursor.row == 1 && buffer->current_line > 1) {
-                    std::size_t col = cursor.col; // TODO: Save row position too
-                    buffer->current_line--;
-                    rawterm::clear_screen();
-                    cursor.set_pos_abs(1, 1, buffer->lineno_offset);
-                    draw(buffer->current_line);
-                    cursor.set_pos_abs(1, col, buffer->lineno_offset);
-                } else if (cursor.row > 1) {
-                    // Move cursor up
-                    buffer->current_line--;
-                    if (cursor.col >
-                        line_size(buffer->lines[buffer->current_line])) {
-                        cursor.set_pos_abs(
-                            cursor.row - 1,
-                            std::max(
-                                line_size(buffer->lines[buffer->current_line]),
-                                static_cast<std::size_t>(1)),
-                            buffer->lineno_offset);
-                    } else {
-                        cursor.set_pos_rel(-1, 0, buffer->lineno_offset);
-                    }
-                }
+                cursor_up(1);
                 break;
             case 'B': // Down
-                if (cursor.row == view_size.vertical &&
-                    buffer->current_line < buffer->lines.size() - 1) {
-                    // Scroll view
-                    rawterm::clear_screen();
-                    std::size_t cursor_col = cursor.col;
-                    cursor.set_pos_abs(1, 1, buffer->lineno_offset);
-                    buffer->current_line++;
-                    draw(buffer->current_line + 1 - view_size.vertical);
-                    cursor.set_pos_abs(view_size.vertical, cursor_col,
-                                       buffer->lineno_offset);
-                } else if (cursor.row < view_size.vertical) {
-                    // Move cursor in view
-                    if (cursor.col >
-                        line_size(buffer->lines[buffer->current_line])) {
-                        cursor.set_pos_abs(
-                            cursor.row + 1,
-                            std::max(
-                                line_size(buffer->lines[buffer->current_line]),
-                                static_cast<std::size_t>(1)),
-                            buffer->lineno_offset);
-                        buffer->current_line++;
-                    } else if (cursor.row < buffer->lines.size()) {
-                        cursor.set_pos_rel(1, 0, buffer->lineno_offset);
-                        buffer->current_line++;
-                    }
-                }
+                cursor_down(1);
                 break;
 
             case 'C': // Right

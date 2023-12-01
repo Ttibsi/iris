@@ -12,17 +12,6 @@ usually the window into your code
 different aspects, much like your editor bridges text and code. (Thanks
 ChatGPT)
 
-### HOW TO RUN
-Prerequisites: `cmake`
-
-```bash
-cmake -S . -B build/ && cmake --build build/
-./build/src/iris
-```
-Add the `-DRUN-TESTS=OFF` flag to cmake to disable the tests being included.
-
-To run unit tests, simply run `ctest` in the `build/`directory.
-
 ### CONTROLS
 Just like vim, Iris has a few modes: `read`, `write`, and `command`. You can
 switch to `write` mode by pressing `i`, then back to `read` with the `esc` key.
@@ -36,6 +25,10 @@ Likewise, you can switch to `command` with the `;` (semicolon) key.
 | <kbd>j</kbd>  | Move cursor down                                 |
 | <kbd>k</kbd>  | Move cursor up                                   |
 | <kbd>l</kbd>  | Move cursor right                                |
+| <kbd>[</kbd>  | Move cursor to top of file                       |
+| <kbd>]</kbd>  | Move cursor to bottom of file                    |
+| <kbd>{</kbd>  | Move to previous empty line                      |
+| <kbd>}</kbd>  | Move to next empty line                          |
 | <kbd>;</kbd>  | Go to command mode                               |
 | <kbd>i</kbd>  | Go to insert mode left of the current character  |
 | <kbd>a</kbd>  | Go to insert mode right of the current character |
@@ -60,3 +53,14 @@ All commands start with a semicolon
 | `;q!`        | Quit without saving            |
 | `;wq`        | Write and quit                 |
 | `;1`         | Jump to the given line number  |
+
+### HOW TO RUN
+Prerequisites: `cmake`
+
+```bash
+cmake -S . -B build/ && cmake --build build/
+./build/src/iris
+```
+Add the `-DRUN-TESTS=OFF` flag to cmake to disable the tests being included.
+
+To run unit tests, simply run `ctest` in the `build/`directory.
