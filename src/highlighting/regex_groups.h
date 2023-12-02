@@ -14,6 +14,7 @@ enum Token {
     STRING_LITERAL,
     COMMENT,
     KEYWORD,
+    BOOLEAN,
     TYPE,
 };
 
@@ -25,6 +26,7 @@ static std::unordered_map<Token, std::string> default_theme = {
     { COMMENT,        "#666666"},
     { KEYWORD,        "#09D0EF"},
     { TYPE,           "#C4A000"},
+    { BOOLEAN,        "#C4A000"},
 };
 
 static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
@@ -42,9 +44,11 @@ static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
                              "from|global|if|import|in|is|lambda|nonlocal|not|"
                              "or|pass|raise|return|try|while|with|yield)\\b") },
                 { COMMENT, std::regex("(# *.+)") },
+                { BOOLEAN, std::regex("\\b(True|False)\\b") },
                 { FUNC_CALL, std::regex("(\\w+)(?=\\()") },
-                { TYPE, std::regex("\\b(str|int|bool|tuple|list|dict|set|Any|"
-                                   "Sequence|Union|None)(?![a-zA-Z])") },
+                { TYPE,
+                  std::regex("\\b(str|int|bool|tuple|list|dict|set|Any|"
+                             "Sequence|Union|None|List|Dict)(?![a-zA-Z])") },
 
             }, }
 };
