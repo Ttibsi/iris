@@ -46,7 +46,9 @@ inline void Viewport::draw(const std::size_t &start_point) {
                                static_cast<unsigned long>(1));
 
     std::span<std::string> line_span = lines;
-    highlight(buffer->lang, line_span.subspan(start, view_size.vertical));
+    highlight(
+        buffer->lang,
+        line_span.subspan(start, std::min(view_size.vertical, lines.size())));
 
     int idx;
     if (LINE_NUMBER) {

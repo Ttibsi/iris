@@ -1,6 +1,7 @@
-#include <regex>
-
 #include "highlighter.h"
+#include "highlighting/regex_groups.h"
+#include <iostream>
+#include <regex>
 
 std::string parse_colour(std::string raw) {
     std::string ret = "";
