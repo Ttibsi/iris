@@ -1,6 +1,5 @@
 #include "highlighter.h"
 #include "highlighting/regex_groups.h"
-#include <iostream>
 #include <regex>
 
 std::string parse_colour(std::string raw) {
@@ -20,6 +19,10 @@ std::string parse_colour(std::string raw) {
 }
 
 void highlight(Language language, std::span<std::string> lines) {
+    if (language == UNKNOWN) {
+        return;
+    }
+
     for (unsigned int i = 0; i < lines.size(); i++) {
         if (lines[i].empty()) {
             continue;
@@ -34,14 +37,21 @@ void highlight_line(Language language, std::string &line) {
     for (auto &&re : highlight_groups[language]) {
         std::smatch match;
         std::regex_search(line, match, re.second);
+        if (match.size()) {
 
-        // TODO: Make sure this reads from the `THEME` constant instead of
-        // hardcoding the default here. I want to make the default theme
-        // its own file
-        std::string ansi_colour =
-            "\x1b[38;2;" + parse_colour(default_theme[re.first]);
-        std::string result_text = ansi_colour + "$1\x1B[0m";
-        line = std::regex_replace(line, re.second, result_text);
+            // TODO: Make sure this reads from the `THEME` constant instead of
+            // hardcoding the default here. I want to make the default theme
+            // its own file
+            std::string result_text = "\x1b[38;2;" +
+                                      parse_colour(default_theme[re.first]) +
+                                      "$1\x1B[0m";
+            line = std::regex_replace(line, re.second, result_text);
+        }
+    }
+
+    // No highlighting in this line
+    if (line.find("\x1b") == std::string::npos) {
+        return;
     }
 
     // Check the line hasn't got nested highlighting
