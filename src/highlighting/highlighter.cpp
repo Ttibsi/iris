@@ -1,5 +1,6 @@
 #include "highlighter.h"
 #include "highlighting/regex_groups.h"
+#include "highlighting/theme_parsing.h"
 #include <regex>
 
 std::string parse_colour(std::string raw) {
@@ -33,6 +34,7 @@ void highlight(Language language, std::span<std::string> lines) {
 
 void highlight_line(Language language, std::string &line) {
     const std::string close_suffix = "[0m";
+    auto colour_scheme = get_theme();
 
     for (auto &&re : highlight_groups[language]) {
         std::smatch match;
@@ -43,7 +45,7 @@ void highlight_line(Language language, std::string &line) {
             // hardcoding the default here. I want to make the default theme
             // its own file
             std::string result_text = "\x1b[38;2;" +
-                                      parse_colour(default_theme[re.first]) +
+                                      parse_colour(colour_scheme[re.first]) +
                                       "$1\x1B[0m";
             line = std::regex_replace(line, re.second, result_text);
         }
