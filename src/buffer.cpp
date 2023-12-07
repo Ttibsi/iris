@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <regex>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -176,4 +177,48 @@ void Buffer::parse_command(const std::string &cmd) {
     }
 
     return;
+}
+
+std::optional<rawterm::Pos> Buffer::find_cmd() {
+    using rawterm::Mod;
+    std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
+    std::string prompt = "find > ";
+    std::string search = "";
+
+    while (true) {
+        rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+        rawterm::clear_line();
+
+        rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+        std::cout << prompt << search;
+        rawterm::move_cursor({ view->view_size.horizontal + 2,
+                               prompt.size() + search.size() + 1 });
+
+        // Read and handle input
+        rawterm::Key k = rawterm::process_keypress();
+        rawterm::Mod modifier = rawterm::getMod(&k);
+
+        if (modifier == Mod::Escape) {
+            rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+            rawterm::clear_line();
+            break;
+        } else if (modifier == Mod::Enter) {
+            rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+            rawterm::clear_line();
+
+            std::span<std::string> line_span = lines;
+            return find_in_text(
+                line_span.subspan(current_line,
+                                  line_span.size() - current_line),
+                search);
+
+        } else if (modifier == Mod::Backspace) {
+            search = search.substr(0, search.size() - 1);
+        } else if (std::find(searchable.begin(), searchable.end(), modifier) !=
+                   searchable.end()) {
+            search.push_back(k.code);
+        }
+    }
+
+    return {};
 }

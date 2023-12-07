@@ -86,3 +86,5 @@ TEST(bufferClass, splitLines) {
     EXPECT_EQ(b.lines.size(), 7);
     EXPECT_EQ(b.lines[4], "");
 }
+
+TEST(bufferClass, find) { Buffer b = setup("fixture/example_file.txt"); }

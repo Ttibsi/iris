@@ -103,8 +103,25 @@ void Viewport::keypress_read() {
             buffer->editor->set_mode(Mode::Read);
             buffer->reset_status_bar(view_size, &cursor);
 
+            // Find and replace
+        } else if (k.code == 'f' && modifier == rawterm::Mod::None) {
+            buffer->editor->set_mode(Mode::Command);
+            buffer->reset_status_bar(view_size, &cursor);
+
+            auto new_loc = buffer->find_cmd();
+            if (!(new_loc)) {
+                continue;
+            }
+
+            cursor.set_pos_abs(buffer->current_line + new_loc->vertical + 1,
+                               new_loc->horizontal, buffer->lineno_offset);
+            buffer->current_line += new_loc->vertical;
+            buffer->editor->set_mode(Mode::Read);
+            buffer->reset_status_bar(view_size, &cursor);
+
             // cursor manipulation
         } else if (k.code == 'w' && modifier == rawterm::Mod::None) {
+
             std::size_t col = find_next_whitespace(
                 buffer->lines[buffer->current_line], cursor.col - 1);
             std::size_t line_len =
@@ -146,17 +163,21 @@ void Viewport::keypress_read() {
             if (k2.code == 'l' && mod2 == rawterm::Mod::None) {
                 buffer->lines.erase(buffer->lines.begin() +
                                     buffer->current_line);
+                if (buffer->lines.size() == 0) {
+                    buffer->lines.push_back("");
+                }
 
                 rawterm::clear_screen();
                 rawterm::move_cursor({ 1, 1 });
                 draw(buffer->current_line - cursor.row + 1);
                 buffer->modified = true;
-                cursor.set_pos_abs(cursor.row, cursor.col,
-                                   buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
+                cursor.set_pos_abs(cursor.row, 0, buffer->lineno_offset);
 
             } else if (k2.code == 'w' && mod2 == rawterm::Mod::None) {
                 std::string &line = buffer->lines[buffer->current_line];
+                if (cursor.col > line.size())
+                    return;
 
                 int pos1 = line.substr(0, cursor.col).rfind(' ');
                 int pos2 = line.substr(cursor.col, line.size()).find(' ');
@@ -316,6 +337,8 @@ void Viewport::keypress_command() {
         rawterm::Mod modifier = rawterm::getMod(&k);
 
         if (modifier == Mod::Escape) {
+            rawterm::move_cursor({ view_size.horizontal + 2, 1 });
+            rawterm::clear_line();
             break;
         } else if (modifier == Mod::Enter) {
             rawterm::clear_line();
