@@ -1,0 +1,18 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#include <string>
+
+inline std::string git_tag() {
+    return "@GIT_TAG@";
+}
+
+inline std::string git_hash() {
+    return "@GIT_HASH@";
+}
+
+inline std::string compile_date() {
+    return "@COMPILE_DATE@";
+}
+
+#endif // VERSION_H
