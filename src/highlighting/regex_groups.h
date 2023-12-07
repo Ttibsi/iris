@@ -18,17 +18,6 @@ enum Token {
     TYPE,
 };
 
-// TODO: Move this out
-static std::unordered_map<Token, std::string> default_theme = {
-    {FUNC_CALL,       "#6666ff"},
-    { NUMBER_LITERAL, "#ff2222"},
-    { STRING_LITERAL, "#22ff22"},
-    { COMMENT,        "#666666"},
-    { KEYWORD,        "#09D0EF"},
-    { TYPE,           "#C4A000"},
-    { BOOLEAN,        "#C4A000"},
-};
-
 static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
     highlight_groups = {
         {
