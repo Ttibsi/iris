@@ -119,6 +119,20 @@ void Viewport::keypress_read() {
             buffer->editor->set_mode(Mode::Read);
             buffer->reset_status_bar(view_size, &cursor);
 
+        } else if (k.code == 'r' && modifier == rawterm::Mod::None) {
+            // Replace up to the next whitespace char
+            buffer->editor->set_mode(Mode::Command);
+            buffer->reset_status_bar(view_size, &cursor);
+
+            int retcode = buffer->replace_cmd();
+            if (retcode) {
+                buffer->modified = true;
+                redraw_line();
+            }
+
+            buffer->editor->set_mode(Mode::Read);
+            buffer->reset_status_bar(view_size, &cursor);
+
             // cursor manipulation
         } else if (k.code == 'w' && modifier == rawterm::Mod::None) {
 

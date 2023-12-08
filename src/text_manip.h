@@ -16,5 +16,6 @@ int find_next_whitespace(const std::string &, const std::size_t &);
 int find_prev_whitespace(const std::string &, const std::size_t &);
 bool is_numeric(const std::string &);
 std::optional<rawterm::Pos> find_in_text(std::span<std::string>, std::string);
+void replace_in_text(std::string &line, int pos, const std::string &new_text);
 
 #endif // TEXT_MANIP_H

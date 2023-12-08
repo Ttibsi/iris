@@ -123,3 +123,16 @@ std::optional<rawterm::Pos> find_in_text(std::span<std::string> haystack,
 
     return {};
 }
+
+void replace_in_text(std::string &line, int pos, const std::string &new_text) {
+    int next_whitespace = line.find(' ', pos);
+
+    if (next_whitespace == -1) {
+        next_whitespace = line.rfind(' ', pos);
+        line.replace(next_whitespace + 1, line.size(), new_text);
+    } else {
+        line.replace(pos, next_whitespace, new_text);
+    }
+
+    return;
+}

@@ -31,6 +31,7 @@ struct Buffer {
     void split_lines(const Cursor &);
     void parse_command(const std::string &);
     std::optional<rawterm::Pos> find_cmd();
+    unsigned int replace_cmd();
 };
 
 #endif // BUFFER_H

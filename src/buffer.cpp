@@ -222,3 +222,44 @@ std::optional<rawterm::Pos> Buffer::find_cmd() {
 
     return {};
 }
+
+unsigned int Buffer::replace_cmd() {
+    using rawterm::Mod;
+    std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
+    std::string prompt = "replace > ";
+    std::string replace = "";
+
+    while (true) {
+        rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+        rawterm::clear_line();
+
+        rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+        std::cout << prompt << replace;
+        rawterm::move_cursor({ view->view_size.horizontal + 2,
+                               prompt.size() + replace.size() + 1 });
+
+        // Read and handle input
+        rawterm::Key k = rawterm::process_keypress();
+        rawterm::Mod modifier = rawterm::getMod(&k);
+
+        if (modifier == Mod::Escape) {
+            rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+            rawterm::clear_line();
+            break;
+        } else if (modifier == Mod::Enter) {
+            rawterm::move_cursor({ view->view_size.horizontal + 2, 1 });
+            rawterm::clear_line();
+
+            replace_in_text(lines[current_line], view->cursor.col - 1, replace);
+            return 1;
+
+        } else if (modifier == Mod::Backspace) {
+            replace = replace.substr(0, replace.size() - 1);
+        } else if (std::find(searchable.begin(), searchable.end(), modifier) !=
+                   searchable.end()) {
+            replace.push_back(k.code);
+        }
+    }
+
+    return 0;
+}
