@@ -1,7 +1,9 @@
 # IRIS
 Yet another terminal text editor. Taking a ton of inspiration from vim and
 friends as well as other popular text editors (nano, emacs, VS*ode) to a lesser
-extent
+extent. This only currently is designed to work in macOS and Linux.
+
+All PRs are welcome
 
 #### Why "Iris"?
 * it's an easy combination of letters to type on an ascii keyboard without being
@@ -41,6 +43,8 @@ Likewise, you can switch to `command` with the `;` (semicolon) key.
 | <kbd>dw</kbd> | Delete current word (between whitespace)         |
 | <kbd>da</kbd> | Delete from beginning of line to cursor          |
 | <kbd>de</kbd> | Delete to end of line                            |
+| <kbd>f</kbd>  | Find string ahead in file                        |
+| <kbd>r</kbd>  | Replace until next whitespace                    |
 
 #### Command mode
 All commands start with a semicolon

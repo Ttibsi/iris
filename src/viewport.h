@@ -79,8 +79,8 @@ inline void Viewport::draw(const std::size_t &start_point) {
 }
 
 inline void Viewport::redraw_line() {
-    rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
+    rawterm::clear_line();
     std::vector<std::string> lines =
         filter_whitespace({ buffer->lines[buffer->current_line] });
     if (LINE_NUMBER) {

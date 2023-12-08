@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,8 @@ struct Buffer {
     void reset_status_bar(rawterm::Pos, Cursor *);
     void split_lines(const Cursor &);
     void parse_command(const std::string &);
+    std::optional<rawterm::Pos> find_cmd();
+    unsigned int replace_cmd();
 };
 
 #endif // BUFFER_H
