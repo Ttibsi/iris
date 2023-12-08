@@ -61,3 +61,14 @@ TEST(textManipSuite, isNumeric) {
     EXPECT_EQ(is_numeric("123"), true);
     EXPECT_EQ(is_numeric("foo"), false);
 }
+
+TEST(textManipSuite, findInText) {
+    std::vector<std::string> inp = { "foo", "bar", "baz",
+                                     "foo with some text" };
+    rawterm::Pos expected = { 3, 4 };
+
+    auto out = find_in_text(inp, "with");
+    EXPECT_EQ(out.has_value(), true);
+    EXPECT_EQ(out.value().vertical, expected.vertical);
+    EXPECT_EQ(out.value().horizontal, expected.horizontal);
+}

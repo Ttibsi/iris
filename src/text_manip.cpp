@@ -109,3 +109,30 @@ bool is_numeric(const std::string &s) {
 
     return true;
 }
+
+std::optional<rawterm::Pos> find_in_text(std::span<std::string> haystack,
+                                         std::string needle) {
+    for (unsigned int i = 0; i < haystack.size(); i++) {
+        if (haystack[i].find(needle) != std::string::npos) {
+            rawterm::Pos p = { i, haystack[i].find(needle) +
+                                      (haystack[i].front() == '\t' ? TABSTOP
+                                                                   : 0) };
+            return p;
+        }
+    }
+
+    return {};
+}
+
+void replace_in_text(std::string &line, int pos, const std::string &new_text) {
+    int next_whitespace = line.find(' ', pos);
+
+    if (next_whitespace == -1) {
+        next_whitespace = line.rfind(' ', pos);
+        line.replace(next_whitespace + 1, line.size(), new_text);
+    } else {
+        line.replace(pos, next_whitespace, new_text);
+    }
+
+    return;
+}
