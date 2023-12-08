@@ -114,8 +114,8 @@ std::optional<rawterm::Pos> find_in_text(std::span<std::string> haystack,
                                          std::string needle) {
     for (unsigned int i = 0; i < haystack.size(); i++) {
         if (haystack[i].find(needle) != std::string::npos) {
-            rawterm::Pos p = { i, haystack[i].find(needle) + 1 +
-                                      (haystack[i].front() == '\t' ? TABSTOP + 1
+            rawterm::Pos p = { i, haystack[i].find(needle) +
+                                      (haystack[i].front() == '\t' ? TABSTOP
                                                                    : 0) };
             return p;
         }

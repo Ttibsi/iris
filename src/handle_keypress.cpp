@@ -114,7 +114,7 @@ void Viewport::keypress_read() {
             }
 
             cursor.set_pos_abs(buffer->current_line + new_loc->vertical + 1,
-                               new_loc->horizontal, buffer->lineno_offset);
+                               new_loc->horizontal + 1, buffer->lineno_offset);
             buffer->current_line += new_loc->vertical;
             buffer->editor->set_mode(Mode::Read);
             buffer->reset_status_bar(view_size, &cursor);
