@@ -59,13 +59,23 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     }
 
     // NOTE: No branch/git = empty string
-    std::string git_branch =
-        shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null", true);
-    if (!(git_branch.empty())) {
-        git_branch.erase(
-            std::remove_if(git_branch.begin(), git_branch.end(), isspace),
-            git_branch.end());
-        left += git_branch + " |";
+    if (!(git_branch.has_value())) {
+        Response resp =
+            shell_exec("git rev-parse --abbrev-ref HEAD 2>/dev/null", true);
+        if (!(resp.retcode)) {
+            git_branch = resp.stdout;
+        } else {
+            git_branch = "";
+        }
+    }
+
+    if (!(git_branch.value().empty())) {
+        // Remove spaces
+        git_branch.value().erase(std::remove_if(git_branch.value().begin(),
+                                                git_branch.value().end(),
+                                                isspace),
+                                 git_branch.value().end());
+        left += git_branch.value() + " |";
     }
 
     std::string right = "| ";
@@ -135,8 +145,14 @@ void Buffer::parse_command(const std::string &cmd) {
 
         std::string shell_cmd = "";
         shell_cmd += cmd.substr(3, cmd.size());
-        std::string ret = shell_exec(shell_cmd, true);
-        std::cout << ret << "\r\n\n" << rawterm::bold("Press ENTER to clear");
+        Response resp = shell_exec(shell_cmd, true);
+        if (resp.retcode) {
+            std::cout << rawterm::fg(resp.stderr, rawterm::red) << "\r\n\n"
+                      << rawterm::bold("Press ENTER to clear");
+        } else {
+            std::cout << resp.stdout << "\r\n\n"
+                      << rawterm::bold("Press ENTER to clear");
+        }
         bang_cmd_output = true;
 
         // Enter a number to go to that line ex `;24`

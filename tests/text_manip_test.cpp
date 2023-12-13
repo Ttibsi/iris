@@ -2,6 +2,7 @@
 #include "text_manip.h"
 
 #include "gtest/gtest.h"
+#include <filesystem>
 
 TEST(textManipSuite, filterWhitespace) {
     std::vector<std::string> fixture = {
@@ -20,17 +21,36 @@ TEST(textManipSuite, filterWhitespace) {
 }
 
 TEST(textManipSuite, shellExec) {
-    EXPECT_EQ(shell_exec("echo 'hi'", true), "hi");
-    EXPECT_EQ(shell_exec("echo 'hi'", false), "");
+    Response r = { "hi", "", 0 };
+    Response out = shell_exec("echo 'hi'", true);
+    EXPECT_EQ(out.stdout, r.stdout);
+    EXPECT_EQ(out.stderr, r.stderr);
+    EXPECT_EQ(out.retcode, r.retcode);
+
+    out = shell_exec("echo 'hi'", false);
+    r = { "", "", -1 };
+    EXPECT_EQ(out.stdout, r.stdout);
+    EXPECT_EQ(out.stderr, r.stderr);
+    EXPECT_EQ(out.retcode, r.retcode);
 
 #ifdef __APPLE__
-    EXPECT_EQ(shell_exec("mv", true),
-              "usage: mv [-f | -i | -n] [-hv] source target"
-              "       mv [-f | -i | -n] [-v] source ... directory");
-#else
-    EXPECT_EQ(shell_exec("mv", true), "mv: missing file operandTry 'mv "
-                                      "--help' for more information.");
+    out = shell_exec("mv", true);
+    r.stderr = "usage: mv [-f | -i | -n] [-hv] source target"
+               "       mv [-f | -i | -n] [-v] source ... directory";
+    r.retcode = 16384;
 
+    EXPECT_EQ(out.stdout, r.stdout);
+    EXPECT_EQ(out.stderr, r.stderr);
+    EXPECT_EQ(out.retcode, r.retcode);
+#else
+    out = shell_exec("mv", true);
+    r.stderr = "mv: missing file operandTry 'mv "
+               "--help' for more information.";
+    r.retcode = 1;
+
+    EXPECT_EQ(out.stdout, r.stdout);
+    EXPECT_EQ(out.stderr, r.stderr);
+    EXPECT_EQ(out.retcode, r.retcode);
 #endif
 }
 

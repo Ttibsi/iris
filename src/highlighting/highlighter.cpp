@@ -20,7 +20,7 @@ std::string parse_colour(std::string raw) {
 }
 
 void highlight(Language language, std::span<std::string> lines) {
-    if (language == UNKNOWN) {
+    if (language == Language::UNKNOWN) {
         return;
     }
 

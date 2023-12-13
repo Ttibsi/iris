@@ -612,13 +612,13 @@ namespace rawterm {
     inline std::string fg(const std::string &s, const Color color) {
         return "\x1B[38;2;" + std::to_string(color.red) + ';' +
                std::to_string(color.green) + ';' + std::to_string(color.blue) +
-               'm' + s + "\x1B[38m";
+               'm' + s + "\x1B[39m";
     }
 
     inline std::string bg(const std::string &s, const Color color) {
         return "\x1B[48;2;" + std::to_string(color.red) + ';' +
                std::to_string(color.green) + ';' + std::to_string(color.blue) +
-               'm' + s + "\x1B[48m";
+               'm' + s + "\x1B[49m";
     }
 
     // clear screen entirely
