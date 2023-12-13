@@ -37,15 +37,11 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
-    std::vector<std::string> lines = filter_whitespace(buffer->lines);
-    auto start = std::min(start_point, lines.size() - 1);
-    std::size_t end = std::max(std::min(view_size.vertical, lines.size()),
-                               static_cast<unsigned long>(1));
 
-    std::span<std::string> line_span = lines;
-    highlight(
-        buffer->lang,
-        line_span.subspan(start, std::min(view_size.vertical, lines.size())));
+    auto start = std::min(start_point, buffer->lines.size() - 1);
+    std::size_t end =
+        std::max(std::min(view_size.vertical, buffer->lines.size()),
+                 static_cast<unsigned long>(1));
 
     rawterm::clear_screen();
     rawterm::move_cursor({ 1, 1 });
@@ -55,14 +51,18 @@ inline void Viewport::draw(const std::size_t &start_point) {
     }
 
     for (auto it = start; it < start + end; ++it) {
-        if (it < lines.size()) {
+        if (it < buffer->lines.size()) {
             if (LINE_NUMBER) {
                 std::cout << std::format("{:>{}}", idx,
                                          buffer->lineno_offset - 1)
                           << "\u2502";
                 idx++;
             }
-            std::cout << lines[it] << "\r\n";
+            std::string line = filter_whitespace(buffer->lines[it]);
+            if (buffer->lang != Language::UNKNOWN) {
+                highlight_line(buffer->lang, line);
+            }
+            std::cout << line << "\r\n";
         } else {
             std::cout << "\r\n";
         }
@@ -86,10 +86,10 @@ inline void Viewport::draw(const std::size_t &start_point) {
 inline void Viewport::redraw_line() {
     rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
-    std::vector<std::string> lines =
-        filter_whitespace({ buffer->lines[buffer->current_line] });
+    std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
 
-    highlight_line(buffer->lang, lines[0]);
+    if (buffer->lang != Language::UNKNOWN)
+        highlight_line(buffer->lang, line);
 
     if (LINE_NUMBER) {
         std::cout << std::format("{:>{}}", buffer->current_line + 1,
@@ -97,7 +97,7 @@ inline void Viewport::redraw_line() {
                   << "\u2502";
     }
 
-    std::cout << lines[0] << std::flush;
+    std::cout << line << std::flush;
 }
 
 inline void Viewport::switch_to_insert() {

@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,7 @@ struct Buffer {
     Editor *editor;
     Viewport *view;
     std::string file;
-    Language lang = UNKNOWN;
+    Language lang = Language::UNKNOWN;
     std::vector<std::string> lines;
     bool readonly;
     bool modified;
@@ -23,6 +24,7 @@ struct Buffer {
     bool quit_buf = false;
     std::size_t lineno_offset = 0;
     bool bang_cmd_output = false;
+    std::optional<std::string> git_branch;
 
     Buffer(Editor *);
     Buffer(Editor *, std::string);
