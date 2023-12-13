@@ -4,13 +4,13 @@
 #include <string>
 #include <unordered_map>
 
-enum Language {
+enum class Language {
     UNKNOWN, // default value
     PYTHON,
 };
 
 static std::unordered_map<std::string, Language> languages = {
-    {".py", PYTHON},
+    {".py", Language::PYTHON},
 };
 
 #endif // LANGUAGES_H
