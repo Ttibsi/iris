@@ -1,7 +1,8 @@
+#include <regex>
+
 #include "highlighter.h"
 #include "highlighting/regex_groups.h"
 #include "highlighting/theme_parsing.h"
-#include <regex>
 
 std::string parse_colour(std::string raw) {
     std::string ret = "";
@@ -36,6 +37,8 @@ void highlight_line(Language language, std::string &line) {
     const std::string close_suffix = "[0m";
     auto colour_scheme = get_theme();
 
+    // TODO: Figure out how to not include a previous `0m` as part of a match
+    // group -- Do I have to just add it to every regex?
     for (auto &&re : highlight_groups[language]) {
         std::smatch match;
         std::regex_search(line, match, re.second);

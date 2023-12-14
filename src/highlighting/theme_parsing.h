@@ -17,6 +17,7 @@ inline std::unordered_map<Token, std::string> get_theme() {
             { Token::KEYWORD,        "#09D0EF"},
             { Token::TYPE,           "#C4A000"},
             { Token::BOOLEAN,        "#C4A000"},
+            { Token::VAR_CALL,       "#FFEB00"},
         };
     } else {
         // TODO:

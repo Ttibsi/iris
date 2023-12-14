@@ -46,18 +46,20 @@ std::string filename_only(std::string f) {
     return f;
 }
 
-std::string get_file_type(const std::string &file) {
+Language get_file_type(const std::string &file) {
     namespace fs = std::filesystem;
     auto path = fs::path(file);
 
     if (file == "NO FILE") {
-        return "TEXT";
+        return Language::TEXT;
     } else if (!(path.extension().empty())) {
-        // TODO: Replace this string with actually getting it from the
-        // highlighter/languages.h
-        return path.extension();
+        if (filename_only(file) == "CMakeLists.txt" ||
+            path.extension() == "cmake")
+            return Language::CMAKE;
+
+        return languages[path.extension()];
     } else {
-        return "UNKNOWN";
+        return Language::UNKNOWN;
     }
 }
 
