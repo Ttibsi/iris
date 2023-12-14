@@ -60,12 +60,14 @@ inline void Viewport::draw(const std::size_t &start_point) {
             if (buffer->lang != Language::UNKNOWN) {
                 highlight_line(buffer->lang, line);
             }
+            // TODO: Cut off line based off of horizontal space
             std::cout << line << "\r\n";
         } else {
             std::cout << "\r\n";
         }
     }
 
+    // TODO: Fix trailing whitespace on print out -- one missing ~
     if (view_size.vertical > end) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
             if (i == 1) {
@@ -83,17 +85,11 @@ inline void Viewport::draw(const std::size_t &start_point) {
 
 inline void Viewport::redraw_line() {
     rawterm::move_cursor({ cursor.row, 1 });
-<<<<<<< HEAD
-    rawterm::clear_line();
-    std::vector<std::string> lines =
-        filter_whitespace({ buffer->lines[buffer->current_line] });
-=======
     std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
 
     if (buffer->lang != Language::UNKNOWN)
         highlight_line(buffer->lang, line);
 
->>>>>>> 363c109 (speed up rendering)
     if (LINE_NUMBER) {
         std::cout << std::format("{:>{}}", buffer->current_line + 1,
                                  buffer->lineno_offset - 1)

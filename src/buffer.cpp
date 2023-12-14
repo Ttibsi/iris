@@ -8,6 +8,7 @@
 #include "constants.h"
 #include "editor.h"
 #include "file_manip.h"
+#include "highlighting/languages.h"
 #include "rawterm/rawterm.h"
 #include "text_manip.h"
 #include "viewport.h"
@@ -23,8 +24,9 @@ Buffer::Buffer(Editor *e)
 
 // TODO: What if the given path is a directory?
 Buffer::Buffer(Editor *e, std::string filename)
-    : editor(e), file(filename), lines(open_file(filename)),
-      readonly(is_readonly(filename)), modified(false), current_line(0) {
+    : editor(e), file(filename), lang(get_file_type(filename)),
+      lines(open_file(filename)), readonly(is_readonly(filename)),
+      modified(false), current_line(0) {
 
     if (LINE_NUMBER) {
         lineno_offset = std::to_string(lines.size()).size() + 1;
@@ -79,7 +81,7 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     }
 
     std::string right = "| ";
-    right += get_file_type(file) + " | ";
+    right += lang_string(lang) + " | ";
     if (CURSOR_STATUS) {
         right += "Cursor: (" + std::to_string(c->row) + ":" +
                  std::to_string(c->col) + ") | ";

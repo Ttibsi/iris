@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "file_manip.h"
+#include "highlighting/languages.h"
 #include "gtest/gtest.h"
 
 TEST(fileManipSuite, openingFile) {
@@ -23,5 +24,5 @@ TEST(fileManipSuite, filenameOnly) {
 }
 
 TEST(fileManipSuite, fileType) {
-    EXPECT_EQ(get_file_type("fixture/example_file.txt"), ".txt");
+    EXPECT_EQ(get_file_type("fixture/example_file.txt"), Language::TEXT);
 }

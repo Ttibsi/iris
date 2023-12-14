@@ -58,7 +58,7 @@ TEST(bufferClass, renderStatusBar) {
     // that creates it is out of scope by now
     EXPECT_EQ(split[1], " example_file.txt ");
     EXPECT_EQ(split[2], " [ ] ");
-    EXPECT_EQ(split[5], " .txt ");
+    EXPECT_EQ(split[5], " TEXT ");
 
     if (CURSOR_STATUS) {
         EXPECT_EQ(split[6], " Cursor: (1:1) ");
