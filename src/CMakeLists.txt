@@ -18,6 +18,8 @@ string(TIMESTAMP COMPILE_DATE "%Y/%m/%d")
 
 configure_file("${PROJECT_SOURCE_DIR}/src/version.h.in" "${PROJECT_SOURCE_DIR}/src/version.h" @ONLY)
 
+add_subdirectory(highlighting)
+
 add_library(lib SHARED
     buffer.cpp
     file_manip.cpp

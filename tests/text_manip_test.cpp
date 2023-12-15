@@ -46,7 +46,7 @@ TEST(textManipSuite, shellExec) {
     out = shell_exec("mv", true);
     r.stderr = "mv: missing file operandTry 'mv "
                "--help' for more information.";
-    r.retcode = 1;
+    r.retcode = 256;
 
     EXPECT_EQ(out.stdout, r.stdout);
     EXPECT_EQ(out.stderr, r.stderr);

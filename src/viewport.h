@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "cursor.h"
 #include "editor.h"
+#include "highlighting/highlighter.h"
 #include "text_manip.h"
 
 struct Viewport {

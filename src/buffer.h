@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cursor.h"
+#include "highlighting/languages.h"
 #include "rawterm/rawterm.h"
 
 struct Editor;
