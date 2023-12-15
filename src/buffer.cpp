@@ -109,7 +109,7 @@ void Buffer::split_lines(const Cursor &c) {
     if (c.col == 1) {
         lines.insert(lines.begin() + current_line, "");
         return;
-    } else if (c.col == lines[current_line].size()) {
+    } else if (c.col >= lines[current_line].size()) {
         lines.insert(lines.begin() + current_line + 1, "");
         return;
     }
