@@ -51,13 +51,14 @@ void highlight_line(Language language, std::string &line) {
                                       parse_colour(colour_scheme[re.first]) +
                                       "$1\x1B[0m";
             line = std::regex_replace(line, re.second, result_text);
+
+            // if (re.first == Token::FSTRING) return;
+            
         }
     }
 
     // No highlighting in this line
-    if (line.find("\x1b") == std::string::npos) {
-        return;
-    }
+    if (line.find("\x1b") == std::string::npos) return;
 
     // Check the line hasn't got nested highlighting
     int open_count = 0;

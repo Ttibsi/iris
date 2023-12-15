@@ -133,6 +133,7 @@ void Buffer::split_lines(const Cursor &c) {
 }
 
 void Buffer::parse_command(const std::string &cmd) {
+    if (cmd.size() == 1) return;
     using namespace std::literals;
 
     // Bang shell commands (ie `;!ls -la`)

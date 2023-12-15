@@ -9,12 +9,13 @@
 #include "highlighting/languages.h"
 
 enum class Token {
+    BOOLEAN,
+    COMMENT,
+    FSTRING,
     FUNC_CALL,
+    KEYWORD,
     NUMBER_LITERAL,
     STRING_LITERAL,
-    COMMENT,
-    KEYWORD,
-    BOOLEAN,
     TYPE,
     VAR_CALL,
 };
@@ -27,8 +28,7 @@ enum class Token {
 // TODO: Rust/Go?
 // TODO: Lua?
 
-static const std::regex number_literal =
-    std::regex("\\b(([0-9\\.]+)(?=[0-9]|\\b))");
+static const auto number_literal = std::regex("\\b(([0-9\\.]+)(?=[0-9]|\\b))");
 
 static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
     highlight_groups = {
@@ -37,6 +37,9 @@ static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
               // This has to go first or it overwrites other escape codes
               { Token::NUMBER_LITERAL, number_literal },
               // https://dev.to/xowap/the-string-matching-regex-explained-step-by-step-4lkp
+              { Token::FSTRING,
+                std::regex(
+                    "\"[\\w\\b ]*(\\{[\\w ]+\\})[\\w\\b ]*\"") },
               { Token::STRING_LITERAL,
                 std::regex(R"str((["']([^"\\]|\\.)*["']))str") },
               { Token::KEYWORD,
@@ -46,7 +49,7 @@ static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
                            "or|pass|raise|return|try|while|with|yield)\\b") },
               { Token::COMMENT, std::regex("(# *.+)") },
               { Token::BOOLEAN, std::regex("\\b(True|False)\\b") },
-              { Token::FUNC_CALL, std::regex("(\\w+)(?=\\()") },
+              { Token::FUNC_CALL, std::regex("(?:0m)(\\w+)(?=\\()") },
               { Token::TYPE,
                 std::regex("\\b(str|int|bool|tuple|list|dict|set|Any|"
                            "Sequence|Union|None|List|Dict|Tuple|NamedTuple)(?!["
