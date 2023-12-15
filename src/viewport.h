@@ -71,11 +71,9 @@ inline void Viewport::draw(const std::size_t &start_point) {
     // TODO: Fix trailing whitespace on print out -- one missing ~
     if (view_size.vertical > end) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
-            if (i == 1) {
+            if (buffer->lines.empty())
                 std::cout << "\r\n";
-            } else {
-                std::cout << "~\r\n";
-            }
+            std::cout << "~\r\n";
         }
     }
 
