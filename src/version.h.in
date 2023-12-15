@@ -15,4 +15,8 @@ inline std::string compile_date() {
     return "@COMPILE_DATE@";
 }
 
+inline std::string release_mode() {
+    return "@CMAKE_BUILD_TYPE@";
+}
+
 #endif // VERSION_H

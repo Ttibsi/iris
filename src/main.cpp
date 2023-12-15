@@ -11,7 +11,9 @@
 void version() {
     std::cout << "Iris version: " << git_tag() << "\n"
               << "Compiled from commit: " << git_hash() << "\n"
-              << "Compiled on date: " << compile_date() << "\n";
+              << "Compiled on date: " << compile_date() << "\n"
+              << "Build type: "
+              << (release_mode().empty() ? "Default" : release_mode()) << "\n";
 }
 
 int main(int argc, char *argv[]) {

@@ -3,7 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # This is all for building the `--version` flag at compile time
 execute_process(
-    COMMAND git describe --tags
+    COMMAND git tag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     OUTPUT_VARIABLE GIT_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE
