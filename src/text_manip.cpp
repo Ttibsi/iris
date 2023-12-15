@@ -26,7 +26,15 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     return lines;
 }
 
-std::string shell_exec(const std::string &cmd, bool output) {
+std::string filter_whitespace(std::string line) {
+    if (std::binary_search(line.begin(), line.end(), '\t')) {
+        line.replace(line.find('\t'), 1, std::string(TABSTOP, ' '));
+    }
+
+    return line;
+}
+
+Response shell_exec(const std::string &cmd, bool output) {
     namespace fs = std::filesystem;
     std::string tmp_dir = fs::temp_directory_path();
     int retcode = std::system((cmd + ">" + tmp_dir + "/iris_cmd_out.txt 2> " +
@@ -44,17 +52,18 @@ std::string shell_exec(const std::string &cmd, bool output) {
             for (auto &l : stderr_contents) {
                 ret += l;
             }
-            return ret;
+            return { "", ret, retcode };
         }
 
         std::string ret = "";
         for (auto &l : stdout_contents) {
             ret += l;
         }
-        return ret;
+
+        return { ret, "", 0 };
 
     } else {
-        return "";
+        return { "", "", -1 };
     }
 }
 

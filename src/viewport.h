@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "cursor.h"
 #include "editor.h"
+#include "highlighting/highlighter.h"
 #include "text_manip.h"
 
 struct Viewport {
@@ -35,15 +36,14 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
-    rawterm::clear_screen();
-    rawterm::move_cursor({ 1, 1 });
 
-    std::vector<std::string> lines = filter_whitespace(buffer->lines);
-    auto start = std::min(start_point, lines.size() - 1);
+    auto start = std::min(start_point, buffer->lines.size() - 1);
     std::size_t end =
         std::max(std::min(view_size.vertical, buffer->lines.size()),
                  static_cast<unsigned long>(1));
 
+    rawterm::clear_screen();
+    rawterm::move_cursor({ 1, 1 });
     int idx;
     if (LINE_NUMBER) {
         idx = start_point + 1;
@@ -57,12 +57,18 @@ inline void Viewport::draw(const std::size_t &start_point) {
                           << "\u2502";
                 idx++;
             }
-            std::cout << buffer->lines[it] << "\r\n";
+            std::string line = filter_whitespace(buffer->lines[it]);
+            if (buffer->lang != Language::UNKNOWN) {
+                highlight_line(buffer->lang, line);
+            }
+            // TODO: Cut off line based off of horizontal space
+            std::cout << line << "\r\n";
         } else {
             std::cout << "\r\n";
         }
     }
 
+    // TODO: Fix trailing whitespace on print out -- one missing ~
     if (view_size.vertical > end) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
             if (i == 1) {
@@ -80,16 +86,18 @@ inline void Viewport::draw(const std::size_t &start_point) {
 
 inline void Viewport::redraw_line() {
     rawterm::move_cursor({ cursor.row, 1 });
-    rawterm::clear_line();
-    std::vector<std::string> lines =
-        filter_whitespace({ buffer->lines[buffer->current_line] });
+    std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
+
+    if (buffer->lang != Language::UNKNOWN)
+        highlight_line(buffer->lang, line);
+
     if (LINE_NUMBER) {
         std::cout << std::format("{:>{}}", buffer->current_line + 1,
                                  buffer->lineno_offset - 1)
                   << "\u2502";
     }
 
-    std::cout << lines[0] << std::flush;
+    std::cout << line << std::flush;
 }
 
 inline void Viewport::switch_to_insert() {

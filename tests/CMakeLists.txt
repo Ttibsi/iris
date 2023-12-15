@@ -19,9 +19,10 @@ add_executable(test_exe
     cursor_test.cpp
     editor_test.cpp
     file_manip_test.cpp
+    highlighting_test.cpp
     text_manip_test.cpp
     viewport_test.cpp
 )
 
-target_link_libraries(test_exe PRIVATE lib GTest)
+target_link_libraries(test_exe PRIVATE lib highlighter GTest)
 gtest_discover_tests(test_exe WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)

@@ -3,7 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # This is all for building the `--version` flag at compile time
 execute_process(
-    COMMAND git describe --tags
+    COMMAND git tag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     OUTPUT_VARIABLE GIT_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -18,6 +18,8 @@ string(TIMESTAMP COMPILE_DATE "%Y/%m/%d")
 
 configure_file("${PROJECT_SOURCE_DIR}/src/version.h.in" "${PROJECT_SOURCE_DIR}/src/version.h" @ONLY)
 
+add_subdirectory(highlighting)
+
 add_library(lib SHARED
     buffer.cpp
     file_manip.cpp
@@ -26,5 +28,5 @@ add_library(lib SHARED
 )
 
 add_executable(${PROJECT_NAME} main.cpp)
-set_target_properties(lib PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${PROJECT_NAME} PUBLIC lib)
+target_link_libraries(lib PRIVATE highlighter)
+target_link_libraries(${PROJECT_NAME} PUBLIC lib highlighter)
