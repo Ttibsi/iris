@@ -39,7 +39,7 @@ Likewise, you can switch to `command` with the `;` (semicolon) key.
 | <kbd>b</kbd>  | Move cursor back one word                        |
 | <kbd>z</kbd>  | Center the current line in the screen            |
 | <kbd>x</kbd>  | Delete character under the cursor                |
-| <kbd>dl</kbd> | Delete enter line                                |
+| <kbd>dl</kbd> | Delete entire line                               |
 | <kbd>dw</kbd> | Delete current word (between whitespace)         |
 | <kbd>da</kbd> | Delete from beginning of line to cursor          |
 | <kbd>de</kbd> | Delete to end of line                            |

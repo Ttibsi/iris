@@ -92,3 +92,11 @@ TEST(textManipSuite, findInText) {
     EXPECT_EQ(out.value().vertical, expected.vertical);
     EXPECT_EQ(out.value().horizontal, expected.horizontal);
 }
+
+TEST(textManipSuite, joinLines) {
+    std::vector<std::string> inp = { "foo", "bar", "baz" };
+    std::vector<std::string> out = { "foo", "bar baz" };
+
+    join_lines(inp, 1);
+    EXPECT_EQ(inp, out);
+}
