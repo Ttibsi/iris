@@ -77,7 +77,8 @@ std::size_t count_char(const std::string &line, char c) {
 }
 
 std::size_t line_size(const std::string &line) {
-    return line.size() + count_char(line, '\t') * TABSTOP;
+    auto count = count_char(line, '\t');
+    return (line.size() - count) + (count * TABSTOP);
 }
 
 int find_next_whitespace(const std::string &curr_line,

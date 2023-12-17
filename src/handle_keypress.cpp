@@ -60,9 +60,7 @@ void Viewport::keypress_read() {
 
             // Right
         } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
-            // TODO: This moves 7 too far right in src/buffer.cpp
-            if (cursor.col < line_size(buffer->lines[buffer->current_line]) +
-                                 1 + buffer->lineno_offset) {
+            if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
                 cursor.set_pos_rel(0, 1, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
