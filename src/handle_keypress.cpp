@@ -227,6 +227,12 @@ void Viewport::keypress_read() {
                 cursor.set_pos_rel(0, -pos, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
+        } else if (k.code == 'J' && modifier == rawterm::Mod::Shift) {
+            join_lines(buffer->lines, buffer->current_line);
+
+            draw(buffer->current_line - cursor.row + 1);
+            buffer->modified = true;
+            buffer->reset_status_bar(view_size, &cursor);
         }
     }
 }
@@ -249,7 +255,6 @@ void Viewport::keypress_write() {
             buffer->modified = true;
 
         } else if (modifier == Mod::Backspace) {
-            // TODO: backspace newline char (merge two lines)
             if (cursor.col > 1) {
                 buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
 
@@ -257,10 +262,25 @@ void Viewport::keypress_write() {
                 cursor.set_pos_abs(cursor.row, cursor.col - 1,
                                    buffer->lineno_offset);
                 buffer->modified = true;
+            } else {
+                buffer->current_line--;
+                int new_curr_pos = buffer->lines[buffer->current_line].size();
+                join_lines(buffer->lines, buffer->current_line);
+
+                buffer->modified = true;
+
+                if (buffer->current_line + 1 < buffer->lines.size()) {
+                    cursor.set_pos_rel(-1, new_curr_pos, buffer->lineno_offset);
+                } else {
+                    cursor.set_pos_rel(0, new_curr_pos, buffer->lineno_offset);
+                }
+
+                unsigned int draw_point = buffer->current_line - cursor.row + 1;
+                (draw_point < buffer->lines.size()) ? draw(draw_point)
+                                                    : draw(0);
             }
 
         } else if (modifier == Mod::Delete) {
-            // TODO: backspace newline char (merge two lines)
             if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
                 buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
 
@@ -268,6 +288,21 @@ void Viewport::keypress_write() {
                 cursor.set_pos_abs(cursor.row, cursor.col,
                                    buffer->lineno_offset);
                 buffer->modified = true;
+            } else {
+                int new_curr_pos = buffer->lines[buffer->current_line].size();
+                join_lines(buffer->lines, buffer->current_line);
+
+                buffer->modified = true;
+
+                if (buffer->current_line < buffer->lines.size()) {
+                    cursor.set_pos_rel(-1, new_curr_pos, buffer->lineno_offset);
+                } else {
+                    cursor.set_pos_rel(0, new_curr_pos, buffer->lineno_offset);
+                }
+
+                unsigned int draw_point = buffer->current_line - cursor.row + 1;
+                (draw_point < buffer->lines.size()) ? draw(draw_point)
+                                                    : draw(0);
             }
 
         } else if (modifier == Mod::Enter) {
