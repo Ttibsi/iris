@@ -9,12 +9,12 @@
 #include "highlighting/languages.h"
 
 enum class Token {
+    BOOLEAN,
+    COMMENT,
     FUNC_CALL,
+    KEYWORD,
     NUMBER_LITERAL,
     STRING_LITERAL,
-    COMMENT,
-    KEYWORD,
-    BOOLEAN,
     TYPE,
     VAR_CALL,
 };
