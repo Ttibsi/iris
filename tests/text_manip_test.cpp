@@ -59,10 +59,10 @@ TEST(textManipSuite, countChar) {
     EXPECT_EQ(count_char("\ttab test", '\t'), 1);
 }
 
-TEST(textManipSuite, line_size) {
+TEST(textManipSuite, lineSize) {
     EXPECT_EQ(line_size("foo"), 3);
-    EXPECT_EQ(line_size("\tfoo"), 8);
-    EXPECT_EQ(line_size("\t\tfoo"), 13);
+    EXPECT_EQ(line_size("\tfoo"), 7);
+    EXPECT_EQ(line_size("\t\tfoo"), 11);
 }
 
 TEST(textManipSuite, findNextWord) {
