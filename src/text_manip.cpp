@@ -17,7 +17,7 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
 
     for (auto &line : lines) {
         for (std::pair<char, std::string> p : pairs) {
-            if (std::binary_search(line.begin(), line.end(), p.first)) {
+            while (line.find(p.first) != std::string::npos) {
                 line.replace(line.find(p.first), 1, p.second);
             }
         }
@@ -27,7 +27,7 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
 }
 
 std::string filter_whitespace(std::string line) {
-    if (std::binary_search(line.begin(), line.end(), '\t')) {
+    while (line.find('\t') != std::string::npos) {
         line.replace(line.find('\t'), 1, std::string(TABSTOP, ' '));
     }
 
