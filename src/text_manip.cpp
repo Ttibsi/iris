@@ -148,8 +148,11 @@ void replace_in_text(std::string &line, int pos, const std::string &new_text) {
 }
 
 void join_lines(std::vector<std::string> &lines, unsigned int first) {
-    lines[first] +=
-        " " + lines[first + 1].substr(lines[first + 1].find_first_not_of(" \t"),
-                                      lines[first + 1].size());
+    if (!(lines[first + 1].empty())) {
+        lines[first] += " " + lines[first + 1].substr(
+                                  lines[first + 1].find_first_not_of(" \t"),
+                                  lines[first + 1].size());
+    }
+
     lines.erase(lines.begin() + first + 1);
 }
