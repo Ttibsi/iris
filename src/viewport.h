@@ -83,6 +83,8 @@ inline void Viewport::draw(const std::size_t &start_point) {
 
 inline void Viewport::redraw_line() {
     rawterm::move_cursor({ cursor.row, 1 });
+    std::cout << std::string(view_size.horizontal, ' ');
+    rawterm::move_cursor({ cursor.row, 1 });
     std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
 
     if (buffer->lang != Language::UNKNOWN)
