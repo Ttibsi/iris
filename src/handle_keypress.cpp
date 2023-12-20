@@ -5,12 +5,19 @@
 #include <rawterm/rawterm.h>
 
 #include "constants.h"
+#include "signal_tracker.h"
 #include "text_manip.h"
 #include "viewport.h"
 
+// TODO: Make sure when you resize you're in the right mode
+
 void Viewport::keypress_read() {
     while (true) {
-        if (buffer->quit_buf) {
+        if (buffer->quit_buf || resize_flag) {
+            break;
+        }
+
+        if (SignalTracker<SIGWINCH>::checkAndClear()) {
             break;
         }
 
@@ -94,12 +101,7 @@ void Viewport::keypress_read() {
 
             // Command mode
         } else if (k.code == ';' && modifier == rawterm::Mod::None) {
-            buffer->editor->set_mode(Mode::Command);
-            buffer->reset_status_bar(view_size, &cursor);
-            keypress_command();
-            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
-            buffer->editor->set_mode(Mode::Read);
-            buffer->reset_status_bar(view_size, &cursor);
+            switch_to_command();
 
             // Find and replace
         } else if (k.code == 'f' && modifier == rawterm::Mod::None) {
@@ -244,6 +246,10 @@ void Viewport::keypress_write() {
 
     while (true) {
         buffer->reset_status_bar(view_size, &cursor);
+        if (SignalTracker<SIGWINCH>::checkAndClear()) {
+            resize_flag = true;
+            break;
+        }
         rawterm::Key k = rawterm::process_keypress();
         Mod modifier = rawterm::getMod(&k);
 
@@ -374,6 +380,11 @@ void Viewport::keypress_command() {
     std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
 
     while (true) {
+        if (SignalTracker<SIGWINCH>::checkAndClear()) {
+            resize_flag = true;
+            break;
+        }
+
         rawterm::move_cursor({ view_size.horizontal + 2, 1 });
         rawterm::clear_line();
 

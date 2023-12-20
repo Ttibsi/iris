@@ -16,11 +16,13 @@ struct Viewport {
     Buffer *buffer;
     rawterm::Pos view_size;
     Cursor cursor;
+    bool resize_flag = false;
 
     Viewport(Buffer *, rawterm::Pos);
     void draw(const std::size_t &);
     void redraw_line();
     void switch_to_insert();
+    void switch_to_command();
     void center(unsigned int);
     void cursor_up(unsigned int);
     void cursor_down(unsigned int);
@@ -36,7 +38,6 @@ inline Viewport::Viewport(Buffer *b, rawterm::Pos size)
 
 inline void Viewport::draw(const std::size_t &start_point) {
     // start_point = the 0th line to print
-
     auto start = std::min(start_point, buffer->lines.size() - 1);
     std::size_t end =
         std::max(std::min(view_size.vertical, buffer->lines.size()),
@@ -111,6 +112,15 @@ inline void Viewport::switch_to_insert() {
 
     buffer->editor->set_mode(Mode::Read);
     rawterm::cursor_block();
+    buffer->reset_status_bar(view_size, &cursor);
+}
+
+inline void Viewport::switch_to_command() {
+    buffer->editor->set_mode(Mode::Command);
+    buffer->reset_status_bar(view_size, &cursor);
+    keypress_command();
+    cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
+    buffer->editor->set_mode(Mode::Read);
     buffer->reset_status_bar(view_size, &cursor);
 }
 
