@@ -12,7 +12,7 @@ enum class Mode { Read, Write, Command };
 
 struct Editor {
     std::vector<Buffer> buffers;
-    std::size_t active_buffer;
+    int active_buffer;
     Mode mode;
     std::string clipboard;
     rawterm::Pos term_size;

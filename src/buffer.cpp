@@ -13,8 +13,6 @@
 #include "text_manip.h"
 #include "viewport.h"
 
-// lineno_offset has +3 because that's the byte length of \u2502
-
 Buffer::Buffer(Editor *e)
     : editor(e), file("NO FILE"), lines({ "" }), readonly(false),
       modified(false), current_line(0) {
@@ -45,6 +43,9 @@ void Buffer::init(rawterm::Pos view_size, int line_num) {
         view->cursor.set_pos_abs(1, 1, lineno_offset);
     }
     view->keypress_read();
+    if (!quit_buf) {
+        resize_handle();
+    }
 }
 
 std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
@@ -282,4 +283,14 @@ unsigned int Buffer::replace_cmd() {
     }
 
     return 0;
+}
+
+void Buffer::resize_handle() {
+    view->resize_flag = false;
+    auto new_term_size = rawterm::get_term_size();
+    editor->term_size = new_term_size;
+
+    rawterm::clear_screen();
+    init({ new_term_size.vertical - 2, new_term_size.horizontal },
+         current_line);
 }
