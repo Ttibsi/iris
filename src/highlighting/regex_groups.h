@@ -19,16 +19,16 @@ enum class Token {
     VAR_CALL,
 };
 
-// TODO: Python: Highlight parsing on periods messes up
+// TODO: Handle highlighting of `todo` comments
+// TODO: Highlight based on shebang
 // TODO: Python: Handle fstrings - don't highlight within {}
-// TODO: Python: Handle strings within strings: `"hello 'world'"`
 // TODO: Bash
 // TODO: C++
 // TODO: Rust/Go?
 // TODO: Lua?
 
 static const std::regex number_literal =
-    std::regex("\\b(([0-9\\.]+)(?=[0-9]|\\b))");
+    std::regex("(?:v|\\b)(([0-9]+|(\\.[0-9])+)+)");
 
 static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
     highlight_groups = {
@@ -38,7 +38,9 @@ static std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>
               { Token::NUMBER_LITERAL, number_literal },
               // https://dev.to/xowap/the-string-matching-regex-explained-step-by-step-4lkp
               { Token::STRING_LITERAL,
-                std::regex(R"str((["']([^"\\]|\\.)*["']))str") },
+                std::regex(R"str(('([^'\\]|\\.)*'))str") },
+              { Token::STRING_LITERAL,
+                std::regex(R"str(("([^"\\]|\\.)*"))str") },
               { Token::KEYWORD,
                 std::regex("\\b(and|as|assert|async|await|break|class|"
                            "continue|def|del|elif|else|except|finally|for|"

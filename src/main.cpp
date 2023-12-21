@@ -7,6 +7,7 @@
 #include "version.h"
 
 // TODO: Describe each function/method for future review
+// TODO: Handle CTRL+Z
 
 void version() {
     std::cout << "Iris version: " << git_tag() << "\n"

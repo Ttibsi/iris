@@ -53,7 +53,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
     for (auto it = start; it < start + end; ++it) {
         if (it < buffer->lines.size()) {
             if (LINE_NUMBER) {
-                std::cout << std::format("{:>{}}", idx,
+                std::cout << std::format("\x1b[93m{:>{}}\x1b[0m", idx,
                                          buffer->lineno_offset - 1)
                           << "\u2502";
                 idx++;
@@ -73,7 +73,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
         for (unsigned long i = end; i < view_size.vertical; i++) {
             if (buffer->lines.empty())
                 std::cout << "\r\n";
-            std::cout << "~\r\n";
+            std::cout << "\x1b[38;5;12m~\x1b[0m\r\n";
         }
     }
 
@@ -92,7 +92,8 @@ inline void Viewport::redraw_line() {
         highlight_line(buffer->lang, line);
 
     if (LINE_NUMBER) {
-        std::cout << std::format("{:>{}}", buffer->current_line + 1,
+        std::cout << std::format("\x1b[93m{:>{}}\x1b[0m",
+                                 buffer->current_line + 1,
                                  buffer->lineno_offset - 1)
                   << "\u2502";
     }
