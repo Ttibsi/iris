@@ -133,6 +133,8 @@ void Buffer::split_lines(const Cursor &c) {
     lines.insert(lines.begin() + current_line + 1, l2);
 }
 
+// TODO: `;sort` command
+// TODO: Set filetype manually with command
 void Buffer::parse_command(const std::string &cmd) {
     if (cmd.size() < 2)
         return;
