@@ -11,6 +11,7 @@
 enum class Token {
     BOOLEAN,
     COMMENT,
+    COMMENT_TODO,
     COMMON_COMMANDS,
     FLAGS,
     FUNC_CALL,
@@ -21,7 +22,6 @@ enum class Token {
     VAR_CALL,
 };
 
-// TODO: Handle highlighting of `todo` comments
 // TODO: Highlight based on shebang
 // TODO: Highlight trailing whitespace
 // TODO: Python: Handle fstrings - don't highlight within {}
@@ -38,7 +38,8 @@ inline hl_group_t highlight_groups = {
     {Language::BASH,
      {
           { Token::NUMBER_LITERAL, number_literal },
-          { Token::COMMENT, std::regex("^(# *.+)") },
+          { Token::COMMENT, std::regex("^(# *[^ TODO:].+)") },
+          { Token::COMMENT_TODO, std::regex("(# TODO: +.+)") },
           { Token::BOOLEAN, std::regex("\\b(true|false)\\b") },
           { Token::FUNC_CALL, std::regex("^[A-Za-z0-9_-]+\\(\\)") },
           { Token::STRING_LITERAL, std::regex(R"str(('([^'\\]|\\.)*'))str") },
@@ -65,7 +66,8 @@ inline hl_group_t highlight_groups = {
           // https://dev.to/xowap/the-string-matching-regex-explained-step-by-step-4lkp
           { Token::STRING_LITERAL,
             std::regex(R"str((["']([^"\\]|\\.)*["']))str") },
-          { Token::COMMENT, std::regex("(# *.+)") },
+          { Token::COMMENT, std::regex("^(# *[^ TODO:].+)") },
+          { Token::COMMENT_TODO, std::regex("(# TODO: +.+)") },
           { Token::VAR_CALL,
             std::regex("(\\$\\{[^CMAKE|cmake][a-zA-Z_]+\\})") },
           { Token::KEYWORD,
@@ -90,7 +92,8 @@ inline hl_group_t highlight_groups = {
                        "continue|def|del|elif|else|except|finally|for|"
                        "from|global|if|import|in|is|lambda|nonlocal|not|"
                        "or|pass|raise|return|try|while|with|yield)\\b") },
-          { Token::COMMENT, std::regex("(# *.+)") },
+          { Token::COMMENT_TODO, std::regex("(# TODO: +(?:.+))") },
+          { Token::COMMENT, std::regex("(# ?.+)") },
           { Token::BOOLEAN, std::regex("\\b(True|False)\\b") },
           { Token::FUNC_CALL, std::regex("(\\w+)(?=\\()") },
           { Token::TYPE,
