@@ -13,6 +13,7 @@ inline std::unordered_map<Token, std::string> get_theme() {
             {Token::BOOLEAN,          "#C4A000"},
             { Token::COMMON_COMMANDS, "#028A0F"},
             { Token::COMMENT,         "#666666"},
+            { Token::COMMENT_TODO,    "#87C1FF"},
             { Token::FLAGS,           "#E8BCF0"},
             { Token::FUNC_CALL,       "#6666ff"},
             { Token::KEYWORD,         "#09D0EF"},

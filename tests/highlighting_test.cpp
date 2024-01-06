@@ -32,6 +32,6 @@ TEST(highlightSuite, getTheme) {
     if (THEME == "default") {
         auto theme = get_theme();
 
-        EXPECT_EQ(theme.size(), 10);
+        EXPECT_EQ(theme.size(), 11);
     }
 }
