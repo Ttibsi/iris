@@ -13,13 +13,16 @@
 
 void Viewport::keypress_read() {
     while (true) {
-        if (buffer->quit_buf || resize_flag) {
+        if (buffer->quit_buf || resize_flag ||
+            SignalTracker<SIGWINCH>::checkAndClear()) {
             break;
         }
 
-        if (SignalTracker<SIGWINCH>::checkAndClear()) {
-            break;
-        }
+        rawterm::sigcont_handler([this]() {
+            rawterm::move_cursor({ 1, 1 });
+            draw(buffer->current_line - cursor.row + 1);
+            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
+        });
 
         rawterm::Key k = rawterm::process_keypress();
         rawterm::Mod modifier = rawterm::getMod(&k);
@@ -250,6 +253,13 @@ void Viewport::keypress_write() {
             resize_flag = true;
             break;
         }
+
+        rawterm::sigcont_handler([this]() {
+            rawterm::move_cursor({ 1, 1 });
+            draw(buffer->current_line - cursor.row + 1);
+            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
+        });
+
         rawterm::Key k = rawterm::process_keypress();
         Mod modifier = rawterm::getMod(&k);
 
@@ -384,6 +394,12 @@ void Viewport::keypress_command() {
             resize_flag = true;
             break;
         }
+
+        rawterm::sigcont_handler([this]() {
+            rawterm::move_cursor({ 1, 1 });
+            draw(buffer->current_line - cursor.row + 1);
+            cursor.set_pos_abs(cursor.row, cursor.col, buffer->lineno_offset);
+        });
 
         rawterm::move_cursor({ view_size.horizontal + 2, 1 });
         rawterm::clear_line();

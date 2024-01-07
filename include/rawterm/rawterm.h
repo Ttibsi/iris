@@ -22,7 +22,7 @@
 // SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////
 // Code source: https://github.com/Ttibsi/rawterm/blob/main/rawterm.h
-// Version: v2.2.5
+// Version: v2.4.0
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RAWTERM_H
@@ -30,9 +30,11 @@
 
 #include <cctype>
 #include <cmath>
+#include <csignal>
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -47,8 +49,11 @@
 // https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html
 
 namespace rawterm {
+
     namespace detail {
         inline termios orig;
+        inline bool sigtstp_called = false;
+        inline bool sigcont_called = false;
     } // namespace detail
 
     enum struct Mod {
@@ -122,13 +127,17 @@ namespace rawterm {
     // Switch terminal to raw mode, enabling character-level reading of input
     // without waiting for a newline character
     inline void enable_raw_mode() {
+
         if (tcgetattr(STDIN_FILENO, &rawterm::detail::orig) == -1) {
             std::perror("tcgetattr");
         }
         std::atexit(rawterm::disable_raw_mode);
 
         termios raw = rawterm::detail::orig;
-        cfmakeraw(&raw);
+        raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+        raw.c_oflag &= ~(OPOST);
+        // raw.c_lflag |= ~(CS8); // Disable to allow term_size reading
+        raw.c_lflag &= ~(ECHO | IEXTEN | ICANON | ISIG);
 
         if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
             std::perror("tcsetattr");
@@ -152,8 +161,41 @@ namespace rawterm {
         '\x74', '\x75', '\x76', '\x77', '\x78', '\x79', '\x7A'
     };
 
+    // Enables the use of ctrl+c and ctrl+z
+    inline bool is_signals_enabled = false;
+    inline void enable_signals() { is_signals_enabled = true; }
+
+    // wrapper functions for custom signal handlers
+    inline void sigtstp_handler(std::function<void(void)> func) {
+        if (detail::sigtstp_called) {
+            func();
+            detail::sigtstp_called = false;
+        }
+    }
+
+    inline void sigcont_handler(std::function<void(void)> func) {
+        if (detail::sigcont_called) {
+            func();
+            detail::sigcont_called = false;
+        }
+    }
+
     // Read user input and return a Key object ready to read the value
     inline rawterm::Key process_keypress() {
+
+        // Backgrounding
+        std::signal(SIGTSTP, [](int) {
+            detail::sigtstp_called = true;
+            rawterm::exit_alt_screen();
+            std::raise(SIGSTOP);
+        });
+
+        // Foregrounding
+        std::signal(SIGCONT, [](int) {
+            detail::sigcont_called = true;
+            rawterm::enter_alt_screen();
+            rawterm::enable_raw_mode();
+        });
 
         std::string characters = std::string(32, '\0');
         if (read(STDIN_FILENO, characters.data(), 32) < 0) {
@@ -177,6 +219,9 @@ namespace rawterm {
         case '\x02':
             return { 'b', { rawterm::Mod::Control }, raw };
         case '\x03':
+            if (is_signals_enabled) {
+                raise(SIGINT);
+            }
             return { 'c', { rawterm::Mod::Control }, raw };
         case '\x04':
             return { 'd', { rawterm::Mod::Control }, raw };
@@ -224,6 +269,9 @@ namespace rawterm {
         case '\x19':
             return { 'y', { rawterm::Mod::Control }, raw };
         case '\x1A':
+            if (is_signals_enabled) {
+                raise(SIGTSTP);
+            }
             return { 'z', { rawterm::Mod::Control }, raw };
         case '\x1B':
             // ESCAPE

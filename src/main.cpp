@@ -7,7 +7,6 @@
 #include "version.h"
 
 // TODO: Describe each function/method for future review
-// TODO: Handle CTRL+Z
 
 void version() {
     std::cout << "Iris version: " << git_tag() << "\n"
@@ -41,6 +40,7 @@ int main(int argc, char *argv[]) {
 
     rawterm::enter_alt_screen();
     rawterm::enable_raw_mode();
+    rawterm::enable_signals();
 
     Editor e(file);
     e.start(file.empty() ? 0 : line_num);
