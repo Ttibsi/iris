@@ -156,3 +156,12 @@ void join_lines(std::vector<std::string> &lines, unsigned int first) {
 
     lines.erase(lines.begin() + first + 1);
 }
+
+std::string parse_shebang(std::string line) {
+    if (line.find(' ') != std::string::npos) {
+        return line.substr(line.find(' ') + 1, line.size());
+    } else {
+        return line.substr(line.rfind('/') + 1, line.size());
+    }
+    return "";
+}
