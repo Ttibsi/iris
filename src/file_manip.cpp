@@ -69,7 +69,8 @@ Language get_file_type(const std::string &file) {
             path.extension() == "cmake")
             return Language::CMAKE;
 
-        return languages[path.extension()];
+        std::string path_str = path.extension();
+        return languages[path_str.substr(1, path_str.size())];
     } else {
         std::string lang = parse_shebang(get_shebang(file));
         if (!(lang.empty())) {
