@@ -22,7 +22,6 @@ enum class Token {
     VAR_CALL,
 };
 
-// TODO: Highlight based on shebang
 // TODO: Highlight trailing whitespace
 // TODO: Python: Handle fstrings - don't highlight within {}
 // TODO: C++

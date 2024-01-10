@@ -100,3 +100,11 @@ TEST(textManipSuite, joinLines) {
     join_lines(inp, 1);
     EXPECT_EQ(inp, out);
 }
+
+TEST(textManipSuite, parseShebang) {
+    std::string str1 = "#!/bin/env python3";
+    std::string str2 = "#!/bin/sh";
+
+    EXPECT_EQ(parse_shebang(str1), "python3");
+    EXPECT_EQ(parse_shebang(str2), "sh");
+}

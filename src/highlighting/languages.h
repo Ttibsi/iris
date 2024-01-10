@@ -30,11 +30,14 @@ inline std::string lang_string(const Language &l) {
 }
 
 static std::unordered_map<std::string, Language> languages = {
-    {".bashrc", Language::BASH  },
-    { ".sh",    Language::BASH  },
-    { ".cmake", Language::CMAKE },
-    { ".py",    Language::PYTHON},
-    { ".txt",   Language::TEXT  },
+    {"bashrc",   Language::BASH  },
+    { "sh",      Language::BASH  },
+    { "cmake",   Language::CMAKE },
+    { "py",      Language::PYTHON},
+    { "txt",     Language::TEXT  },
+ // For shebangs
+    { "python3", Language::PYTHON},
+    { "bash",    Language::BASH  },
 };
 
 #endif // LANGUAGES_H

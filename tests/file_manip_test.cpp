@@ -26,3 +26,7 @@ TEST(fileManipSuite, filenameOnly) {
 TEST(fileManipSuite, fileType) {
     EXPECT_EQ(get_file_type("fixture/example_file.txt"), Language::TEXT);
 }
+
+TEST(fileManipSuite, getShebang) {
+    EXPECT_EQ(get_shebang("fixture/shebang_file"), "#!/bin/env python3");
+}

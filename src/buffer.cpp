@@ -134,7 +134,6 @@ void Buffer::split_lines(const Cursor &c) {
 }
 
 // TODO: `;sort` command
-// TODO: Set filetype manually with command
 void Buffer::parse_command(const std::string &cmd) {
     if (cmd.size() < 2)
         return;
@@ -197,6 +196,11 @@ void Buffer::parse_command(const std::string &cmd) {
         }
     } else if (cmd == ";q!"sv) {
         quit_buf = true;
+    } else if (cmd.starts_with(";lang"sv)) {
+        if (cmd.size() > 5) {
+            lang = languages[cmd.substr(6, cmd.size())];
+            view->draw(current_line - view->cursor.row + 1);
+        }
     }
 
     return;

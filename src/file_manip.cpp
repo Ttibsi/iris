@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "file_manip.h"
+#include "text_manip.h"
 
 std::vector<std::string> open_file(const std::string &file) {
     std::ifstream ifs(file);
@@ -46,6 +47,17 @@ std::string filename_only(std::string f) {
     return f;
 }
 
+std::string get_shebang(const std::string &filename) {
+    std::ifstream ifs(filename);
+    std::string line;
+    std::getline(ifs, line);
+
+    if (line.at(0) == '#' && line.at(1) == '!') {
+        return line;
+    }
+    return "";
+}
+
 Language get_file_type(const std::string &file) {
     namespace fs = std::filesystem;
     auto path = fs::path(file);
@@ -57,8 +69,13 @@ Language get_file_type(const std::string &file) {
             path.extension() == "cmake")
             return Language::CMAKE;
 
-        return languages[path.extension()];
+        std::string path_str = path.extension();
+        return languages[path_str.substr(1, path_str.size())];
     } else {
+        std::string lang = parse_shebang(get_shebang(file));
+        if (!(lang.empty())) {
+            return languages[lang];
+        }
         return Language::UNKNOWN;
     }
 }
