@@ -62,8 +62,11 @@ inline void Viewport::draw(const std::size_t &start_point) {
             if (buffer->lang != Language::UNKNOWN) {
                 highlight_line(buffer->lang, line);
             }
-            // TODO: Cut off line based off of horizontal space
-            std::cout << line << "\r\n";
+            if (line.size() >= view_size.horizontal) {
+                std::cout << line.substr(0, view_size.horizontal) << "\r\n";
+            } else {
+                std::cout << line << "\r\n";
+            }
         } else {
             std::cout << "\r\n";
         }
