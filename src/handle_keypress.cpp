@@ -4,6 +4,7 @@
 
 #include <rawterm/rawterm.h>
 
+#include "actions.h"
 #include "constants.h"
 #include "signal_tracker.h"
 #include "text_manip.h"
@@ -37,7 +38,7 @@ void Viewport::keypress_read() {
         }
         // Insert mode
         if (k.code == 'i' && modifier == rawterm::Mod::None) {
-            switch_to_insert();
+            action_controller.action_event(Action::EnterInsertMode);
 
         } else if (k.code == 'a' && modifier == rawterm::Mod::None) {
             cursor.set_pos_rel(0, 1, buffer->lineno_offset);

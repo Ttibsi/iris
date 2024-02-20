@@ -21,10 +21,12 @@ configure_file("${PROJECT_SOURCE_DIR}/src/version.h.in" "${PROJECT_SOURCE_DIR}/s
 add_subdirectory(highlighting)
 
 add_library(lib SHARED
+    actions.cpp
     buffer.cpp
     file_manip.cpp
     handle_keypress.cpp
     text_manip.cpp
+    viewport.cpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp)
