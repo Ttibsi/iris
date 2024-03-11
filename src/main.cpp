@@ -8,7 +8,7 @@
 
 // TODO: Describe each function/method for future review
 
-void version() {
+void version() noexcept {
     std::cout << "Iris version: " << git_tag() << "\n"
               << "Compiled from commit: " << git_hash() << "\n"
               << "Compiled on date: " << compile_date() << "\n"

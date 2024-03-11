@@ -1,21 +1,21 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#include <string>
+#include <string_view>
 
-inline std::string git_tag() {
+[[nodiscard]] constexpr inline std::string_view git_tag() noexcept {
     return "@GIT_TAG@";
 }
 
-inline std::string git_hash() {
+[[nodiscard]] constexpr inline std::string_view git_hash() noexcept {
     return "@GIT_HASH@";
 }
 
-inline std::string compile_date() {
+[[nodiscard]] constexpr inline std::string_view compile_date() noexcept {
     return "@COMPILE_DATE@";
 }
 
-inline std::string release_mode() {
+[[nodiscard]] constexpr inline std::string_view release_mode() noexcept {
     return "@CMAKE_BUILD_TYPE@";
 }
 
