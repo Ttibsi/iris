@@ -3,20 +3,15 @@
 
 #include <string_view>
 
-[[nodiscard]] constexpr inline std::string_view git_tag() noexcept {
-    return "@GIT_TAG@";
-}
+[[nodiscard]] constexpr inline std::string_view version() noexcept {
+    const std::string release_mode = "@CMAKE_BUILD_TYPE@";
 
-[[nodiscard]] constexpr inline std::string_view git_hash() noexcept {
-    return "@GIT_HASH@";
-}
+    constexpr std::string version_str = "Iris version: " + "@GIT_TAG@" + "\n"
+              + "Compiled from commit: " + "@GIT_HASH@" + "\n"
+              + "Compiled on date: " + "@COMPILE_DATE@" + "\n"
+              + "Build type: "
+              + (release_mode.empty ? "Default" : release_mode) + "\n";
 
-[[nodiscard]] constexpr inline std::string_view compile_date() noexcept {
-    return "@COMPILE_DATE@";
-}
-
-[[nodiscard]] constexpr inline std::string_view release_mode() noexcept {
-    return "@CMAKE_BUILD_TYPE@";
-}
+    return version_str;
 
 #endif // VERSION_H

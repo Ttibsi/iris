@@ -1,20 +1,16 @@
+#include <iostream>
 #include <string>
 
 #include <cli11/CLI11.hpp>
 #include <rawterm/rawterm.h>
 
 #include "editor.h"
+#include "logger.h"
 #include "version.h"
 
-// TODO: Describe each function/method for future review
+const std::string log_file = "iris.log";
 
-void version() noexcept {
-    std::cout << "Iris version: " << git_tag() << "\n"
-              << "Compiled from commit: " << git_hash() << "\n"
-              << "Compiled on date: " << compile_date() << "\n"
-              << "Build type: "
-              << (release_mode().empty() ? "Default" : release_mode()) << "\n";
-}
+// TODO: Describe each function/method for future review
 
 int main(int argc, char *argv[]) {
     CLI::App app{ "Iris text editor" };
@@ -34,7 +30,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (print_version) {
-        version();
+        std::cout << version();
         return 0;
     }
 

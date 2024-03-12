@@ -1,6 +1,8 @@
 [ ] Switch the unit tests to catch2
-[ ] Replace highlighting with lexical analysis
+[ ] Introduce Logging
 [ ] Rework buffer and viewport relationship
+[ ] Replace highlighting with lexical analysis
+[ ] Redesign status bar
 [ ] Create minbuffer for command palete
 [ ] Introduce Actions system
 [ ] Introduce undo/redo

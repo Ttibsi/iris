@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.0)
-if (APPLE)
+if(APPLE)
     set(CMAKE_CXX_COMPILER "/usr/local/bin/g++")
 elseif(UNIX AND NOT APPLE)
     set(CMAKE_CXX_COMPILER "/usr/bin/g++-13")
@@ -17,6 +17,9 @@ add_compile_options(-Wextra)
 add_subdirectory(src)
 
 if(RUN_TESTS)
+    add_compile_options(-fsanitize=address)
+    add_compile_options(-fsanitize=undefined)
+
     enable_testing()
     message(STATUS "UNIT TESTS ENABLED")
     add_subdirectory(tests)
