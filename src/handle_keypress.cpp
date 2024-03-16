@@ -5,6 +5,7 @@
 #include <rawterm/rawterm.h>
 
 #include "constants.h"
+#include "logger.h"
 #include "signal_tracker.h"
 #include "text_manip.h"
 #include "viewport.h"
@@ -46,6 +47,9 @@ void Viewport::keypress_read() {
         } else if (k.code == 'A' && modifier == rawterm::Mod::Shift) {
             std::size_t col_pos =
                 line_size(buffer->lines[buffer->current_line]) + 1;
+            if (col_pos > view_size.horizontal) {
+                horizontal_offset = col_pos - view_size.horizontal;
+            }
             cursor.set_pos_abs(cursor.row, col_pos, buffer->lineno_offset);
             switch_to_insert();
 
@@ -57,6 +61,17 @@ void Viewport::keypress_read() {
 
             if (cursor.col > tab_count) {
                 cursor.set_pos_rel(0, -1, buffer->lineno_offset);
+                buffer->reset_status_bar(view_size, &cursor);
+            } else if (cursor.col == buffer->lineno_offset &&
+                       horizontal_offset > 0) {
+                // TODO: This else statement feels wrong - log and debug it
+                horizontal_offset--;
+                Cursor tmp = cursor;
+
+                rawterm::clear_screen();
+                cursor.set_pos_abs(1, 1, 0);
+                draw(buffer->current_line);
+                cursor.set_pos_abs(tmp.row, tmp.col, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
 
@@ -70,9 +85,23 @@ void Viewport::keypress_read() {
 
             // Right
         } else if (k.code == 'l' && modifier == rawterm::Mod::None) {
-            if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
-                cursor.set_pos_rel(0, 1, buffer->lineno_offset);
-                buffer->reset_status_bar(view_size, &cursor);
+            if (cursor.col + horizontal_offset <
+                line_size(buffer->lines[buffer->current_line])) {
+                if (cursor.col == view_size.horizontal) {
+                    // TODO: test inputting new char in weird position
+                    horizontal_offset++;
+                    Cursor tmp = cursor;
+
+                    rawterm::clear_screen();
+                    cursor.set_pos_abs(1, 1, 0);
+                    draw(buffer->current_line);
+                    cursor.set_pos_abs(tmp.row, tmp.col, buffer->lineno_offset);
+                    buffer->reset_status_bar(view_size, &cursor);
+
+                } else {
+                    cursor.set_pos_rel(0, 1, buffer->lineno_offset);
+                    buffer->reset_status_bar(view_size, &cursor);
+                }
             }
 
             // vertical movement
@@ -267,14 +296,16 @@ void Viewport::keypress_write() {
             break;
 
         } else if (modifier == Mod::Space) {
-            buffer->lines[buffer->current_line].insert(cursor.col - 1, 1, ' ');
+            buffer->lines[buffer->current_line].insert(
+                cursor.col + horizontal_offset - 1, 1, ' ');
             redraw_line();
             cursor.set_pos_rel(0, 1, buffer->lineno_offset);
             buffer->modified = true;
 
         } else if (modifier == Mod::Backspace) {
             if (cursor.col > 1) {
-                buffer->lines[buffer->current_line].erase(cursor.col - 2, 1);
+                buffer->lines[buffer->current_line].erase(
+                    cursor.col + horizontal_offset - 2, 1);
 
                 redraw_line();
                 cursor.set_pos_abs(cursor.row, cursor.col - 1,
@@ -300,7 +331,8 @@ void Viewport::keypress_write() {
 
         } else if (modifier == Mod::Delete) {
             if (cursor.col < line_size(buffer->lines[buffer->current_line])) {
-                buffer->lines[buffer->current_line].erase(cursor.col - 1, 1);
+                buffer->lines[buffer->current_line].erase(
+                    cursor.col + horizontal_offset - 1, 1);
 
                 redraw_line();
                 cursor.set_pos_abs(cursor.row, cursor.col,
@@ -330,7 +362,8 @@ void Viewport::keypress_write() {
             draw(buffer->current_line - cursor.row + 1);
             buffer->current_line++;
 
-            cursor.set_pos_abs(cursor.row + 1, 1, buffer->lineno_offset);
+            cursor.set_pos_abs(cursor.row + horizontal_offset + 1, 1,
+                               buffer->lineno_offset);
             buffer->modified = true;
 
         } else if (modifier == Mod::Arrow) {

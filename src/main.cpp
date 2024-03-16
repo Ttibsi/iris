@@ -4,8 +4,10 @@
 #include <rawterm/rawterm.h>
 
 #include "editor.h"
+#include "logger.h"
 #include "version.h"
 
+const std::string log_file = "iris.log";
 // TODO: Describe each function/method for future review
 
 void version() {

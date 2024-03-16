@@ -17,6 +17,7 @@ struct Viewport {
     rawterm::Pos view_size;
     Cursor cursor;
     bool resize_flag = false;
+    int horizontal_offset = 0;
 
     Viewport(Buffer *, rawterm::Pos);
     void draw(const std::size_t &);
@@ -63,7 +64,9 @@ inline void Viewport::draw(const std::size_t &start_point) {
                 highlight_line(buffer->lang, line);
             }
             if (line.size() >= view_size.horizontal) {
-                std::cout << line.substr(0, view_size.horizontal) << "\r\n";
+                std::cout << line.substr(horizontal_offset,
+                                         view_size.horizontal)
+                          << "\r\n";
             } else {
                 std::cout << line << "\r\n";
             }
@@ -101,9 +104,12 @@ inline void Viewport::redraw_line() {
     }
 
     if (line.size() >= view_size.horizontal) {
-        std::cout << line.substr(0, view_size.horizontal) << "\r\n";
+        std::cout << line.substr(horizontal_offset, view_size.horizontal)
+                  << "\r\n";
     } else {
-        std::cout << line << std::flush;
+        // NOTE: For an unknown reason, this used to use std::flush. It may
+        // still need that, but I can't find why
+        std::cout << line << "\r\n";
     }
 }
 
