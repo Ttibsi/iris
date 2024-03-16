@@ -86,8 +86,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
 }
 
 inline void Viewport::redraw_line() {
-    rawterm::move_cursor({ cursor.row, 1 });
-    std::cout << std::string(view_size.horizontal, ' ');
+    rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
     std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
 
@@ -101,7 +100,11 @@ inline void Viewport::redraw_line() {
                   << "\u2502";
     }
 
-    std::cout << line << std::flush;
+    if (line.size() >= view_size.horizontal) {
+        std::cout << line.substr(0, view_size.horizontal) << "\r\n";
+    } else {
+        std::cout << line << std::flush;
+    }
 }
 
 inline void Viewport::switch_to_insert() {

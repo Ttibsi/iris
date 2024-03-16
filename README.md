@@ -1,6 +1,6 @@
 # IRIS
 Yet another terminal text editor. Taking a ton of inspiration from vim and
-friends as well as other popular text editors (nano, emacs, VS*ode) to a lesser
+friends as well as other popular text editors (nano, emacs, VScode) to a lesser
 extent. This only currently is designed to work in macOS and Linux.
 
 All PRs are welcome
@@ -68,3 +68,6 @@ cmake -S . -B build/ && cmake --build build/
 Add the `-DRUN-TESTS=OFF` flag to cmake to disable the tests being included.
 
 To run unit tests, simply run `ctest` in the `build/`directory.
+```bash
+ctest --test-dir build/tests
+```
