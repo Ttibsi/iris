@@ -10,14 +10,6 @@
 const std::string log_file = "iris.log";
 // TODO: Describe each function/method for future review
 
-void version() {
-    std::cout << "Iris version: " << git_tag() << "\n"
-              << "Compiled from commit: " << git_hash() << "\n"
-              << "Compiled on date: " << compile_date() << "\n"
-              << "Build type: "
-              << (release_mode().empty() ? "Default" : release_mode()) << "\n";
-}
-
 int main(int argc, char *argv[]) {
     CLI::App app{ "Iris text editor" };
 
@@ -36,7 +28,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (print_version) {
-        version();
+        std::cout << version();
         return 0;
     }
 
