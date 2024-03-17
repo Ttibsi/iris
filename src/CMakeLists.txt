@@ -31,9 +31,11 @@ add_subdirectory(highlighting)
 
 add_library(lib SHARED
     buffer.cpp
+    editor.cpp
     file_manip.cpp
     handle_keypress.cpp
     text_manip.cpp
+    viewport.cpp
 )
 
 add_executable(${PROJECT_NAME} main.cpp)

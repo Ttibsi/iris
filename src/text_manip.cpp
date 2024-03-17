@@ -10,7 +10,8 @@
 #include "file_manip.h"
 #include "text_manip.h"
 
-std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
+[[nodiscard]] std::vector<std::string>
+filter_whitespace(std::vector<std::string> lines) {
     std::unordered_map<char, std::string> pairs = {
         { '\t', std::string(TABSTOP, ' ') },
     };
@@ -26,7 +27,7 @@ std::vector<std::string> filter_whitespace(std::vector<std::string> lines) {
     return lines;
 }
 
-std::string filter_whitespace(std::string line) {
+[[nodiscard]] std::string filter_whitespace(std::string line) {
     while (line.find('\t') != std::string::npos) {
         line.replace(line.find('\t'), 1, std::string(TABSTOP, ' '));
     }
@@ -34,7 +35,7 @@ std::string filter_whitespace(std::string line) {
     return line;
 }
 
-Response shell_exec(const std::string &cmd, bool output) {
+[[nodiscard]] Response shell_exec(const std::string &cmd, bool output) {
     namespace fs = std::filesystem;
     std::string tmp_dir = fs::temp_directory_path();
     int retcode = std::system((cmd + ">" + tmp_dir + "/iris_cmd_out.txt 2> " +
@@ -67,7 +68,7 @@ Response shell_exec(const std::string &cmd, bool output) {
     }
 }
 
-std::size_t count_char(const std::string &line, char c) {
+[[nodiscard]] std::size_t count_char(const std::string &line, char c) {
     std::size_t ret = 0;
     for (const char &l : line) {
         if (l == c)
@@ -76,13 +77,13 @@ std::size_t count_char(const std::string &line, char c) {
     return ret;
 }
 
-std::size_t line_size(const std::string &line) {
+[[nodiscard]] std::size_t line_size(const std::string &line) {
     auto count = count_char(line, '\t');
     return (line.size() - count) + (count * TABSTOP);
 }
 
-int find_next_whitespace(const std::string &curr_line,
-                         const std::size_t &curr_pos) {
+[[nodiscard]] int find_next_whitespace(const std::string &curr_line,
+                                       const std::size_t &curr_pos) {
     // curr_poss is 0-indexed - the string index
     int ret = 0;
 
@@ -96,8 +97,8 @@ int find_next_whitespace(const std::string &curr_line,
     return curr_line.size();
 }
 
-int find_prev_whitespace(const std::string &curr_line,
-                         const std::size_t &curr_pos) {
+[[nodiscard]] int find_prev_whitespace(const std::string &curr_line,
+                                       const std::size_t &curr_pos) {
     // curr_poss is 0-indexed - the string index
     int ret = 0;
 
@@ -111,7 +112,7 @@ int find_prev_whitespace(const std::string &curr_line,
     return 1;
 }
 
-bool is_numeric(const std::string &s) {
+[[nodiscard]] bool is_numeric(const std::string &s) {
     for (auto &&letter : s) {
         if (!(std::isdigit(letter)))
             return false;
@@ -120,8 +121,8 @@ bool is_numeric(const std::string &s) {
     return true;
 }
 
-std::optional<rawterm::Pos> find_in_text(std::span<std::string> haystack,
-                                         std::string needle) {
+[[nodiscard]] std::optional<rawterm::Pos>
+find_in_text(std::span<std::string> haystack, std::string needle) {
     for (unsigned int i = 0; i < haystack.size(); i++) {
         if (haystack[i].find(needle) != std::string::npos) {
             rawterm::Pos p = { i, haystack[i].find(needle) +
@@ -157,7 +158,7 @@ void join_lines(std::vector<std::string> &lines, unsigned int first) {
     lines.erase(lines.begin() + first + 1);
 }
 
-std::string parse_shebang(std::string line) {
+[[nodiscard]] std::string parse_shebang(std::string line) {
     if (line.find(' ') != std::string::npos) {
         return line.substr(line.find(' ') + 1, line.size());
     } else {

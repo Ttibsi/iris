@@ -9,7 +9,7 @@
 #include "file_manip.h"
 #include "text_manip.h"
 
-std::vector<std::string> open_file(const std::string &file) {
+[[nodiscard]] std::vector<std::string> open_file(const std::string &file) {
     std::ifstream ifs(file);
     std::string line;
     std::vector<std::string> lines;
@@ -26,14 +26,14 @@ std::vector<std::string> open_file(const std::string &file) {
     return lines;
 }
 
-bool is_readonly(const std::string &file) {
+[[nodiscard]] bool is_readonly(const std::string &file) {
     if (access(file.c_str(), W_OK) == -1) {
         return true;
     }
     return false;
 }
 
-std::string filename_only(std::string f) {
+[[nodiscard]] std::string filename_only(std::string f) {
     // TODO: Windows
     std::string delim = "/";
 
@@ -47,7 +47,7 @@ std::string filename_only(std::string f) {
     return f;
 }
 
-std::string get_shebang(const std::string &filename) {
+[[nodiscard]] std::string get_shebang(const std::string &filename) {
     std::ifstream ifs(filename);
     std::string line;
     std::getline(ifs, line);
@@ -58,7 +58,7 @@ std::string get_shebang(const std::string &filename) {
     return "";
 }
 
-Language get_file_type(const std::string &file) {
+[[nodiscard]] Language get_file_type(const std::string &file) {
     namespace fs = std::filesystem;
     auto path = fs::path(file);
 
@@ -80,8 +80,8 @@ Language get_file_type(const std::string &file) {
     }
 }
 
-std::size_t write_to_file(const std::string &file,
-                          std::vector<std::string> lines) {
+[[nodiscard]] std::size_t write_to_file(const std::string &file,
+                                        std::vector<std::string> lines) {
     if (file == "NO FILE") {
         return -1;
     }
