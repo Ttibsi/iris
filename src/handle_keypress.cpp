@@ -59,12 +59,7 @@ void Viewport::keypress_read() {
                 line_size(buffer->lines[buffer->current_line]) -
                 buffer->lines[buffer->current_line].size();
 
-            if (cursor.col > tab_count) {
-                cursor.set_pos_rel(0, -1, buffer->lineno_offset);
-                buffer->reset_status_bar(view_size, &cursor);
-            } else if (cursor.col == buffer->lineno_offset &&
-                       horizontal_offset > 0) {
-                // TODO: This else statement feels wrong - log and debug it
+            if (cursor.col == buffer->lineno_offset && horizontal_offset > 0) {
                 horizontal_offset--;
                 Cursor tmp = cursor;
 
@@ -72,6 +67,9 @@ void Viewport::keypress_read() {
                 cursor.set_pos_abs(1, 1, 0);
                 draw(buffer->current_line);
                 cursor.set_pos_abs(tmp.row, tmp.col, buffer->lineno_offset);
+                buffer->reset_status_bar(view_size, &cursor);
+            } else if (cursor.col > tab_count) {
+                cursor.set_pos_rel(0, -1, buffer->lineno_offset);
                 buffer->reset_status_bar(view_size, &cursor);
             }
 

@@ -63,7 +63,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
             if (buffer->lang != Language::UNKNOWN) {
                 highlight_line(buffer->lang, line);
             }
-            if (line.size() >= view_size.horizontal) {
+            if (line_size(line) >= view_size.horizontal) {
                 std::cout << line.substr(horizontal_offset,
                                          view_size.horizontal)
                           << "\r\n";
@@ -103,7 +103,7 @@ inline void Viewport::redraw_line() {
                   << "\u2502";
     }
 
-    if (line.size() >= view_size.horizontal) {
+    if (line_size(line) >= view_size.horizontal) {
         std::cout << line.substr(horizontal_offset, view_size.horizontal)
                   << "\r\n";
     } else {
