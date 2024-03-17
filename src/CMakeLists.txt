@@ -15,6 +15,11 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 string(TIMESTAMP COMPILE_DATE "%Y/%m/%d")
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    set(BUILD_MODE "Default")
+else()
+    set(BUILD_MODE ${CMAKE_BUILD_TYPE})
+endif()
 
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/version.h.in"
