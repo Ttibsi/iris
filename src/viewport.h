@@ -17,6 +17,7 @@ struct Viewport {
     rawterm::Pos view_size;
     Cursor cursor;
     bool resize_flag = false;
+    int horizontal_offset = 0;
 
     Viewport(Buffer *, rawterm::Pos);
     void draw(const std::size_t &);
@@ -62,8 +63,13 @@ inline void Viewport::draw(const std::size_t &start_point) {
             if (buffer->lang != Language::UNKNOWN) {
                 highlight_line(buffer->lang, line);
             }
-            // TODO: Cut off line based off of horizontal space
-            std::cout << line << "\r\n";
+            if (line_size(line) >= view_size.horizontal) {
+                std::cout << line.substr(horizontal_offset,
+                                         view_size.horizontal)
+                          << "\r\n";
+            } else {
+                std::cout << line << "\r\n";
+            }
         } else {
             std::cout << "\r\n";
         }
@@ -83,8 +89,7 @@ inline void Viewport::draw(const std::size_t &start_point) {
 }
 
 inline void Viewport::redraw_line() {
-    rawterm::move_cursor({ cursor.row, 1 });
-    std::cout << std::string(view_size.horizontal, ' ');
+    rawterm::clear_line();
     rawterm::move_cursor({ cursor.row, 1 });
     std::string line = filter_whitespace(buffer->lines[buffer->current_line]);
 
@@ -98,7 +103,14 @@ inline void Viewport::redraw_line() {
                   << "\u2502";
     }
 
-    std::cout << line << std::flush;
+    if (line_size(line) >= view_size.horizontal) {
+        std::cout << line.substr(horizontal_offset, view_size.horizontal)
+                  << "\r\n";
+    } else {
+        // NOTE: For an unknown reason, this used to use std::flush. It may
+        // still need that, but I can't find why
+        std::cout << line << "\r\n";
+    }
 }
 
 inline void Viewport::switch_to_insert() {

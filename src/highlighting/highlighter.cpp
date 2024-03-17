@@ -49,7 +49,7 @@ void highlight_line(Language language, std::string &line) {
             // its own file
             std::string result_text = "\x1b[38;2;" +
                                       parse_colour(colour_scheme[re.first]) +
-                                      "$1\x1B[0m";
+                                      "$1\x1b[0m";
             line = std::regex_replace(line, re.second, result_text);
         }
     }

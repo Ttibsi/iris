@@ -1207,14 +1207,14 @@ namespace CLI {
 
             /// Get the first value (really just the underlying value)
             template <typename Q>
-            static auto first(Q &&pair_value)
-                -> decltype(std::forward<Q>(pair_value)) {
+            static auto
+            first(Q &&pair_value) -> decltype(std::forward<Q>(pair_value)) {
                 return std::forward<Q>(pair_value);
             }
             /// Get the second value (really just the underlying value)
             template <typename Q>
-            static auto second(Q &&pair_value)
-                -> decltype(std::forward<Q>(pair_value)) {
+            static auto
+            second(Q &&pair_value) -> decltype(std::forward<Q>(pair_value)) {
                 return std::forward<Q>(pair_value);
             }
         };
@@ -1264,17 +1264,18 @@ namespace CLI {
         // used in the parse detection
         template <typename T, typename C> class is_direct_constructible {
             template <typename TT, typename CC>
-            static auto test(int, std::true_type) -> decltype(
+            static auto
+            test(int, std::true_type) -> decltype(
 // NVCC warns about narrowing conversions here
 #ifdef __CUDACC__
 #pragma diag_suppress 2361
 #endif
-                TT{ std::declval<CC>() }
+                                          TT{ std::declval<CC>() }
 #ifdef __CUDACC__
 #pragma diag_default 2361
 #endif
-                ,
-                std::is_move_assignable<TT>());
+                                          ,
+                                          std::is_move_assignable<TT>());
 
             template <typename TT, typename CC>
             static auto test(int, std::false_type) -> std::false_type;
@@ -1297,9 +1298,9 @@ namespace CLI {
         template <typename T, typename S = std::ostringstream>
         class is_ostreamable {
             template <typename TT, typename SS>
-            static auto test(int)
-                -> decltype(std::declval<SS &>() << std::declval<TT>(),
-                            std::true_type());
+            static auto test(int) -> decltype(std::declval<SS &>()
+                                                  << std::declval<TT>(),
+                                              std::true_type());
 
             template <typename, typename>
             static auto test(...) -> std::false_type;
@@ -1312,9 +1313,9 @@ namespace CLI {
         template <typename T, typename S = std::istringstream>
         class is_istreamable {
             template <typename TT, typename SS>
-            static auto test(int)
-                -> decltype(std::declval<SS &>() >> std::declval<TT &>(),
-                            std::true_type());
+            static auto test(int) -> decltype(std::declval<SS &>() >>
+                                                  std::declval<TT &>(),
+                                              std::true_type());
 
             template <typename, typename>
             static auto test(...) -> std::false_type;
@@ -1326,9 +1327,9 @@ namespace CLI {
         /// Check for complex
         template <typename T> class is_complex {
             template <typename TT>
-            static auto test(int)
-                -> decltype(std::declval<TT>().real(),
-                            std::declval<TT>().imag(), std::true_type());
+            static auto test(int) -> decltype(std::declval<TT>().real(),
+                                              std::declval<TT>().imag(),
+                                              std::true_type());
 
             template <typename> static auto test(...) -> std::false_type;
 
@@ -1406,10 +1407,10 @@ namespace CLI {
             // static auto test(int)
             //     -> decltype(std::conditional<(std::tuple_size<SS>::value >
             //     0), std::true_type, std::false_type>::type());
-            static auto test(int)
-                -> decltype(std::tuple_size<
-                                typename std::decay<SS>::type>::value,
-                            std::true_type{});
+            static auto
+            test(int) -> decltype(std::tuple_size<
+                                      typename std::decay<SS>::type>::value,
+                                  std::true_type{});
             template <typename> static auto test(...) -> std::false_type;
 
           public:
@@ -3758,9 +3759,9 @@ namespace CLI {
 
         template <typename C, typename V> struct has_find {
             template <typename CC, typename VV>
-            static auto test(int)
-                -> decltype(std::declval<CC>().find(std::declval<VV>()),
-                            std::true_type());
+            static auto
+            test(int) -> decltype(std::declval<CC>().find(std::declval<VV>()),
+                                  std::true_type());
             template <typename, typename>
             static auto test(...) -> decltype(std::false_type());
 

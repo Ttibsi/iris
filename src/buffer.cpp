@@ -48,6 +48,8 @@ void Buffer::init(rawterm::Pos view_size, int line_num) {
     }
 }
 
+// TODO: Work out more truncating with really small widths
+// potentially just not render git branch and file name when not enough space
 std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     // Left - Mode, filename, modified/readonly, git branch
     // Right - file type, current/total line number
@@ -58,7 +60,9 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
     } else if (modified) {
         left += " | [X] | ";
     } else {
+        // TODO: Decide which I like
         left += " | [ ] | ";
+        // left += " | ";
     }
 
     // NOTE: No branch/git = empty string
@@ -78,6 +82,14 @@ std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
                                                 git_branch.value().end(),
                                                 isspace),
                                  git_branch.value().end());
+
+        // trucate or it'll crash
+        if (git_branch.value().size() > view->view_size.horizontal / 4) {
+            git_branch =
+                git_branch.value().substr(0, view->view_size.horizontal / 4) +
+                "...";
+        }
+
         left += git_branch.value() + " |";
     }
 

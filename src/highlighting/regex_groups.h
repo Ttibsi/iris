@@ -34,7 +34,7 @@ const std::regex number_literal =
 using hl_group_t =
     std::unordered_map<Language, std::vector<std::pair<Token, std::regex>>>;
 inline hl_group_t highlight_groups = {
-    {Language::BASH,
+    { Language::BASH,
      {
           { Token::NUMBER_LITERAL, number_literal },
           { Token::COMMENT, std::regex("^(# *[^ TODO:].+)") },
@@ -57,7 +57,7 @@ inline hl_group_t highlight_groups = {
                 "install|ln|make|mkdir|mv|popd|printf|pushd|rm|rmdir|sed|set|"
                 "sort|sudo|tail|tar|touch|umask|unset)\\b") },
 
-      }},
+      } },
     { Language::CMAKE,
      {
           // This has to go first or it overwrites other escape codes
@@ -78,7 +78,7 @@ inline hl_group_t highlight_groups = {
                        "NEWER_THAN|MATCHES|(STR|VERSION_)?(LESS|GREATER|"
                        "EQUAL|ON|OFF|CXX|SET|VERSION))\\b") },
 
-      }},
+      } },
     { Language::PYTHON,
      {
           // This has to go first or it overwrites other escape codes
@@ -100,7 +100,7 @@ inline hl_group_t highlight_groups = {
                        "Sequence|Union|None|List|Dict|Tuple|NamedTuple)(?!["
                        "a-zA-Z])\\b") },
 
-      }}
+      } }
 };
 
 #endif // REGEX_GROUPS_H
