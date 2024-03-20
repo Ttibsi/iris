@@ -21,6 +21,9 @@ struct Editor {
     void start(int);
     void set_mode(Mode m);
     [[nodiscard]] std::string get_mode();
+    int new_buffer();
+    void load_next_buffer();
+    void load_prev_buffer();
 };
 
 #endif // EDITOR_H

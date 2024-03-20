@@ -49,8 +49,19 @@ void Viewport::draw(const std::size_t &start_point) {
         }
     }
 
-    std::cout << buffer->render_status_bar(
-        view_size.horizontal + buffer->lineno_offset, &cursor);
+    if (buffer->editor->buffers.size() > 1) {
+        std::string tab_bar = " ";
+        for (auto &&b : buffer->editor->buffers) {
+            tab_bar += "| " + b.file + " | ";
+        }
+        std::cout << rawterm::inverse(
+            tab_bar + std::string(view_size.horizontal - tab_bar.size(), ' '));
+    }
+    eternals
+
+            std::cout
+        << buffer->render_status_bar(
+               view_size.horizontal + buffer->lineno_offset, &cursor);
     std::cout << "\r\n";
 }
 

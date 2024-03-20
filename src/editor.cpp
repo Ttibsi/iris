@@ -28,3 +28,13 @@ void Editor::set_mode(Mode m) { mode = m; }
         return "";
     }
 }
+
+int Editor::new_buffer() {
+    buffers.push_back(Buffer(this));
+    buffers.back().init({ term_size.vertical - 3, term_size.horizontal }, 0);
+
+    return buffers.size();
+}
+
+void Editor::load_next_buffer() {}
+void Editor::load_prev_buffer() {}

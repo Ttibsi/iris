@@ -267,6 +267,23 @@ void Viewport::keypress_read() {
             draw(buffer->current_line - cursor.row + 1);
             buffer->modified = true;
             buffer->reset_status_bar(view_size, &cursor);
+
+            // tabs
+        } else if (k.code == 't' && modifier == rawterm::Mod::Shift) {
+            rawterm::Key k2 = rawterm::process_keypress();
+            rawterm::Mod mod2 = rawterm::getMod(&k);
+
+            // tt - new tab
+            // tn - tab next
+            // tp - tab prev
+            if (k2.code == 't' && mod2 == rawterm::Mod::None) {
+                buffer->editor->new_buffer();
+                break;
+            } else if (k2.code == 'n' && mod2 == rawterm::Mod::None) {
+                buffer->editor->load_next_buffer()
+            } else if (k2.code == 'p' && mod2 == rawterm::Mod::None) {
+                buffer->editor->load_prev_buffer()
+            }
         }
     }
 }
