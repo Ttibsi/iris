@@ -12,7 +12,7 @@ enum class Language {
     TEXT,
 };
 
-inline std::string lang_string(const Language &l) {
+[[nodiscard]] inline std::string lang_string(const Language &l) {
     switch (l) {
     case Language::UNKNOWN:
         return "UNKNOWN";

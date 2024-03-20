@@ -29,12 +29,12 @@ struct Buffer {
     Buffer(Editor *);
     Buffer(Editor *, std::string);
     void init(rawterm::Pos, int);
-    std::string render_status_bar(const std::size_t &, Cursor *);
+    [[nodiscard]] std::string render_status_bar(const std::size_t &, Cursor *);
     void reset_status_bar(rawterm::Pos, Cursor *);
     void split_lines(const Cursor &);
     void parse_command(const std::string &);
-    std::optional<rawterm::Pos> find_cmd();
-    unsigned int replace_cmd();
+    [[nodiscard]] std::optional<rawterm::Pos> find_cmd();
+    [[nodiscard]] unsigned int replace_cmd();
     void resize_handle();
 };
 

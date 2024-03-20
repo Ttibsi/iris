@@ -3,11 +3,12 @@
 
 #include <span>
 #include <string>
+#include <string_view>
 
 #include "highlighting/languages.h"
 
-std::string parse_colour(std::string);
-void highlight(Language, std::span<std::string>);
-void highlight_line(Language, std::string &);
+[[nodiscard]] const std::string parse_colour(std::string) noexcept;
+void highlight(const Language &, std::span<std::string>);
+void highlight_line(const Language &, std::string &);
 
 #endif // HIGHLIGHTER_H

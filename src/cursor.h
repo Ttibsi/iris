@@ -13,13 +13,13 @@ struct Cursor {
     std::size_t col;
 
     Cursor(std::size_t offset) : row(1), col(1) { set_pos_abs(1, 1, offset); }
-    void set_pos_abs(std::size_t, std::size_t, std::size_t);
-    void set_pos_rel(std::size_t, std::size_t, std::size_t);
+    void set_pos_abs(std::size_t, std::size_t, std::size_t) noexcept;
+    void set_pos_rel(std::size_t, std::size_t, std::size_t) noexcept;
     friend std::ostream &operator<<(std::ostream &os, const Cursor &c);
 };
 
 inline void Cursor::set_pos_abs(std::size_t r, std::size_t c,
-                                std::size_t offset) {
+                                std::size_t offset) noexcept {
     if (r >= 1 && c >= 1) {
         row = r;
         col = c;
@@ -28,7 +28,7 @@ inline void Cursor::set_pos_abs(std::size_t r, std::size_t c,
 };
 
 inline void Cursor::set_pos_rel(std::size_t r, std::size_t c,
-                                std::size_t offset) {
+                                std::size_t offset) noexcept {
     if (row + r >= 1) {
         row += r;
     }

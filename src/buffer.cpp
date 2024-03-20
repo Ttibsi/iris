@@ -50,7 +50,8 @@ void Buffer::init(rawterm::Pos view_size, int line_num) {
 
 // TODO: Work out more truncating with really small widths
 // potentially just not render git branch and file name when not enough space
-std::string Buffer::render_status_bar(const std::size_t &width, Cursor *c) {
+[[nodiscard]] std::string Buffer::render_status_bar(const std::size_t &width,
+                                                    Cursor *c) {
     // Left - Mode, filename, modified/readonly, git branch
     // Right - file type, current/total line number
 
@@ -156,7 +157,7 @@ void Buffer::parse_command(const std::string &cmd) {
         // NOTE: Run cmd without output
         std::string shell_cmd = "";
         shell_cmd += cmd.substr(2, cmd.size());
-        shell_exec(shell_cmd, false);
+        Response resp = shell_exec(shell_cmd, false);
 
     } else if (cmd.starts_with(";.!"sv)) {
         // TODO: Wrie the output of a command to a buffer
@@ -218,7 +219,7 @@ void Buffer::parse_command(const std::string &cmd) {
     return;
 }
 
-std::optional<rawterm::Pos> Buffer::find_cmd() {
+[[nodiscard]] std::optional<rawterm::Pos> Buffer::find_cmd() {
     using rawterm::Mod;
     std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
     std::string prompt = "find > ";
@@ -262,7 +263,7 @@ std::optional<rawterm::Pos> Buffer::find_cmd() {
     return {};
 }
 
-unsigned int Buffer::replace_cmd() {
+[[nodiscard]] unsigned int Buffer::replace_cmd() {
     using rawterm::Mod;
     std::vector<Mod> searchable = { Mod::None, Mod::Shift, Mod::Space };
     std::string prompt = "replace > ";

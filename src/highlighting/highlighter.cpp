@@ -4,7 +4,7 @@
 #include "highlighting/regex_groups.h"
 #include "highlighting/theme_parsing.h"
 
-std::string parse_colour(std::string raw) {
+[[nodiscard]] const std::string parse_colour(std::string raw) noexcept {
     std::string ret = "";
 
     int placeholder;
@@ -20,7 +20,7 @@ std::string parse_colour(std::string raw) {
     return ret;
 }
 
-void highlight(Language language, std::span<std::string> lines) {
+void highlight(const Language &language, std::span<std::string> lines) {
     if (language == Language::UNKNOWN) {
         return;
     }
@@ -33,7 +33,7 @@ void highlight(Language language, std::span<std::string> lines) {
     }
 }
 
-void highlight_line(Language language, std::string &line) {
+void highlight_line(const Language &language, std::string &line) {
     const std::string close_suffix = "[0m";
     auto colour_scheme = get_theme();
 
