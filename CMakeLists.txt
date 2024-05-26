@@ -5,8 +5,8 @@ elseif(UNIX AND NOT APPLE)
     set(CMAKE_CXX_COMPILER "/usr/bin/g++-13")
 endif()
 
-project(iris LANGUAGES CXX VERSION 0.1.0)
-option(RUN_TESTS "Run unit tests" ON)
+project(iris LANGUAGES CXX)
+option(RUN_TESTS "Run unit tests" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
