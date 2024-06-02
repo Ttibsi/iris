@@ -14,3 +14,31 @@ TEST_CASE("open_file", "[FILESYSTEM]") {
     REQUIRE(actual.has_value() == true);
     REQUIRE(actual.value() == expected);
 }
+
+TEST_CASE("shell_exec", "[FILESYSTEM]") {
+    SECTION("Standard accept") {
+        Response expected = {"hi", "", 0};
+        auto out = shell_exec("echo -n 'hi'", true);
+
+        REQUIRE(out.has_value());
+        REQUIRE(out.value().stdout == expected.stdout);
+        REQUIRE(out.value().stderr == expected.stderr);
+        REQUIRE(out.value().retcode == expected.retcode);
+    }
+
+    SECTION("No Response needed") {
+        auto out = shell_exec("echo 'hi'", false);
+        REQUIRE_FALSE(out.has_value());
+    }
+
+    SECTION("Executed command failed") {
+        auto out = shell_exec("mv", true);
+        Response r;
+        r.stderr = "mv: missing file operand\nTry 'mv --help' for more information.\n";
+        r.retcode = 256;
+
+        REQUIRE(out.value().stdout == r.stdout);
+        REQUIRE(out.value().stderr == r.stderr);
+        REQUIRE(out.value().retcode == r.retcode);
+    }
+}

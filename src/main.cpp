@@ -1,8 +1,8 @@
-#include <rawterm/core.h>
-
-#include <cli11/CLI11.hpp>
 #include <iostream>
 #include <string>
+
+#include <cli11/CLI11.hpp>
+#include <rawterm/core.h>
 
 #include "editor.h"
 #include "logger.h"

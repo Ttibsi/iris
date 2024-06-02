@@ -1,13 +1,14 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <rawterm/core.h>
-
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include <rawterm/core.h>
+
 #include "gapvector.h"
+#include "model.h"
 #include "view.h"
 
 enum class Mode { Read, Write, Command };
@@ -20,17 +21,17 @@ struct MVMapItem {
 };
 
 struct Editor {
-    std::vector<Gapvector<>> models = {};
+    std::vector<Model> models = {};
     std::vector<View> views = {};
     std::vector<MVMapItem> model_view_map = {};
     unsigned int active_view = 0;  // index into views
     rawterm::Pos term_size;
     Mode mode;
+    std::string git_branch;
 
     Editor();
     void init(const std::string&);
     void start_controller();
-    std::vector<std::string> model_to_view() const;
     void set_mode(Mode);
     [[nodiscard]] std::string get_mode() const;
     [[nodiscard]] int get_current_model() const;

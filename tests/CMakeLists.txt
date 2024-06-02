@@ -20,6 +20,7 @@ add_executable(test_exe
     gapvector_test.cpp
     logger_test.cpp
     model_test.cpp
+    text_transform_test.cpp
     view_test.cpp
 )
 

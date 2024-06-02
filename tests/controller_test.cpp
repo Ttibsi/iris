@@ -1,9 +1,9 @@
 #include "controller.h"
 
-#include <unistd.h>
-
 #include <array>
+
 #include <catch2/catch_test_macros.hpp>
+#include <unistd.h>
 
 // Helper function to simulate keypress by writing to a pipe
 void simulate_keypress(int write_fd, char ch) {

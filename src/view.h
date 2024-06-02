@@ -1,12 +1,12 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <rawterm/core.h>
-#include <rawterm/extras/pane.h>
-
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <rawterm/core.h>
+#include <rawterm/extras/pane.h>
 
 struct View {
     rawterm::PaneManager<std::vector<std::string>> pane_manager;

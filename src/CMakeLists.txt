@@ -5,7 +5,7 @@ include(FetchContent)
 fetchcontent_declare(
   rawterm
   GIT_REPOSITORY https://github.com/ttibsi/rawterm
-  GIT_TAG        ae4852a1a2f68afd92c01016d0589c2931102d67
+  GIT_TAG        49cd2273b6e250cbc17930a854331d0c80592f69
 )
 fetchcontent_makeavailable(rawterm)
 
@@ -49,6 +49,8 @@ add_library(iris_src STATIC
     controller.cpp
     editor.cpp
     filesystem.cpp
+    model.cpp
+    text_transform.cpp
     view.cpp
 )
 target_link_libraries(iris_src PUBLIC rawterm)
