@@ -1,5 +1,7 @@
 #include "text_transform.h"
 
+#include <ranges>
+
 [[nodiscard]] std::string strip_trailing_whitespace(std::string str) {
     if (str.find_last_not_of(' ') == str.size()) {
         return str;

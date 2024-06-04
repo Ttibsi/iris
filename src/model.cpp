@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <cmath>
+#include <filesystem>
 #include <format>
 
 #include "constants.h"
@@ -70,9 +72,16 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
     std::string right = "| " + std::to_string(current_line) + ":" + std::to_string(line_col) + " ";
 
     // TODO: handle overflows
-    unsigned int divide = (width - (left.size() + filename.size() + right.size())) / 2;
-    std::string ret = left + std::string(divide - (filename.size() / 2), ' ') + filename +
-                      std::string(divide + (filename.size() / 2), ' ') + right;
+    float divide = static_cast<float>(width - (left.size() + filename.size() + right.size())) / 2.0;
+    auto temp_file = std::filesystem::path(filename);
+
+    std::string ret =
+        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') +
+        ((filename.size() > static_cast<unsigned int>(width / 3)) ? temp_file.filename().string()
+                                                                  : filename) +
+        std::string(
+            divide + static_cast<int>(filename.size() / 2) + !(floorf(divide) == divide), ' ') +
+        right;
 
     if (static_cast<int>(ret.size()) != width) {
         throw std::runtime_error(

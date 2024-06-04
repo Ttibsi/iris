@@ -49,7 +49,7 @@ TEST_CASE("render_status_bar", "[MODEL]") {
     REQUIRE(m.filename == "test_file_1.txt");
 
     std::string expected = rawterm::set_background(" READ", COLOR_1);
-    auto actual = m.render_status_bar(48);
+    auto actual = m.render_status_bar(80);
 
     REQUIRE(actual == expected);
 }
