@@ -48,8 +48,11 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
         }
     }
 
-    auto sb = render_status_bar(dims.horizontal);
-    ret.push_back(sb);
+    for (auto i = line_count; i < dims.vertical - 1; i++) {
+        ret.push_back("\n");
+    }
+    ret.push_back(render_status_bar(dims.horizontal));
+    assert(ret.size() == static_cast<unsigned long>(dims.vertical));
     return ret;
 }
 

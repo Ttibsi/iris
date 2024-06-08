@@ -25,9 +25,9 @@ TEST_CASE("constructor with open file", "[MODEL]") {
 }
 
 TEST_CASE("render", "[MODEL]") {
-    SKIP("THIS IS RUNNING VERY SLOW");
+    // SKIP("THIS IS RUNNING VERY SLOW");
     Editor e;
-    auto v = View(rawterm::Pos {10, 10});
+    auto v = View(rawterm::Pos {24, 80});
 
     auto file = open_file("tests/fixture/test_file_1.txt");
     auto m = Model(&e, Gapvector(file.value().begin(), file.value().end()), "test_file_1.txt");
@@ -39,7 +39,11 @@ TEST_CASE("render", "[MODEL]") {
     };
     auto actual = m.render(&v);
 
-    REQUIRE(actual == expected);
+    // We aren't comparing the statusbar here, that's for the test below
+    REQUIRE(actual.size() == 24);
+    REQUIRE(actual.at(0) == expected.at(0));
+    REQUIRE(actual.at(1) == expected.at(1));
+    REQUIRE(actual.at(2) == expected.at(2));
 }
 
 TEST_CASE("render_status_bar", "[MODEL]") {
@@ -48,8 +52,10 @@ TEST_CASE("render_status_bar", "[MODEL]") {
     auto m = Model(&e, Gapvector(file.value().begin(), file.value().end()), "test_file_1.txt");
     REQUIRE(m.filename == "test_file_1.txt");
 
-    std::string expected = rawterm::set_background(" READ", COLOR_1);
     auto actual = m.render_status_bar(80);
 
-    REQUIRE(actual == expected);
+    REQUIRE(actual.find("READ") != std::string::npos);
+    REQUIRE(actual.find(e.git_branch) != std::string::npos);
+    REQUIRE(actual.find("1:1") != std::string::npos);
+    REQUIRE(rawterm::raw_size(actual) == 80);
 }
