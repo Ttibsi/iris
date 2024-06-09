@@ -6,6 +6,23 @@ ColumnLimit: '100'
 ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 Cpp11BracedListStyle: 'true'
 IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: "(<[0-9a-z_-]*>)"
+    Priority: 1
+    SortPriority: 1
+    CaseSensitive: false
+  - Regex: '(<.+[/0-9a-z_]*\.h[p]?[p]?>)'
+    Priority: 2
+    SortPriority: 3
+    CaseSensitive: false
+  - Regex: '(".*\.h[p]?[p]?")'
+    Priority: 3
+    SortPriority: 4
+    CaseSensitive: false
+  - Regex: '(".+[/0-9a-z_]*\.h[p]?[p]?")'
+    Priority: 3
+    SortPriority: 5
+    CaseSensitive: false
 IndentWidth: '4'
 Language: Cpp
 NamespaceIndentation: All

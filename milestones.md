@@ -1,7 +1,7 @@
 # Milestones
 
 * [x] Display a text file on the screen
-* [ ] Display line numbers and a statusbar
+* [x] Display line numbers and a statusbar
 * [ ] Move cursor and scroll through a file
 * [ ] Modify and save the file
 * [ ] Handle displaying tab characters with specific widths
