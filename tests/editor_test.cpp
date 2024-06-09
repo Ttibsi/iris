@@ -2,8 +2,21 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "filesystem.h"
+
+TEST_CASE("constructor", "[EDITOR]") {
+    Editor e;
+
+    REQUIRE(e.models.capacity() == 8);
+    REQUIRE(e.views.capacity() == 8);
+    REQUIRE(e.models.size() == 0);
+    REQUIRE(e.views.size() == 1);
+}
+
 TEST_CASE("init", "[EDITOR]") {
     Editor e;
+    auto v = View(rawterm::Pos {24, 80});
+    e.views.push_back(v);
     e.init("tests/fixture/test_file_1.txt");
 
     REQUIRE(e.models.size() == 1);

@@ -12,7 +12,7 @@ def run_shell_cmd(
         *,
         env: dict[str, str] | None = None,
         debug: bool = False,
-) -> int:
+) -> None:
 
     if debug:
         print(f"RUNNING COMMAND: {cmd}")
@@ -22,11 +22,11 @@ def run_shell_cmd(
 
 def loc() -> None:
     run_shell_cmd(
-        (
-            "cloc . ../rawterm" +
-            " --exclude-dir=build,.cache,cli11,examples" +
-            " --exclude-ext=md"
-        ),
+        " ".join([
+            "cloc . ../rawterm",
+            " --exclude-dir=build,.cache,cli11,examples",
+            " --exclude-ext=md",
+        ]),
     )
 
 

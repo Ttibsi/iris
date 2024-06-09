@@ -25,7 +25,6 @@ TEST_CASE("constructor with open file", "[MODEL]") {
 }
 
 TEST_CASE("render", "[MODEL]") {
-    // SKIP("THIS IS RUNNING VERY SLOW");
     Editor e;
     auto v = View(rawterm::Pos {24, 80});
 

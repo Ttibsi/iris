@@ -27,6 +27,7 @@ void Editor::init(const std::string& file) {
     auto file_chars = open_file(file);
     if (file_chars.has_value()) {
         log("Creating model & view");
+
         models.push_back(
             Model(this, Gapvector(file_chars.value().begin(), file_chars.value().end()), file));
 

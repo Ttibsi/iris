@@ -1,26 +1,32 @@
 name: main
 on:
   pull_request:
-    branches: [ main, redraw ]
+    branches: [ main, rewrite ]
 jobs:
-  pre_commit_run:
+  pre-commit:
     runs-on: ubuntu-24.04
+    env:
+      RAWTERM_DEBUG: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-        python-version: '3.10'
+          python-version: '3.10'
       - run: sudo apt-get install clang clang-tidy
       - uses: threeal/cmake-action@v1.3.0
         with:
           run-build: true
+          options: RUN_TESTS=true
       - uses: pre-commit/action@v3.0.1
-  ctest:
+  unit-tests:
     runs-on: ubuntu-24.04
+    env:
+      RAWTERM_DEBUG: true
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install clang
       - uses: threeal/cmake-action@v1.3.0
         with:
           run-build: true
-          run-test: true
+          options: RUN_TESTS=true
+      - run: ./build/tests/test_exe
