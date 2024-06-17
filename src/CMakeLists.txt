@@ -5,7 +5,7 @@ include(FetchContent)
 fetchcontent_declare(
   rawterm
   GIT_REPOSITORY https://github.com/ttibsi/rawterm
-  GIT_TAG        49cd2273b6e250cbc17930a854331d0c80592f69
+  GIT_TAG        origin/main
 )
 fetchcontent_makeavailable(rawterm)
 

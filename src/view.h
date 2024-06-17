@@ -13,6 +13,10 @@ struct View {
     std::unordered_map<int, int> current_lines;
 
     explicit View(const rawterm::Pos&);
+    void move_cur_left();
+    void move_cur_up();
+    void move_cur_down();
+    void move_cur_right();
 };
 
 #endif  // VIEW_H

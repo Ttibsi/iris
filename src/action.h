@@ -5,7 +5,12 @@
 
 struct None {};
 
-enum class ActionType {};
+enum class ActionType {
+        MoveCursorLeft,
+        MoveCursorDown,
+        MoveCursorRight,
+        MoveCursorUp,
+};
 
 template <typename T>
 struct Action {
