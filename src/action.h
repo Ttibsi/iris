@@ -3,6 +3,9 @@
 
 #include <optional>
 
+#include "editor.h"
+#include "logger.h"
+
 struct None {};
 
 enum class ActionType {
@@ -24,6 +27,28 @@ struct Action<void> {
 };
 
 template <typename T, typename U>
-constexpr std::optional<const U> parse_action(const Action<T>&);
+constexpr std::optional<const U> parse_action(Editor* e, const Action<T>& action) {
+    switch (action.type) {
+        case ActionType::MoveCursorLeft:
+            log("Action called: MoveCursorLeft");
+            e->views.at(e->active_view).move_cur_left();
+            return {};
+        case ActionType::MoveCursorUp:
+            log("Action called: MoveCursorUp");
+            e->views.at(e->active_view).move_cur_up();
+            return {};
+        case ActionType::MoveCursorDown:
+            log("Action called: MoveCursorDown");
+            e->views.at(e->active_view).move_cur_down();
+            return {};
+        case ActionType::MoveCursorRight:
+            log("Action called: MoveCursorRight");
+            e->views.at(e->active_view).move_cur_right();
+            return {};
+        default:
+            log(Level::WARNING, "Unknown action called");
+            return {};
+    }
+}
 
 #endif  // ACTION_H

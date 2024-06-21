@@ -11,8 +11,9 @@ struct Editor;
 
 struct Model {
     const Editor* editor;
-    Gapvector<> gv;
+    Gapvector<> gv;  // TODO: Investigate char32_t to allow for unicode
     const std::string filename;
+    int linenum_offset = 0;
     int current_line = 1;
     int line_col = 1;
     bool modified = false;

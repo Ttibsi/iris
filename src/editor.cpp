@@ -3,7 +3,6 @@
 #include <rawterm/color.h>
 
 #include "constants.h"
-#include "controller.h"
 #include "filesystem.h"
 #include "logger.h"
 #include "text_transform.h"
@@ -36,22 +35,10 @@ void Editor::init(const std::string& file) {
         model_view_map.push_back({0, 0, 1});
         auto rendered_content = models.at(0).render(&views.at(active_view));
         views.at(active_view).pane_manager.set_content(rendered_content);
+        views.at(active_view).pane_manager.update();
     }
-}
 
-void Editor::start_controller() {
-    log("Starting Controller");
-    while (true) {
-        switch (parse_input()) {
-            case ParseInputRet::None:
-                continue;
-            case ParseInputRet::Break:
-                log("Breaking out from Controller");
-                return;
-            case ParseInputRet::Redraw:
-                views.at(active_view).pane_manager.draw_all();
-        }
-    }
+    // TODO: else create new empty buffer
 }
 
 void Editor::set_mode(Mode m) {

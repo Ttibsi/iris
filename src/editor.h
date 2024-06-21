@@ -31,10 +31,12 @@ struct Editor {
 
     Editor();
     void init(const std::string&);
-    void start_controller();
     void set_mode(Mode);
     [[nodiscard]] std::string get_mode() const;
     [[nodiscard]] int get_current_model() const;
+
+    // controller.cpp
+    void start_controller();
 };
 
 #endif  // EDITOR_H

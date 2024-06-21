@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
             e.init(file);
         }
         e.start_controller();
+        log("Iris shutdown");
     } catch (const std::exception& e) {
         log(Level::WARNING, e.what());
         throw;

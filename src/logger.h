@@ -25,7 +25,7 @@ enum class Level { INFO, WARNING, ERROR };
 
 // TODO: Add date/time stamp to log
 inline void log(Level lvl, std::string_view msg) {
-    if (std::getenv("RAWTERM_DEBUG") == nullptr) {
+    if (std::getenv("RAWTERM_DEBUG") != nullptr) {
         return;
     }
 

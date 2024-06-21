@@ -20,14 +20,12 @@ endif()
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 
-if(ENABLE_ASAN)
-    add_compile_options(-g)
-    add_compile_options(-fsanitize=address)
-endif()
-
 add_subdirectory(src)
 
 if(RUN_TESTS)
+    add_compile_options(-g)
+    add_compile_options(-fsanitize=address)
+
     enable_testing()
     message(STATUS "UNIT TESTS ENABLED")
     add_subdirectory(tests)

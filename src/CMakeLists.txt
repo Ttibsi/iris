@@ -45,7 +45,6 @@ configure_file(
 )
 
 add_library(iris_src STATIC
-    action.cpp
     controller.cpp
     editor.cpp
     filesystem.cpp

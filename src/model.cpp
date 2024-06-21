@@ -11,12 +11,14 @@ Model::Model(const Editor* e) : editor(e), gv(Gapvector()) {}
 
 Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g), filename(file) {}
 
-[[nodiscard]] const std::vector<std::string> Model::render(const View* view, const rawterm::Pos& offset) const {
+[[nodiscard]] const std::vector<std::string> Model::render(
+    const View* view,
+    const rawterm::Pos& offset) const {
     int line_count = 0;
     std::vector<std::string> ret = {};
     ret.reserve(32);
     std::string placeholder;
-    int linenum_offset = std::to_string(gv.line_count()).size() + 1;
+    linenum_offset = std::to_string(gv.line_count()).size() + 1;
 
     rawterm::Pos dims = view->pane_manager.get_size();
 
@@ -57,7 +59,7 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
 }
 
 [[nodiscard]] const std::vector<std::string> Model::render(const View* view) const {
-    return render(view, {0,0});
+    return render(view, {0, 0});
 }
 
 [[nodiscard]] const std::string Model::render_status_bar(const int width) const {
