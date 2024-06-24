@@ -24,10 +24,10 @@ add_executable(test_exe
     view_test.cpp
 )
 
-if(ENABLE_ASAN)
-    message(STATUS "ADDRESSSANITIZER ENABLED")
-    target_link_libraries(test_exe PRIVATE -fsanitize=address)
-endif()
-
-target_link_libraries(test_exe PRIVATE iris_src rawterm Catch2::Catch2WithMain)
+target_link_libraries(test_exe PRIVATE
+    iris_src
+    rawterm
+    Catch2::Catch2WithMain
+    -fsanitize=address
+)
 catch_discover_tests(test_exe)

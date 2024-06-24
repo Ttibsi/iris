@@ -11,9 +11,7 @@ Model::Model(const Editor* e) : editor(e), gv(Gapvector()) {}
 
 Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g), filename(file) {}
 
-[[nodiscard]] const std::vector<std::string> Model::render(
-    const View* view,
-    const rawterm::Pos& offset) const {
+[[nodiscard]] std::vector<std::string> Model::render(const View* view, const rawterm::Pos& offset) {
     int line_count = 0;
     std::vector<std::string> ret = {};
     ret.reserve(32);
@@ -58,7 +56,7 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
     return ret;
 }
 
-[[nodiscard]] const std::vector<std::string> Model::render(const View* view) const {
+[[nodiscard]] std::vector<std::string> Model::render(const View* view) {
     return render(view, {0, 0});
 }
 

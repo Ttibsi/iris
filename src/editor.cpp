@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "filesystem.h"
 #include "logger.h"
+#include "model.h"
 #include "text_transform.h"
 
 Editor::Editor() : term_size(rawterm::get_term_size()), mode(Mode::Read) {
@@ -35,6 +36,10 @@ void Editor::init(const std::string& file) {
         model_view_map.push_back({0, 0, 1});
         auto rendered_content = models.at(0).render(&views.at(active_view));
         views.at(active_view).pane_manager.set_content(rendered_content);
+        views.at(active_view)
+            .pane_manager.set_blacklist_region(rawterm::Region(
+                {0, 0}, {views.at(active_view).pane_manager.get_size().vertical,
+                         models.at(0).linenum_offset + 1}));
         views.at(active_view).pane_manager.update();
     }
 

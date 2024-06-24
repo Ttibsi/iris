@@ -54,7 +54,7 @@ add_library(iris_src STATIC
 )
 target_link_libraries(iris_src PUBLIC rawterm)
 
-if(ENABLE_ASAN)
+if(RUN_TESTS)
     target_link_libraries(iris_src PUBLIC -fsanitize=address)
 endif()
 
