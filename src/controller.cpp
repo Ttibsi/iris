@@ -1,8 +1,9 @@
-#include "editor.h"
+#include <string>
 
 #include <rawterm/core.h>
 
 #include "action.h"
+#include "editor.h"
 
 void Editor::start_controller() {
     log("Starting Controller");
@@ -17,16 +18,17 @@ void Editor::start_controller() {
 
         auto k = rawterm::process_keypress();
         if (k.has_value()) {
+            // log(std::string("Key pressed: ") += k.value().code);
+
             if (k.value() == rawterm::Key('h')) {
-                parse_action<void, None>(this, Action<void>{ActionType::MoveCursorLeft});
+                parse_action<void, None>(this, Action<void> {ActionType::MoveCursorLeft});
             } else if (k.value() == rawterm::Key('j')) {
-                parse_action<void, None>(this, Action<void>{ActionType::MoveCursorUp});
+                parse_action<void, None>(this, Action<void> {ActionType::MoveCursorDown});
             } else if (k.value() == rawterm::Key('k')) {
-                parse_action<void, None>(this, Action<void>{ActionType::MoveCursorDown});
+                parse_action<void, None>(this, Action<void> {ActionType::MoveCursorUp});
             } else if (k.value() == rawterm::Key('l')) {
-                parse_action<void, None>(this, Action<void>{ActionType::MoveCursorRight});
+                parse_action<void, None>(this, Action<void> {ActionType::MoveCursorRight});
             } else if (k.value() == rawterm::Key('q')) {
-                log("Breaking out from Controller");
                 break_loop = true;
             }
         }

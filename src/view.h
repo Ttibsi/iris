@@ -17,6 +17,8 @@ struct View {
     void move_cur_up();
     void move_cur_down();
     void move_cur_right();
+    void redraw_pane();
+    void redraw_screen();
 };
 
 #endif  // VIEW_H

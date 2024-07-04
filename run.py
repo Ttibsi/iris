@@ -20,6 +20,7 @@ def run_shell_cmd(
     subprocess.run(cmd.split(), env=env).check_returncode()
 
 
+# TODO: re-add the blacklist
 def loc() -> None:
     run_shell_cmd(
         " ".join([
