@@ -3,9 +3,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -46,8 +48,8 @@ class Gapvector {
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
 
-        gapvector_pointer gv;
-        PointerType ptr;
+        gapvector_pointer gv {nullptr};
+        PointerType ptr {nullptr};
 
         explicit IteratorTemplate() = default;
         explicit IteratorTemplate(gapvector_pointer self, PointerType input_ptr)
@@ -171,10 +173,22 @@ class Gapvector {
 
     template <typename InputIt>
     constexpr Gapvector(InputIt begin, InputIt end) {
-        const unsigned int len = std::distance(begin, end);
+        const ptrdiff_t len = std::distance(begin, end);
 
         bufferStart = allocator_type().allocate(len + 8);
         std::uninitialized_copy_n(begin, len, bufferStart);
+
+        gapStart = bufferStart + len;
+        gapEnd = gapStart + 8;
+        bufferEnd = gapEnd;
+    }
+
+    template <std::ranges::input_range InputRng>
+    constexpr Gapvector(const InputRng& range) noexcept {
+        const auto len = std::ranges::distance(range);
+        bufferStart = allocator_type().allocate(len + 8);
+        std::ranges::uninitialized_copy_n(
+            std::ranges::data(range), len, bufferStart, bufferStart + len);
 
         gapStart = bufferStart + len;
         gapEnd = gapStart + 8;

@@ -13,8 +13,7 @@ Editor::Editor() : term_size(rawterm::get_term_size()) {
     views.reserve(8);
     model_view_map.reserve(8);
 
-    term_size -= {1, 0};
-    views.push_back(View(term_size));
+    views.emplace_back(term_size);
 
     auto get_git_branch = shell_exec("git rev-parse --abbrev-ref HEAD", true);
     if (get_git_branch.has_value()) {
@@ -24,28 +23,25 @@ Editor::Editor() : term_size(rawterm::get_term_size()) {
 
 void Editor::init(const std::string& file) {
     log("Opening file: " + file);
-    auto file_chars = open_file(file);
-    if (file_chars.has_value()) {
+    std::optional file_chars = open_file(file);
+    if (file_chars) {
         log("Creating model & view");
-
-        models.push_back(
-            Model(this, Gapvector(file_chars.value().begin(), file_chars.value().end()), file));
-
-        log("Models count: " + std::to_string(models.size()));
-
-        model_view_map.push_back({0, 0, 1});
-        auto rendered_content = models.at(0).render(views.at(active_view));
-        views.at(active_view).pane_manager.set_content(rendered_content);
-        auto bl = rawterm::Region(
-            {1, 1}, {views.at(active_view).pane_manager.get_size().vertical,
-                     models.at(0).linenum_offset + 1});
-
-        log("Region size: " + bl.bottom_right.toStr());
-
-        views.at(active_view).pane_manager.set_blacklist_region(bl);
-        views.at(active_view).redraw_pane();
+        models.emplace_back(this, *file_chars, file);
     }
 
+    log("Models count: " + std::to_string(models.size()));
+
+    model_view_map.push_back({0, 0, 1});
+    auto rendered_content = models.at(0).render(views.at(active_view));
+    views.at(active_view).pane_manager.set_content(rendered_content);
+    auto bl = rawterm::Region(
+        {1, 1},
+        {views.at(active_view).pane_manager.get_size().vertical, models.at(0).linenum_offset + 1});
+
+    log("Region size: " + bl.bottom_right.toStr());
+
+    views.at(active_view).pane_manager.set_blacklist_region(bl);
+    views.at(active_view).redraw_pane();
     // TODO: else create new empty buffer
 }
 

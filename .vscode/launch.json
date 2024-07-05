@@ -5,6 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // this one has better debug info visualization
+            // requires CodeLLDB extension:
+            // https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb
             "name": "Debug (LLDB)",
             "type": "lldb",
             "request": "launch",
@@ -15,6 +18,8 @@
             "cwd": "${command:cmake.getLaunchTargetDirectory}"
         },
         {
+            // this one has meh debug visualization, but
+            // doesn't require a seperate extension to run
             "name": "Debug (GDB)",
             "type": "cppdbg",
             "MIMode": "gdb",
