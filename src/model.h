@@ -21,8 +21,8 @@ struct Model {
 
     Model(const Editor*);
     Model(const Editor*, Gapvector<>, std::string);
-    [[nodiscard]] std::vector<std::string> render(const View*, const rawterm::Pos&);
-    [[nodiscard]] std::vector<std::string> render(const View*);
+    [[nodiscard]] std::vector<std::string> render(const View&, const rawterm::Pos&);
+    [[nodiscard]] std::vector<std::string> render(const View&);
     [[nodiscard]] const std::string render_status_bar(const int) const;
 };
 

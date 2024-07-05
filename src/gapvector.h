@@ -3,9 +3,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -37,20 +39,17 @@ class Gapvector {
        public:
         static const bool is_const = std::is_const_v<std::remove_pointer_t<PointerType>>;
         using iterator_category = std::contiguous_iterator_tag;
-        using gapvector_pointer =
-            typename std::conditional<is_const, const Gapvector*, Gapvector*>::type;
+        using gapvector_pointer = std::conditional_t<is_const, const Gapvector*, Gapvector*>;
 
-        using value_type = typename std::
-            conditional<is_const, const Gapvector::value_type, Gapvector::value_type>::type;
-        using element_type =
-            typename std::conditional<is_const, const value_type, value_type>::type;
+        using value_type = std::conditional_t<is_const, const value_type, value_type>;
+        using element_type = std::conditional_t<is_const, const value_type, value_type>;
 
         using pointer = PointerType;
         using reference = value_type&;
         using difference_type = std::ptrdiff_t;
 
-        gapvector_pointer gv;
-        PointerType ptr;
+        gapvector_pointer gv {nullptr};
+        PointerType ptr {nullptr};
 
         explicit IteratorTemplate() = default;
         explicit IteratorTemplate(gapvector_pointer self, PointerType input_ptr)
@@ -157,19 +156,11 @@ class Gapvector {
 
    public:
     // Constructors
-    constexpr explicit Gapvector() {
-        bufferStart = allocator_type().allocate(32);
-        bufferEnd = std::uninitialized_value_construct_n(bufferStart, 32);
-        gapStart = bufferStart;
-        gapEnd = bufferEnd;
-    }
-
-    constexpr explicit Gapvector(const size_type length) {
-        bufferStart = allocator_type().allocate(length);
-        bufferEnd = std::uninitialized_value_construct_n(bufferStart, length);
-        gapStart = bufferStart;
-        gapEnd = bufferEnd;
-    }
+    constexpr explicit Gapvector(const size_type size = 32)
+        : bufferStart(allocator_type().allocate(size)),
+          bufferEnd(std::uninitialized_value_construct_n(bufferStart, size)),
+          gapStart(bufferStart),
+          gapEnd(bufferEnd) {}
 
     constexpr explicit Gapvector(std::string_view str) {
         bufferStart = allocator_type().allocate(str.size() + 8);
@@ -182,10 +173,22 @@ class Gapvector {
 
     template <typename InputIt>
     constexpr Gapvector(InputIt begin, InputIt end) {
-        const unsigned int len = std::distance(begin, end);
+        const ptrdiff_t len = std::distance(begin, end);
 
         bufferStart = allocator_type().allocate(len + 8);
         std::uninitialized_copy_n(begin, len, bufferStart);
+
+        gapStart = bufferStart + len;
+        gapEnd = gapStart + 8;
+        bufferEnd = gapEnd;
+    }
+
+    template <std::ranges::input_range InputRng>
+    constexpr Gapvector(const InputRng& range) noexcept {
+        const auto len = std::ranges::distance(range);
+        bufferStart = allocator_type().allocate(len + 8);
+        std::ranges::uninitialized_copy_n(
+            std::ranges::data(range), len, bufferStart, bufferStart + len);
 
         gapStart = bufferStart + len;
         gapEnd = gapStart + 8;
@@ -206,9 +209,7 @@ class Gapvector {
     constexpr Gapvector& operator=(const Gapvector& other) {
         if (this != &other) {
             pointer new_bufferStart = allocator_type().allocate(other.capacity());
-
             std::uninitialized_copy_n(other.bufferStart, other.capacity(), new_bufferStart);
-
             allocator_type().deallocate(bufferStart, capacity());
 
             bufferStart = new_bufferStart;
@@ -220,11 +221,11 @@ class Gapvector {
     }
 
     // Move Constructor
-    constexpr Gapvector(Gapvector&& other)
+    constexpr Gapvector(Gapvector&& other) noexcept
         : bufferStart(other.bufferStart),
+          bufferEnd(other.bufferEnd),
           gapStart(other.gapStart),
-          gapEnd(other.gapEnd),
-          bufferEnd(other.bufferEnd) {
+          gapEnd(other.gapEnd) {
         other.bufferStart = nullptr;
         other.gapStart = nullptr;
         other.gapEnd = nullptr;
@@ -232,7 +233,7 @@ class Gapvector {
     }
 
     // Move Assignment Operator
-    constexpr Gapvector& operator=(Gapvector&& other) {
+    constexpr Gapvector& operator=(Gapvector&& other) noexcept {
         std::destroy_n(bufferStart, capacity());
         allocator_type().deallocate(bufferStart, capacity());
 
@@ -243,7 +244,7 @@ class Gapvector {
         return *this;
     }
 
-    ~Gapvector() {
+    constexpr ~Gapvector() {
         std::destroy_n(bufferStart, capacity());
         allocator_type().deallocate(bufferStart, capacity());
     }
@@ -376,6 +377,7 @@ class Gapvector {
     // Iterators
     iterator begin() noexcept { return iterator(this, bufferStart); }
     iterator end() noexcept { return iterator(this, bufferEnd); }
+
     const_iterator begin() const noexcept { return const_iterator(this, bufferStart); }
     const_iterator end() const noexcept { return const_iterator(this, bufferEnd); }
     const_iterator cbegin() const noexcept { return const_iterator(this, bufferStart); }
@@ -384,7 +386,6 @@ class Gapvector {
     reverse_iterator rbegin() noexcept {
         return reverse_iterator(iterator(this, (gapEnd == bufferEnd) ? gapStart : bufferEnd));
     }
-
     reverse_iterator rend() noexcept {
         return reverse_iterator(iterator(this, (gapStart == bufferStart) ? gapEnd : bufferStart));
     }
@@ -511,9 +512,9 @@ class Gapvector {
 
    private:
     pointer bufferStart = nullptr;
+    pointer bufferEnd = nullptr;
     pointer gapStart = nullptr;
     pointer gapEnd = nullptr;
-    pointer bufferEnd = nullptr;
 };
 
 #endif  // GAPVECTOR_H

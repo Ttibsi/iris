@@ -3,10 +3,9 @@
 
 #include <cstdlib>
 #include <fstream>
-#include <string>
 #include <string_view>
 
-inline const std::string log_file = "iris.log";
+static constexpr std::string_view log_file = "iris.log";
 
 enum class Level { INFO, WARNING, ERROR };
 
@@ -35,7 +34,7 @@ inline void log(Level lvl, std::string_view msg) {
     }
 
     std::ofstream out;
-    out.open(log_file, std::ios::app);
+    out.open(log_file.data(), std::ios::app);
     out << level_str(lvl) << " " << msg << "\n";
     out.close();
 }

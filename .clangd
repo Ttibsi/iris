@@ -1,3 +1,0 @@
-CompileFlags:
-    Add: [-std=c++20, -Wall]
-    Compiler: /usr/local/bin/g++

@@ -1,0 +1,3 @@
+[submodule "extern/rawterm"]
+	path = extern/rawterm
+	url = https://github.com/ttibsi/rawterm

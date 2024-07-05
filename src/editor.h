@@ -26,8 +26,8 @@ struct Editor {
     std::vector<MVMapItem> model_view_map = {};
     unsigned int active_view = 0;  // index into views
     rawterm::Pos term_size;
-    Mode mode;
     std::string git_branch;
+    Mode mode = Mode::Read;
 
     Editor();
     void init(const std::string&);

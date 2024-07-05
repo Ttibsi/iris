@@ -1,5 +1,12 @@
 build/
 .cache/
+.out/
+
 compile_commands.json
 src/version.h
 iris.log
+
+.vscode/
+!.vscode/c_cpp_properties.json
+!.vscode/settings.json
+!.vscode/launch.json

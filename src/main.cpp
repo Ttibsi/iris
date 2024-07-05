@@ -6,7 +6,6 @@
 
 #include "editor.h"
 #include "logger.h"
-#include "version.h"
 
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
@@ -25,27 +24,17 @@ int main(int argc, char* argv[]) {
         return app.exit(e);
     }
 
-    if (print_version) {
-        std::cout << version();
-        return 0;
-    }
-
     log("Iris Startup");
     rawterm::enter_alt_screen();
     rawterm::enable_raw_mode();
     rawterm::enable_signals();
 
-    try {
-        Editor e;
-        if (!file.empty()) {
-            e.init(file);
-        }
-        e.start_controller();
-        log("Iris shutdown");
-    } catch (const std::exception& e) {
-        log(Level::WARNING, e.what());
-        throw;
+    Editor e;
+    if (!file.empty()) {
+        e.init(file);
     }
+    e.start_controller();
+    log("Iris shutdown");
 
     rawterm::exit_alt_screen();
     return 0;
