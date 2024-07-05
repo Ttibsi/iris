@@ -1,8 +1,12 @@
 #include "model.h"
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <format>
+#include <print>
+#include <string>
+#include <utility>
 
 #include "constants.h"
 #include "editor.h"
@@ -11,14 +15,14 @@ Model::Model(const Editor* e) : editor(e), gv(Gapvector()) {}
 
 Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g), filename(file) {}
 
-[[nodiscard]] std::vector<std::string> Model::render(const View* view, const rawterm::Pos& offset) {
+[[nodiscard]] std::vector<std::string> Model::render(const View& view, const rawterm::Pos& offset) {
     int line_count = 0;
     std::vector<std::string> ret = {};
     ret.reserve(32);
     std::string placeholder;
     linenum_offset = std::to_string(gv.line_count()).size() + 1;
 
-    rawterm::Pos dims = view->pane_manager.get_size();
+    rawterm::Pos dims = view.pane_manager.get_size();
 
     if (LINE_NUMBERS) {
         placeholder +=
@@ -56,7 +60,7 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
     return ret;
 }
 
-[[nodiscard]] std::vector<std::string> Model::render(const View* view) {
+[[nodiscard]] std::vector<std::string> Model::render(const View& view) {
     return render(view, {0, 0});
 }
 
@@ -77,24 +81,24 @@ Model::Model(const Editor* e, Gapvector<> g, std::string file) : editor(e), gv(g
 
     // TODO: file language after highlighting engine
     std::string right = "| " + std::to_string(current_line) + ":" + std::to_string(line_col) + " ";
+    std::int32_t space_per_elem = std::max(0, width / 3);
+    std::string file_path = filename.size() > static_cast<std::size_t>(space_per_elem)
+                                ? std::filesystem::path(filename).filename().string()
+                                : filename;
+    file_path = file_path.substr(
+        std::max(0, static_cast<int32_t>(file_path.size()) - space_per_elem), space_per_elem);
+    left.resize(space_per_elem, ' ');
+    right.resize(space_per_elem, ' ');
 
-    // TODO: handle overflows
-    float divide = static_cast<float>(width - (left.size() + filename.size() + right.size())) / 2.0;
-    auto temp_file = std::filesystem::path(filename);
+    std::size_t wsc = std::max(1, width - (space_per_elem * 3));
+    auto whitespace = std::string(wsc, ' ');
 
-    std::string ret =
-        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') +
-        ((filename.size() > static_cast<unsigned int>(width / 3)) ? temp_file.filename().string()
-                                                                  : filename) +
-        std::string(
-            divide + static_cast<int>(filename.size() / 2) + !(floorf(divide) == divide), ' ') +
-        right;
+    right = std::format("{:>} {:>}", file_path, right);
+    left.resize(width - right.size(), ' ');
+    std::string ret = std::format("{:<}{:>}", left, right);
 
-    if (static_cast<int>(ret.size()) != width) {
-        throw std::runtime_error(
-            "ret size:" + std::to_string(ret.size()) + " width:" + std::to_string(width));
-    }
-    auto bg = rawterm::set_background(ret, COLOR_1);
-    // auto fg = rawterm::set_foreground(bg, rawterm::Colors::white);
-    return bg;
+    if (static_cast<int>(ret.size()) != width)
+        throw std::runtime_error(std::format("ret size:{} width:{}", ret.size(), width));
+
+    return rawterm::set_background(ret, COLOR_1);
 }

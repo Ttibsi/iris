@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (LLDB)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [
+                "${workspaceFolder}/src/main.cpp"
+            ],
+            "cwd": "${command:cmake.getLaunchTargetDirectory}"
+        },
+        {
+            "name": "Debug (GDB)",
+            "type": "cppdbg",
+            "MIMode": "gdb",
+            "request": "launch",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [
+                "${workspaceFolder}/src/main.cpp"
+            ],
+            "cwd": "${command:cmake.getLaunchTargetDirectory}",
+            "externalConsole": false,
+            "showDisplayString": true,
+            "stopAtEntry": false,
+            "internalConsoleOptions": "neverOpen",
+            "launchCompleteCommand": "exec-run",
+            "symbolLoadInfo": {
+                "loadAll": true
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

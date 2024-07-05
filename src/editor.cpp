@@ -8,7 +8,7 @@
 #include "model.h"
 #include "text_transform.h"
 
-Editor::Editor() : term_size(rawterm::get_term_size()), mode(Mode::Read) {
+Editor::Editor() : term_size(rawterm::get_term_size()) {
     models.reserve(8);
     views.reserve(8);
     model_view_map.reserve(8);
@@ -34,7 +34,7 @@ void Editor::init(const std::string& file) {
         log("Models count: " + std::to_string(models.size()));
 
         model_view_map.push_back({0, 0, 1});
-        auto rendered_content = models.at(0).render(&views.at(active_view));
+        auto rendered_content = models.at(0).render(views.at(active_view));
         views.at(active_view).pane_manager.set_content(rendered_content);
         auto bl = rawterm::Region(
             {1, 1}, {views.at(active_view).pane_manager.get_size().vertical,

@@ -1,0 +1,97 @@
+{
+    "version": 5,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "installDir": "${sourceDir}/.out/install/${presetName}",
+            "binaryDir": "${sourceDir}/.out/build/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            },
+            "environment": {
+                "NINJA_STATUS": "%p [%es] (%f/%t)  -"
+            }
+        },
+        {
+            "name": "default-verbose",
+            "inherits": "default",
+            "hidden": true,
+            "environment": {
+                "VERBOSE": "true"
+            }
+        },
+        {
+            "name": "gcc",
+            "inherits": "default",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+            }
+        },
+        {
+            "displayName": "GCC Debug",
+            "name": "gcc-debug",
+            "inherits": "gcc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "displayName": "GCC Release",
+            "name": "gcc-release",
+            "inherits": "gcc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "displayName": "GCC RelWithDebInfo",
+            "name": "gcc-relwdebinfo",
+            "inherits": "gcc",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "clang",
+            "inherits": "default",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/clang",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            }
+        },
+        {
+            "displayName": "Clang Debug",
+            "name": "clang-debug",
+            "inherits": "clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "displayName": "Clang Release",
+            "name": "clang-release",
+            "inherits": "clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "displayName": "Clang RelWithDebInfo",
+            "name": "clang-relwdebinfo",
+            "inherits": "clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        }
+    ]
+}

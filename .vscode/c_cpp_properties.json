@@ -1,0 +1,10 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "C++ (Clang)",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
+        }
+    ]
+}
