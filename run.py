@@ -33,6 +33,7 @@ def loc() -> None:
 def clean() -> None:
     print("Removing build directory")
     shutil.rmtree("build", ignore_errors=True)
+    shutil.rmtree(".mypy_cache", ignore_errors=True)
 
     print("Removing log file")
     try:

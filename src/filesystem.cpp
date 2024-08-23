@@ -13,6 +13,7 @@
     std::ifstream ifs(file);
     if (ifs.fail()) {
         throw std::runtime_error(strerror(errno));
+        // return {};
     }
 
     while (ifs.get(ch)) {
