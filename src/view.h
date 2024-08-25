@@ -24,6 +24,7 @@ struct View {
     std::vector<Model*> viewable_models;
     int active_model;
     rawterm::Cursor cur;
+    int line_number_offset = 0;
 
     View(const Controller*, const rawterm::Pos);
     void add_model(Model*);
