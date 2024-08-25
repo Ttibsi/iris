@@ -161,9 +161,28 @@ void View::set_status(const std::string& msg) {
 
 void View::cursor_left() {}
 
-void View::cursor_up() {}
+void View::cursor_up() {
+    // Check if we're at the bottom of the file
+    if (viewable_models.at(active_model - 1)->current_line == 1) {
+        return;
+    }
+
+    int vertical_offset = (open_files.size() > 1 ? 1 : 0);
+    if (cur.vertical - 1 == vertical_offset) {
+        // scroll view
+        viewable_models.at(active_model - 1)->vertical_file_offset--;
+        render_screen();
+    } else {
+        // move cursor
+        cur.move_up();
+    }
+
+    viewable_models.at(active_model - 1)->current_line--;
+    draw_status_bar();
+}
 
 void View::cursor_down() {
+    // Check if we're at the bottom of the file
     if (viewable_models.at(active_model - 1)->current_line ==
         viewable_models.at(active_model - 1)->line_count) {
         return;
