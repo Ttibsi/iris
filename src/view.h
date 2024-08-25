@@ -32,10 +32,10 @@ struct View {
     void change_view_backward();
     void render_screen();
     const std::string generate_tab_bar() const;
+    void draw_status_bar();
     const std::string render_status_bar() const;
     void render_line();
     void set_status(const std::string& msg);
-
     void cursor_left();
     void cursor_up();
     void cursor_down();

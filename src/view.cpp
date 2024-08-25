@@ -8,6 +8,7 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "logger.h"
 
 View::View(const Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
@@ -35,6 +36,7 @@ void View::change_view_backward() {
 
 void View::render_screen() {
     int remaining_rows = view_size.vertical - 2;
+    rawterm::Pos starting_cur_pos = cur;
     std::string screen = "";
 
     rawterm::clear_screen();
@@ -46,9 +48,17 @@ void View::render_screen() {
         remaining_rows--;
     }
 
-    int gv_counter = 0;
+    // Find starting point in gapvector
+    unsigned int gv_counter =
+        viewable_models.at(active_model - 1)
+            ->buf.findIthChar('\n', viewable_models.at(active_model - 1)->vertical_file_offset) +
+        1;
+
     // Render gapvector into a single string
     while (remaining_rows) {
+        if (gv_counter == viewable_models.at(active_model - 1)->buf.size()) {
+            break;
+        }
         char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
 
         if (c == '\n') {
@@ -61,15 +71,17 @@ void View::render_screen() {
     }
 
     std::cout << screen;
-    std::cout << render_status_bar();
+    draw_status_bar();
     std::cout << "\n";  // Notification bar
 
     // Place cursor in right place
-    if (open_files.size() > 1) {
-        cur.move(open_files.at(active_model - 1).pos + rawterm::Pos(0, 1));
-    } else {
-        cur.move(open_files.at(active_model - 1).pos);
-    }
+    // if (open_files.size() > 1) {
+    //     cur.move(open_files.at(active_model - 1).pos + rawterm::Pos(0, 1));
+    // } else {
+    //     cur.move(open_files.at(active_model - 1).pos);
+    // }
+
+    cur.move(starting_cur_pos);
 }
 
 const std::string View::generate_tab_bar() const {
@@ -87,6 +99,14 @@ const std::string View::generate_tab_bar() const {
 
     ret += "\n";
     return ret;
+}
+
+void View::draw_status_bar() {
+    rawterm::Pos starting_cur_pos = cur;
+    cur.move({view_size.vertical - 1, 1});
+    rawterm::clear_line();
+    std::cout << render_status_bar();
+    cur.move(starting_cur_pos);
 }
 
 const std::string View::render_status_bar() const {
@@ -138,3 +158,29 @@ void View::set_status(const std::string& msg) {
     rawterm::clear_line();
     std::cout << rawterm::set_foreground(msg, COLOR_NOTIFY);
 }
+
+void View::cursor_left() {}
+
+void View::cursor_up() {}
+
+void View::cursor_down() {
+    if (viewable_models.at(active_model - 1)->current_line ==
+        viewable_models.at(active_model - 1)->line_count) {
+        return;
+    }
+
+    int vertical_offset = (open_files.size() > 1 ? 3 : 2);
+    if (cur.vertical + 1 > view_size.vertical - vertical_offset) {
+        // scroll view
+        viewable_models.at(active_model - 1)->vertical_file_offset++;
+        render_screen();
+    } else {
+        // move cursor
+        cur.move_down();
+    }
+
+    viewable_models.at(active_model - 1)->current_line++;
+    draw_status_bar();
+}
+
+void View::cursor_right() {}

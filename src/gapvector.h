@@ -373,6 +373,19 @@ class Gapvector {
         return std::string(start_it, end_it);
     }
 
+    [[nodiscard]] int findIthChar(char c, int count) const {
+        int tracking_count = 0;
+        for (auto it = begin(); it != end(); ++it) {
+            if (*it == c) {
+                ++tracking_count;
+                if (count == tracking_count) {
+                    return std::distance(begin(), it);
+                }
+            }
+        }
+        return -1;
+    }
+
     // Iterators
     iterator begin() noexcept { return iterator(this, bufferStart); }
     iterator end() noexcept { return iterator(this, bufferEnd); }

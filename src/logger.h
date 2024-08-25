@@ -25,13 +25,8 @@ enum class Level { INFO, WARNING, ERROR };
 
 // TODO: Add date/time stamp to log
 inline void log(Level lvl, std::string_view msg) {
-    if (std::getenv("RAWTERM_DEBUG") == nullptr) {
+    if (std::getenv("RAWTERM_DEBUG") != nullptr) {
         return;
-    }
-
-    if (log_file.empty()) {
-        // TODO: IDK, throw an exception? I wish there was a more graceful
-        // way to handle this
     }
 
     std::ofstream out;
