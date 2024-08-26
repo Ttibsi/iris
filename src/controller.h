@@ -1,11 +1,10 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <string>
-#include <vector>
-
 #include <rawterm/core.h>
 
+#include <string>
+#include <vector>
 #include "model.h"
 #include "view.h"
 
@@ -16,7 +15,7 @@ struct Controller {
     std::vector<Model> models = {};
     View view;
     Mode mode = Mode::Read;
-    std::string git_branch;
+    std::string git_branch = "";
 
     Controller();
     void set_mode(Mode m);

@@ -9,19 +9,6 @@ Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, 
     models.reserve(8);
 }
 
-void Controller::create_view(const std::string& file) {
-    log("Creating view from file: " + file);
-    auto file_chars = open_file(file);
-
-    if (file_chars.has_value()) {
-        models.emplace_back(file_chars.value(), file);
-    } else {
-        models.emplace_back();
-    }
-
-    view.add_model(&models.at(models.size() - 1));
-}
-
 void Controller::set_mode(Mode m) {
     mode = m;
 }
@@ -37,6 +24,20 @@ const std::string Controller::get_mode() const {
         default:
             return "";
     }
+}
+
+// TODO: empty view
+void Controller::create_view(const std::string& file) {
+    log("Creating view from file: " + file);
+    auto file_chars = open_file(file);
+
+    if (file_chars.has_value()) {
+        models.emplace_back(file_chars.value(), file);
+    } else {
+        models.emplace_back();
+    }
+
+    view.add_model(&models.at(models.size() - 1));
 }
 
 void Controller::start_action_engine() {

@@ -1,17 +1,17 @@
 #include "gapvector.h"
 
+#include <catch2/catch_test_macros.hpp>
+
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Default Constructor", "[Constructors]") {
     auto gv = Gapvector();
 
     REQUIRE(gv.size() == 0);
     REQUIRE(gv.capacity() == 32);
-    REQUIRE(gv.toStr() == "");
+    REQUIRE(gv.to_str() == "");
 }
 
 TEST_CASE("Length Constructor", "[Constructors]") {
@@ -19,7 +19,7 @@ TEST_CASE("Length Constructor", "[Constructors]") {
 
     REQUIRE(gv.size() == 0);
     REQUIRE(gv.capacity() == 64);
-    REQUIRE(gv.toStr() == "");
+    REQUIRE(gv.to_str() == "");
 }
 
 TEST_CASE("String_view Constructor", "[Constructors]") {
@@ -28,7 +28,7 @@ TEST_CASE("String_view Constructor", "[Constructors]") {
 
     REQUIRE(gv.size() == 11);
     REQUIRE(gv.capacity() == 11 + 8);
-    REQUIRE(gv.toStr() == "hello world");
+    REQUIRE(gv.to_str() == "hello world");
 }
 
 TEST_CASE("Range Constructor", "[Constructors]") {
@@ -38,7 +38,7 @@ TEST_CASE("Range Constructor", "[Constructors]") {
 
         REQUIRE(gv1.size() == 5);
         REQUIRE(gv1.capacity() == 5 + 8);
-        REQUIRE(gv1.toStr() == "hello");
+        REQUIRE(gv1.to_str() == "hello");
     }
 }
 
@@ -49,7 +49,7 @@ TEST_CASE("Copy Constructor", "[Constructors]") {
 
     REQUIRE(gv_copy.size() == 11);
     REQUIRE(gv_copy.capacity() == 11 + 8);
-    REQUIRE(gv_copy.toStr() == "hello world");
+    REQUIRE(gv_copy.to_str() == "hello world");
 }
 
 TEST_CASE("Copy Assignment Constructor", "[Constructors]") {
@@ -59,7 +59,7 @@ TEST_CASE("Copy Assignment Constructor", "[Constructors]") {
 
     REQUIRE(gv_copy.size() == 11);
     REQUIRE(gv_copy.capacity() == 11 + 8);
-    REQUIRE(gv_copy.toStr() == "hello world");
+    REQUIRE(gv_copy.to_str() == "hello world");
 }
 
 TEST_CASE("Move Constructor", "[Constructors]") {
@@ -69,7 +69,7 @@ TEST_CASE("Move Constructor", "[Constructors]") {
 
     REQUIRE(gv_move.size() == 11);
     REQUIRE(gv_move.capacity() == 11 + 8);
-    REQUIRE(gv_move.toStr() == "hello world");
+    REQUIRE(gv_move.to_str() == "hello world");
 }
 
 TEST_CASE("Move Assignment Constructor", "[Constructors]") {
@@ -80,7 +80,7 @@ TEST_CASE("Move Assignment Constructor", "[Constructors]") {
 
     REQUIRE(gv_move.size() == 11);
     REQUIRE(gv_move.capacity() == 11 + 8);
-    REQUIRE(gv_move.toStr() == "hello world");
+    REQUIRE(gv_move.to_str() == "hello world");
 }
 
 TEST_CASE("Operator Print", "[Operator Overloads]") {
@@ -176,12 +176,12 @@ TEST_CASE("Back (Const)", "[Element Access]") {
 TEST_CASE("ToStr", "[Element Access]") {
     std::string s = "hello world";
     auto gv = Gapvector(s);
-    REQUIRE(gv.toStr() == s);
+    REQUIRE(gv.to_str() == s);
 
     gv.push_back('_');
     gv.push_back('_');
     gv.push_back('_');
-    REQUIRE(gv.toStr() == "hello world___");
+    REQUIRE(gv.to_str() == "hello world___");
 }
 
 TEST_CASE("line", "[Element Access]") {
@@ -208,6 +208,16 @@ TEST_CASE("line", "[Element Access]") {
         auto gv = Gapvector(s);
         REQUIRE(gv.line(5) == "dolor sit amet");
     }
+}
+
+TEST_CASE("find_ith_char", "[Element Access]") {
+    std::string s = "lorem ipsum\ndolor sit amet\nfoo bar baz";
+    auto gv = Gapvector(s);
+
+    REQUIRE(gv.find_ith_char('\n', 2) == 26);
+    REQUIRE(gv.find_ith_char(' ', 1) == 5);
+    REQUIRE(gv.find_ith_char('q', 1) == -1);
+    REQUIRE(gv.find_ith_char(' ', 0) == 0);
 }
 
 TEST_CASE("Begin", "[Iterators]") {
@@ -375,7 +385,7 @@ TEST_CASE("Insert Single", "[Modifiers]") {
     auto gv = Gapvector(s);
     gv.insert(gv.begin() + 5, ',');
 
-    REQUIRE(gv.toStr() == "hello, world");
+    REQUIRE(gv.to_str() == "hello, world");
 }
 
 TEST_CASE("Insert String", "[Modifiers]") {
@@ -383,7 +393,7 @@ TEST_CASE("Insert String", "[Modifiers]") {
     auto gv = Gapvector(s);
     gv.insert(gv.begin() + 5, " there");
 
-    REQUIRE(gv.toStr() == "hello there world");
+    REQUIRE(gv.to_str() == "hello there world");
 }
 
 TEST_CASE("Erase Pos", "[Modifiers]") {
@@ -391,7 +401,7 @@ TEST_CASE("Erase Pos", "[Modifiers]") {
     auto gv = Gapvector(s);
     gv.erase(gv.begin() + 5);
 
-    REQUIRE(gv.toStr() == "helloworld");
+    REQUIRE(gv.to_str() == "helloworld");
 }
 
 TEST_CASE("Erase Count", "[Modifiers]") {
@@ -399,7 +409,7 @@ TEST_CASE("Erase Count", "[Modifiers]") {
     auto gv = Gapvector(s);
     gv.erase(gv.begin() + 5, 6);
 
-    REQUIRE(gv.toStr() == "hello");
+    REQUIRE(gv.to_str() == "hello");
 }
 
 TEST_CASE("Push Back", "[Modifiers]") {
@@ -409,7 +419,7 @@ TEST_CASE("Push Back", "[Modifiers]") {
     gv.push_back('_');
     gv.push_back('_');
     gv.push_back('_');
-    REQUIRE(gv.toStr() == "hello world___");
+    REQUIRE(gv.to_str() == "hello world___");
 }
 
 TEST_CASE("Pop Back", "[Modifiers]") {
@@ -417,7 +427,7 @@ TEST_CASE("Pop Back", "[Modifiers]") {
     auto gv = Gapvector(s);
 
     gv.pop_back();
-    REQUIRE(gv.toStr() == "hello worl");
+    REQUIRE(gv.to_str() == "hello worl");
 }
 
 TEST_CASE("Resize", "[Modifiers]") {

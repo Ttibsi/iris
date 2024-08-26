@@ -1,12 +1,11 @@
 #include "view.h"
 
-#include <filesystem>
 #include <format>
-#include <stdexcept>
 
 #include <rawterm/color.h>
 #include <rawterm/text.h>
 
+#include <stdexcept>
 #include "constants.h"
 #include "controller.h"
 #include "logger.h"
@@ -64,28 +63,29 @@ void View::render_screen() {
     // Find starting point in gapvector
     unsigned int gv_counter =
         viewable_models.at(active_model - 1)
-            ->buf.findIthChar('\n', viewable_models.at(active_model - 1)->vertical_file_offset) +
-        1;
+            ->buf.find_ith_char('\n', viewable_models.at(active_model - 1)->vertical_file_offset);
+
+    if (gv_counter != 0) {
+        gv_counter++;
+    }
 
     while (remaining_rows) {
-        if (gv_counter == viewable_models.at(active_model - 1)->buf.size()) {
+        if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
             break;
         }
         char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
+        screen += c;
 
         if (c == '\n') {
-            screen += "\r";
             remaining_rows--;
 
+            line_count++;
             if (LINE_NUMBERS) {
                 screen += rawterm::set_foreground(
                     std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
             }
-
-            line_count++;
         }
 
-        screen += c;
         gv_counter++;
     }
 
@@ -93,15 +93,8 @@ void View::render_screen() {
     draw_status_bar();
     std::cout << "\n";  // Notification bar
 
-    // Place cursor in right place
-    // if (open_files.size() > 1) {
-    //     cur.move(open_files.at(active_model - 1).pos + rawterm::Pos(0, 1));
-    // } else {
-    //     cur.move(open_files.at(active_model - 1).pos);
-    // }
-
     cur.move(starting_cur_pos);
-    if (LINE_NUMBERS) {
+    if (LINE_NUMBERS && !(rawterm::detail::is_debug())) {
         while (cur.horizontal < line_number_offset + 2) {
             cur.move_right();
         }
@@ -141,7 +134,7 @@ const std::string View::render_status_bar() const {
     // right = language | cursor position
     std::string left = " " + ctrlr_ptr->get_mode();
     if (!(ctrlr_ptr->git_branch.empty())) {
-        left += " | " + ctrlr_ptr->git_branch;
+        left += std::string(" | ") + ctrlr_ptr->git_branch;
     }
 
     if (viewable_models.at(active_model - 1)->readonly) {
@@ -159,13 +152,9 @@ const std::string View::render_status_bar() const {
     float divide =
         static_cast<float>(view_size.horizontal - (left.size() + filename.size() + right.size())) /
         2.0;
-    auto temp_file = std::filesystem::path(filename);
 
     std::string ret =
-        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') +
-        ((filename.size() > static_cast<unsigned int>(view_size.horizontal / 3))
-             ? temp_file.filename().string()
-             : filename) +
+        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') + filename +
         std::string(
             divide + static_cast<int>(filename.size() / 2) + !(floorf(divide) == divide), ' ') +
         right;
@@ -183,7 +172,14 @@ void View::set_status(const std::string& msg) {
     std::cout << rawterm::set_foreground(msg, COLOR_NOTIFY);
 }
 
-void View::cursor_left() {}
+void View::cursor_left() {
+    int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
+    if (cur.horizontal > left_most_pos) {
+        cur.move_left();
+        viewable_models.at(active_model - 1)->current_char_in_line--;
+        draw_status_bar();
+    }
+}
 
 void View::cursor_up() {
     // Check if we're at the bottom of the file
@@ -226,4 +222,12 @@ void View::cursor_down() {
     draw_status_bar();
 }
 
-void View::cursor_right() {}
+void View::cursor_right() {
+    char next_char = viewable_models.at(active_model - 1)->get_next_char();
+
+    if (next_char != '\r') {
+        cur.move_right();
+        viewable_models.at(active_model - 1)->current_char_in_line++;
+        draw_status_bar();
+    }
+}

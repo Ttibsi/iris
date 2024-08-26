@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-
 #include "gapvector.h"
 
 struct Model {
@@ -18,6 +17,8 @@ struct Model {
 
     Model();
     Model(const std::vector<char>&, const std::string&);
+    char get_current_char() const;
+    char get_next_char() const;
 };
 
 #endif  // MODEL_H

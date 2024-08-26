@@ -2,59 +2,56 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "constants.h"
-#include "editor.h"
-#include "filesystem.h"
+#include <vector>
 
-TEST_CASE("default constructor", "[MODEL]") {
-    Editor e = Editor();
-    auto m = Model(&e);
-
-    REQUIRE(m.gv.size() == 0);
-    REQUIRE(m.filename == "");
+TEST_CASE("Constructor", "[MODEL]") {
+    auto m = Model();
+    REQUIRE(m.line_count == 0);
+    REQUIRE(m.buf.size() == 0);
 }
 
-TEST_CASE("constructor with open file", "[MODEL]") {
-    Editor e = Editor();
-    auto file = open_file("tests/fixture/test_file_1.txt");
-    auto m = Model(&e, Gapvector(file.value().begin(), file.value().end()), "test_file_1.txt");
+TEST_CASE("Constructor_with_values", "[MODEL]") {
+    std::vector<char> expected = {
+        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
+        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
+        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
+        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
 
-    REQUIRE(m.gv.line(1) == "This is some text");
-    REQUIRE(m.gv.size() == 68);
-    REQUIRE(m.filename == "test_file_1.txt");
+    auto m = Model(expected, "test_file.txt");
+
+    REQUIRE(m.line_count == 3);
+    REQUIRE(m.buf.size() == expected.size());
+    REQUIRE(m.file_name == "test_file.txt");
 }
 
-TEST_CASE("render", "[MODEL]") {
-    Editor e;
-    auto v = View(rawterm::Pos {24, 80});
+TEST_CASE("get_current_char", "[MODEL]") {
+    std::vector<char> expected = {
+        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
+        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
+        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
+        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
 
-    auto file = open_file("tests/fixture/test_file_1.txt");
-    auto m = Model(&e, Gapvector(file.value().begin(), file.value().end()), "test_file_1.txt");
+    auto m = Model(expected, "test_file.txt");
 
-    std::vector<std::string> expected = {
-        rawterm::set_foreground(" 1\u2502", COLOR_1) + "This is some text\n",
-        rawterm::set_foreground(" 2\u2502", COLOR_1) + "    here is a newline and tab\n",
-        rawterm::set_foreground(" 3\u2502", COLOR_1) + "and another newline\n",
-    };
-    auto actual = m.render(&v);
-
-    // We aren't comparing the statusbar here, that's for the test below
-    REQUIRE(actual.size() == 24);
-    REQUIRE(actual.at(0) == expected.at(0));
-    REQUIRE(actual.at(1) == expected.at(1));
-    REQUIRE(actual.at(2) == expected.at(2));
+    REQUIRE(m.get_current_char() == 'T');
+    m.current_line++;
+    REQUIRE(m.get_current_char() == ' ');
+    m.current_char_in_line = 5;
+    REQUIRE(m.get_current_char() == 'h');
 }
 
-TEST_CASE("render_status_bar", "[MODEL]") {
-    Editor e;
-    auto file = open_file("tests/fixture/test_file_1.txt");
-    auto m = Model(&e, Gapvector(file.value().begin(), file.value().end()), "test_file_1.txt");
-    REQUIRE(m.filename == "test_file_1.txt");
+TEST_CASE("get_next_char", "[MODEL]") {
+    std::vector<char> expected = {
+        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
+        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
+        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
+        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
 
-    auto actual = m.render_status_bar(80);
+    auto m = Model(expected, "test_file.txt");
 
-    REQUIRE(actual.find("READ") != std::string::npos);
-    REQUIRE(actual.find(e.git_branch) != std::string::npos);
-    REQUIRE(actual.find("1:1") != std::string::npos);
-    REQUIRE(rawterm::raw_size(actual) == 80);
+    REQUIRE(m.get_next_char() == 'h');
+    m.current_line++;
+    REQUIRE(m.get_next_char() == ' ');
+    m.current_char_in_line = 5;
+    REQUIRE(m.get_next_char() == 'h');
 }
