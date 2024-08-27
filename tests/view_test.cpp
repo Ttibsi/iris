@@ -148,8 +148,23 @@ TEST_CASE("render_status_bar", "[VIEW]") {
 TEST_CASE("render_line", "[VIEW]") {
     SKIP("Not implemented yet");
 }
-TEST_CASE("set_status", "[VIEW]") {}
-TEST_CASE("cursor_left", "[VIEW]") {}
-TEST_CASE("cursor_up", "[VIEW]") {}
-TEST_CASE("cursor_down", "[VIEW]") {}
-TEST_CASE("cursor_right", "[VIEW]") {}
+TEST_CASE("set_status", "[VIEW]") {
+	SKIP("Not Tested Yet");
+};
+
+TEST_CASE("cursor_left", "[VIEW]") {
+	SKIP("Not Tested Yet");
+};
+
+TEST_CASE("cursor_up", "[VIEW]") {
+	SKIP("Not Tested Yet");
+};
+
+TEST_CASE("cursor_down", "[VIEW]") {
+	SKIP("Not Tested Yet");
+};
+
+TEST_CASE("cursor_right", "[VIEW]") {
+	SKIP("Not Tested Yet");
+};
+
