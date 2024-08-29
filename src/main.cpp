@@ -1,10 +1,12 @@
-#include <iostream>
-#include <string>
-
 #include <cli11/CLI11.hpp>
+#include <cpptrace/from_current.hpp>
+
+#include <iostream>
+
 #include <rawterm/core.h>
 
-#include "editor.h"
+#include <string>
+#include "controller.h"
 #include "logger.h"
 #include "version.h"
 
@@ -35,15 +37,17 @@ int main(int argc, char* argv[]) {
     rawterm::enable_raw_mode();
     rawterm::enable_signals();
 
-    try {
-        Editor e;
+    CPPTRACE_TRY {
+        Controller c;
         if (!file.empty()) {
-            e.init(file);
+            c.create_view(file);
         }
-        e.start_controller();
-    } catch (const std::exception& e) {
+        c.start_action_engine();
+    }
+    CPPTRACE_CATCH(const std::exception& e) {
+        rawterm::exit_alt_screen();
         log(Level::WARNING, e.what());
-        throw;
+        cpptrace::from_current_exception().print();
     }
 
     rawterm::exit_alt_screen();

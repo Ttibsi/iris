@@ -3,25 +3,22 @@
 
 #include <string>
 #include <vector>
-
 #include "gapvector.h"
-#include "view.h"
-
-struct Editor;
 
 struct Model {
-    const Editor* editor;
-    Gapvector<> gv;
-    const std::string filename;
+    Gapvector<> buf;
+    std::string file_name = "";
+    int line_count;
     int current_line = 1;
-    int line_col = 1;
-    bool modified = false;
+    int current_char_in_line = 1;
     bool readonly = false;
+    bool modified = false;
+    int vertical_file_offset = 0;
 
-    Model(const Editor*);
-    Model(const Editor*, Gapvector<>, std::string);
-    [[nodiscard]] const std::vector<std::string> render(const View*) const;
-    [[nodiscard]] const std::string render_status_bar(const int) const;
+    Model();
+    Model(const std::vector<char>&, const std::string&);
+    char get_current_char() const;
+    char get_next_char() const;
 };
 
 #endif  // MODEL_H

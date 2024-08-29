@@ -12,10 +12,14 @@
 
     std::ifstream ifs(file);
     if (ifs.fail()) {
-        throw std::runtime_error(strerror(errno));
+        // throw std::runtime_error(strerror(errno));
+        return {};
     }
 
     while (ifs.get(ch)) {
+        if (ch == '\n') {
+            ret.push_back('\r');
+        }
         ret.push_back(ch);
     }
     return ret;

@@ -15,12 +15,10 @@ include(Catch)
 add_executable(test_exe
     action_test.cpp
     controller_test.cpp
-    editor_test.cpp
     filesystem_test.cpp
     gapvector_test.cpp
     logger_test.cpp
     model_test.cpp
-    text_transform_test.cpp
     view_test.cpp
 )
 

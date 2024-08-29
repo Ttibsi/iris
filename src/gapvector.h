@@ -350,7 +350,7 @@ class Gapvector {
         return *(gapStart - 1);
     }
 
-    [[nodiscard]] const std::string toStr() const noexcept {
+    [[nodiscard]] const std::string to_str() const noexcept {
         std::string ret;
         ret.reserve(size());
         ret.append(bufferStart, (gapStart - bufferStart));
@@ -371,6 +371,23 @@ class Gapvector {
         auto end_it = std::find(begin() + pos, end(), '\n');
 
         return std::string(start_it, end_it);
+    }
+
+    [[nodiscard]] int find_ith_char(char c, int count) const {
+        if (count == 0) {
+            return 0;
+        }
+
+        int tracking_count = 0;
+        for (auto it = begin(); it != end(); ++it) {
+            if (*it == c) {
+                ++tracking_count;
+                if (count == tracking_count) {
+                    return std::distance(begin(), it);
+                }
+            }
+        }
+        return -1;
     }
 
     // Iterators

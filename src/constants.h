@@ -5,8 +5,8 @@
 
 const bool LINE_NUMBERS = true;
 
-const rawterm::Color COLOR_1 = rawterm::Colors::gray;
-const rawterm::Color COLOR_2 = rawterm::Colors::teal;
-// const rawterm::Color COLOR_2 = rawterm::Color(129, 162, 190);
+const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
+const rawterm::Color COLOR_UI_FG = rawterm::Colors::teal;
+const rawterm::Color COLOR_NOTIFY = rawterm::Colors::red;
 
 #endif  // CONSTANTS_H

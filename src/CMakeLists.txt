@@ -5,9 +5,15 @@ include(FetchContent)
 fetchcontent_declare(
   rawterm
   GIT_REPOSITORY https://github.com/ttibsi/rawterm
-  GIT_TAG        49cd2273b6e250cbc17930a854331d0c80592f69
+  GIT_TAG        main
 )
 fetchcontent_makeavailable(rawterm)
+fetchcontent_declare(
+  cpptrace
+  GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
+  GIT_TAG        v0.7.0
+)
+fetchcontent_makeavailable(cpptrace)
 
 # For configuring version.h
 # TODO: Investigate putting this in it's own cmake file
@@ -45,15 +51,12 @@ configure_file(
 )
 
 add_library(iris_src STATIC
-    action.cpp
     controller.cpp
-    editor.cpp
     filesystem.cpp
     model.cpp
-    text_transform.cpp
     view.cpp
 )
-target_link_libraries(iris_src PUBLIC rawterm)
+target_link_libraries(iris_src PUBLIC rawterm cpptrace::cpptrace)
 
 if(ENABLE_ASAN)
     target_link_libraries(iris_src PUBLIC -fsanitize=address)

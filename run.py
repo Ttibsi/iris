@@ -33,6 +33,7 @@ def loc() -> None:
 def clean() -> None:
     print("Removing build directory")
     shutil.rmtree("build", ignore_errors=True)
+    shutil.rmtree(".mypy_cache", ignore_errors=True)
 
     print("Removing log file")
     try:
@@ -42,7 +43,7 @@ def clean() -> None:
 
 
 def test(testname: str | None, asan: bool, coverage: bool) -> None:
-    compile_cmd = "cmake -DRUN_TESTS=true -S . -B build"
+    compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
     if coverage:
@@ -70,7 +71,7 @@ def test(testname: str | None, asan: bool, coverage: bool) -> None:
 
 
 def build() -> None:
-    run_shell_cmd("cmake -S . -B build")
+    run_shell_cmd("cmake -G Ninja -S . -B build")
     run_shell_cmd("cmake --build build/")
 
 

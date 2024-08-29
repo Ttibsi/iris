@@ -2,7 +2,7 @@
 
 * [x] Display a text file on the screen
 * [x] Display line numbers and a statusbar
-* [ ] Move cursor and scroll through a file
+* [x] Move cursor and scroll through a file
 * [ ] Modify and save the file
 * [ ] Handle displaying tab characters with specific widths
     This may be a function to add to Rawterm instead
@@ -29,10 +29,10 @@
 
 ## Vim commands
 
-* [ ] `h`
-* [ ] `j`
-* [ ] `k`
-* [ ] `l`
+* [x] `h`
+* [x] `j`
+* [x] `k`
+* [x] `l`
 * [ ] `x`
 * [ ] `a`
 * [ ] `A`
