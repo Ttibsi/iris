@@ -43,7 +43,7 @@ def clean() -> None:
 
 
 def test(testname: str | None, asan: bool, coverage: bool) -> None:
-    compile_cmd = "cmake -DRUN_TESTS=true -S . -B build"
+    compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
     if coverage:
@@ -71,7 +71,7 @@ def test(testname: str | None, asan: bool, coverage: bool) -> None:
 
 
 def build() -> None:
-    run_shell_cmd("cmake -S . -B build")
+    run_shell_cmd("cmake -G Ninja -S . -B build")
     run_shell_cmd("cmake --build build/")
 
 
