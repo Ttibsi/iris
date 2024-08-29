@@ -3,7 +3,6 @@
 
 #include <optional>
 #include <stdexcept>
-
 #include "logger.h"
 #include "view.h"
 

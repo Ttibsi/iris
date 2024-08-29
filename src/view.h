@@ -1,13 +1,12 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include <string>
-#include <vector>
-
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
 #include <rawterm/screen.h>
 
+#include <string>
+#include <vector>
 #include "model.h"
 
 struct file_pos_pair {
