@@ -10,10 +10,14 @@
 #include "controller.h"
 #include "logger.h"
 
-View::View(const Controller* controller, const rawterm::Pos dims)
+View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
     open_files.reserve(8);
     viewable_models.reserve(8);
+}
+
+Model* View::get_active_model() {
+    return viewable_models.at(active_model - 1);
 }
 
 void View::add_model(Model* m) {
@@ -56,7 +60,8 @@ void View::render_screen() {
     // Even though it appears this might not be needed, we still need this to
     // prevent the first line being cut off
     if (LINE_NUMBERS) {
-        screen += rawterm::set_foreground(
+        screen += 
+            rawterm::set_foreground(
             std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
     }
 
@@ -163,7 +168,24 @@ const std::string View::render_status_bar() const {
 }
 
 void View::render_line() {
-    throw std::logic_error("Not Implemented");
+    rawterm::clear_line();
+    rawterm::Pos cur_pos = cur;
+
+    cur.move({cur.vertical, 1});
+    int current_line = get_active_model()->current_line;
+
+    if (LINE_NUMBERS) {
+        std::cout << rawterm::set_foreground(
+                std::format("{:>{}}\u2502", current_line, line_number_offset),
+                COLOR_UI_BG
+        );
+    }
+
+    std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
+    cur.move({cur_pos.vertical, cur_pos.horizontal + 1});
+    get_active_model()->current_char_in_line++;
+    
+    // throw std::logic_error("Not Implemented");
 }
 
 void View::set_status(const std::string& msg) {

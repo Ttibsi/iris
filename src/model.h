@@ -17,8 +17,10 @@ struct Model {
 
     Model();
     Model(const std::vector<char>&, const std::string&);
-    char get_current_char() const;
-    char get_next_char() const;
+    [[nodiscard]] int get_abs_pos() const;
+    [[nodiscard]] char get_current_char() const;
+    [[nodiscard]] char get_next_char() const;
+    void insert_char(char);
 };
 
 #endif  // MODEL_H

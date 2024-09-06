@@ -27,8 +27,8 @@ class Gapvector {
     using difference_type = std::ptrdiff_t;
     using reference = value_type&;
     using const_reference = const value_type&;
-    using pointer = typename std::allocator_traits<Allocator>::pointer;
-    using const_pointer = typename std::allocator_traits<Allocator>::const_pointer;
+    using pointer = std::allocator_traits<Allocator>::pointer;
+    using const_pointer = std::allocator_traits<Allocator>::const_pointer;
 
    private:
     // Iterator built from: https://medium.com/p/fc5b994462c6#90c4
@@ -37,13 +37,11 @@ class Gapvector {
        public:
         static const bool is_const = std::is_const_v<std::remove_pointer_t<PointerType>>;
         using iterator_category = std::contiguous_iterator_tag;
-        using gapvector_pointer =
-            typename std::conditional<is_const, const Gapvector*, Gapvector*>::type;
+        using gapvector_pointer = std::conditional<is_const, const Gapvector*, Gapvector*>::type;
 
-        using value_type = typename std::
-            conditional<is_const, const Gapvector::value_type, Gapvector::value_type>::type;
-        using element_type =
-            typename std::conditional<is_const, const value_type, value_type>::type;
+        using value_type =
+            std::conditional<is_const, const Gapvector::value_type, Gapvector::value_type>::type;
+        using element_type = std::conditional<is_const, const value_type, value_type>::type;
 
         using pointer = PointerType;
         using reference = value_type&;
@@ -366,18 +364,14 @@ class Gapvector {
             throw std::runtime_error("Cannot pull line from empty gapvector");
         }
 
-        auto start_rit = std::find(rbegin() + (size() - pos), rend(), '\n');
-        auto start_it = (start_rit != rend()) ? start_rit.base() : begin();
+        auto start_rit = std::find(std::make_reverse_iterator(begin() + pos), rend(), '\n');
+        auto start_it = (start_rit == rend()) ? begin() : start_rit.base();
         auto end_it = std::find(begin() + pos, end(), '\n');
 
         return std::string(start_it, end_it);
     }
 
     [[nodiscard]] int find_ith_char(char c, int count) const {
-        if (count == 0) {
-            return 0;
-        }
-
         int tracking_count = 0;
         for (auto it = begin(); it != end(); ++it) {
             if (*it == c) {
@@ -463,8 +457,11 @@ class Gapvector {
     }
 
     constexpr void insert(iterator pos, const_reference value) {
-        if (static_cast<size_type>(gapEnd - gapStart) < 1) {
+        if (static_cast<size_type>(gapEnd - gapStart) <= 1) {
+            int pos_len = pos - begin();
             resize(capacity() * 2);
+            // pos = begin() + pos_len + 1;
+            pos = begin() + pos_len;
         }
 
         std::uninitialized_copy_n(pos.ptr, gapStart - pos.ptr, pos.ptr + 1);
@@ -474,8 +471,10 @@ class Gapvector {
     }
 
     constexpr void insert(iterator pos, const std::string_view value) {
-        if (static_cast<size_type>(gapEnd - gapStart) < value.size()) {
+        if (static_cast<size_type>(gapEnd - gapStart) <= value.size()) {
+            int pos_len = pos - begin();
             resize(capacity() * 2);
+            pos = begin() + pos_len + 1;
         }
 
         std::uninitialized_copy_n(pos.ptr, gapStart - pos.ptr, pos.ptr + value.size());

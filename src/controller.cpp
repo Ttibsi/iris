@@ -10,6 +10,11 @@ Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, 
 }
 
 void Controller::set_mode(Mode m) {
+    // switch (m) {
+    //     case Mode::Read: rawterm::Cursor::cursor_block();
+    //     case Mode::Write: rawterm::Cursor::cursor_underscore();
+    //     case Mode::Command: rawterm::Cursor::cursor_hide();
+    // }
     mode = m;
 }
 
@@ -55,8 +60,21 @@ void Controller::start_action_engine() {
             continue;
         }
 
+        if (mode == Mode::Write) {
+            if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
+                parse_action<Mode, None>(&view, Action<Mode>{ActionType::ChangeMode, Mode::Read});
+            } else {
+                view.get_active_model()->insert_char(k.value().code);
+                view.render_line();
+                view.draw_status_bar();
+                continue;
+            }
+        }
+
         if (k.value() == rawterm::Key('h')) {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+        } else if (k.value() == rawterm::Key('i')) {
+            parse_action<Mode, None>(&view, Action<Mode>{ActionType::ChangeMode, Mode::Write});
         } else if (k.value() == rawterm::Key('j')) {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorDown});
         } else if (k.value() == rawterm::Key('k')) {
