@@ -62,7 +62,7 @@ void Controller::start_action_engine() {
 
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
-                parse_action<Mode, None>(&view, Action<Mode>{ActionType::ChangeMode, Mode::Read});
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
             } else {
                 view.get_active_model()->insert_char(k.value().code);
                 view.render_line();
@@ -74,7 +74,7 @@ void Controller::start_action_engine() {
         if (k.value() == rawterm::Key('h')) {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
         } else if (k.value() == rawterm::Key('i')) {
-            parse_action<Mode, None>(&view, Action<Mode>{ActionType::ChangeMode, Mode::Write});
+            parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
         } else if (k.value() == rawterm::Key('j')) {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorDown});
         } else if (k.value() == rawterm::Key('k')) {
@@ -83,6 +83,8 @@ void Controller::start_action_engine() {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
         } else if (k.value() == rawterm::Key('q')) {
             break_loop = true;
+        } else if (k.value() == rawterm::Key('s')) {
+            parse_action<void, None>(&view, Action<void> {ActionType::SaveFile});
         }
     }
 }

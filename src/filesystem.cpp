@@ -54,3 +54,19 @@
         return {};
     }
 }
+
+[[nodiscard]] std::size_t write_to_file(const std::string& file, Gapvector<> chars) {
+    if (file == "NO FILE") {
+        return -1;
+    }
+    std::ofstream out(file);
+
+    for (auto&& c : chars) {
+        if (c == '\r') {
+            continue;
+        }
+        out << c;
+    }
+
+    return out.tellp();
+}

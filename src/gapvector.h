@@ -372,6 +372,10 @@ class Gapvector {
     }
 
     [[nodiscard]] int find_ith_char(char c, int count) const {
+        if (count == 0) {
+            return 0;
+        }
+
         int tracking_count = 0;
         for (auto it = begin(); it != end(); ++it) {
             if (*it == c) {

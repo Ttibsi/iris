@@ -21,6 +21,7 @@ struct Model {
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] char get_next_char() const;
     void insert_char(char);
+    int save_file() const;
 };
 
 #endif  // MODEL_H

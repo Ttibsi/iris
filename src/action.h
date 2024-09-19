@@ -1,8 +1,8 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "controller.h"
 #include <optional>
+#include "controller.h"
 #include "logger.h"
 #include "view.h"
 
@@ -14,9 +14,10 @@ enum class ActionType {
     MoveCursorDown,
     MoveCursorRight,
     MoveCursorUp,
+    SaveFile,
 
     // Pass value
-    ChangeMode, // Mode
+    ChangeMode,  // Mode
 };
 
 template <typename T>
@@ -51,11 +52,14 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             return {};
         case ActionType::ChangeMode:
             log("Action called: ChangeMode");
-            if constexpr (!std::is_same_v<T, void>) { 
+            if constexpr (!std::is_same_v<T, void>) {
                 v->ctrlr_ptr->set_mode(action.payload);
                 v->draw_status_bar();
             }
             return {};
+        case ActionType::SaveFile:
+            log("Action called: SaveFile");
+            v->get_active_model()->save_file();
         default:
             log(Level::WARNING, "Unknown action called");
             return {};
