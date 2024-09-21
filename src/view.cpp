@@ -179,10 +179,7 @@ void View::render_line() {
     }
 
     std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
-    cur.move({cur_pos.vertical, cur_pos.horizontal + 1});
-    get_active_model()->current_char_in_line++;
-
-    // throw std::logic_error("Not Implemented");
+    cur.move({cur_pos.vertical, cur_pos.horizontal});
 }
 
 void View::set_status(const std::string& msg) {

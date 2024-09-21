@@ -71,3 +71,11 @@ TEST_CASE("get_next_char", "[MODEL]") {
     m.current_char_in_line = 5;
     REQUIRE(m.get_next_char() == 'e');
 }
+
+TEST_CASE("insert_char", "[MODEL]") {
+    SKIP("Untested");
+}
+
+TEST_CASE("save_file", "[MODEL]") {
+    SKIP("Untested");
+}
