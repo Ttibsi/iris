@@ -73,7 +73,16 @@ TEST_CASE("get_next_char", "[MODEL]") {
 }
 
 TEST_CASE("insert_char", "[MODEL]") {
-    SKIP("Untested");
+    std::vector<char> expected = {
+        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
+        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
+        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
+        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
+
+    auto m = Model(expected, "test_file.txt");
+    REQUIRE(m.get_current_char() == 'T');
+    m.insert_char('a');
+    REQUIRE(m.get_current_char() == 'a');
 }
 
 TEST_CASE("save_file", "[MODEL]") {

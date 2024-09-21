@@ -43,3 +43,7 @@ TEST_CASE("shell_exec", "[FILESYSTEM]") {
         REQUIRE(out.value().retcode == r.retcode);
     }
 }
+
+TEST_CASE("write_to_file", "[FILESYSTEM]") {
+    SKIP("untested");
+}
