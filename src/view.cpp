@@ -60,8 +60,7 @@ void View::render_screen() {
     // Even though it appears this might not be needed, we still need this to
     // prevent the first line being cut off
     if (LINE_NUMBERS) {
-        screen += 
-            rawterm::set_foreground(
+        screen += rawterm::set_foreground(
             std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
     }
 
@@ -176,15 +175,13 @@ void View::render_line() {
 
     if (LINE_NUMBERS) {
         std::cout << rawterm::set_foreground(
-                std::format("{:>{}}\u2502", current_line, line_number_offset),
-                COLOR_UI_BG
-        );
+            std::format("{:>{}}\u2502", current_line, line_number_offset), COLOR_UI_BG);
     }
 
     std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
     cur.move({cur_pos.vertical, cur_pos.horizontal + 1});
     get_active_model()->current_char_in_line++;
-    
+
     // throw std::logic_error("Not Implemented");
 }
 
@@ -245,8 +242,11 @@ void View::cursor_down() {
 }
 
 void View::cursor_right() {
-    char next_char = viewable_models.at(active_model - 1)->get_next_char();
+    if (cur.horizontal >= view_size.horizontal) {
+        return;
+    }
 
+    char next_char = viewable_models.at(active_model - 1)->get_next_char();
     if (next_char != '\r') {
         cur.move_right();
         viewable_models.at(active_model - 1)->current_char_in_line++;

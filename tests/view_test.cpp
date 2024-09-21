@@ -146,24 +146,222 @@ TEST_CASE("render_status_bar", "[VIEW]") {
 }
 
 TEST_CASE("render_line", "[VIEW]") {
-    SKIP("Not implemented yet");
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+
+    auto m =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    v.add_model(&m);
+
+    // capture stdout
+    std::stringstream buffer;
+    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+    v.render_line();
+    std::string text = buffer.str();
+
+    // restore stdout
+    std::cout.rdbuf(prevcoutbuf);
+
+    int expected_size = 17;
+    if (LINE_NUMBERS) {
+        expected_size = 23;
+    }
+
+    REQUIRE(rawterm::raw_size(text) == expected_size);
+    // REQUIRE(text)) == "This is some text"); // TODO: raw string - rawterm #55
 }
+
 TEST_CASE("set_status", "[VIEW]") {
     SKIP("Not Tested Yet");
 };
 
 TEST_CASE("cursor_left", "[VIEW]") {
-    SKIP("Not Tested Yet");
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    v.add_model(&m);
+
+    std::stringstream buffer;
+    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+    SECTION("Already at left-most position") {
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        v.cursor_left();
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+    }
+
+    SECTION("Move left") {
+        for (int i = 1; i < 5; i++) {
+            v.cursor_right();
+        }
+        v.cursor_left();
+        REQUIRE(v.cur == rawterm::Pos(1, 4));
+        REQUIRE(m.current_char_in_line == 4);
+    }
+
+    std::cout.rdbuf(prevcoutbuf);
 };
 
 TEST_CASE("cursor_up", "[VIEW]") {
-    SKIP("Not Tested Yet");
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    std::stringstream buffer;
+    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+    SECTION("Already at top-most row") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        v.cursor_up();
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+    }
+
+    SECTION("Move cursor up") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+
+        m.current_line = 3;
+        m.current_char_in_line = 3;
+        v.cur = rawterm::Pos(3, 3);
+        v.cursor_up();
+
+        REQUIRE(v.cur == rawterm::Pos(2, 3));
+        REQUIRE(m.current_line == 2);
+    }
+
+    SECTION("Move view up (scroll)") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        v.add_model(&m);
+
+        // Scroll down below initial view
+        for (int i = 1; i < 27; i++) {
+            v.cursor_down();
+        }
+        // Move cursor to top row
+        for (int i = 1; i < 23; i++) {
+            v.cursor_up();
+        }
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        REQUIRE(m.current_line == 5);
+
+        buffer.str(std::string());  // Empty stringstream buffer
+
+        v.render_screen();
+        std::vector<std::string> screenshot = splitStringOnNewlines(buffer.str());
+        REQUIRE(screenshot.at(0).find("lectus tempor.") != std::string::npos);
+    }
+
+    std::cout.rdbuf(prevcoutbuf);
 };
 
 TEST_CASE("cursor_down", "[VIEW]") {
-    SKIP("Not Tested Yet");
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+
+    std::stringstream buffer;
+    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+    SECTION("Move cursor down") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        v.add_model(&m);
+
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(2, 1));
+        REQUIRE(m.current_line == 2);
+    }
+
+    SECTION("Move view down (scroll)") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        v.add_model(&m);
+
+        for (int i = 1; i < 22; i++) {
+            v.cursor_down();
+        }
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 22);
+
+        v.cursor_down();  // trigger scrolling
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 23);
+
+        v.cursor_down();  // trigger scrolling
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 24);
+    }
+
+    SECTION("Already at bottom-most row in file") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        v.add_model(&m);
+
+        for (int i = 1; i < m.line_count; i++) {
+            v.cursor_down();
+        }
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == m.line_count);
+
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == m.line_count);
+    }
+
+    SECTION("bottom row of file within view (no scrolling required)") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+
+        // Move to end of file
+        v.cursor_down();
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 3);
+
+        // No cursor movement as we're already at end of file
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 3);
+    }
+
+    std::cout.rdbuf(prevcoutbuf);
 };
 
 TEST_CASE("cursor_right", "[VIEW]") {
-    SKIP("Not Tested Yet");
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    v.add_model(&m);
+
+    std::stringstream buffer;
+    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+    SECTION("Already at right-most position in view") {
+        v.cur.move({1, 80});
+        REQUIRE(v.cur == rawterm::Pos(1, 80));
+        v.cursor_right();
+        REQUIRE(v.cur == rawterm::Pos(1, 80));
+    }
+
+    SECTION("Already at right-most position in line") {
+        for (int i = 1; i < 17; i++) {
+            v.cursor_right();
+        }
+        REQUIRE(v.cur == rawterm::Pos(1, 17));
+        REQUIRE(m.current_char_in_line == 17);
+    }
+
+    SECTION("Move right") {
+        v.cursor_right();
+        REQUIRE(v.cur == rawterm::Pos(1, 2));
+    }
+
+    std::cout.rdbuf(prevcoutbuf);
 };
