@@ -52,7 +52,7 @@ configure_file(
 
 add_library(iris_src STATIC
     controller.cpp
-    filesystem.cpp
+    file_io.cpp
     model.cpp
     view.cpp
 )

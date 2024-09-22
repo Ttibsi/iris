@@ -1,8 +1,8 @@
-#include "filesystem.h"
-
-#include <catch2/catch_test_macros.hpp>
+#include "file_io.h"
 
 #include <filesystem>
+
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("open_file", "[FILESYSTEM]") {
     std::vector<char> expected = {'T',  'h',  'i', 's', ' ', 'i',  's',  ' ', 's', 'o',  'm', 'e',

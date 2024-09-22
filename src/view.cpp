@@ -1,11 +1,11 @@
 #include "view.h"
 
 #include <format>
+#include <stdexcept>
 
 #include <rawterm/color.h>
 #include <rawterm/text.h>
 
-#include <stdexcept>
 #include "constants.h"
 #include "controller.h"
 #include "logger.h"

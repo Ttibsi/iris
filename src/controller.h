@@ -1,10 +1,11 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <rawterm/core.h>
-
 #include <string>
 #include <vector>
+
+#include <rawterm/core.h>
+
 #include "model.h"
 #include "view.h"
 

@@ -1,9 +1,10 @@
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
+#ifndef FILE_IO_H
+#define FILE_IO_H
 
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "gapvector.h"
 
 struct Response {
@@ -20,4 +21,4 @@ struct Response {
 [[nodiscard]] std::optional<Response> shell_exec(const std::string&, bool);
 [[nodiscard]] std::size_t write_to_file(const std::string&, Gapvector<>);
 
-#endif  // FILESYSTEM_H
+#endif  // FILE_IO_H

@@ -15,7 +15,7 @@ include(Catch)
 add_executable(test_exe
     action_test.cpp
     controller_test.cpp
-    filesystem_test.cpp
+    file_io_test.cpp
     gapvector_test.cpp
     logger_test.cpp
     model_test.cpp
