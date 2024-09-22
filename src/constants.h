@@ -3,10 +3,12 @@
 
 #include <rawterm/color.h>
 
-const bool LINE_NUMBERS = true;
+inline const bool LINE_NUMBERS = true;
+inline const int TAB_SIZE = 4;
+inline const bool EXPAND_TAB = true;
 
-const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
-const rawterm::Color COLOR_UI_FG = rawterm::Colors::teal;
-const rawterm::Color COLOR_NOTIFY = rawterm::Colors::red;
+inline const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
+inline const rawterm::Color COLOR_UI_FG = rawterm::Colors::teal;
+inline const rawterm::Color COLOR_NOTIFY = rawterm::Colors::red;
 
 #endif  // CONSTANTS_H

@@ -9,6 +9,9 @@
 #include "logger.h"
 #include "version.h"
 
+// TODO: Handle entering text when writing to an empty file
+// Currently we can open a nonexistant file, but writing to it causes a crash
+
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 

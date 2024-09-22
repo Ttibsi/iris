@@ -17,7 +17,8 @@ struct file_pos_pair {
 
 struct Controller;
 
-struct View {
+class View {
+   public:
     Controller* ctrlr_ptr;
     rawterm::Pos view_size;
     std::vector<file_pos_pair> open_files;
@@ -42,8 +43,10 @@ struct View {
     void cursor_up();
     void cursor_down();
     void cursor_right();
-
     // TODO: methods for cmd buffer (to name)
+
+   private:
+    void cursor_tab_compensator();
 };
 
 #endif  // VIEW_H

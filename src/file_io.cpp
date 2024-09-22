@@ -3,7 +3,6 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <stdexcept>
 
 [[nodiscard]] std::optional<std::vector<char>> open_file(const std::string& file) {
     std::vector<char> ret;
@@ -12,8 +11,7 @@
 
     std::ifstream ifs(file);
     if (ifs.fail()) {
-        // throw std::runtime_error(strerror(errno));
-        return {};
+        return {std::vector<char>()};
     }
 
     while (ifs.get(ch)) {

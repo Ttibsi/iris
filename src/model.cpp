@@ -21,6 +21,11 @@ Model::Model(const std::vector<char>& file_chars, const std::string& filename)
     return char_pos;
 }
 
+[[nodiscard]] char Model::get_prev_char() const {
+    if (get_abs_pos() == 0) { return ' '; }
+    return buf.at(get_abs_pos() - 1);
+}
+
 [[nodiscard]] char Model::get_current_char() const {
     return buf.at(get_abs_pos());
 }

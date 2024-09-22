@@ -43,6 +43,10 @@ TEST_CASE("get_abs_pos", "[MODEL]") {
     REQUIRE(m.get_abs_pos() == 22);
 }
 
+TEST_CASE("get_prev_char", "[MODEL]") {
+    SKIP("TODO");
+}
+
 TEST_CASE("get_current_char", "[MODEL]") {
     std::vector<char> expected = {
         'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ',  't', 'e', 'x', 't', '\r',

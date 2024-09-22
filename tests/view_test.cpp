@@ -307,7 +307,7 @@ TEST_CASE("cursor_down", "[VIEW]") {
             open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
         v.add_model(&m);
 
-        for (int i = 1; i < m.line_count; i++) {
+        for (unsigned int i = 1; i < m.line_count; i++) {
             v.cursor_down();
         }
         REQUIRE(v.cur == rawterm::Pos(22, 5));

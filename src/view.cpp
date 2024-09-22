@@ -1,6 +1,9 @@
 #include "view.h"
 
+#include <algorithm>
+#include <cassert>
 #include <format>
+#include <span>
 #include <stdexcept>
 
 #include <rawterm/color.h>
@@ -74,12 +77,22 @@ void View::render_screen() {
     }
 
     while (remaining_rows) {
+        // Empty file
+        if (viewable_models.at(active_model - 1)->buf.size() == 0) {
+            screen += "\r\n";
+            break;
+        }
+
         if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
             screen += "\r\n";
             break;
         }
         char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
-        screen += c;
+        if (c == '\t') {
+            screen += std::string(TAB_SIZE, ' ');
+        } else {
+            screen += c;
+        }
 
         if (c == '\n') {
             remaining_rows--;
@@ -184,7 +197,14 @@ void View::render_line() {
             std::format("{:>{}}\u2502", current_line, line_number_offset), COLOR_UI_BG);
     }
 
-    std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
+    std::string line_str = get_active_model()->buf.line(get_active_model()->get_abs_pos());
+    std::size_t pos = 0;
+    while ((pos = line_str.find('\t', pos)) != std::string::npos) {
+        line_str.replace(pos, 1, std::string(TAB_SIZE, ' '));
+        pos += TAB_SIZE;
+    }
+
+    std::cout << line_str;
     cur.move({cur_pos.vertical, cur_pos.horizontal});
 }
 
@@ -196,8 +216,16 @@ void View::set_status(const std::string& msg) {
 
 void View::cursor_left() {
     int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
+
     if (cur.horizontal > left_most_pos) {
-        cur.move_left();
+        if (viewable_models.at(active_model - 1)->get_prev_char() == '\t') {
+            for (int i = 0; i < TAB_SIZE; i++) {
+                cur.move_left();
+            }
+        } else {
+            cur.move_left();
+        }
+
         viewable_models.at(active_model - 1)->current_char_in_line--;
         draw_status_bar();
     }
@@ -216,10 +244,14 @@ void View::cursor_up() {
         render_screen();
     } else {
         // move cursor
+        if (get_active_model()->get_current_char() == '\t') {
+            get_active_model()->current_char_in_line -= (TAB_SIZE - 1);
+        }
         cur.move_up();
     }
 
-    viewable_models.at(active_model - 1)->current_line--;
+    get_active_model()->current_line--;
+    cursor_tab_compensator();
     draw_status_bar();
 }
 
@@ -237,10 +269,14 @@ void View::cursor_down() {
         render_screen();
     } else {
         // move cursor
+        if (get_active_model()->get_current_char() == '\t') {
+            get_active_model()->current_char_in_line -= (TAB_SIZE - 1);
+        }
         cur.move_down();
     }
 
     viewable_models.at(active_model - 1)->current_line++;
+    cursor_tab_compensator();
     draw_status_bar();
 }
 
@@ -250,7 +286,13 @@ void View::cursor_right() {
     }
 
     auto trigger = [this]() {
-        cur.move_right();
+        if (viewable_models.at(active_model - 1)->get_current_char() == '\t') {
+            for (int i = 0; i < TAB_SIZE; i++) {
+                cur.move_right();
+            }
+        } else {
+            cur.move_right();
+        }
         viewable_models.at(active_model - 1)->current_char_in_line++;
         draw_status_bar();
     };
@@ -270,5 +312,24 @@ void View::cursor_right() {
         case Mode::Command:
             // TODO: command mode
             break;
+    }
+}
+
+// Private functions
+
+void View::cursor_tab_compensator() {
+    const int curr_char_pos = get_active_model()->current_char_in_line;
+    auto substr = std::span<char>(
+        get_active_model()->buf.line(get_active_model()->get_abs_pos()).begin() +
+            (curr_char_pos - (TAB_SIZE - 1)),
+        TAB_SIZE - 1);
+
+    auto tab_char_iter = std::find(substr.begin(), substr.end(), '\t');
+    if (tab_char_iter == substr.end()) {
+        return;
+    }
+
+    for (unsigned int i = 0; i < TAB_SIZE - 1; i++) {
+        cur.move_left();
     }
 }

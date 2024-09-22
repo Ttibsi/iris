@@ -15,13 +15,13 @@ if(RELEASE)
     set(CMAKE_BUILD_TYPE Release)
 else()
     set(CMAKE_BUILD_TYPE Debug)
+    add_compile_options(-g3)
 endif()
 
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 
 if(ENABLE_ASAN)
-    add_compile_options(-g)
     add_compile_options(-fsanitize=address)
 endif()
 

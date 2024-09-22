@@ -2,6 +2,7 @@
 
 #include <action.h>
 
+#include "constants.h"
 #include "file_io.h"
 #include "logger.h"
 
@@ -43,7 +44,7 @@ void Controller::create_view(const std::string& file) {
     if (file_chars.has_value()) {
         models.emplace_back(file_chars.value(), file);
     } else {
-        models.emplace_back();
+        models.push_back(Model());
     }
 
     view.add_model(&models.at(models.size() - 1));
@@ -79,13 +80,24 @@ void Controller::start_action_engine() {
                 parse_action<void, None>(&view, Action<void> {ActionType::Backspace});
             } else if (k.value() == rawterm::Key('m', rawterm::Mod::Enter)) {
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
-            } else {
-                view.get_active_model()->insert_char(k.value().code);
-                view.cursor_right();
+            } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab)) {
+                if (EXPAND_TAB) {
+                    for (int i = 0; i < TAB_SIZE; i++) {
+                        parse_action<char, None>(&view, Action<char> {ActionType::InsertChar, ' '});
+                    }
+                } else {
+                    parse_action<char, None>(&view, Action<char> {ActionType::InsertChar, '\t'});
+                }
                 view.render_line();
                 view.draw_status_bar();
-                continue;
+            } else {
+                parse_action<char, None>(
+                    &view, Action<char> {ActionType::InsertChar, k.value().code});
+                view.render_line();
+                view.draw_status_bar();
             }
+
+            continue;
         }
 
         // TODO: snap cursor to the right when you go up/down
