@@ -65,9 +65,13 @@ std::vector<std::string> splitStringOnNewlines(const std::string& input) {
     std::string line;
 
     while (std::getline(stream, line)) {
+        if (line.find("~") != std::string::npos) {
+            continue;
+        }
         result.push_back(line);
     }
 
+    result.pop_back();  // Remove the string of escape codes that gets the cursor to the right place
     return result;
 }
 
@@ -90,7 +94,7 @@ TEST_CASE("render_screen", "[VIEW]") {
     // restore stdout
     std::cout.rdbuf(prevcoutbuf);
 
-    REQUIRE(text.size() == 3);
+    REQUIRE(text.size() == 4);
     REQUIRE(rawterm::raw_at(text.at(0), 5) == 'T');
     REQUIRE(rawterm::raw_at(text.at(1), 1) == '2');
 }
@@ -165,7 +169,7 @@ TEST_CASE("render_line", "[VIEW]") {
 
     int expected_size = 17;
     if (LINE_NUMBERS) {
-        expected_size = 23;
+        expected_size = 24;
     }
 
     REQUIRE(rawterm::raw_size(text) == expected_size);
@@ -247,7 +251,7 @@ TEST_CASE("cursor_up", "[VIEW]") {
         for (int i = 1; i < 23; i++) {
             v.cursor_up();
         }
-        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        REQUIRE(v.cur == rawterm::Pos(1, 5));
         REQUIRE(m.current_line == 5);
 
         buffer.str(std::string());  // Empty stringstream buffer
@@ -289,11 +293,11 @@ TEST_CASE("cursor_down", "[VIEW]") {
         REQUIRE(m.current_line == 22);
 
         v.cursor_down();  // trigger scrolling
-        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(v.cur == rawterm::Pos(22, 5));
         REQUIRE(m.current_line == 23);
 
         v.cursor_down();  // trigger scrolling
-        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(v.cur == rawterm::Pos(22, 5));
         REQUIRE(m.current_line == 24);
     }
 
@@ -305,11 +309,11 @@ TEST_CASE("cursor_down", "[VIEW]") {
         for (int i = 1; i < m.line_count; i++) {
             v.cursor_down();
         }
-        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(v.cur == rawterm::Pos(22, 5));
         REQUIRE(m.current_line == m.line_count);
 
         v.cursor_down();
-        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(v.cur == rawterm::Pos(22, 5));
         REQUIRE(m.current_line == m.line_count);
     }
 

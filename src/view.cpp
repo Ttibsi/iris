@@ -75,6 +75,7 @@ void View::render_screen() {
 
     while (remaining_rows) {
         if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
+            screen += "\r\n";
             break;
         }
         char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
@@ -91,6 +92,11 @@ void View::render_screen() {
         }
 
         gv_counter++;
+    }
+
+    while (remaining_rows) {
+        remaining_rows--;
+        screen += "~\r\n";
     }
 
     std::cout << screen;
@@ -243,10 +249,26 @@ void View::cursor_right() {
         return;
     }
 
-    char next_char = viewable_models.at(active_model - 1)->get_next_char();
-    if (next_char != '\r') {
+    auto trigger = [this]() {
         cur.move_right();
         viewable_models.at(active_model - 1)->current_char_in_line++;
         draw_status_bar();
+    };
+
+    char next_char = viewable_models.at(active_model - 1)->get_next_char();
+    switch (ctrlr_ptr->mode) {
+        case Mode::Read:
+            if (next_char != '\r') {
+                trigger();
+            }
+            break;
+        case Mode::Write:
+            if (next_char != '\n') {
+                trigger();
+            }
+            break;
+        case Mode::Command:
+            // TODO: command mode
+            break;
     }
 }

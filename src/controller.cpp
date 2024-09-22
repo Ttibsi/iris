@@ -81,13 +81,14 @@ void Controller::start_action_engine() {
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
             } else {
                 view.get_active_model()->insert_char(k.value().code);
+                view.cursor_right();
                 view.render_line();
                 view.draw_status_bar();
-                view.cursor_right();
                 continue;
             }
         }
 
+        // TODO: snap cursor to the right when you go up/down
         if (k.value() == rawterm::Key('h')) {
             parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
         } else if (k.value() == rawterm::Key('i')) {

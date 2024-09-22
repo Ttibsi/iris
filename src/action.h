@@ -77,6 +77,7 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
                 for (int i = 0; i <= prev_line_len - 2; i++) {
                     v->cursor_right();
                 }
+                active->line_count--;
                 v->render_screen();
             } else {
                 active->buf.erase(active->buf.begin() + active->get_abs_pos() - 1);
@@ -93,6 +94,7 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             while (active->current_char_in_line > 1) {
                 v->cursor_left();
             }
+            active->line_count++;
             v->render_screen();
             return {};
         }
