@@ -3,7 +3,7 @@
 * [x] Display a text file on the screen
 * [x] Display line numbers and a statusbar
 * [x] Move cursor and scroll through a file
-* [ ] Modify and save the file
+* [x] Modify and save the file
 * [ ] Handle displaying tab characters with specific widths
     This may be a function to add to Rawterm instead
 * [ ] Handle replacing tab chars with spaces on save - make it togglable
