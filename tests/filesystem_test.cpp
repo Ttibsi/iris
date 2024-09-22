@@ -2,6 +2,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <filesystem>
+
 TEST_CASE("open_file", "[FILESYSTEM]") {
     std::vector<char> expected = {'T',  'h',  'i', 's', ' ', 'i',  's',  ' ', 's', 'o',  'm', 'e',
                                   ' ',  't',  'e', 'x', 't', '\r', '\n', ' ', ' ', ' ',  ' ', 'h',
@@ -45,5 +47,16 @@ TEST_CASE("shell_exec", "[FILESYSTEM]") {
 }
 
 TEST_CASE("write_to_file", "[FILESYSTEM]") {
-    SKIP("untested");
+    std::vector<char> expected = {
+        'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd',
+    };
+
+    size_t bytes = write_to_file("save_test_file.txt", Gapvector(expected.begin(), expected.end()));
+    REQUIRE(bytes == expected.size());
+
+    auto contents = open_file("save_test_file.txt");
+    REQUIRE(contents.has_value());
+    REQUIRE(contents.value() == expected);
+
+    std::filesystem::remove("save_test_file.txt");
 }

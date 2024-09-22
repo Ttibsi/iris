@@ -2,7 +2,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <filesystem>
 #include <vector>
+#include "filesystem.h"
 
 TEST_CASE("Constructor", "[MODEL]") {
     auto m = Model();
@@ -86,5 +88,16 @@ TEST_CASE("insert_char", "[MODEL]") {
 }
 
 TEST_CASE("save_file", "[MODEL]") {
-    SKIP("Untested");
+    std::vector<char> expected = {
+        'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd',
+    };
+
+    auto m = Model(expected, "save_test_file.txt");
+
+    m.save_file();
+    auto contents = open_file("save_test_file.txt");
+    REQUIRE(contents.has_value());
+    REQUIRE(contents.value() == expected);
+
+    std::filesystem::remove("save_test_file.txt");
 }
