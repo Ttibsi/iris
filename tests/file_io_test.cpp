@@ -1,4 +1,6 @@
-#include "filesystem.h"
+#include "file_io.h"
+
+#include <filesystem>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -42,4 +44,19 @@ TEST_CASE("shell_exec", "[FILESYSTEM]") {
         REQUIRE(out.value().stderr == r.stderr);
         REQUIRE(out.value().retcode == r.retcode);
     }
+}
+
+TEST_CASE("write_to_file", "[FILESYSTEM]") {
+    std::vector<char> expected = {
+        'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd',
+    };
+
+    size_t bytes = write_to_file("save_test_file.txt", Gapvector(expected.begin(), expected.end()));
+    REQUIRE(bytes == expected.size());
+
+    auto contents = open_file("save_test_file.txt");
+    REQUIRE(contents.has_value());
+    REQUIRE(contents.value() == expected);
+
+    std::filesystem::remove("save_test_file.txt");
 }

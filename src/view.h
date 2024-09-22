@@ -1,12 +1,13 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <string>
+#include <vector>
+
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
 #include <rawterm/screen.h>
 
-#include <string>
-#include <vector>
 #include "model.h"
 
 struct file_pos_pair {
@@ -17,7 +18,7 @@ struct file_pos_pair {
 struct Controller;
 
 struct View {
-    const Controller* ctrlr_ptr;
+    Controller* ctrlr_ptr;
     rawterm::Pos view_size;
     std::vector<file_pos_pair> open_files;
     std::vector<Model*> viewable_models;
@@ -25,7 +26,8 @@ struct View {
     rawterm::Cursor cur;
     int line_number_offset = 0;
 
-    View(const Controller*, const rawterm::Pos);
+    View(Controller*, const rawterm::Pos);
+    Model* get_active_model();
     void add_model(Model*);
     void close_model();
     void change_view_forward();

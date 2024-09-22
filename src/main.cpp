@@ -1,11 +1,10 @@
+#include <iostream>
+#include <string>
+
 #include <cli11/CLI11.hpp>
 #include <cpptrace/from_current.hpp>
-
-#include <iostream>
-
 #include <rawterm/core.h>
 
-#include <string>
 #include "controller.h"
 #include "logger.h"
 #include "version.h"

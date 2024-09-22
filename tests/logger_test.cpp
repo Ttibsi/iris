@@ -1,9 +1,11 @@
 #include "logger.h"
 
+#include <cstdlib>
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
-#include "filesystem.h"
+#include "file_io.h"
 
 TEST_CASE("level_str", "[LOGGER]") {
     REQUIRE(level_str(Level::INFO) == "[INFO]");
@@ -11,8 +13,7 @@ TEST_CASE("level_str", "[LOGGER]") {
 }
 
 TEST_CASE("log", "[LOGGER]") {
-    // These tests will always fail as the logging won't happen during unit testing
-    SKIP("Not relevant");
+    unsetenv("RAWTERM_DEBUG");
 
     SECTION("no specified level") {
         log("hello world");
@@ -39,4 +40,6 @@ TEST_CASE("log", "[LOGGER]") {
         std::string expected = "[WARNING] hello world";
         REQUIRE(contents_str.find(expected) != std::string::npos);
     }
+
+    setenv("RAWTERM_DEBUG", "True", 1);
 }

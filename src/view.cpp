@@ -1,19 +1,23 @@
 #include "view.h"
 
 #include <format>
+#include <stdexcept>
 
 #include <rawterm/color.h>
 #include <rawterm/text.h>
 
-#include <stdexcept>
 #include "constants.h"
 #include "controller.h"
 #include "logger.h"
 
-View::View(const Controller* controller, const rawterm::Pos dims)
+View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
     open_files.reserve(8);
     viewable_models.reserve(8);
+}
+
+Model* View::get_active_model() {
+    return viewable_models.at(active_model - 1);
 }
 
 void View::add_model(Model* m) {
@@ -71,6 +75,7 @@ void View::render_screen() {
 
     while (remaining_rows) {
         if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
+            screen += "\r\n";
             break;
         }
         char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
@@ -87,6 +92,11 @@ void View::render_screen() {
         }
 
         gv_counter++;
+    }
+
+    while (remaining_rows) {
+        remaining_rows--;
+        screen += "~\r\n";
     }
 
     std::cout << screen;
@@ -163,7 +173,19 @@ const std::string View::render_status_bar() const {
 }
 
 void View::render_line() {
-    throw std::logic_error("Not Implemented");
+    rawterm::clear_line();
+    rawterm::Pos cur_pos = cur;
+
+    cur.move({cur.vertical, 1});
+    int current_line = get_active_model()->current_line;
+
+    if (LINE_NUMBERS) {
+        std::cout << rawterm::set_foreground(
+            std::format("{:>{}}\u2502", current_line, line_number_offset), COLOR_UI_BG);
+    }
+
+    std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
+    cur.move({cur_pos.vertical, cur_pos.horizontal});
 }
 
 void View::set_status(const std::string& msg) {
@@ -223,11 +245,30 @@ void View::cursor_down() {
 }
 
 void View::cursor_right() {
-    char next_char = viewable_models.at(active_model - 1)->get_next_char();
+    if (cur.horizontal >= view_size.horizontal) {
+        return;
+    }
 
-    if (next_char != '\r') {
+    auto trigger = [this]() {
         cur.move_right();
         viewable_models.at(active_model - 1)->current_char_in_line++;
         draw_status_bar();
+    };
+
+    char next_char = viewable_models.at(active_model - 1)->get_next_char();
+    switch (ctrlr_ptr->mode) {
+        case Mode::Read:
+            if (next_char != '\r') {
+                trigger();
+            }
+            break;
+        case Mode::Write:
+            if (next_char != '\n') {
+                trigger();
+            }
+            break;
+        case Mode::Command:
+            // TODO: command mode
+            break;
     }
 }
