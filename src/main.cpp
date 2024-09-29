@@ -38,14 +38,12 @@ int main(int argc, char* argv[]) {
 
     CPPTRACE_TRY {
         Controller c;
-        if (!file.empty()) {
-            c.create_view(file);
-        }
+        c.create_view(file);
         c.start_action_engine();
     }
     CPPTRACE_CATCH(const std::exception& e) {
         rawterm::exit_alt_screen();
-        log(Level::WARNING, e.what());
+        log(Level::WARNING, cpptrace::demangle(typeid(e).name()) + " " + e.what());
         cpptrace::from_current_exception().print();
     }
 

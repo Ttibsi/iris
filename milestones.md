@@ -4,10 +4,11 @@
 * [x] Display line numbers and a statusbar
 * [x] Move cursor and scroll through a file
 * [x] Modify and save the file
+* [ ] Open an empty buffer
+* [ ] Create and save a new file
 * [ ] Handle displaying tab characters with specific widths
     This may be a function to add to Rawterm instead
 * [ ] Handle replacing tab chars with spaces on save - make it togglable
-* [ ] Open an empty buffer and create and save a new file
 * [ ] Handle undo/redo as two stacks of Actions, and a system to know how
     to perform the opposite of the action
 * [ ] Open a second file in a split
