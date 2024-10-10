@@ -21,7 +21,7 @@ struct Controller {
     Controller();
     void set_mode(Mode m);
     const std::string get_mode() const;
-    void create_view(const std::string& file);
+    void create_view(const std::string&);
     void start_action_engine();
 };
 

@@ -357,7 +357,7 @@ class Gapvector {
     }
 
     [[nodiscard]] std::string line(size_type pos) const {
-        if (pos >= size()) {
+        if (pos > size()) {
             throw std::out_of_range("index out of range");
         }
         if (empty()) {

@@ -1,7 +1,8 @@
 #include "controller.h"
 
-#include <action.h>
+#include <optional>
 
+#include "action.h"
 #include "file_io.h"
 #include "logger.h"
 
@@ -36,14 +37,18 @@ const std::string Controller::get_mode() const {
 }
 
 // TODO: empty view
-void Controller::create_view(const std::string& file) {
-    log("Creating view from file: " + file);
-    auto file_chars = open_file(file);
-
-    if (file_chars.has_value()) {
-        models.emplace_back(file_chars.value(), file);
-    } else {
+void Controller::create_view(const std::string& file_name) {
+    if (file_name.empty()) {
         models.emplace_back();
+    } else {
+        log("Creating view from file: " + file_name);
+        std::optional<std::vector<char>> file_chars = open_file(file_name);
+
+        if (file_chars.has_value()) {
+            models.emplace_back(file_chars.value(), file_name);
+        } else {
+            models.emplace_back();
+        }
     }
 
     view.add_model(&models.at(models.size() - 1));

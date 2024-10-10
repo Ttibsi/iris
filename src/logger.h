@@ -1,6 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <concepts>
 #include <cstdlib>
 #include <fstream>
 #include <string>
@@ -23,8 +24,14 @@ enum class Level { INFO, WARNING, ERROR };
     }
 }
 
+template <typename T>
+concept Streamable = requires(std::ostream& out, T in) {
+    { out << in } -> std::convertible_to<std::ostream&>;
+};
+
 // TODO: Add date/time stamp to log
-inline void log(Level lvl, std::string_view msg) {
+template <Streamable T = std::string_view>
+inline void log(Level lvl, T msg) {
     if (std::getenv("RAWTERM_DEBUG") != nullptr) {
         return;
     }
@@ -35,7 +42,8 @@ inline void log(Level lvl, std::string_view msg) {
     out.close();
 }
 
-inline void log(std::string_view msg) {
+template <Streamable T = std::string_view>
+inline void log(T msg) {
     log(Level::INFO, msg);
 }
 
