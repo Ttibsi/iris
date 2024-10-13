@@ -189,9 +189,13 @@ void View::render_line() {
             COLOR_UI_BG);
     }
 
-    log(get_active_model()->buf);
-    std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
-    // cur.move({cur_pos.vertical, cur_pos.horizontal});
+    std::string line = "";
+    try {
+        line = get_active_model()->buf.line(get_active_model()->get_abs_pos());
+    } catch (const std::runtime_error&) {
+    }
+
+    std::cout << line;
     cur.move(cur_pos);
 }
 

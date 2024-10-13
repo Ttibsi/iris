@@ -10,7 +10,6 @@
 #include "version.h"
 
 // TODO: Fix these bugs before it can be used properly
-// Backspace on 0th/only character crashes
 // Typing too fast mixes up characters, I think?
 // line count doesn't show on a blank new line
 // Typing c++ hello world renders oddly with entering brackets (see 2 above)
