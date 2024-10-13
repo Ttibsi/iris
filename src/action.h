@@ -21,6 +21,7 @@ enum class ActionType {
 
     // Pass value
     ChangeMode,  // Mode
+    InsertChar,  // char
 };
 
 template <typename T>
@@ -55,7 +56,7 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             return {};
         case ActionType::ChangeMode:
             log("Action called: ChangeMode");
-            if constexpr (!std::is_same_v<T, void>) {
+            if constexpr (std::is_same_v<T, Mode>) {
                 v->ctrlr_ptr->set_mode(action.payload);
                 v->draw_status_bar();
             }
@@ -99,6 +100,12 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             v->render_screen();
             return {};
         }
+        case ActionType::InsertChar:
+            log("Action called: InsertChar");
+            if constexpr (std::is_same_v<T, char>) {
+                v->get_active_model()->insert_char(action.payload);
+                v->cursor_right();
+            }
         default:
             log(Level::WARNING, "Unknown action called");
             return {};
