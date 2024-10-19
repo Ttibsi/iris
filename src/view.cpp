@@ -67,26 +67,25 @@ void View::render_screen() {
     if (get_active_model()->buf.size() > 0) {
         // Find starting point in gapvector
         unsigned int gv_counter =
-            viewable_models.at(active_model - 1)
-                ->buf.find_ith_char(
-                    '\n', viewable_models.at(active_model - 1)->vertical_file_offset);
+            get_active_model()->buf.find_ith_char('\n', get_active_model()->vertical_file_offset);
 
         if (gv_counter != 0) {
             gv_counter++;
         }
 
         while (remaining_rows) {
-            if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
+            if (gv_counter == get_active_model()->buf.size()) {
                 screen += "\r\n";
                 break;
             }
-            char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
+
+            char c = get_active_model()->buf.at(gv_counter);
             screen += c;
 
             if (c == '\n') {
                 remaining_rows--;
-
                 line_count++;
+
                 if (LINE_NUMBERS) {
                     screen += rawterm::set_foreground(
                         std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
@@ -96,6 +95,7 @@ void View::render_screen() {
             gv_counter++;
         }
     } else {
+        // Display an empty buffer
         screen += "\r\n";
     }
 

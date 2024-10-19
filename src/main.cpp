@@ -11,8 +11,7 @@
 
 // TODO: Fix these bugs before it can be used properly
 // Typing too fast mixes up characters, I think?
-// line count doesn't show on a blank new line
-// Typing c++ hello world renders oddly with entering brackets (see 2 above)
+// Typing c++ hello world renders oddly with entering brackets
 
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
