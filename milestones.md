@@ -4,8 +4,9 @@
 * [x] Display line numbers and a statusbar
 * [x] Move cursor and scroll through a file
 * [x] Modify and save the file
-* [ ] Open an empty buffer
+* [x] Open an empty buffer
 * [ ] Create and save a new file
+* [ ] Handle linux backgrounding (CTRL+Z)
 * [ ] Handle displaying tab characters with specific widths
     This may be a function to add to Rawterm instead
 * [ ] Handle replacing tab chars with spaces on save - make it togglable

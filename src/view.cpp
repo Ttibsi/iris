@@ -73,6 +73,9 @@ void View::render_screen() {
             gv_counter++;
         }
 
+        // To truncate lines
+        int horizontal_counter = 0;
+
         while (remaining_rows) {
             if (gv_counter == get_active_model()->buf.size()) {
                 screen += "\r\n";
@@ -82,9 +85,28 @@ void View::render_screen() {
             char c = get_active_model()->buf.at(gv_counter);
             screen += c;
 
+            // Truncate line
+            horizontal_counter++;
+            if (horizontal_counter + line_number_offset + 2 == view_size.horizontal) {
+                screen += "\u00BB\r\n";
+                while (get_active_model()->buf.at(gv_counter) != '\n') {
+                    gv_counter++;
+                }
+
+                remaining_rows--;
+                line_count++;
+                horizontal_counter = 0;
+
+                if (LINE_NUMBERS) {
+                    screen += rawterm::set_foreground(
+                        std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
+                }
+            }
+
             if (c == '\n') {
                 remaining_rows--;
                 line_count++;
+                horizontal_counter = 0;
 
                 if (LINE_NUMBERS) {
                     screen += rawterm::set_foreground(
@@ -179,7 +201,8 @@ const std::string View::render_status_bar() const {
 
 void View::render_line() {
     rawterm::clear_line();
-    rawterm::Pos cur_pos = cur;
+    const rawterm::Pos cur_pos = cur;
+    const unsigned int horizontal_line_space = view_size.horizontal - line_number_offset - 2;
 
     cur.move({cur.vertical, 1});
 
@@ -195,7 +218,10 @@ void View::render_line() {
     } catch (const std::runtime_error&) {
     }
 
-    std::cout << line;
+    std::cout << line.substr(0, horizontal_line_space);
+    if (line.size() > horizontal_line_space) {
+        std::cout << "\u00BB";
+    }
     cur.move(cur_pos);
 }
 
@@ -206,7 +232,7 @@ void View::set_status(const std::string& msg) {
 }
 
 void View::cursor_left() {
-    int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
+    const int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
     if (cur.horizontal > left_most_pos) {
         cur.move_left();
         viewable_models.at(active_model - 1)->current_char_in_line--;
