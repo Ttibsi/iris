@@ -8,6 +8,8 @@ fetchcontent_declare(
   GIT_TAG        main
 )
 fetchcontent_makeavailable(rawterm)
+
+set(CPPTRACE_UNWIND_WITH_EXECINFO on)
 fetchcontent_declare(
   cpptrace
   GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
