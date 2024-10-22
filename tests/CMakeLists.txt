@@ -12,6 +12,8 @@ fetchcontent_makeavailable(Catch2)
 include(CTest)
 include(Catch)
 
+add_compile_options(-g)
+
 add_executable(test_exe
     action_test.cpp
     controller_test.cpp
@@ -24,7 +26,7 @@ add_executable(test_exe
 
 if(ENABLE_ASAN)
     message(STATUS "ADDRESSSANITIZER ENABLED")
-    target_link_libraries(test_exe PRIVATE -fsanitize=address)
+    target_link_libraries(test_exe PRIVATE -fsanitize=address -static-libsan)
 endif()
 
 target_link_libraries(test_exe PRIVATE iris_src rawterm Catch2::Catch2WithMain)

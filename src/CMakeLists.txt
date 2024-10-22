@@ -61,7 +61,7 @@ add_library(iris_src STATIC
 target_link_libraries(iris_src PUBLIC rawterm cpptrace::cpptrace)
 
 if(ENABLE_ASAN)
-    target_link_libraries(iris_src PUBLIC -fsanitize=address)
+    target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
 
 if(ENABLE_COVERAGE)
