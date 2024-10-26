@@ -21,6 +21,7 @@ struct Model {
     [[nodiscard]] int get_abs_pos() const;
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] char get_next_char() const;
+    [[nodiscard]] const std::string get_current_line() const;
     void insert_char(char);
     int save_file() const;
 };

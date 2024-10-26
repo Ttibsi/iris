@@ -75,6 +75,30 @@ TEST_CASE("get_next_char", "[MODEL]") {
     REQUIRE(m.get_next_char() == 'e');
 }
 
+TEST_CASE("get_current_line", "[MODEL]") {
+    std::vector<char> expected = {
+        '#', 'i', 'n', 'c',  'l',  'u',  'd',  'e', ' ', '<', 'i', 'o', 's', 't', 'r', 'e',
+        'a', 'm', '>', '\r', '\n', '\r', '\n', 'i', 'n', 't', ' ', 'm', 'a', 'i', 'n',
+    };
+
+    auto m = Model(expected, "test_file.txt");
+
+    SECTION("At the start of buffer") {
+        REQUIRE(m.current_line == 1);
+        REQUIRE(m.current_char_in_line == 1);
+        REQUIRE(m.get_current_line() == "#include <iostream>");
+    }
+
+    SECTION("At the end of the buffer") {
+        m.current_line++;
+        m.current_line++;
+        m.current_char_in_line = 8;
+        REQUIRE(m.current_line == 3);
+        REQUIRE(m.current_char_in_line == 8);
+        REQUIRE(m.get_current_line() == "int main");
+    }
+}
+
 TEST_CASE("insert_char", "[MODEL]") {
     std::vector<char> expected = {
         'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',

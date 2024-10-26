@@ -202,7 +202,7 @@ const std::string View::render_status_bar() const {
 void View::render_line() {
     rawterm::clear_line();
     const rawterm::Pos cur_pos = cur;
-    const unsigned int horizontal_line_space = view_size.horizontal - line_number_offset - 2;
+    const unsigned int horizontal_draw_space = view_size.horizontal - line_number_offset - 2;
 
     cur.move({cur.vertical, 1});
 
@@ -214,12 +214,12 @@ void View::render_line() {
 
     std::string line = "";
     try {
-        line = get_active_model()->buf.line(get_active_model()->get_abs_pos());
+        line = get_active_model()->get_current_line();
     } catch (const std::runtime_error&) {
     }
 
-    std::cout << line.substr(0, horizontal_line_space);
-    if (line.size() > horizontal_line_space) {
+    std::cout << line.substr(0, horizontal_draw_space);
+    if (line.size() > horizontal_draw_space) {
         std::cout << "\u00BB";
     }
     cur.move(cur_pos);
@@ -288,13 +288,13 @@ void View::cursor_right() {
 
     auto trigger = [this]() {
         cur.move_right();
-        viewable_models.at(active_model - 1)->current_char_in_line++;
+        get_active_model()->current_char_in_line++;
         draw_status_bar();
     };
 
     char next_char = '\0';
     try {
-        next_char = viewable_models.at(active_model - 1)->get_next_char();
+        next_char = get_active_model()->get_next_char();
     } catch (const std::out_of_range& e) {
         next_char = '\0';
     }

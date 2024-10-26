@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 
+// TODO: Just create a gapvector here
 [[nodiscard]] std::optional<std::vector<char>> open_file(const std::string& file) {
     std::vector<char> ret;
     ret.reserve(1024);
