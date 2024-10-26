@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -12,7 +13,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "logger.h"
+
 // Gap buffer data structure implementation: https://en.wikipedia.org/wiki/Gap_buffer
+// TODO: Implement moving left/right
 
 template <typename T>
 concept Fundamental = std::is_fundamental_v<T>;
@@ -357,16 +361,18 @@ class Gapvector {
     }
 
     [[nodiscard]] std::string line(size_type pos) const {
-        if (pos > size()) {
+        if (pos >= size()) {
             throw std::out_of_range("index out of range");
         }
         if (empty()) {
             throw std::runtime_error("Cannot pull line from empty gapvector");
         }
 
+        // decrement pos to get it to the correct location when 0-based
+        pos--;
         auto start_rit = std::find(std::make_reverse_iterator(begin() + pos), rend(), '\n');
         auto start_it = (start_rit == rend()) ? begin() : start_rit.base();
-        auto end_it = std::find(begin() + pos, end(), '\n');
+        auto end_it = std::find(begin() + pos, end(), '\r');
 
         return std::string(start_it, end_it);
     }
@@ -461,29 +467,24 @@ class Gapvector {
     }
 
     constexpr void insert(iterator pos, const_reference value) {
-        if (static_cast<size_type>(gapEnd - gapStart) <= 1) {
-            int pos_len = pos - begin();
-            resize(capacity() * 2);
-            // pos = begin() + pos_len + 1;
-            pos = begin() + pos_len;
-        }
-
         std::uninitialized_copy_n(pos.ptr, gapStart - pos.ptr, pos.ptr + 1);
         *pos.ptr = value;
 
         ++gapStart;
+
+        if (static_cast<size_type>(gapEnd - gapStart) == 0) {
+            resize(capacity() * 2);
+        }
     }
 
     constexpr void insert(iterator pos, const std::string_view value) {
-        if (static_cast<size_type>(gapEnd - gapStart) <= value.size()) {
-            int pos_len = pos - begin();
-            resize(capacity() * 2);
-            pos = begin() + pos_len + 1;
-        }
-
         std::uninitialized_copy_n(pos.ptr, gapStart - pos.ptr, pos.ptr + value.size());
         std::copy(value.begin(), value.end(), pos.ptr);
         gapStart += value.size();
+
+        if (static_cast<size_type>(gapEnd - gapStart) == 0) {
+            resize(capacity() * 2);
+        }
     }
 
     constexpr void erase(iterator pos) {
@@ -497,11 +498,11 @@ class Gapvector {
     }
 
     constexpr void push_back(const T& value) {
+        *gapStart = value;
+        gapStart++;
         if (gapStart == gapEnd) {
             resize(capacity() * 2);
         }
-        *gapStart = value;
-        gapStart++;
     }
     constexpr void pop_back() {
         gapStart -= 1;
@@ -510,23 +511,29 @@ class Gapvector {
 
     constexpr void resize(const size_type count) {
         if (count <= size()) {
+            // TODO: Resize to be smaller?
             return;
         }
 
+        int prefix = gapStart - bufferStart;
+        int suffix = bufferEnd - gapEnd;
+        int old_cap = capacity();
         pointer new_mem = allocator_type().allocate(count);
 
-        size_type prefix_size = gapStart - bufferStart;
-        size_type suffix_size = bufferEnd - gapEnd;
-        std::uninitialized_copy_n(bufferStart, prefix_size, new_mem);
-        std::uninitialized_copy_n(
-            gapEnd, suffix_size, new_mem + prefix_size + (count - capacity()));
+        pointer gap_start_point = std::uninitialized_move(begin(), begin() + prefix, new_mem);
+        pointer buf_end_point =
+            std::uninitialized_move(end() - suffix, end(), (new_mem + count - suffix));
 
-        allocator_type().deallocate(bufferStart, capacity());
+        allocator_type().deallocate(bufferStart, old_cap);
 
-        gapStart = new_mem + prefix_size;
-        gapEnd = new_mem + prefix_size + (count - capacity());
-        bufferEnd = new_mem + count;
+        bufferEnd = buf_end_point;
+        gapStart = gap_start_point;
+        gapEnd = buf_end_point - suffix;
         bufferStart = new_mem;
+
+        for (pointer i = gapStart; i < gapEnd; i++) {
+            *i = value_type();
+        }
     }
 
    private:

@@ -10,9 +10,8 @@
 #include "version.h"
 
 // TODO: Fix these bugs before it can be used properly
-// Typing too fast mixes up characters, I think?
-// Typing c++ hello world renders oddly with entering brackets
-
+// Double check drawing of chevron on truncated lines
+// backspace on newline error
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 
