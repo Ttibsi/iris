@@ -12,14 +12,16 @@ Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, 
 }
 
 void Controller::set_mode(Mode m) {
-    // TODO: I don't think this works
     switch (m) {
         case Mode::Read:
             rawterm::Cursor::cursor_block();
+            break;
         case Mode::Write:
             rawterm::Cursor::cursor_pipe();
+            break;
         case Mode::Command:
             rawterm::Cursor::cursor_block();
+            break;
     }
     mode = m;
 }

@@ -67,6 +67,7 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             return {};
         case ActionType::Backspace: {
             log("Action called: Backspace");
+            // TODO: backspace on \n should also delete \r
             Model* active = v->get_active_model();
             if (active->current_char_in_line == 1 && active->current_line == 1) {
                 return {};
@@ -106,6 +107,7 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
                 v->get_active_model()->insert_char(action.payload);
                 v->cursor_right();
             }
+            return {};
         default:
             log(Level::WARNING, "Unknown action called");
             return {};
