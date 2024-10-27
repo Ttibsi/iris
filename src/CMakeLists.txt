@@ -8,6 +8,9 @@ fetchcontent_declare(
   GIT_TAG        main
 )
 fetchcontent_makeavailable(rawterm)
+
+set(CPPTRACE_BUILD_SHARED Off)
+set(CPPTRACE_UNWIND_WITH_UNWIND on)
 fetchcontent_declare(
   cpptrace
   GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
@@ -56,10 +59,11 @@ add_library(iris_src STATIC
     model.cpp
     view.cpp
 )
-target_link_libraries(iris_src PUBLIC rawterm cpptrace::cpptrace)
+target_link_libraries(iris_src PUBLIC rawterm)
+target_link_libraries(iris_src PUBLIC cpptrace::cpptrace)
 
 if(ENABLE_ASAN)
-    target_link_libraries(iris_src PUBLIC -fsanitize=address)
+    target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
 
 if(ENABLE_COVERAGE)

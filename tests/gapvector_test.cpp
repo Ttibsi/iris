@@ -119,18 +119,34 @@ TEST_CASE("Operator Squacket (Const)", "[Operator Overloads]") {
 }
 
 TEST_CASE("At", "[Element Access]") {
-    std::string s = "hello world";
-    auto gv = Gapvector(s);
+    SECTION("Standard at") {
+        std::string s = "hello world";
+        auto gv = Gapvector(s);
 
-    REQUIRE(gv.at(0) == 'h');
-    REQUIRE(gv.at(5) == ' ');
-    REQUIRE_THROWS_AS(gv.at(21), std::out_of_range);
+        REQUIRE(gv.at(0) == 'h');
+        REQUIRE(gv.at(5) == ' ');
+        REQUIRE_THROWS_AS(gv.at(21), std::out_of_range);
+    }
+
+    SECTION("Check at a resize boundary") {
+        auto gv = Gapvector();
+        gv.insert(gv.begin(), "0123456789012345678901234567890");
+
+        REQUIRE(gv.size() == 31);
+        REQUIRE(gv.capacity() == 32);
+        REQUIRE(gv.at(30) == '0');
+        REQUIRE_THROWS_AS(gv.at(31), std::out_of_range);
+
+        gv.push_back('!');
+        REQUIRE(gv.size() == 32);
+        REQUIRE(gv.capacity() == 64);
+        REQUIRE(gv.at(31) == '!');
+    }
 }
 
 TEST_CASE("At (Const)", "[Element Access]") {
     std::string s = "hello world";
     const auto gv = Gapvector(s);
-
     REQUIRE(gv.at(0) == 'h');
     REQUIRE(gv.at(5) == ' ');
     REQUIRE_THROWS_AS(gv.at(21), std::out_of_range);
@@ -186,7 +202,7 @@ TEST_CASE("ToStr", "[Element Access]") {
 
 TEST_CASE("line", "[Element Access]") {
     SECTION("Newline at start and end") {
-        std::string s = "lorem ipsum\ndolor sit amet\nfoo bar baz";
+        std::string s = "lorem ipsum\r\ndolor sit amet\r\nfoo bar baz";
         auto gv = Gapvector(s);
         REQUIRE(gv.line(21) == "dolor sit amet");
     }
@@ -198,15 +214,26 @@ TEST_CASE("line", "[Element Access]") {
     }
 
     SECTION("Newline just at start") {
-        std::string s = "lorem ipsum\ndolor sit amet";
+        std::string s = "lorem ipsum\r\ndolor sit amet";
         auto gv = Gapvector(s);
         REQUIRE(gv.line(21) == "dolor sit amet");
     }
 
     SECTION("Newline just at end") {
-        std::string s = "dolor sit amet\nlorem ipsum";
+        std::string s = "dolor sit amet\r\nlorem ipsum";
         auto gv = Gapvector(s);
         REQUIRE(gv.line(5) == "dolor sit amet");
+    }
+
+    SECTION("Get the line at a resize border") {
+        auto gv = Gapvector();
+        gv.insert(gv.begin(), "#include <iostream>\r\n\r\nint main");
+        REQUIRE(gv.capacity() == 32);
+        gv.push_back('(');
+        REQUIRE(gv.capacity() == 64);  // Check it's been resized
+        REQUIRE(gv.size() == 32);
+
+        REQUIRE(gv.line(32) == "int main(");
     }
 }
 
@@ -442,5 +469,18 @@ TEST_CASE("Resize", "[Modifiers]") {
     SECTION("Larger") {
         gv.resize(32);
         REQUIRE(gv.capacity() == 32);
+    }
+
+    SECTION("Ensure the contents remains the same after resizing") {
+        auto gv = Gapvector();
+        gv.insert(gv.begin(), "#include <iostream>\r\n\r\nint main");
+        REQUIRE(gv.size() == 31);
+        REQUIRE(gv.capacity() == 32);
+
+        gv.push_back('(');
+        REQUIRE(gv.size() == 32);
+        REQUIRE(gv.capacity() == 64);
+
+        REQUIRE(gv.to_str() == "#include <iostream>\r\n\r\nint main(");
     }
 }

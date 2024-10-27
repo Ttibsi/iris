@@ -13,10 +13,12 @@ jobs:
         with:
           python-version: '3.10'
       - run: sudo apt-get install clang clang-tidy
+      - run: sudo apt-get remove zlib1g-dev
       - uses: threeal/cmake-action@v1.3.0
         with:
           run-build: true
           options: RUN_TESTS=true
+          generator: Ninja
       - uses: pre-commit/action@v3.0.1
   unit-tests:
     runs-on: ubuntu-24.04
@@ -24,9 +26,11 @@ jobs:
       RAWTERM_DEBUG: true
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install clang
+      - run: sudo apt-get install clang clang-tidy
+      - run: sudo apt-get remove zlib1g-dev
       - uses: threeal/cmake-action@v1.3.0
         with:
           run-build: true
           options: RUN_TESTS=true
+          generator: Ninja
       - run: ./build/tests/test_exe

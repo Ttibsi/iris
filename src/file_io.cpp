@@ -3,8 +3,8 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <stdexcept>
 
+// TODO: Just create a gapvector here
 [[nodiscard]] std::optional<std::vector<char>> open_file(const std::string& file) {
     std::vector<char> ret;
     ret.reserve(1024);
@@ -12,7 +12,6 @@
 
     std::ifstream ifs(file);
     if (ifs.fail()) {
-        // throw std::runtime_error(strerror(errno));
         return {};
     }
 
@@ -22,6 +21,13 @@
         }
         ret.push_back(ch);
     }
+
+    // Remove trailing \r\n
+    if (ret.back() == '\n') {
+        ret.pop_back();
+        ret.pop_back();
+    }
+
     return ret;
 }
 

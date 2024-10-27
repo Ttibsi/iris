@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22.0)
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++-18")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_C_COMPILER "/usr/bin/clang")
 
 project(iris LANGUAGES CXX)
 option(RUN_TESTS "Run unit tests" OFF)
@@ -9,6 +10,7 @@ option(RELEASE "Release build" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 if(RELEASE)
@@ -23,6 +25,9 @@ add_compile_options(-Wextra)
 if(ENABLE_ASAN)
     add_compile_options(-g)
     add_compile_options(-fsanitize=address)
+    add_compile_options(-static-libsan)
+else()
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
 endif()
 
 add_subdirectory(src)

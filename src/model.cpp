@@ -29,6 +29,10 @@ Model::Model(const std::vector<char>& file_chars, const std::string& filename)
     return buf.at(get_abs_pos() + 1);
 }
 
+[[nodiscard]] const std::string Model::get_current_line() const {
+    return buf.line(get_abs_pos());
+}
+
 void Model::insert_char(char c) {
     buf.insert(buf.begin() + get_abs_pos(), c);
 }

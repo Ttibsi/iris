@@ -17,7 +17,10 @@ def run_shell_cmd(
     if debug:
         print(f"RUNNING COMMAND: {cmd}")
 
-    subprocess.run(cmd.split(), env=env).check_returncode()
+    try:
+        subprocess.run(cmd.split(), env=env).check_returncode()
+    except subprocess.CalledProcessError:
+        print(f"CMD FAILED: {cmd}")
 
 
 def loc() -> None:

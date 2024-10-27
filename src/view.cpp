@@ -67,26 +67,47 @@ void View::render_screen() {
     if (get_active_model()->buf.size() > 0) {
         // Find starting point in gapvector
         unsigned int gv_counter =
-            viewable_models.at(active_model - 1)
-                ->buf.find_ith_char(
-                    '\n', viewable_models.at(active_model - 1)->vertical_file_offset);
+            get_active_model()->buf.find_ith_char('\n', get_active_model()->vertical_file_offset);
 
         if (gv_counter != 0) {
             gv_counter++;
         }
 
+        // To truncate lines
+        int horizontal_counter = 0;
+
         while (remaining_rows) {
-            if (gv_counter == viewable_models.at(active_model - 1)->buf.size() - 1) {
+            if (gv_counter == get_active_model()->buf.size()) {
                 screen += "\r\n";
                 break;
             }
-            char c = viewable_models.at(active_model - 1)->buf.at(gv_counter);
+
+            char c = get_active_model()->buf.at(gv_counter);
             screen += c;
+
+            // Truncate line
+            horizontal_counter++;
+            if (horizontal_counter + line_number_offset + 2 == view_size.horizontal) {
+                screen += "\u00BB\r\n";
+                while (get_active_model()->buf.at(gv_counter) != '\n') {
+                    gv_counter++;
+                }
+
+                remaining_rows--;
+                line_count++;
+                horizontal_counter = 0;
+
+                if (LINE_NUMBERS) {
+                    screen += rawterm::set_foreground(
+                        std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
+                }
+            }
 
             if (c == '\n') {
                 remaining_rows--;
-
                 line_count++;
+                horizontal_counter = 0;
+
                 if (LINE_NUMBERS) {
                     screen += rawterm::set_foreground(
                         std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
@@ -96,6 +117,7 @@ void View::render_screen() {
             gv_counter++;
         }
     } else {
+        // Display an empty buffer
         screen += "\r\n";
     }
 
@@ -179,7 +201,8 @@ const std::string View::render_status_bar() const {
 
 void View::render_line() {
     rawterm::clear_line();
-    rawterm::Pos cur_pos = cur;
+    const rawterm::Pos cur_pos = cur;
+    const unsigned int horizontal_draw_space = view_size.horizontal - line_number_offset - 2;
 
     cur.move({cur.vertical, 1});
 
@@ -189,9 +212,16 @@ void View::render_line() {
             COLOR_UI_BG);
     }
 
-    log(get_active_model()->buf);
-    std::cout << get_active_model()->buf.line(get_active_model()->get_abs_pos());
-    // cur.move({cur_pos.vertical, cur_pos.horizontal});
+    std::string line = "";
+    try {
+        line = get_active_model()->get_current_line();
+    } catch (const std::runtime_error&) {
+    }
+
+    std::cout << line.substr(0, horizontal_draw_space);
+    if (line.size() > horizontal_draw_space) {
+        std::cout << "\u00BB";
+    }
     cur.move(cur_pos);
 }
 
@@ -202,7 +232,7 @@ void View::set_status(const std::string& msg) {
 }
 
 void View::cursor_left() {
-    int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
+    const int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
     if (cur.horizontal > left_most_pos) {
         cur.move_left();
         viewable_models.at(active_model - 1)->current_char_in_line--;
@@ -258,13 +288,13 @@ void View::cursor_right() {
 
     auto trigger = [this]() {
         cur.move_right();
-        viewable_models.at(active_model - 1)->current_char_in_line++;
+        get_active_model()->current_char_in_line++;
         draw_status_bar();
     };
 
     char next_char = '\0';
     try {
-        next_char = viewable_models.at(active_model - 1)->get_next_char();
+        next_char = get_active_model()->get_next_char();
     } catch (const std::out_of_range& e) {
         next_char = '\0';
     }

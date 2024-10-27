@@ -16,7 +16,7 @@ ChatGPT)
 
 
 ### HOW TO RUN
-Prerequisites: `cmake`, `python`
+Prerequisites: `cmake`, `python`, `glibc-static`
 
 ```console
 $ ./run.py          # Build the iris binary

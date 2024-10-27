@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "action.h"
+#include "constants.h"
 #include "file_io.h"
 #include "logger.h"
 
@@ -11,14 +12,16 @@ Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, 
 }
 
 void Controller::set_mode(Mode m) {
-    // TODO: I don't think this works
     switch (m) {
         case Mode::Read:
             rawterm::Cursor::cursor_block();
+            break;
         case Mode::Write:
             rawterm::Cursor::cursor_pipe();
+            break;
         case Mode::Command:
             rawterm::Cursor::cursor_block();
+            break;
     }
     mode = m;
 }
@@ -84,9 +87,15 @@ void Controller::start_action_engine() {
                 parse_action<void, None>(&view, Action<void> {ActionType::Backspace});
             } else if (k.value() == rawterm::Key('m', rawterm::Mod::Enter)) {
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
+            } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab)) {
+                for (int i = 0; i < TAB_SIZE; i++) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::InsertChar, ' '});
+                }
+                view.render_line();
+                view.draw_status_bar();
             } else {
-                view.get_active_model()->insert_char(k.value().code);
-                view.cursor_right();
+                parse_action<char, None>(
+                    &view, Action<char> {ActionType::InsertChar, k.value().code});
                 view.render_line();
                 view.draw_status_bar();
                 continue;
