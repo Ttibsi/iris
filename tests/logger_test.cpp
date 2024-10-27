@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "file_io.h"
@@ -10,6 +11,19 @@
 TEST_CASE("level_str", "[LOGGER]") {
     REQUIRE(level_str(Level::INFO) == "[INFO]");
     REQUIRE(level_str(Level::WARNING) == "[WARNING]");
+}
+
+TEST_CASE("formatted_time", "[LOGGER]") {
+    const std::string given_time = formatted_time(system_clock::now());
+
+    REQUIRE(given_time.size() == 19);
+
+    REQUIRE(given_time.at(0) == '[');
+    REQUIRE(given_time.at(18) == ']');
+    REQUIRE_THAT(std::stof(given_time.substr(1, 2)), Catch::Matchers::WithinAbs(0.0, 31.0));
+    REQUIRE_THAT(std::stof(given_time.substr(3, 2)), Catch::Matchers::WithinAbs(0.0, 12.0));
+    REQUIRE_THAT(std::stof(given_time.substr(10, 2)), Catch::Matchers::WithinAbs(0.0, 23.0));
+    REQUIRE_THAT(std::stof(given_time.substr(10, 2)), Catch::Matchers::WithinAbs(0.0, 59.0));
 }
 
 TEST_CASE("log", "[LOGGER]") {
@@ -24,8 +38,8 @@ TEST_CASE("log", "[LOGGER]") {
         std::string contents_str =
             std::string(file_contents.value().begin(), file_contents.value().end());
 
-        std::string expected = "[INFO] hello world";
-        REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring(expected));
+        REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("INFO"));
+        REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("hello world"));
     }
 
     SECTION("Given level") {
@@ -37,8 +51,8 @@ TEST_CASE("log", "[LOGGER]") {
         std::string contents_str =
             std::string(file_contents.value().begin(), file_contents.value().end());
 
-        std::string expected = "[WARNING] hello world";
-        REQUIRE(contents_str.find(expected) != std::string::npos);
+        REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("WARNING"));
+        REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("hello world"));
     }
 
     setenv("RAWTERM_DEBUG", "True", 1);

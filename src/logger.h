@@ -1,11 +1,15 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <chrono>
 #include <concepts>
 #include <cstdlib>
+#include <format>
 #include <fstream>
 #include <string>
 #include <string_view>
+
+using namespace std::chrono;
 
 inline const std::string log_file = "iris.log";
 
@@ -24,12 +28,16 @@ enum class Level { INFO, WARNING, ERROR };
     }
 }
 
+[[nodiscard]] inline const std::string formatted_time(const time_point<system_clock>& time) {
+    const auto now = round<seconds>(time);
+    return std::format("[{:%y-%m-%d %H:%M:%S}]", now);
+}
+
 template <typename T>
 concept Streamable = requires(std::ostream& out, T in) {
     { out << in } -> std::convertible_to<std::ostream&>;
 };
 
-// TODO: Add date/time stamp to log
 template <Streamable T = std::string_view>
 inline void log(Level lvl, T msg) {
     if (std::getenv("RAWTERM_DEBUG") != nullptr) {
@@ -38,7 +46,7 @@ inline void log(Level lvl, T msg) {
 
     std::ofstream out;
     out.open(log_file, std::ios::app);
-    out << level_str(lvl) << " " << msg << "\n";
+    out << formatted_time(system_clock::now()) << level_str(lvl) << " " << msg << "\n";
     out.close();
 }
 
