@@ -66,11 +66,5 @@ if(ENABLE_ASAN)
     target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
 
-if(ENABLE_COVERAGE)
-    message(STATUS "COVERAGE ENABLED")
-    add_compile_options(--coverage -g -O0)
-    add_link_options(--coverage)
-endif()
-
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC rawterm iris_src)

@@ -4,7 +4,6 @@ set(CMAKE_C_COMPILER "/usr/bin/clang")
 
 project(iris LANGUAGES CXX)
 option(RUN_TESTS "Run unit tests" OFF)
-option(ENABLE_COVERAGE "Generate coverage report" OFF)
 option(ENABLE_ASAN "Compile with AddressSanitizer" OFF)
 option(RELEASE "Release build" OFF)
 
