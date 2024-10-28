@@ -45,12 +45,10 @@ def clean() -> None:
         pass
 
 
-def test(testname: str | None, asan: bool, coverage: bool) -> None:
+def test(testname: str | None, asan: bool) -> None:
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
-    if coverage:
-        compile_cmd += " -DENABLE_COVERAGE=true"
 
     run_shell_cmd(compile_cmd, debug=True)
     run_shell_cmd("cmake --build build/")
@@ -58,19 +56,6 @@ def test(testname: str | None, asan: bool, coverage: bool) -> None:
         f"./build/tests/test_exe {testname if testname else ''}",
         env={"RAWTERM_DEBUG": "true"},
     )
-
-    # if coverage:
-    #     onlyfiles = [
-    #         test_file
-    #         for test_file in os.listdir("src/")
-    #         if os.path.isfile(
-    #             os.path.join("src/", test_file)
-    #         ) and test_file.endswith(".cpp")
-    #     ]
-    #     for file in onlyfiles:
-    #         run_shell_cmd(
-    # f"gcov -o build/src/CMakeFiles/iris_src.dir/ src/{file} -m -t",
-    # debug=True)
 
 
 def build() -> None:
@@ -87,7 +72,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     test_parser.add_argument("testname", nargs="?", default=None)
 
     test_parser.add_argument("--asan", action="store_true", default=False)
-    test_parser.add_argument("--coverage", action="store_true", default=False)
 
     args: argparse.Namespace = parser.parse_args(argv)
     print(args)
@@ -98,7 +82,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.cmd == "loc":
         loc()
     elif args.cmd == "test":
-        test(args.testname, args.asan, args.coverage)
+        test(args.testname, args.asan)
     else:
         build()
 
