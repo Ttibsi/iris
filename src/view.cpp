@@ -1,6 +1,8 @@
 #include "view.h"
 
+#include <algorithm>
 #include <format>
+#include <iterator>
 #include <stdexcept>
 
 #include <rawterm/color.h>
@@ -8,6 +10,7 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "gapvector.h"
 #include "logger.h"
 
 View::View(Controller* controller, const rawterm::Pos dims)
@@ -47,6 +50,7 @@ void View::render_screen() {
     rawterm::Pos starting_cur_pos = cur;
     std::string screen = "";
     int line_count = viewable_models.at(active_model - 1)->vertical_file_offset + 1;
+    const int max_line_width = view_size.horizontal - line_number_offset - 4;
 
     rawterm::clear_screen();
     cur.move({1, 1});
@@ -87,11 +91,12 @@ void View::render_screen() {
 
             // Truncate line
             horizontal_counter++;
-            if (horizontal_counter + line_number_offset + 2 == view_size.horizontal) {
+            if (horizontal_counter >= max_line_width) {
                 screen += "\u00BB\r\n";
-                while (get_active_model()->buf.at(gv_counter) != '\n') {
-                    gv_counter++;
-                }
+                Gapvector<>* buf_ptr = &get_active_model()->buf;
+                gv_counter += std::distance(
+                    buf_ptr->begin() + gv_counter,
+                    std::find(buf_ptr->begin() + gv_counter, buf_ptr->end(), '\n'));
 
                 remaining_rows--;
                 line_count++;
@@ -101,6 +106,11 @@ void View::render_screen() {
                     screen += rawterm::set_foreground(
                         std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
                 }
+
+                if (gv_counter < get_active_model()->buf.size()) {
+                    gv_counter++;  // Skip the newline
+                }
+                continue;
             }
 
             if (c == '\n') {
@@ -163,6 +173,7 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
+// TODO: The center text isn't aligned right - it ends at the center point
 const std::string View::render_status_bar() const {
     std::string filename = open_files.at(active_model - 1).filename;
 
@@ -219,6 +230,7 @@ void View::render_line() {
     }
 
     std::cout << line.substr(0, horizontal_draw_space);
+    // Truncate
     if (line.size() > horizontal_draw_space) {
         std::cout << "\u00BB";
     }

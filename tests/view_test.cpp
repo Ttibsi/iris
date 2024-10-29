@@ -1,5 +1,6 @@
 #include "view.h"
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -11,6 +12,9 @@
 #include "controller.h"
 #include "file_io.h"
 #include "model.h"
+
+// TODO: Create a test util function that takes in a lambda to wrap the stdout
+// redirection
 
 TEST_CASE("Constructor", "[VIEW]") {
     Controller c;
@@ -80,24 +84,49 @@ TEST_CASE("render_screen", "[VIEW]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
 
-    auto m =
-        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-    v.add_model(&m);
+    SECTION("Render single text file") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
 
-    // https://truong.io/posts/capturing_stdout_for_c++_unit_testing.html
-    // capture stdout
-    std::stringstream buffer;
-    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+        // https://truong.io/posts/capturing_stdout_for_c++_unit_testing.html
+        // capture stdout
+        std::stringstream buffer;
+        std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
 
-    v.render_screen();
-    std::vector<std::string> text = splitStringOnNewlines(buffer.str());
+        v.render_screen();
+        std::vector<std::string> text = splitStringOnNewlines(buffer.str());
 
-    // restore stdout
-    std::cout.rdbuf(prevcoutbuf);
+        // restore stdout
+        std::cout.rdbuf(prevcoutbuf);
 
-    REQUIRE(text.size() == 4);
-    REQUIRE(rawterm::raw_at(text.at(0), 5) == 'T');
-    REQUIRE(rawterm::raw_at(text.at(1), 1) == '2');
+        REQUIRE(text.size() == 4);
+        REQUIRE(rawterm::raw_at(text.at(0), 5) == 'T');
+        REQUIRE(rawterm::raw_at(text.at(1), 1) == '2');
+    }
+
+    SECTION("Truncated line") {
+        auto m = Model();
+        v.add_model(&m);
+
+        for (int i = 0; i < 80; i++) {
+            m.insert_char('_');
+        }
+
+        // capture stdout
+        std::stringstream buffer;
+        std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+        v.render_screen();
+        std::vector<std::string> text = splitStringOnNewlines(buffer.str());
+
+        // restore stdout
+        std::cout.rdbuf(prevcoutbuf);
+
+        REQUIRE(text.size() == 3);
+        // REQUIRE(rawterm::raw_str(text.at(0)).size() == 83); // TODO: rawterm 55
+        REQUIRE(text.at(0).substr(text.at(0).size() - 3, 2) == "\u00bb");
+    }
 }
 
 TEST_CASE("generate_tab_bar", "[VIEW]") {
@@ -154,28 +183,53 @@ TEST_CASE("render_line", "[VIEW]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
 
-    auto m =
-        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-    v.add_model(&m);
+    SECTION("Standard line rendering") {
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
 
-    // capture stdout
-    std::stringstream buffer;
-    std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+        // capture stdout
+        std::stringstream buffer;
+        std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
 
-    v.render_line();
-    std::string text = buffer.str();
+        v.render_line();
+        std::string text = buffer.str();
 
-    // restore stdout
-    std::cout.rdbuf(prevcoutbuf);
+        // restore stdout
+        std::cout.rdbuf(prevcoutbuf);
 
-    int expected_size = 17;
-    if (LINE_NUMBERS) {
-        expected_size = 23;
+        int expected_size = 17;
+        if (LINE_NUMBERS) {
+            expected_size = 23;
+        }
+
+        // TODO: expected size is 22 if we only run the one test, but 23 when running all tests?
+        REQUIRE(rawterm::raw_size(text) == expected_size);
+        // REQUIRE(text == " 1\u2502This is some text"); // TODO: raw string - rawterm #55
     }
 
-    // TODO: expected size is 22 if we only run the one test, but 23 when running all tests?
-    REQUIRE(rawterm::raw_size(text) == expected_size);
-    // REQUIRE(text == "This is some text"); // TODO: raw string - rawterm #55
+    SECTION("Truncated line") {
+        auto m = Model();
+        v.add_model(&m);
+
+        for (int i = 0; i < 80; i++) {
+            m.insert_char('_');
+        }
+
+        // capture stdout
+        std::stringstream buffer;
+        std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
+
+        v.render_line();
+        std::string text = rawterm::raw_str(buffer.str());
+
+        // restore stdout
+        std::cout.rdbuf(prevcoutbuf);
+
+        REQUIRE(text.substr(text.size() - 2, 2) == "\u00BB");
+        // size is +3 because "\u2502".size() == 3 is "\u00bb".size() == 2
+        REQUIRE(text.size() == 84);
+    }
 }
 
 TEST_CASE("set_status", "[VIEW]") {

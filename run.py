@@ -54,7 +54,11 @@ def test(testname: str | None, asan: bool) -> None:
     run_shell_cmd("cmake --build build/")
     run_shell_cmd(
         f"./build/tests/test_exe {testname if testname else ''}",
-        env={"RAWTERM_DEBUG": "true"},
+        env={
+            "RAWTERM_DEBUG": "true",
+            "ASAN_OPTIONS": "symbolize=1",
+            "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer",
+        },
     )
 
 
