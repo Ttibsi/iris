@@ -4,10 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
-// TODO: Just create a gapvector here
-[[nodiscard]] std::optional<std::vector<char>> open_file(const std::string& file) {
-    std::vector<char> ret;
-    ret.reserve(1024);
+[[nodiscard]] std::optional<Gapvector<>> open_file(const std::string& file) {
+    auto ret = Gapvector(1024);
     char ch;
 
     std::ifstream ifs(file);
@@ -42,19 +40,13 @@
 
         if (retcode) {
             auto stderr_contents = open_file(tmp_dir + "/iris_cmd_err.txt");
-            std::string ret = "";
-            for (auto& l : stderr_contents.value()) {
-                ret += l;
+            if (stderr_contents.has_value()) {
+                return Response {"", stderr_contents.value().to_str(), retcode};
             }
-            return Response {"", ret, retcode};
+            return Response {"", "No STDERR contents found", retcode};
         }
 
-        std::string ret = "";
-        for (auto& l : stdout_contents.value()) {
-            ret += l;
-        }
-
-        return Response {ret, "", 0};
+        return Response {stdout_contents.value().to_str(), "", 0};
 
     } else {
         return {};
