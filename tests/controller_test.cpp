@@ -26,13 +26,22 @@ TEST_CASE("get_mode", "[CONTROLLER]") {
     REQUIRE(c.get_mode() == "WRITE");
 }
 
-// TODO: empty view
 TEST_CASE("create_view", "[CONTROLLER]") {
-    Controller c;
-    c.create_view("tests/fixture/test_file_1.txt");
+    SECTION("View with file") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt");
 
-    REQUIRE(c.models.size() == 1);
-    REQUIRE(*c.models.at(0).buf.begin() == 'T');
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(*c.models.at(0).buf.begin() == 'T');
+    }
+
+    SECTION("Empty view") {
+        Controller c;
+        c.create_view("");
+
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(c.models.at(0).buf.size() == 0);
+    }
 }
 
 TEST_CASE("start_action_engine", "[CONTROLLER]") {
