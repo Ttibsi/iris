@@ -2,7 +2,6 @@
 #define MODEL_H
 
 #include <string>
-#include <vector>
 
 #include "gapvector.h"
 
@@ -17,7 +16,7 @@ struct Model {
     int vertical_file_offset = 0;
 
     Model();
-    Model(const std::vector<char>&, const std::string&);
+    Model(Gapvector<>, const std::string&);
     [[nodiscard]] int get_abs_pos() const;
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] char get_next_char() const;

@@ -16,6 +16,15 @@
 // Gap buffer data structure implementation: https://en.wikipedia.org/wiki/Gap_buffer
 // TODO: Implement moving left/right
 
+/*
+TODO: Resize and reserve are mixed up
+Reserve should just "reserve x amounts of memory"
+    Sets only capacity
+Resize should reserve memory and fill every elem
+    Sets size and capacity
+    Use something like std::copy_n or std::generate
+*/
+
 template <typename T>
 concept Fundamental = std::is_fundamental_v<T>;
 
@@ -279,6 +288,16 @@ class Gapvector {
         }
     }
 
+    [[nodiscard]] bool operator==(const Gapvector& other) const {
+        if (size() != other.size()) {
+            return false;
+        }
+        if (to_str() != other.to_str()) {
+            return false;
+        }
+        return true;
+    }
+
     // Element Access
     [[nodiscard]] constexpr reference at(size_type loc) {
         if (loc >= size()) {
@@ -509,7 +528,7 @@ class Gapvector {
 
     constexpr void resize(const size_type count) {
         if (count <= size()) {
-            // TODO: Resize to be smaller?
+            // TODO:Resize to be smaller?
             return;
         }
 

@@ -1,11 +1,12 @@
 #include "model.h"
 
 #include <filesystem>
-#include <vector>
+#include <optional>
 
 #include <catch2/catch_test_macros.hpp>
 
 #include "file_io.h"
+#include "gapvector.h"
 
 TEST_CASE("Constructor", "[MODEL]") {
     auto m = Model();
@@ -14,13 +15,11 @@ TEST_CASE("Constructor", "[MODEL]") {
 }
 
 TEST_CASE("Constructor_with_values", "[MODEL]") {
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
-        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
-        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
-
-    auto m = Model(expected, "test_file.txt");
+    std::string expected =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     REQUIRE(m.line_count == 3);
     REQUIRE(m.buf.size() == expected.size());
@@ -28,13 +27,11 @@ TEST_CASE("Constructor_with_values", "[MODEL]") {
 }
 
 TEST_CASE("get_abs_pos", "[MODEL]") {
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
-        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
-        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
-
-    auto m = Model(expected, "test_file.txt");
+    std::string expected =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     REQUIRE(m.get_abs_pos() == 0);
     m.current_line++;
@@ -44,13 +41,11 @@ TEST_CASE("get_abs_pos", "[MODEL]") {
 }
 
 TEST_CASE("get_current_char", "[MODEL]") {
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ',  't', 'e', 'x', 't', '\r',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ',  'a', ' ', 'n', 'e', 'w',
-        'l',  'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd', ' ', 'a',
-        'n',  'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i', 'n',  'e', '\n'};
-
-    auto m = Model(expected, "test_file.txt");
+    std::string expected =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     REQUIRE(m.get_current_char() == 'T');
     m.current_line++;
@@ -60,13 +55,11 @@ TEST_CASE("get_current_char", "[MODEL]") {
 }
 
 TEST_CASE("get_next_char", "[MODEL]") {
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
-        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
-        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
-
-    auto m = Model(expected, "test_file.txt");
+    std::string expected =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     REQUIRE(m.get_next_char() == 'h');
     m.current_line++;
@@ -76,12 +69,8 @@ TEST_CASE("get_next_char", "[MODEL]") {
 }
 
 TEST_CASE("get_current_line", "[MODEL]") {
-    std::vector<char> expected = {
-        '#', 'i', 'n', 'c',  'l',  'u',  'd',  'e', ' ', '<', 'i', 'o', 's', 't', 'r', 'e',
-        'a', 'm', '>', '\r', '\n', '\r', '\n', 'i', 'n', 't', ' ', 'm', 'a', 'i', 'n',
-    };
-
-    auto m = Model(expected, "test_file.txt");
+    std::string expected = "#include <iostream>\r\n\r\nint main";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     SECTION("At the start of buffer") {
         REQUIRE(m.current_line == 1);
@@ -100,27 +89,23 @@ TEST_CASE("get_current_line", "[MODEL]") {
 }
 
 TEST_CASE("insert_char", "[MODEL]") {
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
-        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
-        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
+    std::string expected =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+    auto m = Model(Gapvector<>(expected), "test_file.txt");
 
-    auto m = Model(expected, "test_file.txt");
     REQUIRE(m.get_current_char() == 'T');
     m.insert_char('a');
     REQUIRE(m.get_current_char() == 'a');
 }
 
 TEST_CASE("save_file", "[MODEL]") {
-    std::vector<char> expected = {
-        'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd',
-    };
-
+    Gapvector<> expected = Gapvector("Hello world");
     auto m = Model(expected, "save_test_file.txt");
 
     m.save_file();
-    auto contents = open_file("save_test_file.txt");
+    std::optional<Gapvector<>> contents = open_file("save_test_file.txt");
     REQUIRE(contents.has_value());
     REQUIRE(contents.value() == expected);
 

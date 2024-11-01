@@ -1,21 +1,22 @@
 #include "file_io.h"
 
 #include <filesystem>
+#include <string>
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "gapvector.h"
+
 TEST_CASE("open_file", "[FILESYSTEM]") {
-    std::vector<char> expected = {'T',  'h',  'i', 's', ' ', 'i',  's',  ' ', 's', 'o', 'm', 'e',
-                                  ' ',  't',  'e', 'x', 't', '\r', '\n', ' ', ' ', ' ', ' ', 'h',
-                                  'e',  'r',  'e', ' ', 'i', 's',  ' ',  'a', ' ', 'n', 'e', 'w',
-                                  'l',  'i',  'n', 'e', ' ', 'a',  'n',  'd', ' ', 't', 'a', 'b',
-                                  '\r', '\n', 'a', 'n', 'd', ' ',  'a',  'n', 'o', 't', 'h', 'e',
-                                  'r',  ' ',  'n', 'e', 'w', 'l',  'i',  'n', 'e'};
+    Gapvector<> gv = Gapvector<>(
+        "This is some text\r\n"
+        "    here is a newline and tab\r\n"
+        "and another newline");
 
     auto actual = open_file("tests/fixture/test_file_1.txt");
 
     REQUIRE(actual.has_value() == true);
-    REQUIRE(actual.value() == expected);
+    REQUIRE(actual.value() == gv);
 }
 
 TEST_CASE("shell_exec", "[FILESYSTEM]") {
@@ -47,16 +48,13 @@ TEST_CASE("shell_exec", "[FILESYSTEM]") {
 }
 
 TEST_CASE("write_to_file", "[FILESYSTEM]") {
-    std::vector<char> expected = {
-        'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd',
-    };
-
-    size_t bytes = write_to_file("save_test_file.txt", Gapvector(expected.begin(), expected.end()));
-    REQUIRE(bytes == expected.size());
+    Gapvector<> gv = Gapvector<>("Hello world");
+    size_t bytes = write_to_file("save_test_file.txt", gv);
+    REQUIRE(bytes == gv.size());
 
     auto contents = open_file("save_test_file.txt");
     REQUIRE(contents.has_value());
-    REQUIRE(contents.value() == expected);
+    REQUIRE(contents.value() == gv);
 
     std::filesystem::remove("save_test_file.txt");
 }

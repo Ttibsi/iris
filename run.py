@@ -56,7 +56,7 @@ def test(testname: str | None, asan: bool) -> None:
     # tests
     # (I think it's down to rawterm func calls that straight print to stdout)
     run_shell_cmd(
-        f"./build/tests/test_exe {testname if testname else ''}",
+        f"./build/tests/test_exe -i {testname if testname else ''}",
         env={
             "RAWTERM_DEBUG": "true",
             "ASAN_OPTIONS": "symbolize=1",

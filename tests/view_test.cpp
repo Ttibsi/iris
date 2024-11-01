@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "file_io.h"
+#include "gapvector.h"
 #include "model.h"
 
 // TODO: Create a test util function that takes in a lambda to wrap the stdout
@@ -25,23 +26,16 @@ TEST_CASE("Constructor", "[VIEW]") {
     REQUIRE(v.view_size.vertical == 24);
 }
 
-View setup() {
-    Controller c;
-    auto v = View(&c, rawterm::Pos(24, 80));
-
-    std::vector<char> expected = {
-        'T',  'h', 'i', 's', ' ', 'i', 's', ' ', 's', 'o', 'm', 'e', ' ', 't',  'e', 'x', 't',
-        '\n', ' ', ' ', ' ', ' ', 'h', 'e', 'r', 'e', ' ', 'i', 's', ' ', 'a',  ' ', 'n', 'e',
-        'w',  'l', 'i', 'n', 'e', ' ', 'a', 'n', 'd', ' ', 't', 'a', 'b', '\n', 'a', 'n', 'd',
-        ' ',  'a', 'n', 'o', 't', 'h', 'e', 'r', ' ', 'n', 'e', 'w', 'l', 'i',  'n', 'e', '\n'};
-
-    auto m = Model(expected, "test_file.txt");
-    v.add_model(&m);
-    return v;
-}
-
 TEST_CASE("add_model", "[VIEW]") {
-    View v = setup();
+    Controller c;
+    std::string raw =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m = Model(Gapvector<>(raw), "test_file.txt");
+    v.add_model(&m);
 
     REQUIRE(v.active_model == 1);
     REQUIRE(v.viewable_models.at(v.active_model - 1)->file_name == "test_file.txt");
@@ -130,7 +124,16 @@ TEST_CASE("render_screen", "[VIEW]") {
 }
 
 TEST_CASE("generate_tab_bar", "[VIEW]") {
-    auto v = setup();
+    Controller c;
+    std::string raw =
+        "This is some text\n"
+        "    here is a newline and tab\n"
+        "and another newline\n";
+
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m = Model(Gapvector<>(raw), "test_file.txt");
+
+    v.add_model(&m);
     auto m2 =
         Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
     v.add_model(&m2);
