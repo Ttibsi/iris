@@ -38,11 +38,15 @@ def clean() -> None:
     shutil.rmtree("build", ignore_errors=True)
     shutil.rmtree(".mypy_cache", ignore_errors=True)
 
-    print("Removing log file")
-    try:
-        os.remove("iris.log")
-    except FileNotFoundError:
-        pass
+    files = [
+        "src/version.h",
+        "iris.log",
+    ]
+
+    for file in files:
+        if os.path.isfile(file):
+            print(f"Removing {file}")
+            os.remove(file)
 
 
 def test(testname: str | None, asan: bool) -> None:
