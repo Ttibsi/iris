@@ -40,7 +40,6 @@ const std::string Controller::get_mode() const {
     }
 }
 
-// TODO: empty view
 void Controller::create_view(const std::string& file_name) {
     if (file_name.empty()) {
         models.emplace_back();
