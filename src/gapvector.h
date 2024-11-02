@@ -385,9 +385,11 @@ class Gapvector {
             throw std::runtime_error("Cannot pull line from empty gapvector");
         }
 
-        // decrement pos to get it to the correct location when 0-based
-        pos--;
-        auto start_rit = std::find(std::make_reverse_iterator(begin() + pos), rend(), '\n');
+        auto start_rit = std::find(
+            std::make_reverse_iterator(begin() + pos),
+            rend(),
+            '\n'
+        );
         auto start_it = (start_rit == rend()) ? begin() : start_rit.base();
         auto end_it = std::find(begin() + pos, end(), '\r');
 

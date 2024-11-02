@@ -3,3 +3,4 @@ build/
 compile_commands.json
 src/version.h
 iris.log
+.gdbhistory

@@ -216,13 +216,19 @@ TEST_CASE("line", "[Element Access]") {
     SECTION("Newline just at start") {
         std::string s = "lorem ipsum\r\ndolor sit amet";
         auto gv = Gapvector(s);
-        REQUIRE(gv.line(21) == "dolor sit amet");
+        REQUIRE(gv.line(13) == "dolor sit amet");
     }
 
     SECTION("Newline just at end") {
         std::string s = "dolor sit amet\r\nlorem ipsum";
         auto gv = Gapvector(s);
         REQUIRE(gv.line(5) == "dolor sit amet");
+    }
+
+    SECTION("Empty line") {
+        std::string s = "foo\r\n\r\nbar";
+        auto gv = Gapvector(s);
+        REQUIRE(gv.line(6) == "");
     }
 
     SECTION("Get the line at a resize border") {
