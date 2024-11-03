@@ -385,11 +385,11 @@ class Gapvector {
             throw std::runtime_error("Cannot pull line from empty gapvector");
         }
 
-        auto start_rit = std::find(
-            std::make_reverse_iterator(begin() + pos),
-            rend(),
-            '\n'
-        );
+        if (pos < 0) {
+            pos = 0;
+        }
+
+        auto start_rit = std::find(std::make_reverse_iterator(begin() + pos), rend(), '\n');
         auto start_it = (start_rit == rend()) ? begin() : start_rit.base();
         auto end_it = std::find(begin() + pos, end(), '\r');
 
@@ -405,7 +405,7 @@ class Gapvector {
         for (auto it = begin(); it != end(); ++it) {
             if (*it == c) {
                 ++tracking_count;
-                if (count == tracking_count) {
+                if (tracking_count == count) {
                     return std::distance(begin(), it);
                 }
             }
@@ -509,6 +509,7 @@ class Gapvector {
     constexpr void erase(iterator pos) {
         std::copy(pos.ptr + 1, gapStart, pos.ptr);
         --gapStart;
+        *gapStart = T();
     }
 
     constexpr void erase(iterator pos, size_type count) {

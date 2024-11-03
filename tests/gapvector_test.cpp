@@ -228,7 +228,7 @@ TEST_CASE("line", "[Element Access]") {
     SECTION("Empty line") {
         std::string s = "foo\r\n\r\nbar";
         auto gv = Gapvector(s);
-        REQUIRE(gv.line(6) == "");
+        REQUIRE(gv.line(5) == "");
     }
 
     SECTION("Get the line at a resize border") {
@@ -239,7 +239,7 @@ TEST_CASE("line", "[Element Access]") {
         REQUIRE(gv.capacity() == 64);  // Check it's been resized
         REQUIRE(gv.size() == 32);
 
-        REQUIRE(gv.line(32) == "int main(");
+        REQUIRE(gv.line(31) == "int main(");
     }
 }
 
@@ -432,9 +432,16 @@ TEST_CASE("Insert String", "[Modifiers]") {
 TEST_CASE("Erase Pos", "[Modifiers]") {
     std::string s = "hello world";
     auto gv = Gapvector(s);
-    gv.erase(gv.begin() + 5);
 
-    REQUIRE(gv.to_str() == "helloworld");
+    SECTION("Erase in middle") {
+        gv.erase(gv.begin() + 5);
+        REQUIRE(gv.to_str() == "helloworld");
+    }
+
+    SECTION("Erase at end") {
+        gv.erase(gv.begin() + s.size());
+        REQUIRE(gv.to_str() == "hello worl");
+    }
 }
 
 TEST_CASE("Erase Count", "[Modifiers]") {

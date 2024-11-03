@@ -38,7 +38,6 @@ struct Action<void> {
 template <typename T, typename U>
 constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) {
     switch (action.type) {
-
         case ActionType::MoveCursorLeft:
             log("Action called: MoveCursorLeft");
             v->cursor_left();
@@ -74,7 +73,6 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
 
         case ActionType::Backspace: {
             log("Action called: Backspace");
-            // TODO: backspace on \n should also delete \r
             Model* active = v->get_active_model();
             if (active->current_char_in_line == 1 && active->current_line == 1) {
                 return {};
@@ -93,8 +91,8 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             } else {
                 // Move cursor backwards
                 active->buf.erase(active->buf.begin() + active->get_abs_pos() - 1);
-                v->cursor_left();
                 v->render_line();
+                v->cursor_left();
             }
             return {};
         }
