@@ -9,9 +9,6 @@
 #include "logger.h"
 #include "version.h"
 
-// TODO: Fix these bugs before it can be used properly
-// Double check drawing of chevron on truncated lines
-// backspace on newline error
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 
@@ -46,7 +43,7 @@ int main(int argc, char* argv[]) {
     }
     CPPTRACE_CATCH(const std::exception& e) {
         rawterm::exit_alt_screen();
-        log(Level::WARNING, cpptrace::demangle(typeid(e).name()) + " " + e.what());
+        log(Level::ERROR, cpptrace::demangle(typeid(e).name()) + " " + e.what());
         cpptrace::from_current_exception().print();
     }
 

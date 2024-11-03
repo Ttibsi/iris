@@ -12,7 +12,8 @@ Model::Model(Gapvector<> file_chars, const std::string& filename)
 
 // 0-based position of the current character, used for insertion/deletion
 [[nodiscard]] int Model::get_abs_pos() const {
-    int char_pos = buf.find_ith_char('\n', current_line - 1) + current_char_in_line;
+    int char_pos = buf.find_ith_char('\n', current_line - 1);
+    char_pos += current_char_in_line;
     if (current_line == 1) {
         char_pos--;
     }
@@ -28,7 +29,9 @@ Model::Model(Gapvector<> file_chars, const std::string& filename)
 }
 
 [[nodiscard]] const std::string Model::get_current_line() const {
-    return buf.line(get_abs_pos());
+    // The -1 is because we want the abs pos of the last char, not
+    // the cursor
+    return buf.line(std::max(get_abs_pos() - 1, 0));
 }
 
 void Model::insert_char(char c) {

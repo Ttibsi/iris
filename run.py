@@ -49,7 +49,7 @@ def clean() -> None:
             os.remove(file)
 
 
-def test(testname: str | None, asan: bool) -> None:
+def test(testname: str | None, asan: bool, success: bool) -> None:
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
@@ -59,9 +59,14 @@ def test(testname: str | None, asan: bool) -> None:
     # TODO: `--order=rand` for fuzz testing I then need to fix any polluting
     # tests
     # (I think it's down to rawterm func calls that straight print to stdout)
+
+    shell_cmd: str = "./build/tests/test_exe -i"
+    if success:
+        shell_cmd += " -s"
+    shell_cmd += f" {testname if testname else ''}"
+
     run_shell_cmd(
-        f"./build/tests/test_exe -i {testname if testname else ''}",
-        env={
+        shell_cmd, env={
             "RAWTERM_DEBUG": "true",
             "ASAN_OPTIONS": "symbolize=1",
             "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer",
@@ -79,9 +84,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="cmd")
     subparsers.add_parser("clean")
     subparsers.add_parser("loc")
+
     test_parser = subparsers.add_parser("test")
     test_parser.add_argument("testname", nargs="?", default=None)
-
+    test_parser.add_argument(
+        "--success", "-s", action="store_true", default=False,
+    )
     test_parser.add_argument("--asan", action="store_true", default=False)
 
     args: argparse.Namespace = parser.parse_args(argv)
@@ -93,7 +101,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.cmd == "loc":
         loc()
     elif args.cmd == "test":
-        test(args.testname, args.asan)
+        test(args.testname, args.asan, args.success)
     else:
         build()
 

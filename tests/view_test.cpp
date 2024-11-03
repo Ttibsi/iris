@@ -414,7 +414,7 @@ TEST_CASE("cursor_right", "[VIEW]") {
     }
 
     SECTION("Already at right-most position in line") {
-        for (int i = 1; i < 17; i++) {
+        for (int i = 1; i <= 20; i++) {
             v.cursor_right();
         }
         REQUIRE(v.cur == rawterm::Pos(1, 17));

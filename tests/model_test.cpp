@@ -28,16 +28,16 @@ TEST_CASE("Constructor_with_values", "[MODEL]") {
 
 TEST_CASE("get_abs_pos", "[MODEL]") {
     std::string expected =
-        "This is some text\n"
-        "    here is a newline and tab\n"
-        "and another newline\n";
+        "This is some text\r\n"
+        "    here is a newline and tab\r\n"
+        "and another newline";
     auto m = Model(Gapvector<>(expected), "test_file.txt");
 
     REQUIRE(m.get_abs_pos() == 0);
     m.current_line++;
-    REQUIRE(m.get_abs_pos() == 18);
+    REQUIRE(m.get_abs_pos() == 19);
     m.current_char_in_line = 5;
-    REQUIRE(m.get_abs_pos() == 22);
+    REQUIRE(m.get_abs_pos() == 23);
 }
 
 TEST_CASE("get_current_char", "[MODEL]") {
