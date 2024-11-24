@@ -81,16 +81,15 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
             if (active->current_char_in_line == 1 && active->current_line > 1) {
                 // At the start of the line, move cursor up
                 int prev_line_len = active->buf.line(active->get_abs_pos() - 1).size();
-                active->buf.erase(active->buf.begin() + active->get_abs_pos() - 2, 2);
+                active->buf.erase(2);
                 v->cursor_up();
                 for (int i = 0; i <= prev_line_len - 1; i++) {
                     v->cursor_right();
                 }
-                active->line_count--;
                 v->render_screen();
             } else {
                 // Move cursor backwards
-                active->buf.erase(active->buf.begin() + active->get_abs_pos() - 1);
+                active->buf.pop_back();
                 v->render_line();
                 v->cursor_left();
             }
@@ -100,12 +99,11 @@ constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) 
         case ActionType::Newline: {
             log("Action called: Newline");
             Model* active = v->get_active_model();
-            active->buf.insert(active->buf.begin() + active->get_abs_pos(), "\r\n");
+            active->buf.insert("\r\n");
             v->cursor_down();
             while (active->current_char_in_line > 1) {
                 v->cursor_left();
             }
-            active->line_count++;
             v->render_screen();
             return {};
         }

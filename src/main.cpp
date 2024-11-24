@@ -2,7 +2,6 @@
 #include <string>
 
 #include <cli11/CLI11.hpp>
-#include <cpptrace/from_current.hpp>
 #include <rawterm/core.h>
 
 #include "controller.h"
@@ -36,15 +35,19 @@ int main(int argc, char* argv[]) {
     rawterm::enable_raw_mode();
     rawterm::enable_signals();
 
-    CPPTRACE_TRY {
+    // TODO: When we upgrade to c++23, use std::stacktrace here
+    // CPPTRACE_TRY {
+    try {
         Controller c;
         c.create_view(file);
         c.start_action_engine();
-    }
-    CPPTRACE_CATCH(const std::exception& e) {
+        // } CPPTRACE_CATCH(const std::exception& e) {
+    } catch (const std::exception& e) {
         rawterm::exit_alt_screen();
-        log(Level::ERROR, cpptrace::demangle(typeid(e).name()) + " " + e.what());
-        cpptrace::from_current_exception().print();
+        log(Level::ERROR, e.what());
+        throw e;
+        //     log(Level::ERROR, cpptrace::demangle(typeid(e).name()) + " " + e.what());
+        //     cpptrace::from_current_exception().print();
     }
 
     rawterm::exit_alt_screen();

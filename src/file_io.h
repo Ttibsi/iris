@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-#include "gapvector.h"
+#include "gapbuffer.h"
 
 struct Response {
     std::string stdout;
@@ -16,8 +16,8 @@ struct Response {
     }
 };
 
-[[nodiscard]] std::optional<Gapvector<>> open_file(const std::string&);
-[[nodiscard]] std::optional<Response> shell_exec(const std::string&, bool);
-[[nodiscard]] std::size_t write_to_file(const std::string&, Gapvector<>);
+[[nodiscard]] std::optional<Gapbuffer> open_file(const std::string&);
+// [[nodiscard]] std::optional<Response> shell_exec(const std::string&, bool);
+[[nodiscard]] std::size_t write_to_file(const std::string&, Gapbuffer);
 
 #endif  // FILE_IO_H
