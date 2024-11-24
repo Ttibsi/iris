@@ -10,7 +10,7 @@ repos:
         exclude: "tests/fixture/readonly_file.txt"
     -   id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v19.1.2
+    rev: v19.1.4
     hooks:
       - id: clang-format
         exclude: ".json"
@@ -45,11 +45,11 @@ repos:
       hooks:
       -   id: autopep8
   -   repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v1.12.0
+      rev: v1.13.0
       hooks:
       -   id: mypy
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.3
+    rev: v1.7.4
     hooks:
       - id: actionlint
   - repo: https://github.com/sco1/brie-commit
