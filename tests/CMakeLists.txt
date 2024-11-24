@@ -5,7 +5,7 @@ include(FetchContent)
 fetchcontent_declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.6.0
+  GIT_TAG        v3.7.1
 )
 fetchcontent_makeavailable(Catch2)
 
@@ -18,7 +18,7 @@ add_executable(test_exe
     action_test.cpp
     controller_test.cpp
     file_io_test.cpp
-    gapvector_test.cpp
+    gapbuffer_test.cpp
     logger_test.cpp
     model_test.cpp
     view_test.cpp
