@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
-[[nodiscard]] std::optional<Gapvector<>> open_file(const std::string& file) {
-    auto ret = Gapvector(1024);
+[[nodiscard]] std::optional<Gapbuffer> open_file(const std::string& file) {
+    auto ret = Gapbuffer(1024);
     char ch;
 
     std::ifstream ifs(file);
@@ -26,34 +26,38 @@
         ret.pop_back();
     }
 
+    for (unsigned int i = 0; i <= ret.size(); i++) {
+        ret.retreat();
+    }
+
     return ret;
 }
 
-[[nodiscard]] std::optional<Response> shell_exec(const std::string& cmd, bool output) {
-    namespace fs = std::filesystem;
-    std::string tmp_dir = fs::temp_directory_path();
-    int retcode = std::system(
-        (cmd + ">" + tmp_dir + "/iris_cmd_out.txt 2> " + tmp_dir + "/iris_cmd_err.txt").c_str());
+// [[nodiscard]] std::optional<Response> shell_exec(const std::string& cmd, bool output) {
+//     namespace fs = std::filesystem;
+//     std::string tmp_dir = fs::temp_directory_path();
+//     int retcode = std::system(
+//         (cmd + ">" + tmp_dir + "/iris_cmd_out.txt 2> " + tmp_dir + "/iris_cmd_err.txt").c_str());
+//
+//     if (output) {
+//         auto stdout_contents = open_file(tmp_dir + "/iris_cmd_out.txt");
+//
+//         if (retcode) {
+//             auto stderr_contents = open_file(tmp_dir + "/iris_cmd_err.txt");
+//             if (stderr_contents.has_value()) {
+//                 return Response {"", stderr_contents.value().to_str(), retcode};
+//             }
+//             return Response {"", "No STDERR contents found", retcode};
+//         }
+//
+//         return Response {stdout_contents.value().to_str(), "", 0};
+//
+//     } else {
+//         return {};
+//     }
+// }
 
-    if (output) {
-        auto stdout_contents = open_file(tmp_dir + "/iris_cmd_out.txt");
-
-        if (retcode) {
-            auto stderr_contents = open_file(tmp_dir + "/iris_cmd_err.txt");
-            if (stderr_contents.has_value()) {
-                return Response {"", stderr_contents.value().to_str(), retcode};
-            }
-            return Response {"", "No STDERR contents found", retcode};
-        }
-
-        return Response {stdout_contents.value().to_str(), "", 0};
-
-    } else {
-        return {};
-    }
-}
-
-[[nodiscard]] std::size_t write_to_file(const std::string& file, Gapvector<> chars) {
+[[nodiscard]] std::size_t write_to_file(const std::string& file, Gapbuffer chars) {
     if (file == "NO FILE") {
         return -1;
     }

@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "file_io.h"
-#include "gapvector.h"
+#include "gapbuffer.h"
 #include "model.h"
 
 // TODO: Create a test util function that takes in a lambda to wrap the stdout
@@ -34,7 +34,7 @@ TEST_CASE("add_model", "[VIEW]") {
         "and another newline\n";
 
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m = Model(Gapvector<>(raw), "test_file.txt");
+    auto m = Model(Gapbuffer(raw), "test_file.txt");
     v.add_model(&m);
 
     REQUIRE(v.active_model == 1);
@@ -118,7 +118,7 @@ TEST_CASE("render_screen", "[VIEW]") {
         std::cout.rdbuf(prevcoutbuf);
 
         REQUIRE(text.size() == 3);
-        // REQUIRE(rawterm::raw_str(text.at(0)).size() == 83); // TODO: rawterm 55
+        REQUIRE(rawterm::raw_str(text.at(0)).size() == 82);
         REQUIRE(text.at(0).substr(text.at(0).size() - 3, 2) == "\u00bb");
     }
 }
@@ -131,7 +131,7 @@ TEST_CASE("generate_tab_bar", "[VIEW]") {
         "and another newline\n";
 
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m = Model(Gapvector<>(raw), "test_file.txt");
+    auto m = Model(Gapbuffer(raw), "test_file.txt");
 
     v.add_model(&m);
     auto m2 =
@@ -183,12 +183,11 @@ TEST_CASE("render_status_bar", "[VIEW]") {
 }
 
 TEST_CASE("render_line", "[VIEW]") {
-    Controller c;
-    auto v = View(&c, rawterm::Pos(24, 80));
-
     SECTION("Standard line rendering") {
+        Controller c;
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
         // capture stdout
@@ -197,25 +196,28 @@ TEST_CASE("render_line", "[VIEW]") {
 
         v.render_line();
         std::string text = buffer.str();
+        text = rawterm::raw_str(text).substr(
+            1, text.size());  // Trim the preceeding \r from clear_line
 
         // restore stdout
         std::cout.rdbuf(prevcoutbuf);
 
-        int expected_size = 17;
+        unsigned int expected_size = 17;
         if (LINE_NUMBERS) {
-            expected_size = 23;
+            expected_size = 24;
         }
 
-        // TODO: expected size is 22 if we only run the one test, but 23 when running all tests?
-        REQUIRE(rawterm::raw_size(text) == expected_size);
-        // REQUIRE(text == " 1\u2502This is some text"); // TODO: raw string - rawterm #55
+        REQUIRE(text == " 1\u2502This is some text\r\n");
+        REQUIRE(text.size() == expected_size);
     }
 
     SECTION("Truncated line") {
+        Controller c;
         auto m = Model();
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
-        for (int i = 0; i < 80; i++) {
+        for (int i = 0; i <= 80; i++) {
             m.insert_char('_');
         }
 
@@ -225,13 +227,14 @@ TEST_CASE("render_line", "[VIEW]") {
 
         v.render_line();
         std::string text = rawterm::raw_str(buffer.str());
+        text = text.substr(1, text.size());  // Trim the preceeding \r from clear_line
 
         // restore stdout
         std::cout.rdbuf(prevcoutbuf);
 
         REQUIRE(text.substr(text.size() - 2, 2) == "\u00BB");
         // size is +3 because "\u2502".size() == 3 is "\u00bb".size() == 2
-        REQUIRE(text.size() == 84);
+        REQUIRE(text.size() == 83);
     }
 }
 
@@ -325,7 +328,6 @@ TEST_CASE("cursor_up", "[VIEW]") {
 
 TEST_CASE("cursor_down", "[VIEW]") {
     Controller c;
-    auto v = View(&c, rawterm::Pos(24, 80));
 
     std::stringstream buffer;
     std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
@@ -333,6 +335,7 @@ TEST_CASE("cursor_down", "[VIEW]") {
     SECTION("Move cursor down") {
         auto m = Model(
             open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
         v.cursor_down();
@@ -343,6 +346,7 @@ TEST_CASE("cursor_down", "[VIEW]") {
     SECTION("Move view down (scroll)") {
         auto m = Model(
             open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
         for (int i = 1; i < 22; i++) {
@@ -351,7 +355,12 @@ TEST_CASE("cursor_down", "[VIEW]") {
         REQUIRE(v.cur == rawterm::Pos(22, 1));
         REQUIRE(m.current_line == 22);
 
+        std::stringstream buffer;
+        std::streambuf* prevcoutbuf = std::cout.rdbuf(buffer.rdbuf());
         v.cursor_down();  // trigger scrolling
+        // restore stdout
+        std::cout.rdbuf(prevcoutbuf);
+
         REQUIRE(v.cur == rawterm::Pos(22, 5));
         REQUIRE(m.current_line == 23);
 
@@ -362,35 +371,38 @@ TEST_CASE("cursor_down", "[VIEW]") {
 
     SECTION("Already at bottom-most row in file") {
         auto m = Model(
-            open_file("tests/fixture/test_file_2.txt").value(), "tests/fixture/test_file_2.txt");
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
-        for (int i = 1; i < m.line_count; i++) {
+        for (std::size_t i = 1; i < m.buf.line_count(); i++) {
             v.cursor_down();
         }
-        REQUIRE(v.cur == rawterm::Pos(22, 5));
-        REQUIRE(m.current_line == m.line_count);
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == m.buf.line_count());
 
         v.cursor_down();
-        REQUIRE(v.cur == rawterm::Pos(22, 5));
-        REQUIRE(m.current_line == m.line_count);
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == m.buf.line_count());
     }
 
     SECTION("bottom row of file within view (no scrolling required)") {
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
         // Move to end of file
         v.cursor_down();
         v.cursor_down();
-        REQUIRE(v.cur == rawterm::Pos(2, 1));
-        REQUIRE(m.current_line == 2);
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 3);
 
         // No cursor movement as we're already at end of file
         v.cursor_down();
-        REQUIRE(v.cur == rawterm::Pos(2, 1));
-        REQUIRE(m.current_line == 2);
+        INFO(m.buf.line_count());
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 3);
     }
 
     std::cout.rdbuf(prevcoutbuf);
@@ -414,9 +426,10 @@ TEST_CASE("cursor_right", "[VIEW]") {
     }
 
     SECTION("Already at right-most position in line") {
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 100; i++) {
             v.cursor_right();
         }
+
         REQUIRE(v.cur == rawterm::Pos(1, 17));
         REQUIRE(m.current_char_in_line == 17);
     }

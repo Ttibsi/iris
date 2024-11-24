@@ -35,8 +35,7 @@ TEST_CASE("log", "[LOGGER]") {
         auto file_contents = open_file(log_file);
         REQUIRE(file_contents.has_value() == true);
 
-        std::string contents_str =
-            std::string(file_contents.value().begin(), file_contents.value().end());
+        std::string contents_str = file_contents.value().to_str();
 
         REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("INFO"));
         REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("hello world"));
@@ -48,8 +47,7 @@ TEST_CASE("log", "[LOGGER]") {
         auto file_contents = open_file(log_file);
         REQUIRE(file_contents.has_value() == true);
 
-        std::string contents_str =
-            std::string(file_contents.value().begin(), file_contents.value().end());
+        std::string contents_str = file_contents.value().to_str();
 
         REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("WARNING"));
         REQUIRE_THAT(contents_str, Catch::Matchers::ContainsSubstring("hello world"));

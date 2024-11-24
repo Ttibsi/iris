@@ -10,8 +10,7 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "gapvector.h"
-#include "logger.h"
+#include "gapbuffer.h"
 
 View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
@@ -29,7 +28,7 @@ void View::add_model(Model* m) {
     active_model = viewable_models.size();
 
     if (LINE_NUMBERS) {
-        line_number_offset = std::to_string(m->line_count).size() + 1;
+        line_number_offset = std::to_string(m->buf.line_count()).size() + 1;
     }
 }
 
@@ -49,7 +48,7 @@ void View::render_screen() {
     int remaining_rows = view_size.vertical - 2;
     rawterm::Pos starting_cur_pos = cur;
     std::string screen = "";
-    int line_count = viewable_models.at(active_model - 1)->vertical_file_offset + 1;
+    int line_count = get_active_model()->vertical_file_offset + 1;
     const int max_line_width = view_size.horizontal - line_number_offset - 4;
 
     rawterm::clear_screen();
@@ -70,33 +69,35 @@ void View::render_screen() {
 
     if (get_active_model()->buf.size() > 0) {
         // Find starting point in gapvector
-        unsigned int gv_counter =
-            get_active_model()->buf.find_ith_char('\n', get_active_model()->vertical_file_offset);
+        int buf_playhead =
+            get_active_model()->buf.find('\n', get_active_model()->vertical_file_offset);
 
-        if (gv_counter != 0) {
-            gv_counter++;
+        if (buf_playhead != 0) {
+            buf_playhead++;
         }
 
         // To truncate lines
         int horizontal_counter = 0;
 
         while (remaining_rows) {
-            if (gv_counter == get_active_model()->buf.size()) {
+            if (buf_playhead == static_cast<int>(get_active_model()->buf.size())) {
                 screen += "\r\n";
                 break;
             }
 
-            char c = get_active_model()->buf.at(gv_counter);
+            char c = get_active_model()->buf.at(buf_playhead);
             screen += c;
 
             // Truncate line
             horizontal_counter++;
             if (horizontal_counter >= max_line_width) {
                 screen += "\u00BB\r\n";
-                Gapvector<>* buf_ptr = &get_active_model()->buf;
-                gv_counter += std::distance(
-                    buf_ptr->begin() + gv_counter,
-                    std::find(buf_ptr->begin() + gv_counter, buf_ptr->end(), '\n'));
+                Gapbuffer* buf_ptr = &get_active_model()->buf;
+
+                // Skip characters being cut off
+                buf_playhead += std::distance(
+                    buf_ptr->begin() + buf_playhead,
+                    std::find(buf_ptr->begin() + buf_playhead, buf_ptr->end(), '\n'));
 
                 remaining_rows--;
                 line_count++;
@@ -107,8 +108,8 @@ void View::render_screen() {
                         std::format("{:>{}}\u2502", line_count, line_number_offset), COLOR_UI_BG);
                 }
 
-                if (gv_counter < get_active_model()->buf.size()) {
-                    gv_counter++;  // Skip the newline
+                if (buf_playhead < static_cast<int>(get_active_model()->buf.size())) {
+                    buf_playhead++;  // Skip the newline
                 }
                 continue;
             }
@@ -124,7 +125,7 @@ void View::render_screen() {
                 }
             }
 
-            gv_counter++;
+            buf_playhead++;
         }
     } else {
         // Display an empty buffer
@@ -217,23 +218,25 @@ void View::render_line() {
 
     cur.move({cur.vertical, 1});
 
+    std::string line = "";
     if (LINE_NUMBERS) {
-        std::cout << rawterm::set_foreground(
+        line = rawterm::set_foreground(
             std::format("{:>{}}\u2502", get_active_model()->current_line, line_number_offset),
             COLOR_UI_BG);
     }
 
-    std::string line = "";
     try {
-        line = get_active_model()->get_current_line();
+        std::string line_chars = get_active_model()->get_current_line();
+        line += line_chars.substr(0, horizontal_draw_space);
     } catch (const std::runtime_error&) {
     }
 
-    std::cout << line.substr(0, horizontal_draw_space);
     // Truncate
     if (line.size() > horizontal_draw_space) {
-        std::cout << "\u00BB";
+        line += "\u00BB";
     }
+
+    std::cout << line;
     cur.move(cur_pos);
 }
 
@@ -247,7 +250,8 @@ void View::cursor_left() {
     const int left_most_pos = (LINE_NUMBERS ? line_number_offset + 2 : 0);
     if (cur.horizontal > left_most_pos) {
         cur.move_left();
-        viewable_models.at(active_model - 1)->current_char_in_line--;
+        get_active_model()->current_char_in_line--;
+        get_active_model()->buf.retreat();
         draw_status_bar();
     }
 }
@@ -261,35 +265,36 @@ void View::cursor_up() {
     int vertical_offset = (open_files.size() > 1 ? 1 : 0);
     if (cur.vertical - 1 == vertical_offset) {
         // scroll view
-        viewable_models.at(active_model - 1)->vertical_file_offset--;
+        get_active_model()->vertical_file_offset--;
         render_screen();
     } else {
         // move cursor
         cur.move_up();
     }
 
-    viewable_models.at(active_model - 1)->current_line--;
+    get_active_model()->line_up();
+    get_active_model()->current_line--;
     draw_status_bar();
 }
 
 void View::cursor_down() {
     // Check if we're at the bottom of the file
-    if (viewable_models.at(active_model - 1)->current_line ==
-        viewable_models.at(active_model - 1)->line_count) {
+    if (get_active_model()->current_line == get_active_model()->buf.line_count()) {
         return;
     }
 
     int vertical_offset = (open_files.size() > 1 ? 3 : 2);
     if (cur.vertical + 1 > view_size.vertical - vertical_offset) {
         // scroll view
-        viewable_models.at(active_model - 1)->vertical_file_offset++;
+        get_active_model()->vertical_file_offset++;
         render_screen();
     } else {
         // move cursor
         cur.move_down();
     }
 
-    viewable_models.at(active_model - 1)->current_line++;
+    get_active_model()->line_down();
+    get_active_model()->current_line++;
     draw_status_bar();
 }
 
@@ -300,6 +305,7 @@ void View::cursor_right() {
 
     auto trigger = [this]() {
         cur.move_right();
+        get_active_model()->buf.advance();
         get_active_model()->current_char_in_line++;
         draw_status_bar();
     };

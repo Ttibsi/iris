@@ -5,7 +5,7 @@
 #include "action.h"
 #include "constants.h"
 #include "file_io.h"
-#include "gapvector.h"
+#include "gapbuffer.h"
 #include "logger.h"
 
 Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {
@@ -45,7 +45,7 @@ void Controller::create_view(const std::string& file_name) {
         models.emplace_back();
     } else {
         log("Creating view from file: " + file_name);
-        std::optional<Gapvector<>> file_chars = open_file(file_name);
+        std::optional<Gapbuffer> file_chars = open_file(file_name);
 
         if (file_chars.has_value()) {
             models.emplace_back(file_chars.value(), file_name);
