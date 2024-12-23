@@ -1,8 +1,13 @@
+#include <iostream>
+
+#include "controller.h"
+#include "version.h"
+
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
-#include "version.h"
+
 #include <cli11/CLI11.hpp>
-#include <iostream>
+#include <rawterm/core.h>
 
 int main(int argc, char *argv[]) {
     CLI::App app{ "Iris text editor" };
@@ -30,4 +35,22 @@ int main(int argc, char *argv[]) {
         std::cout << version();
         return 0;
     }
+
+    spdlog::get("basic_logger")->info("Iris startup");
+    rawterm::enter_alt_screen();
+    rawterm::enable_raw_mode();
+    rawterm::enable_signals();
+
+    try {
+        Controller c;
+        c.create_view(file);
+        c.start_action_engine();
+    } catch (const std::exception &e) {
+        rawterm::exit_alt_screen();
+        spdlog::get("basic_logger")->error(e.what());
+        throw e;
+    }
+
+    rawterm::exit_alt_screen();
+    return 0;
 }

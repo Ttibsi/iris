@@ -20,7 +20,7 @@ repos:
       - id: clang-tidy
         name: clang-tidy
         language: system
-        entry: clang-tidy -p build/compile_commands.json -extra-arg=-std=c++20
+        entry: clang-tidy -p build/compile_commands.json -extra-arg=-std=c++23
         files: cpp
         exclude: "^build/"
   - repo: https://github.com/cmake-lint/cmake-lint
