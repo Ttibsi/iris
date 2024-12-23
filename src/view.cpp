@@ -19,6 +19,12 @@ View::View(Controller *controller, const rawterm::Pos dims)
 void View::add_model(Model *m) {
     viewable_models.push_back(m);
     active_model = viewable_models.size();
+
+    // Set visual offset
+    if (LINE_NUMBERS) {
+        int line_count = std::count(m->buf.begin(), m->buf.end(), '\n');
+        line_number_offset = std::to_string(line_count).size() + 1;
+    }
 }
 
 Model *View::get_active_model() const {
@@ -64,7 +70,12 @@ void View::render_screen() {
             }
 
             char c = get_active_model()->buf.at(buf_playhead);
-            screen += c;
+            // Don't draw tab chars
+            if (c == '\t') {
+                screen += std::string(TAB_SIZE, ' ');
+            } else {
+                screen += c;
+            }
 
             // Truncate line
             horizontal_counter++;
@@ -183,7 +194,7 @@ const std::string View::render_status_bar() const {
     // TODO: file language after highlighting engine
     std::string right =
         "| " + std::to_string(get_active_model()->buf.curr_line_index()) + ":" +
-        std::to_string(get_active_model()->buf.curr_char_index()) + " ";
+        std::to_string(get_active_model()->buf.curr_char_index() + 1) + " ";
 
     // TODO: handle overflows
     float divide =

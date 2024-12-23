@@ -23,7 +23,7 @@ def test_open_with_file(r: hecate.Runner):
         content: list[str] = file.readlines()
 
     for idx, line in enumerate(content, start=1):
-        expected = f" {idx}\u2502{line.rstrip()}"
+        expected = f" {idx}\u2502{line.rstrip().replace("\t", " " * 4)}"
         assert lines[idx - 1] == expected
 
     assert lines[len(content) + 3] == "~"

@@ -446,7 +446,7 @@ template <typename T> class TwinArray {
         if (last_idx > lhs_size) {
             last_idx = 0;
         }
-        return (lhs_size - last_idx) - 1;
+        return std::max(static_cast<int>((lhs_size - last_idx) - 1), 0);
     }
 
   private:
