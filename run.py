@@ -91,11 +91,8 @@ def test(testname: str | None, asan: bool, success: bool) -> None:
 
     run_shell_cmd(compile_cmd, debug=True)
     run_shell_cmd("cmake --build build/")
-    # TODO: `--order=rand` for fuzz testing I then need to fix any polluting
-    # tests
-    # (I think it's down to rawterm func calls that straight print to stdout)
 
-    shell_cmd: str = "./build/tests/test_exe -i"
+    shell_cmd: str = "./build/tests/test_exe --order=rand"
     if success:
         shell_cmd += " -s"
     shell_cmd += f" {testname if testname else ''}"
