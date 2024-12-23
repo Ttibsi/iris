@@ -1,16 +1,17 @@
 ---
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
     -   id: check-case-conflict
     -   id: check-merge-conflict
     -   id: check-yaml
+        additional_dependencies: [ ruamel.yaml>=0.15 ]
     -   id: end-of-file-fixer
         exclude: "tests/fixture/readonly_file.txt"
     -   id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v18.1.1
+    rev: v19.1.5
     hooks:
       - id: clang-format
         exclude: ".json"
@@ -23,9 +24,30 @@ repos:
         files: cpp
         exclude: "^build/"
   - repo: https://github.com/cmake-lint/cmake-lint
-    rev: 1.4.2
+    rev: 1.4.3
     hooks:
       - id: cmakelint
+  - repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.14.0
+    hooks:
+    -   id: reorder-python-imports
+        args: [--py310-plus]
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+    - id: add-trailing-comma
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+    - id: flake8
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.0
+    hooks:
+    - id: mypy
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.4
+    hooks:
+    - id: actionlint
   - repo: https://github.com/sco1/brie-commit
     rev: v1.1.0
     hooks:

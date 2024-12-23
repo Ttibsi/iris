@@ -3,3 +3,5 @@ build/
 compile_commands.json
 src/version.h
 iris.log
+.mypy_cache/
+.pytest_cache/
