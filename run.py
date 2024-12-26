@@ -3,6 +3,7 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
 import timeit
 import venv
 from collections.abc import Sequence
@@ -76,9 +77,9 @@ def integration_tests(test_name: str = "") -> None:
     ]
 
     if test_name:
-        run_shell_cmd(f"venv/bin/pytest {test_name}")
+        sys.exit(run_shell_cmd(f"venv/bin/pytest -v {test_name}"))
     else:
-        run_shell_cmd(f"venv/bin/pytest {' '.join(test_paths)}")
+        sys.exit(run_shell_cmd(f"venv/bin/pytest -v {' '.join(test_paths)}"))
 
 
 def test(testname: str | None, asan: bool, success: bool) -> None:
@@ -89,9 +90,9 @@ def test(testname: str | None, asan: bool, success: bool) -> None:
     run_shell_cmd(compile_cmd, debug=True)
     run_shell_cmd("cmake --build build/")
 
-    shell_cmd: str = f"./build/tests/test_exe {
-        testname if testname else ''
-    } --order rand"
+    if testname is None:
+        testname = ""
+    shell_cmd: str = f"./build/tests/test_exe {testname} --order rand"
     if success:
         shell_cmd += " -s"
 
