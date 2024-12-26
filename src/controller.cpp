@@ -45,8 +45,11 @@ void Controller::create_view(const std::string &file_name) {
     if (file_name.empty()) {
         models.emplace_back();
     } else {
-        spdlog::get("basic_logger")
-            ->info("Creating view from file: " + file_name);
+        auto logger = spdlog::get("basic_logger");
+        if (logger != nullptr) {
+            logger->info("Creating view from file: " + file_name);
+        }
+
         std::optional<TwinArray<char>> file_chars = open_file(file_name);
 
         if (file_chars.has_value()) {
@@ -65,7 +68,7 @@ void Controller::start_action_engine() {
 
     while (!(break_loop)) {
         if (redraw_all) {
-            view.render_screen();
+            view.draw_screen();
             redraw_all = false;
         }
 

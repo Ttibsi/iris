@@ -21,8 +21,9 @@ struct View {
     View(Controller *, const rawterm::Pos);
     void add_model(Model *);
     Model *get_active_model() const;
-    void render_screen();
-    const std::string generate_tab_bar() const;
+    void draw_screen();
+    const std::string render_screen() const;
+    const std::string render_tab_bar() const;
     void draw_status_bar();
     const std::string render_status_bar() const;
 };

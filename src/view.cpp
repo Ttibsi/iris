@@ -2,6 +2,7 @@
 #include <format>
 #include <iterator>
 #include <print>
+#include <string>
 
 #include "constants.h"
 #include "controller.h"
@@ -31,16 +32,34 @@ Model *View::get_active_model() const {
     return viewable_models.at(active_model - 1);
 }
 
-void View::render_screen() {
-    int remaining_rows = view_size.vertical - 2;
+void View::draw_screen() {
     rawterm::Pos starting_cur_pos = cur;
+
+    // Draw to screen
+    rawterm::clear_screen();
+    cur.move({ 1, 1 });
+    std::print("{}", render_screen());
+    draw_status_bar();
+    std::print("\n"); // Notification bar
+
+    // Cursor positioning
+    cur.move(starting_cur_pos);
+    if (LINE_NUMBERS && !(rawterm::detail::is_debug())) {
+        while (cur.horizontal < line_number_offset + 2) {
+            cur.move_right();
+        }
+    }
+}
+
+const std::string View::render_screen() const {
+    int remaining_rows = view_size.vertical - 2;
     std::string screen = "";
     int line_count = get_active_model()->vertical_scroll_offset + 1;
     const int max_hor_line_len = view_size.horizontal - line_number_offset - 3;
 
     // Draw tab bar
     if (viewable_models.size() > 1) {
-        screen += generate_tab_bar();
+        screen += render_tab_bar();
         remaining_rows--;
     }
 
@@ -131,23 +150,10 @@ void View::render_screen() {
         screen += "~\r\n";
     }
 
-    // Draw to screen
-    rawterm::clear_screen();
-    cur.move({ 1, 1 });
-    std::print("{}", screen);
-    draw_status_bar();
-    std::print("\n"); // Notification bar
-
-    // Cursor positioning
-    cur.move(starting_cur_pos);
-    if (LINE_NUMBERS && !(rawterm::detail::is_debug())) {
-        while (cur.horizontal < line_number_offset + 2) {
-            cur.move_right();
-        }
-    }
+    return screen;
 }
 
-const std::string View::generate_tab_bar() const {
+const std::string View::render_tab_bar() const {
     std::string ret = "| ";
 
     for (unsigned int i = 0; i < viewable_models.size(); ++i) {
@@ -194,7 +200,7 @@ const std::string View::render_status_bar() const {
     // TODO: file language after highlighting engine
     std::string right =
         "| " + std::to_string(get_active_model()->buf.curr_line_index()) + ":" +
-        std::to_string(get_active_model()->buf.curr_char_index() + 1) + " ";
+        std::to_string(get_active_model()->buf.curr_char_index()) + " ";
 
     // TODO: handle overflows
     float divide =

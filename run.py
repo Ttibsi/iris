@@ -13,15 +13,12 @@ def run_shell_cmd(
         *,
         env: dict[str, str] | None = None,
         debug: bool = False,
-) -> None:
+) -> int:
 
     if debug:
         print(f"RUNNING COMMAND: {cmd}")
 
-    try:
-        subprocess.run(cmd.split(), env=env).check_returncode()
-    except subprocess.CalledProcessError:
-        print(f"CMD FAILED: {cmd}")
+    return subprocess.run(cmd.split(), env=env).returncode
 
 
 def loc() -> None:
@@ -92,10 +89,11 @@ def test(testname: str | None, asan: bool, success: bool) -> None:
     run_shell_cmd(compile_cmd, debug=True)
     run_shell_cmd("cmake --build build/")
 
-    shell_cmd: str = "./build/tests/test_exe --order=rand"
+    shell_cmd: str = f"./build/tests/test_exe {
+        testname if testname else ''
+    } --order rand"
     if success:
         shell_cmd += " -s"
-    shell_cmd += f" {testname if testname else ''}"
 
     run_shell_cmd(
         shell_cmd, env={

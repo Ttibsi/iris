@@ -443,10 +443,10 @@ template <typename T> class TwinArray {
         requires(std::is_same_v<T, char>)
     {
         auto last_idx = std::string_view(lhs.get()).find_last_of('\n');
-        if (last_idx > lhs_size) {
-            last_idx = 0;
-        }
-        return std::max(static_cast<int>((lhs_size - last_idx) - 1), 0);
+        // if (last_idx > lhs_size) {
+        //     last_idx = 0;
+        // }
+        return std::max(static_cast<int>(lhs_size - last_idx), 1);
     }
 
   private:
