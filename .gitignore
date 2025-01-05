@@ -1,5 +1,15 @@
-build/
+# caches
+tests/integrations/__pycache__/
 .cache/
+.mypy_cache/
+.pytest_cache/
+
+# build files
+build/
+venv/
+
+# other
 compile_commands.json
 src/version.h
 iris.log
+.gdb_history

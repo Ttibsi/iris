@@ -1,13 +1,41 @@
 ---
-AlignArrayOfStructures: Left
-BasedOnStyle: LLVM
-IndentWidth: 4
-AlignTrailingComments: Always
-AllowAllArgumentsOnNextLine: true
-ColumnLimit:     80
-ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
-KeepEmptyLinesAtTheStartOfBlocks: true
+BasedOnStyle: Chromium
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortIfStatementsOnASingleLine: WithoutElse
+ColumnLimit: '100'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+Cpp11BracedListStyle: 'true'
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Standard library headers (e.g., <vector>, <iostream>)
+  - Regex: '<(algorithm|array|cassert|cctype|cerrno|cfloat|chrono|cmath|complex|condition_variable|csetjmp|csignal|cstdarg|cstddef|cstdint|cstdio|cstdlib|cstring|ctime|cwchar|cwctype|deque|exception|fstream|functional|initializer_list|iomanip|ios|iosfwd|iostream|istream|iterator|limits|list|locale|map|memory|mutex|new|numeric|ostream|queue|random|regex|scoped_allocator|set|sstream|stack|stdexcept|string|strstream|system_error|thread|tuple|type_traits|typeindex|typeinfo|unordered_map|unordered_set|utility|valarray|vector|[c]*[a-z_]+)>'
+    Priority: 1
+    SortPriority: 1
+    CaseSensitive: false
+
+  # Third-party headers (enclosed in <>, but not standard library)
+  - Regex: '<.+[/0-9a-z_]*\.h[p]?[p]?>'
+    Priority: 2
+    SortPriority: 2
+    CaseSensitive: false
+
+  # Project headers (enclosed in "", without paths)
+  - Regex: '".*\.h[p]?[p]?"'
+    Priority: 3
+    SortPriority: 3
+    CaseSensitive: false
+
+  # Project headers (enclosed in "", with paths)
+  - Regex: '".+[/0-9a-z_]*\.h[p]?[p]?"'
+    Priority: 4
+    SortPriority: 4
+    CaseSensitive: false
+IndentWidth: '4'
+Language: Cpp
 NamespaceIndentation: All
-SortIncludes: CaseInsensitive
+PointerAlignment: Left
+ReflowComments: 'true'
+SpaceBeforeCpp11BracedList: 'true'
+SpacesInContainerLiterals: 'true'
+Standard: Cpp11
+TabWidth: '4'
