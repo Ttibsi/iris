@@ -13,7 +13,7 @@ struct Controller;
 struct View {
     Controller *ctrlr_ptr;
     rawterm::Pos view_size;
-    std::vector<Model *> models = {}; // Indexes into controller.models
+    std::vector<Model *> view_models = {}; // Indexes into controller.models
     int active_model = 0; // 0-indexed
     rawterm::Cursor cur;
     int line_number_offset = 0;

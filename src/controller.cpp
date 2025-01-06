@@ -1,17 +1,16 @@
 #include "controller.h"
-#include "action.h"
-#include "file_io.h"
-#include "twin_array.h"
-#include "view.h"
 
 #include <string>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
 
+#include "action.h"
+#include "file_io.h"
 #include "spdlog/spdlog.h"
+#include "view.h"
 
-Controller::Controller(): term_size(rawterm::get_term_size()), view(View(this, term_size)) {}
+Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {}
 
 void Controller::set_mode(Mode m) {
     mode = m;
@@ -41,21 +40,21 @@ void Controller::set_mode(Mode m) {
     }
 }
 
-void Controller::create_view(const std::string &file_name) {
+void Controller::create_view(const std::string& file_name) {
     if (file_name.empty()) {
-        models.emplace_back();
+        models.emplace_back(term_size.vertical - 2);
     } else {
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) {
             logger->info("Creating view from file: " + file_name);
         }
 
-        std::optional<> file_chars = open_file(file_name);
+        opt_lines_t file_chars = open_file(file_name);
 
         if (file_chars.has_value()) {
             models.emplace_back(file_chars.value(), file_name);
         } else {
-            models.emplace_back();
+            models.emplace_back(term_size.vertical - 2);
         }
     }
 
@@ -78,9 +77,7 @@ void Controller::start_action_engine() {
         }
 
         if (mode == Mode::Write) {
-
         } else if (mode == Mode::Read) {
-
         }
 
         // After every input, refresh the status bar

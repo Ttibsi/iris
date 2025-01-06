@@ -14,6 +14,10 @@ include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
 version_setup()
 
 add_library(iris_src STATIC
+    controller.cpp
+    file_io.cpp
+    model.cpp
+    view.cpp
 )
 target_link_libraries(iris_src PUBLIC rawterm)
 

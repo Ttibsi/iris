@@ -3,12 +3,14 @@
 
 #include <rawterm/core.h>
 
+#include "model.h"
 #include "view.h"
 
 enum class Mode { Read, Write, Command };
 
 struct Controller {
     rawterm::Pos term_size;
+    std::vector<Model> models = {};
     View view;
     Mode mode = Mode::Read;
     std::string git_branch = "";

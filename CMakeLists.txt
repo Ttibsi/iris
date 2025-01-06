@@ -18,6 +18,7 @@ endif()
 
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
+add_compile_options(-g)
 
 # TODO: When I'm close to release-1, enable static linkage
 if(ENABLE_ASAN)

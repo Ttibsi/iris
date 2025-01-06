@@ -15,6 +15,9 @@ struct Model {
 
     bool readonly = false;
     bool modified = false;
+
+    Model(const int);
+    Model(std::vector<std::string>, const std::string&);
 };
 
 #endif // MODEL_H
