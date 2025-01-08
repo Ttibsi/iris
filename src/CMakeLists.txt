@@ -15,8 +15,8 @@ version_setup()
 
 add_library(iris_src STATIC
     controller.cpp
-    file_io.cpp
     model.cpp
+    text_io.cpp
     view.cpp
 )
 target_link_libraries(iris_src PUBLIC rawterm)

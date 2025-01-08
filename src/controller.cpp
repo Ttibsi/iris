@@ -6,7 +6,7 @@
 #include <rawterm/cursor.h>
 
 #include "action.h"
-#include "file_io.h"
+#include "text_io.h"
 #include "spdlog/spdlog.h"
 #include "view.h"
 

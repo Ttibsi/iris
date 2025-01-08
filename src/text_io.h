@@ -1,5 +1,5 @@
-#ifndef FILE_IO_H
-#define FILE_IO_H
+#ifndef TEXT_IO_H
+#define TEXT_IO_H
 
 #include <optional>
 #include <string>
@@ -9,5 +9,6 @@ using lines_t = std::vector<std::string>;
 using opt_lines_t = std::optional<std::vector<std::string>>;
 
 [[nodiscard]] opt_lines_t open_file(const std::string&);
+[[nodiscard]] lines_t lines(const std::string &str);
 
-#endif // FILE_IO_H
+#endif // TEXT_IO_H

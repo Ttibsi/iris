@@ -1,6 +1,7 @@
-#include "file_io.h"
+#include "text_io.h"
 
 #include <fstream>
+#include <sstream>
 
 #include "constants.h"
 
@@ -31,4 +32,17 @@
     }
 
     return ret;
+}
+
+
+[[nodiscard]] lines_t lines(const std::string &str) {
+    std::vector<std::string> result;
+    std::stringstream ss(str);
+    std::string line;
+
+    while (std::getline(ss, line)) {
+        result.push_back(line);
+    }
+
+    return result;
 }
