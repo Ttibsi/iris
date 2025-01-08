@@ -1,5 +1,5 @@
 # caches
-tests/integrations/__pycache__/
+tests/integration/__pycache__/
 .cache/
 .mypy_cache/
 .pytest_cache/

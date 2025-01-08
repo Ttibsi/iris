@@ -6,7 +6,7 @@
 #include "constants.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
-    auto ret = std::vector<std::string>(1024);
+    auto ret = std::vector<std::string>();
     std::string line = "";
     char ch;
 

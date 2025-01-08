@@ -83,7 +83,6 @@ def test_inserting_char_end_of_file(r: hecate.Runner):
     for _ in range(len(contents[-1])):
         r.press("l")
 
-    breakpoint()
     r.press("i")
     r.press("v")
 

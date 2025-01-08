@@ -33,8 +33,8 @@ def clean() -> None:
     print("Cleaning up after python")
     shutil.rmtree("venv", ignore_errors=True)
     shutil.rmtree(".mypy_cache", ignore_errors=True)
-    shutil.rmtree("tests/integrations/.pytest_cache", ignore_errors=True)
-    shutil.rmtree("tests/integrations/__pycache__", ignore_errors=True)
+    shutil.rmtree("tests/integration/.pytest_cache", ignore_errors=True)
+    shutil.rmtree("tests/integration/__pycache__", ignore_errors=True)
     shutil.rmtree(".pytest_cache", ignore_errors=True)
 
     files = [
@@ -57,13 +57,18 @@ def integration_tests(test_name: str = "") -> int:
         hecate_repo = "git+https://github.com/ttibsi/hecate.git@upgrades"
         return run_shell_cmd(f"venv/bin/pip install pytest {hecate_repo}")
 
-    return build()
-    return create_venv()
+    ret: int = build()
+    if ret:
+        return ret
 
-    test_folder_subpath: str = os.path.join(os.getcwd(), "tests/integrations")
+    ret = create_venv()
+    if ret:
+        return ret
+
+    test_folder_subpath: str = os.path.join(os.getcwd(), "tests/integration")
     test_paths: list[str] = [
         os.path.join(test_folder_subpath, file_path)
-        for file_path in os.listdir("tests/integrations")
+        for file_path in os.listdir("tests/integration")
         if "__pycache__" not in file_path
     ]
 
@@ -78,8 +83,14 @@ def test(testname: str | None, asan: bool, success: bool) -> int:
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
 
-    return run_shell_cmd(compile_cmd)
-    return run_shell_cmd("cmake --build build/")
+    ret: int = 0
+    ret = run_shell_cmd(compile_cmd)
+    if ret:
+        return ret
+
+    ret = run_shell_cmd("cmake --build build/")
+    if ret:
+        return ret
 
     if testname is None:
         testname = ""

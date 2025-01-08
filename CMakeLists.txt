@@ -18,7 +18,6 @@ endif()
 
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
-add_compile_options(-g)
 
 # TODO: When I'm close to release-1, enable static linkage
 if(ENABLE_ASAN)
@@ -29,6 +28,7 @@ endif()
 add_subdirectory(src)
 
 if(RUN_TESTS)
+    enable_testing()
     message(STATUS "UNIT TESTS ENABLED")
     add_subdirectory(tests)
 endif()

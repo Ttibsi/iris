@@ -1,6 +1,6 @@
 #include "model.h"
 
-Model::Model(const int view_height) : buf(std::vector<std::string>()), filename("") {
+Model::Model(const int view_height) : buf({""}), filename("") {
     buf.reserve(view_height);
 }
 
