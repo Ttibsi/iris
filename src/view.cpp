@@ -228,7 +228,7 @@ void View::cursor_left() {
 
 [[maybe_unused]] bool View::cursor_down() {
     // If we're on the last line, do nothing
-    if (get_active_model()->current_line == get_active_model()->buf.size() - 1) {
+    if (get_active_model()->current_line >= get_active_model()->buf.size() - 1) {
         return false;
     }
 
@@ -240,7 +240,7 @@ void View::cursor_left() {
     const unsigned int text_view_height =
         get_active_model()->view_offset + (view_size.vertical - 2);
 
-    if (get_active_model()->current_line > text_view_height) {
+    if (get_active_model()->current_line >= text_view_height) {
         // scroll
         get_active_model()->view_offset++;
         redraw_sentinal = true;

@@ -1,4 +1,5 @@
 import hecate
+from setup import get_statusbar_parts
 from setup import setup
 
 
@@ -38,4 +39,41 @@ def test_open_with_file(r: hecate.Runner):
 def test_render_truncated_line(r: hecate.Runner):
     lines = r.screenshot().split("\n")
     assert lines[0][-1] == "\u00BB"
-    assert lines[0][-2] == "3"
+    assert lines[0][-2] == "5"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_move_cursor_vertically(r: hecate.Runner):
+    status_bar = get_statusbar_parts(r.screenshot().split("\n"))
+    assert status_bar[3] == "1:1"
+
+    for _ in range(5):
+        r.press("j")
+
+    status_bar = get_statusbar_parts(r.screenshot().split("\n"))
+    assert status_bar[3] == "6:1"
+
+    r.press("k")
+    r.press("k")
+
+    status_bar = get_statusbar_parts(r.screenshot().split("\n"))
+    assert status_bar[3] == "4:1"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_scroll_view_vertically(r: hecate.Runner):
+    for _ in range(21):
+        r.press("j")
+
+    lines = r.screenshot().split("\n")
+    status_bar = get_statusbar_parts(lines)
+    assert status_bar[3] == "22:1"
+    assert lines[21][4:15] == "consectetur"
+
+    r.press("j")
+
+    lines = r.screenshot().split("\n")
+    status_bar = get_statusbar_parts(lines)
+    # breakpoint()
+    assert status_bar[3] == "23:1"
+    assert lines[21][4:9] == "Morbi"

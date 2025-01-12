@@ -79,7 +79,65 @@ void Controller::start_action_engine() {
         }
 
         if (mode == Mode::Write) {
+            if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
+            } else if (k.value() == rawterm::Key('D', rawterm::Mod::Arrow)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+            } else if (k.value() == rawterm::Key('B', rawterm::Mod::Arrow)) {
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
+                if (redraw.value()) {
+                    redraw_all = true;
+                }
+            } else if (k.value() == rawterm::Key('A', rawterm::Mod::Arrow)) {
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
+                if (redraw.value()) {
+                    redraw_all = true;
+                }
+            } else if (k.value() == rawterm::Key('C', rawterm::Mod::Arrow)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+            } else if (k.value() == rawterm::Key(' ', rawterm::Mod::Backspace)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::Backspace});
+                redraw_all = true;
+            } else if (k.value() == rawterm::Key('m', rawterm::Mod::Enter)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::Newline});
+                // } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab))
+                // {
+                //     for (int i = 0; i < TAB_SIZE; i++) {
+                //         parse_action<char, None>(&view, Action<char>
+                //         {ActionType::InsertChar, ' '});
+                //     }
+                //     view.render_line();
+                //     view.draw_status_bar();
+            } else {
+                parse_action<char, None>(
+                    &view, Action<char> {ActionType::InsertChar, k.value().code});
+                view.draw_line();
+            }
+
         } else if (mode == Mode::Read) {
+            if (k.value() == rawterm::Key('h')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+            } else if (k.value() == rawterm::Key('i')) {
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
+            } else if (k.value() == rawterm::Key('j')) {
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
+                if (redraw.value()) {
+                    redraw_all = true;
+                }
+            } else if (k.value() == rawterm::Key('k')) {
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
+                if (redraw.value()) {
+                    redraw_all = true;
+                }
+            } else if (k.value() == rawterm::Key('l')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+            } else if (k.value() == rawterm::Key('q')) {
+                break_loop = true;
+            }
         }
 
         // After every input, refresh the status bar

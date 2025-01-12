@@ -237,7 +237,7 @@ boost::ut::suite<"View"> view_suite = [] {
                 v.cursor_down();
             }
 
-            expect(v.cur == rawterm::Pos(23, 1));
+            expect(v.cur == rawterm::Pos(22, 1));
             expect(m.current_line == 34);
 
             std::vector<std::string> text = lines(v.render_screen());
@@ -289,11 +289,11 @@ boost::ut::suite<"View"> view_suite = [] {
 
             v.cursor_down();  // trigger scrolling
 
-            expect(v.cur == rawterm::Pos(23, 1));
+            expect(v.cur == rawterm::Pos(22, 1));
             expect(m.current_line == 22);
 
             v.cursor_down();  // trigger scrolling
-            expect(v.cur == rawterm::Pos(23, 1));
+            expect(v.cur == rawterm::Pos(22, 1));
             expect(m.current_line == 23);
         };
 
@@ -309,11 +309,11 @@ boost::ut::suite<"View"> view_suite = [] {
                 v.cursor_down();
             }
 
-            expect(v.cur == rawterm::Pos(23, 1)) << v.cur;
+            expect(v.cur == rawterm::Pos(22, 1));
             expect(m.current_line == m.buf.size() - 1);
 
             v.cursor_down();
-            expect(v.cur == rawterm::Pos(23, 1));
+            expect(v.cur == rawterm::Pos(22, 1));
             expect(m.current_line == m.buf.size() - 1);
         };
 
@@ -328,12 +328,12 @@ boost::ut::suite<"View"> view_suite = [] {
             // Move to end of file
             v.cursor_down();
             v.cursor_down();
-            expect(v.cur == rawterm::Pos(3, 1));
+            expect(v.cur == rawterm::Pos(3, 1)) << v.cur;
             expect(m.current_line == 2);
 
             // No cursor movement as we're already at end of file
             v.cursor_down();
-            expect(v.cur == rawterm::Pos(3, 1));
+            expect(v.cur == rawterm::Pos(3, 1)) << v.cur;
             expect(m.current_line == 2);
         };
     };
