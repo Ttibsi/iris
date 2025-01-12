@@ -3,6 +3,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <rawterm/text.h>
+
 #include "constants.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
@@ -34,14 +36,16 @@
     return ret;
 }
 
-
-[[nodiscard]] lines_t lines(const std::string &str) {
+[[nodiscard]] lines_t lines(const std::string& str) {
     std::vector<std::string> result;
     std::stringstream ss(str);
     std::string line;
 
     while (std::getline(ss, line)) {
-        result.push_back(line);
+        if (line.back() == '\r') {
+            line.pop_back();
+        }
+        result.push_back(rawterm::raw_str(line));
     }
 
     return result;

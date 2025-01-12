@@ -12,25 +12,24 @@
 boost::ut::suite<"View"> view_suite = [] {
     using namespace boost::ut;
 
-    skip / "Constructor"_test = [] {
+    "Constructor"_test = [] {
         Controller c;
-        auto v = View(&c, rawterm::Pos(24, 80));
+        auto v = View(&c, {24, 80});
 
         expect(v.view_models.capacity() == 8);
         expect(v.view_size.horizontal == 80);
         expect(v.view_size.vertical == 24);
     };
 
-    skip / "add_model"_test = [] {
+    "add_model"_test = [] {
         Controller c;
-        lines_t raw = {
-            "This is some text\n", "    here is a newline and tab\n", "and another newline\n"};
+        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(raw, "test_file.txt");
         v.add_model(&m);
 
-        expect(v.active_model == 1);
+        expect(v.active_model == 0);
         expect(v.get_active_model()->filename == "test_file.txt");
 
         if (LINE_NUMBERS) {
@@ -38,10 +37,9 @@ boost::ut::suite<"View"> view_suite = [] {
         }
     };
 
-    skip / "get_active_model"_test = [] {
+    "get_active_model"_test = [] {
         Controller c;
-        lines_t raw = {
-            "This is some text\n", "    here is a newline and tab\n", "and another newline\n"};
+        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(raw, "test_file.txt");
@@ -50,11 +48,10 @@ boost::ut::suite<"View"> view_suite = [] {
         expect(v.get_active_model() == &m);
     };
 
-    skip / "render_screen"_test = [] {
-        Controller c;
-        auto v = View(&c, rawterm::Pos(24, 80));
-
-        should("Render single text file") = [=]() mutable {
+    "render_screen"_test = [] {
+        should("Render single text file") = [] {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
             auto m = Model(
                 open_file("tests/fixture/test_file_1.txt").value(),
                 "tests/fixture/test_file_1.txt");
@@ -62,12 +59,14 @@ boost::ut::suite<"View"> view_suite = [] {
 
             auto buffer = lines(v.render_screen());
 
-            expect(buffer.size() == 23);
-            expect(rawterm::raw_at(buffer.at(0), 5) == 'T');
-            expect(rawterm::raw_at(buffer.at(1), 1) == '2');
+            expect(buffer.size() == 22);
+            expect(buffer.at(0).at(5) == 'T');
+            expect(buffer.at(1).at(1) == '2');
         };
 
-        should("Truncated line") = [=]() mutable {
+        should("Truncated line") = [] {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
             auto m = Model(32);
             v.add_model(&m);
 
@@ -77,16 +76,15 @@ boost::ut::suite<"View"> view_suite = [] {
 
             auto buffer = lines(v.render_screen());
 
-            expect(buffer.size() == 23);
-            expect(rawterm::raw_size(buffer.at(0)) == 82);
-            expect(buffer.at(0).substr(buffer.at(0).size() - 3, 2) == "\u00bb");
+            expect(buffer.size() == 22);
+            expect(buffer.at(0).substr(buffer.at(0).size() - 2, 2) == "\u00bb");
+            expect(buffer.at(0).size() == 83);  // +3 for unicode chars
         };
     };
 
-    skip / "generate_tab_bar"_test = [] {
+    "generate_tab_bar"_test = [] {
         Controller c;
-        lines_t raw = {
-            "This is some text\n", "    here is a newline and tab\n", "and another newline\n"};
+        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(raw, "test_file.txt");
@@ -98,13 +96,14 @@ boost::ut::suite<"View"> view_suite = [] {
 
         std::string ret = v.render_tab_bar();
         std::string expected =
-            "| test_file.txt | \x1B[7mtests/fixture/test_file_1.txt\x1B[27m | "
-            "\n";
+            "| test_file.txt | \x1B[7mtests/fixture/test_file_1.txt\x1B[27m | \n";
 
+        expect(v.view_models.size() == 2);
+        expect(v.active_model == 1);
         expect(expected == ret);
     };
 
-    skip / "render_line"_test = [] {
+    "render_line"_test = [] {
         should("Standard line rendering") = []() {
             Controller c;
             auto m = Model(
@@ -116,7 +115,7 @@ boost::ut::suite<"View"> view_suite = [] {
 
             const std::string line = rawterm::raw_str(v.render_line());
 
-            std::string expected_text = "This is some text\r\n";
+            std::string expected_text = "This is some text";
             unsigned int expected_size = expected_text.size();
 
             if (LINE_NUMBERS) {
@@ -142,11 +141,11 @@ boost::ut::suite<"View"> view_suite = [] {
             const std::string line = rawterm::raw_str(v.render_line());
 
             expect(line.substr(line.size() - 2, 2) == "\u00BB");
-            expect(line.size() == 83);  // adding len of unicode chars, removing \r\n
+            expect(line.size() == 83);  // +3 for unicode chars
         };
     };
 
-    skip / "render_status_bar"_test = [] {
+    "render_status_bar"_test = [] {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
 
@@ -162,30 +161,39 @@ boost::ut::suite<"View"> view_suite = [] {
         expect(rawterm::raw_size(ret) == 80);
     };
 
-    skip / "cursor_left"_test = [] {
-        Controller c;
-        auto v = View(&c, rawterm::Pos(24, 80));
-        auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-        v.add_model(&m);
-
+    "cursor_left"_test = [] {
         should("Already at left-most position") = [&]() {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/test_file_1.txt").value(),
+                "tests/fixture/test_file_1.txt");
+            v.add_model(&m);
+
             expect(v.cur == rawterm::Pos(1, 1));
             v.cursor_left();
             expect(v.cur == rawterm::Pos(1, 1));
         };
 
         should("Move left") = [&]() {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/test_file_1.txt").value(),
+                "tests/fixture/test_file_1.txt");
+            v.add_model(&m);
+
             for (int i = 1; i < 5; i++) {
                 v.cursor_right();
             }
             v.cursor_left();
             expect(v.cur == rawterm::Pos(1, 4));
-            expect(m.current_line == 3);
+            expect(m.current_line == 0);
+            expect(m.current_char == 3) << m.current_char;
         };
     };
 
-    skip / "cursor_up"_test = [] {
+    "cursor_up"_test = [] {
         should("Already at top-most row") = [] {
             Controller c;
             auto v = View(&c, rawterm::Pos(24, 80));
@@ -229,23 +237,27 @@ boost::ut::suite<"View"> view_suite = [] {
                 v.cursor_down();
             }
 
-            expect(v.cur == rawterm::Pos(22, 1));
+            expect(v.cur == rawterm::Pos(23, 1));
             expect(m.current_line == 34);
 
+            std::vector<std::string> text = lines(v.render_screen());
+            const int idx = m.current_line - m.view_offset - 1;
+            expect(text.at(idx).find("massa.") != std::string::npos);
+
             // Move cursor to top row
-            for (int i = 1; i < 22; i++) {
+            for (int i = 1; i < 23; i++) {
                 v.cursor_up();
             }
 
             expect(v.cur == rawterm::Pos(1, 1));
-            expect(m.current_line == 10);
+            expect(m.current_line == 12);
 
-            std::vector<std::string> text = lines(v.render_screen());
-            expect(text.at(0).find("Lorem ipsum dolor sit amet,") == std::string::npos);
+            text = lines(v.render_screen());
+            expect(text.at(0).find("Lorem ipsum") == std::string::npos);
         };
     };
 
-    skip / "cursor_down"_test = [] {
+    "cursor_down"_test = [] {
         should("Move cursor down") = [&] {
             Controller c;
             auto m = Model(
@@ -277,11 +289,11 @@ boost::ut::suite<"View"> view_suite = [] {
 
             v.cursor_down();  // trigger scrolling
 
-            expect(v.cur == rawterm::Pos(22, 1));
+            expect(v.cur == rawterm::Pos(23, 1));
             expect(m.current_line == 22);
 
             v.cursor_down();  // trigger scrolling
-            expect(v.cur == rawterm::Pos(22, 1));
+            expect(v.cur == rawterm::Pos(23, 1));
             expect(m.current_line == 23);
         };
 
@@ -293,15 +305,15 @@ boost::ut::suite<"View"> view_suite = [] {
             auto v = View(&c, rawterm::Pos(24, 80));
             v.add_model(&m);
 
-            for (int i = 1; i < m.buf.size(); i++) {
+            for (unsigned int i = 1; i < m.buf.size(); i++) {
                 v.cursor_down();
             }
 
-            expect(v.cur == rawterm::Pos(22, 1));
+            expect(v.cur == rawterm::Pos(23, 1)) << v.cur;
             expect(m.current_line == m.buf.size() - 1);
 
             v.cursor_down();
-            expect(v.cur == rawterm::Pos(22, 1));
+            expect(v.cur == rawterm::Pos(23, 1));
             expect(m.current_line == m.buf.size() - 1);
         };
 
@@ -326,32 +338,49 @@ boost::ut::suite<"View"> view_suite = [] {
         };
     };
 
-    skip / "cursor_right"_test = [] {
-        Controller c;
-        auto v = View(&c, rawterm::Pos(24, 80));
-        auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-        v.add_model(&m);
-
+    "cursor_right"_test = [] {
         should("Already at right-most position in view") = [&] {
-            v.cur.move({1, 80});
-            expect(v.cur == rawterm::Pos(1, 80));
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/test_file_1.txt").value(),
+                "tests/fixture/test_file_1.txt");
+            v.add_model(&m);
+            v.cur.move({v.cur.vertical, v.line_number_offset + 1});
+
+            for (int i = 1; i <= 80; i++) {
+                v.cursor_right();
+            }
+            expect(v.cur == rawterm::Pos(1, 20));
             v.cursor_right();
-            expect(v.cur == rawterm::Pos(1, 80));
+            expect(v.cur == rawterm::Pos(1, 20));
         };
 
         should("Already at right-most position in line") = [&] {
-            v.cur.move({1, 1});
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/test_file_1.txt").value(),
+                "tests/fixture/test_file_1.txt");
+            v.add_model(&m);
+            v.cur.move({v.cur.vertical, v.line_number_offset + 1});
+
             for (int i = 1; i <= 100; i++) {
                 v.cursor_right();
             }
 
-            expect(v.cur == rawterm::Pos(1, 18));
+            expect(v.cur == rawterm::Pos(1, 20));
             expect(m.current_char == 17);
         };
 
         should("Move right") = [&] {
-            v.cur.move({1, 1});
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/test_file_1.txt").value(),
+                "tests/fixture/test_file_1.txt");
+            v.add_model(&m);
+
             v.cursor_right();
             expect(v.cur == rawterm::Pos(1, 2));
         };

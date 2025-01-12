@@ -65,7 +65,7 @@ void View::draw_screen() {
     auto viewable_range = get_active_model()->buf |
                           std::views::drop(get_active_model()->view_offset) | std::views::take(end);
 
-    for (auto const [idx, line] : std::views::enumerate(viewable_range)) {
+    for (const auto [idx, line] : std::views::enumerate(viewable_range)) {
         if (LINE_NUMBERS) {
             screen += rawterm::set_foreground(
                 std::format(
@@ -75,15 +75,14 @@ void View::draw_screen() {
 
         // Truncate
         const unsigned int viewable_hor_len =
-            view_size.horizontal - (LINE_NUMBERS ? line_number_offset : 0);
+            view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0);
 
         if (line.size() > viewable_hor_len) {
-            line = line.substr(0, viewable_hor_len - 1);
-            line += "\u00BB";
-        }
-
-        screen += line;
-        screen += "\r\n";
+            screen += line.substr(0, viewable_hor_len - 1);
+            screen += "\u00BB\r\n";
+        } else {
+            screen += line + "\r\n";
+        };
     }
 
     // Set 1 line number if no text in the buffer
@@ -106,8 +105,8 @@ void View::draw_screen() {
 const std::string View::render_tab_bar() const {
     std::string ret = "| ";
 
-    for (unsigned int i = 0; i < view_models.size(); ++i) {
-        if (i == static_cast<unsigned int>(active_model - 1)) {
+    for (int i = 0; i < static_cast<int>(view_models.size()); ++i) {
+        if (i == active_model) {
             ret += rawterm::inverse(view_models.at(i)->filename);
         } else {
             ret += view_models.at(i)->filename;
@@ -132,12 +131,12 @@ void View::draw_line() {
     std::string line = "";
 
     const unsigned int viewable_hor_len =
-        view_size.horizontal - (LINE_NUMBERS ? line_number_offset : 0);
+        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0);
     std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
 
     if (LINE_NUMBERS) {
         line += rawterm::set_foreground(
-            std::format("{:>{}}\u2502", get_active_model()->current_line, line_number_offset),
+            std::format("{:>{}}\u2502", get_active_model()->current_line + 1, line_number_offset),
             COLOR_UI_BG);
     }
 
@@ -229,7 +228,7 @@ void View::cursor_left() {
 
 [[maybe_unused]] bool View::cursor_down() {
     // If we're on the last line, do nothing
-    if (get_active_model()->current_line == get_active_model()->buf.size()) {
+    if (get_active_model()->current_line == get_active_model()->buf.size() - 1) {
         return false;
     }
 
@@ -255,11 +254,18 @@ void View::cursor_left() {
 
 void View::cursor_right() {
     // TODO: Handle line longer than view
+    if (cur.horizontal == view_size.horizontal) {
+        return;
+    }
 
     // Only scroll if we're still in the line
     int line_size = get_active_model()->buf.at(get_active_model()->current_line).size();
-    if (line_size <= cur.vertical + line_number_offset) {
-        get_active_model()->current_line++;
+    if (LINE_NUMBERS) {
+        line_size += line_number_offset + 1;
+    }
+
+    if (cur.horizontal < line_size) {
+        get_active_model()->current_char++;
         cur.move_right();
     }
 }

@@ -42,7 +42,7 @@ boost::ut::suite<"Controller"> controller_suite = [] {
             c.create_view("");
 
             expect(c.models.size() == 1);
-            expect(c.models.at(0).buf.size() == 0);
+            expect(c.models.at(0).buf.size() == 1);
         };
     };
 

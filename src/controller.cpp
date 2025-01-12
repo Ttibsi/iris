@@ -6,11 +6,13 @@
 #include <rawterm/cursor.h>
 
 #include "action.h"
-#include "text_io.h"
 #include "spdlog/spdlog.h"
+#include "text_io.h"
 #include "view.h"
 
-Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {}
+Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {
+    models.reserve(8);
+}
 
 void Controller::set_mode(Mode m) {
     mode = m;
