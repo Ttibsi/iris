@@ -19,7 +19,7 @@ struct Model {
     Model(const int);
     Model(std::vector<std::string>, const std::string&);
     void backspace();
-    void newline();
+    [[nodiscard]] int newline();
     void insert(const char);
 };
 

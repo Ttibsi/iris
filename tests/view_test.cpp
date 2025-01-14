@@ -339,7 +339,7 @@ boost::ut::suite<"View"> view_suite = [] {
     };
 
     "cursor_right"_test = [] {
-        should("Already at right-most position in view") = [&] {
+        should("Already at right-most position in view") = [] {
             Controller c;
             auto v = View(&c, rawterm::Pos(24, 80));
             auto m = Model(
@@ -351,12 +351,12 @@ boost::ut::suite<"View"> view_suite = [] {
             for (int i = 1; i <= 80; i++) {
                 v.cursor_right();
             }
-            expect(v.cur == rawterm::Pos(1, 20));
+            expect(v.cur == rawterm::Pos(1, 21));
             v.cursor_right();
-            expect(v.cur == rawterm::Pos(1, 20));
+            expect(v.cur == rawterm::Pos(1, 21));
         };
 
-        should("Already at right-most position in line") = [&] {
+        should("Already at right-most position in line") = [] {
             Controller c;
             auto v = View(&c, rawterm::Pos(24, 80));
             auto m = Model(
@@ -369,11 +369,11 @@ boost::ut::suite<"View"> view_suite = [] {
                 v.cursor_right();
             }
 
-            expect(v.cur == rawterm::Pos(1, 20));
-            expect(m.current_char == 17);
+            expect(v.cur == rawterm::Pos(1, 21));
+            expect(m.current_char == 18);
         };
 
-        should("Move right") = [&] {
+        should("Move right") = [] {
             Controller c;
             auto v = View(&c, rawterm::Pos(24, 80));
             auto m = Model(

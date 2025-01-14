@@ -93,7 +93,12 @@ template <typename T, typename U>
                 logger->info("Action called: Newline");
             }
 
-            v->get_active_model()->newline();
+            const int count = v->get_active_model()->newline();
+            v->cur.move_down();
+            for (int i = 0; i < count; i++) {
+                v->cur.move_left();
+            }
+
             return {};
         }
 
@@ -127,6 +132,7 @@ template <typename T, typename U>
                 }
 
                 v->get_active_model()->insert(action.payload);
+                v->cur.move_right();
             }
             return {};
         }

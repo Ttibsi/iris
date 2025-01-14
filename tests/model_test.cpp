@@ -20,4 +20,8 @@ boost::ut::suite<"Model"> model_suite = [] {
         expect(m.filename == "");
         expect(m.buf.at(0) == "foo");
     };
+
+    skip / "backspace"_test = [] {};
+    skip / "newline"_test = [] {};
+    skip / "insert"_test = [] {};
 };

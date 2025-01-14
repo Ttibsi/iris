@@ -54,12 +54,15 @@ def test_inserting_char_in_middle_of_line(r: hecate.Runner):
     status_bar: list[str] = get_statusbar_parts(lines)
     assert status_bar[3][2:] == "7"
 
+
+# TODO: GDB to see if move-right works correctly.
+# Not sure press("l") is going far enough here
 @setup("tests/fixture/test_file_1.txt")
 def test_inserting_char_end_of_line(r: hecate.Runner):
     with open("tests/fixture/test_file_1.txt") as f:
         contents = f.readlines()
 
-    for _ in range(len(contents[0]) - 1):
+    for _ in range(len(contents[0])):
         r.press("l")
 
     r.press("i")
@@ -71,6 +74,7 @@ def test_inserting_char_end_of_line(r: hecate.Runner):
 
     status_bar: list[str] = get_statusbar_parts(lines)
     assert status_bar[3][2:] == "19"
+
 
 @setup("tests/fixture/test_file_1.txt")
 def test_inserting_char_end_of_file(r: hecate.Runner):
@@ -95,6 +99,7 @@ def test_inserting_char_end_of_file(r: hecate.Runner):
     status_bar = get_statusbar_parts(lines)
     assert status_bar[3] == f"{len(contents)}:{len(contents[-1]) + 1}"
 
+
 @setup("tests/fixture/test_file_1.txt")
 def test_backspace_char(r: hecate.Runner):
     for _ in range(5):
@@ -110,6 +115,7 @@ def test_backspace_char(r: hecate.Runner):
 
     status_bar = get_statusbar_parts(lines)
     assert status_bar[3][2] == "4"
+
 
 @setup("tests/fixture/test_file_1.txt")
 def test_backspace_newline(r: hecate.Runner):
@@ -134,6 +140,7 @@ def test_backspace_newline(r: hecate.Runner):
     # of "second" line
     cursor_horizontal: int = (len(line_1_clean) - 3) + 1
     assert status_bar[3][2:] == f"{cursor_horizontal}"
+
 
 @setup("tests/fixture/test_file_1.txt")
 def test_insert_newline(r: hecate.Runner):
@@ -163,18 +170,19 @@ def test_insert_newline(r: hecate.Runner):
     assert status_bar[3][0] == "4"
     assert status_bar[3][2:] == "6"
 
+
 @setup()
 def test_line_truncates_when_inserting_char(r: hecate.Runner):
     r.press("i")
-    for idx in range(76):
+    for idx in range(77):
         r.press(f"{idx % 10}")
 
     lines = r.screenshot().split("\n")
-    assert len(lines[0]) == 79
-    assert lines[0][-1] == "5"
+    assert len(lines[0]) == 80
+    assert lines[0][-1] == "6"
 
     status_bar = get_statusbar_parts(lines)
-    assert status_bar[2] == "1:77"
+    assert status_bar[2] == "1:78"
 
     r.press("_")
 
@@ -183,7 +191,7 @@ def test_line_truncates_when_inserting_char(r: hecate.Runner):
     assert lines[0][-1] == "\u00BB"
 
     status_bar = get_statusbar_parts(lines)
-    assert status_bar[2] == "1:78"
+    assert status_bar[2] == "1:79"
 
 
 @setup("tests/fixture/very_long_line.txt")

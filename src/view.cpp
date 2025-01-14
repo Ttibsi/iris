@@ -259,7 +259,7 @@ void View::cursor_right() {
     }
 
     // Only scroll if we're still in the line
-    int line_size = get_active_model()->buf.at(get_active_model()->current_line).size();
+    int line_size = get_active_model()->buf.at(get_active_model()->current_line).size() + 1;
     if (LINE_NUMBERS) {
         line_size += line_number_offset + 1;
     }

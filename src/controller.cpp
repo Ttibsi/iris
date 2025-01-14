@@ -102,6 +102,8 @@ void Controller::start_action_engine() {
                 redraw_all = true;
             } else if (k.value() == rawterm::Key('m', rawterm::Mod::Enter)) {
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
+                redraw_all = true;
+
                 // } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab))
                 // {
                 //     for (int i = 0; i < TAB_SIZE; i++) {
