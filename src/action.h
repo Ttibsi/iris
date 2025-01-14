@@ -38,13 +38,14 @@ template <typename T, typename U>
 [[maybe_unused]] constexpr std::optional<const U> parse_action(View* v, const Action<T>& action) {
     switch (action.type) {
         case ActionType::Backspace: {
-            auto logger = spdlog::get("basic_logger");
-            if (logger != nullptr) {
-                logger->info("Action called: Backspace");
-            }
+            if constexpr (std::is_same_v<U, Redraw>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: Backspace");
+                }
 
-            v->get_active_model()->backspace();
-            return {};
+                return v->get_active_model()->backspace();
+            }
         }
 
         case ActionType::MoveCursorLeft: {

@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+// Forward declare from controller.h
+enum class Redraw;
+
 struct Model {
     std::vector<std::string> buf;
     std::string filename;
@@ -18,7 +21,7 @@ struct Model {
 
     Model(const int);
     Model(std::vector<std::string>, const std::string&);
-    void backspace();
+    [[nodiscard]] Redraw backspace();
     [[nodiscard]] int newline();
     void insert(const char);
 };

@@ -1,4 +1,5 @@
 #include "model.h"
+#include "controller.h"
 
 Model::Model(const int view_height) : buf({""}), filename("") {
     buf.reserve(view_height);
@@ -9,48 +10,27 @@ Model::Model(const int view_height) : buf({""}), filename("") {
 Model::Model(std::vector<std::string> file_chars, const std::string& filename)
     : buf(file_chars), filename(filename) {}
 
-void Model::backspace() {
-    // Model *active = v->get_active_model();
-    // const int curr_char = active->buf.curr_char_index() + 1;
-    // const int curr_line = active->buf.curr_line_index();
-    //
-    // if (curr_char == 1 && curr_line == 1) {
-    //     return {};
-    // }
-    //
-    // if (curr_char == v->line_number_offset && curr_line > 1) {
-    //     // At the start of the line, move cursor up
-    //     int line_counter = 0;
-    //     int prev_line_len = 0;
-    //     for (char &c : active->buf) {
-    //         if (c == '\n') {
-    //             line_counter++;
-    //         }
-    //         if (line_counter == curr_line - 1) {
-    //             prev_line_len++;
-    //         }
-    //         if (line_counter >= curr_line) {
-    //             break;
-    //         }
-    //     }
-    //
-    //     active->buf.move_left();
-    //     active->buf.pop();
-    //     active->buf.pop();
-    //
-    //     // We have to use the cursor method here because we don't want any
-    //     // other side affects from v->cursor_up()
-    //     v->cur.move_up();
-    //     for (int i = 0; i <= prev_line_len; i++) {
-    //         v->cur.move_right();
-    //     }
-    //
-    // } else {
-    //     // Move cursor backwards
-    //     active->buf.pop();
-    //     v->draw_line();
-    //     v->cursor_left();
-    // }
+[[nodiscard]] Redraw Model::backspace() {
+    if (current_char == 0) {
+        // Concat two lines
+
+        // At top of buffer
+        if (current_line == 0) { return Redraw::None; }
+
+        const int prev_line_len = buf.at(current_line - 1).size();
+        buf.at(current_line - 1) += buf.at(current_line);
+        buf.erase(buf.begin() + current_line);
+
+        current_line--;
+        current_char = prev_line_len;
+
+        return Redraw::Screen;
+    } else {
+        current_char--;
+        buf.at(current_line).erase(current_char, 1);
+
+        return Redraw::Line;
+    }
 }
 
 [[nodiscard]] int Model::newline() {

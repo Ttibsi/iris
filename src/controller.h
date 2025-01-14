@@ -7,6 +7,7 @@
 #include "view.h"
 
 enum class Mode { Read, Write, Command };
+enum class Redraw { Line, Screen, None };
 
 struct Controller {
     rawterm::Pos term_size;

@@ -114,7 +114,7 @@ def test_backspace_char(r: hecate.Runner):
     assert lines[0] == f" 1\u2502{expected_text}"
 
     status_bar = get_statusbar_parts(lines)
-    assert status_bar[3][2] == "4"
+    assert status_bar[3][2] == "5"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -136,10 +136,8 @@ def test_backspace_newline(r: hecate.Runner):
     status_bar = get_statusbar_parts(lines)
     assert status_bar[3][0] == "2"
 
-    # -3 because \t becomes a space, +1 because cursor should be on first char
-    # of "second" line
-    cursor_horizontal: int = (len(line_1_clean) - 3) + 1
-    assert status_bar[3][2:] == f"{cursor_horizontal}"
+    # +1 because cursor should be on first char of "second" line
+    assert status_bar[3][2:] == f"{len(line_1_clean) + 1}"
 
 
 @setup("tests/fixture/test_file_1.txt")
