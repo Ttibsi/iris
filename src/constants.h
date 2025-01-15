@@ -8,4 +8,4 @@ const int TAB_SIZE = 4;
 
 const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
 
-#endif // CONSTANTS_H
+#endif  // CONSTANTS_H

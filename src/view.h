@@ -3,18 +3,18 @@
 
 #include <vector>
 
-#include "model.h"
-
 #include <rawterm/cursor.h>
 #include <rawterm/screen.h>
+
+#include "model.h"
 
 struct Controller;
 
 struct View {
-    Controller *ctrlr_ptr;
+    Controller* ctrlr_ptr;
     rawterm::Pos view_size;
-    std::vector<Model *> view_models = {}; // Indexes into controller.models
-    int active_model = 0; // 0-indexed
+    std::vector<Model*> view_models = {};  // Indexes into controller.models
+    int active_model = 0;                  // 0-indexed
     rawterm::Cursor cur;
     int line_number_offset = 0;
 
@@ -35,4 +35,4 @@ struct View {
     void cursor_right();
 };
 
-#endif // VIEW_H
+#endif  // VIEW_H

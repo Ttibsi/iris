@@ -15,4 +15,4 @@ different aspects, much like your editor bridges text and code. (Thanks
 ChatGPT)
 
 ### HOW TO RUN
-Prerequisites: `cmake`, `ninja`
+Prerequisites: `cmake`, `ninja`, `Python`

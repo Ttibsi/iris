@@ -1,4 +1,5 @@
 #include "model.h"
+
 #include "controller.h"
 
 Model::Model(const int view_height) : buf({""}), filename("") {
@@ -15,7 +16,9 @@ Model::Model(std::vector<std::string> file_chars, const std::string& filename)
         // Concat two lines
 
         // At top of buffer
-        if (current_line == 0) { return Redraw::None; }
+        if (current_line == 0) {
+            return Redraw::None;
+        }
 
         const int prev_line_len = buf.at(current_line - 1).size();
         buf.at(current_line - 1) += buf.at(current_line);

@@ -93,7 +93,8 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('A', rawterm::Mod::Arrow)) {
-                auto draw = parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
+                auto draw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
                 if (draw.value()) {
                     redraw_all = true;
                 }
@@ -104,9 +105,12 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key(' ', rawterm::Mod::Backspace)) {
                 auto draw = parse_action<void, Redraw>(&view, Action<void> {ActionType::Backspace});
                 switch (draw.value()) {
-                    case Redraw::Screen: redraw_all = true;
-                    case Redraw::Line: view.draw_line();
-                    case Redraw:: None: break;
+                    case Redraw::Screen:
+                        redraw_all = true;
+                    case Redraw::Line:
+                        view.draw_line();
+                    case Redraw::None:
+                        break;
                 }
 
             } else if (k.value() == rawterm::Key('m', rawterm::Mod::Enter)) {

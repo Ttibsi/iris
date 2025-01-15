@@ -1,10 +1,10 @@
 # Milestones
 
-* [ ] Display a text file on the screen
-* [ ] Display line numbers and a statusbar
-* [ ] Move cursor and scroll through a file
+* [x] Display a text file on the screen
+* [x] Display line numbers and a statusbar
+* [x] Move cursor and scroll through a file
+* [x] Open an empty buffer
 * [ ] Modify and save the file
-* [ ] Open an empty buffer
 * [ ] Create and save a new file
 * [ ] Handle linux backgrounding (CTRL+Z)
 * [ ] Handle displaying tab characters with specific widths
@@ -31,10 +31,10 @@
 
 ## Vim commands
 
-* [ ] `h`
-* [ ] `j`
-* [ ] `k`
-* [ ] `l`
+* [x] `h`
+* [x] `j`
+* [x] `k`
+* [x] `l`
 * [ ] `x`
 * [ ] `a`
 * [ ] `A`
