@@ -1,11 +1,11 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include <string>
+#include <rawterm/color.h>
 
-const int TABSTOP = 4;            // default: 4
-const bool CURSOR_STATUS = false; // default false
-const bool LINE_NUMBER = true;    // Default false
-const std::string THEME = "default";
+const bool LINE_NUMBERS = true;
+const int TAB_SIZE = 4;
 
-#endif
+const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
+
+#endif  // CONSTANTS_H

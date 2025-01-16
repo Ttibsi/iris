@@ -1,43 +1,29 @@
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# This is all for building the `--version` flag at compile time
-execute_process(
-    COMMAND git tag
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    OUTPUT_VARIABLE GIT_TAG
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+include(FetchContent)
+fetchcontent_declare(
+  rawterm
+  GIT_REPOSITORY https://github.com/ttibsi/rawterm
+  GIT_TAG        main
 )
-execute_process(
-    COMMAND git log -1 --format=%h
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    OUTPUT_VARIABLE GIT_HASH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
+fetchcontent_makeavailable(rawterm)
+
+include(${PROJECT_SOURCE_DIR}/cmake/version.cmake)
+version_setup()
+
+add_library(iris_src STATIC
+    controller.cpp
+    model.cpp
+    text_io.cpp
+    view.cpp
 )
-string(TIMESTAMP COMPILE_DATE "%Y/%m/%d")
-if(CMAKE_BUILD_TYPE STREQUAL "")
-    set(BUILD_MODE "Default")
-else()
-    set(BUILD_MODE ${CMAKE_BUILD_TYPE})
+target_link_libraries(iris_src PUBLIC rawterm)
+
+if(ENABLE_ASAN)
+    target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
 
-configure_file(
-    "${PROJECT_SOURCE_DIR}/src/version.h.in"
-    "${PROJECT_SOURCE_DIR}/src/version.h"
-    @ONLY
-)
-
-add_subdirectory(highlighting)
-
-add_library(lib SHARED
-    buffer.cpp
-    editor.cpp
-    file_manip.cpp
-    handle_keypress.cpp
-    text_manip.cpp
-    viewport.cpp
-)
-
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(lib PRIVATE highlighter)
-target_link_libraries(${PROJECT_NAME} PUBLIC lib highlighter)
+target_link_libraries(${PROJECT_NAME} PUBLIC rawterm iris_src)

@@ -1,12 +1,10 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#include <string>
 #include <string_view>
 
 [[nodiscard]] constexpr inline std::string_view version() noexcept {
-    return "Iris version: " "@GIT_TAG@" "\n"
-        "Compiled from commit: " "@GIT_HASH@" "\n"
+    return "Iris version: " "@GIT_VERSION@" "\n"
         "Compiled on date: " "@COMPILE_DATE@" "\n"
         "Build type: " "@BUILD_MODE@" "\n";
 }
