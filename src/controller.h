@@ -15,12 +15,15 @@ struct Controller {
     View view;
     Mode mode = Mode::Read;
     std::string git_branch = "";
+    bool quit_flag = false;
 
     Controller();
     void set_mode(Mode m);
     [[nodiscard]] const std::string get_mode() const;
     void create_view(const std::string&);
     void start_action_engine();
+    void enter_command_mode();
+    void parse_command();
 };
 
 #endif  // CONTROLLER_H

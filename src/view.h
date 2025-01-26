@@ -1,6 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <string>
 #include <vector>
 
 #include <rawterm/cursor.h>
@@ -17,6 +18,7 @@ struct View {
     int active_model = 0;                  // 0-indexed
     rawterm::Cursor cur;
     int line_number_offset = 0;
+    std::string command_text = ";";
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
@@ -28,6 +30,7 @@ struct View {
     [[nodiscard]] const std::string render_line() const;
     void draw_status_bar();
     const std::string render_status_bar() const;
+    [[maybe_unused]] const rawterm::Pos draw_command_bar();
 
     void cursor_left();
     [[maybe_unused]] bool cursor_up();

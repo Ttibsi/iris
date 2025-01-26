@@ -36,6 +36,17 @@
     return ret;
 }
 
+[[nodiscard]] std::size_t write_to_file(const Model& model) {
+    if (model.filename == "") {
+        return -1;
+    }
+    std::ofstream out(model.filename);
+    for (auto&& line : model.buf) {
+        out << line << "\n";
+    }
+    return out.tellp();
+}
+
 [[nodiscard]] lines_t lines(const std::string& str) {
     std::vector<std::string> result;
     std::stringstream ss(str);

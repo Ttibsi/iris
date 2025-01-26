@@ -196,6 +196,16 @@ const std::string View::render_status_bar() const {
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
+[[maybe_unused]] const rawterm::Pos View::draw_command_bar() {
+    rawterm::Pos prev_pos = cur;
+    cur.move({view_size.vertical, 1});
+    rawterm::clear_line();
+    std::print("{}", command_text);
+    cur.move({view_size.vertical, static_cast<int>(command_text.size() + 1)});
+
+    return prev_pos;
+}
+
 void View::cursor_left() {
     if (get_active_model()->current_char) {
         get_active_model()->current_char--;
