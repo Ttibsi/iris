@@ -16,6 +16,8 @@ boost::ut::suite<"Text IO"> file_io_suite = [] {
         expect(actual.value().at(1) == expected.at(1));
     };
 
+    skip / "write_to_file"_test = [] {};
+
     "lines"_test = [] {
         std::string s = "foo\nbar\r\nbaz";
         auto actual = lines(s);

@@ -74,6 +74,5 @@ def test_scroll_view_vertically(r: hecate.Runner):
 
     lines = r.screenshot().split("\n")
     status_bar = get_statusbar_parts(lines)
-    # breakpoint()
     assert status_bar[3] == "23:1"
     assert lines[21][4:9] == "Morbi"

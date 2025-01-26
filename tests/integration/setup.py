@@ -1,21 +1,28 @@
+import os
 from collections.abc import Callable
+from typing import Final
 from typing import TypeVar
 
 from hecate import Runner
 
 
 T = TypeVar("T", bound=Callable[[Runner], None])
+CMD_KEY: Final[str] = "\\;"
 
 
 def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
+    with open("tests/fixture/temp_file.txt", "w") as f:
+        f.write("Hello world")
+
     def decorator(func: T) -> Callable[[], None]:
         def wrapper() -> None:
             dims = {"width": 80, "height": 24}
             with Runner("build/src/iris", open_with, **dims) as r:
                 r.await_text("READ", timeout=2)
                 func(r)
-                r.press("q")
         return wrapper
+
+    os.remove("tests/fixture/temp_file.txt")
     return decorator
 
 
