@@ -83,7 +83,6 @@ void Controller::start_action_engine() {
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
-                view.draw_status_bar();
 
             } else if (k.value() == rawterm::Key('D', rawterm::Mod::Arrow)) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
@@ -162,10 +161,10 @@ void Controller::start_action_engine() {
                 enter_command_mode();
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
             }
-
-            // After every input, refresh the status bar
-            view.draw_status_bar();
         }
+
+        // After every input, refresh the status bar
+        view.draw_status_bar();
     }
 }
 
