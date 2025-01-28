@@ -1,5 +1,6 @@
 # caches
 tests/integration/__pycache__/
+tests/fixture/temp_file.txt
 .cache/
 .mypy_cache/
 .pytest_cache/
