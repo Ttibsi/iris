@@ -33,6 +33,12 @@
         };
     }
 
+    // If there's no newlines in the stream at all, it never gets added to
+    // the vector
+    if (line.size()) {
+        ret.push_back(line);
+    }
+
     return ret;
 }
 
