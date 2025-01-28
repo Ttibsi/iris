@@ -71,6 +71,8 @@ void Controller::start_action_engine() {
         if (redraw_all) {
             view.draw_screen();
             redraw_all = false;
+        } else if (quit_flag) {
+            break;
         }
 
         auto k = rawterm::process_keypress();
@@ -150,12 +152,63 @@ void Controller::start_action_engine() {
                 }
             } else if (k.value() == rawterm::Key('l')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
-            } else if (k.value() == rawterm::Key('q')) {
-                break_loop = true;
+
+                // Trigger command mode
+            } else if (k.value() == rawterm::Key(';')) {
+                parse_action<Mode, None>(
+                    &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
+                view.draw_status_bar();
+                enter_command_mode();
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
             }
         }
 
         // After every input, refresh the status bar
         view.draw_status_bar();
+    }
+}
+
+// TODO: Command history
+// TODO: Autocomplete with Tab
+void Controller::enter_command_mode() {
+    std::optional<rawterm::Pos> prev_cursor_pos;
+
+    while (true) {
+        auto previous = view.draw_command_bar();
+        if (!(prev_cursor_pos.has_value())) {
+            prev_cursor_pos = previous;
+        }
+
+        auto in = rawterm::wait_for_input();
+
+        if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
+            rawterm::clear_line();
+            break;
+        } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
+            parse_command();
+            break;
+        } else if (in.isCharInput()) {
+            view.command_text.push_back(in.code);
+        }
+    }
+
+    view.command_text = ";";
+    view.cur = prev_cursor_pos.value();
+}
+
+void Controller::parse_command() {
+    std::string cmd = std::move(view.command_text);
+
+    // Empty command
+    if (cmd.size() < 2) {
+        return;
+    }
+
+    if (cmd == ";w") {
+        // TODO: Display bytes saved
+        std::ignore = write_to_file(*view.get_active_model());
+    } else if (cmd == ";q") {
+        // TODO: Check if file is modified
+        quit_flag = true;
     }
 }
