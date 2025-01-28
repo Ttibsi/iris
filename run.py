@@ -40,6 +40,7 @@ def clean() -> None:
     files = [
         "src/version.h",
         "iris.log",
+        "tests/fixture/temp_file.txt",
     ]
 
     for file in files:

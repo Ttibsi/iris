@@ -1,5 +1,6 @@
 #include "text_io.h"
 
+#include "model.h"
 #include "ut/ut.hpp"
 
 boost::ut::suite<"Text IO"> file_io_suite = [] {
@@ -21,11 +22,16 @@ boost::ut::suite<"Text IO"> file_io_suite = [] {
             opt_lines_t actual = open_file("tests/fixture/no_newline_file.txt");
             expect(actual.has_value() == true);
             expect(actual.value().size() == 1);
-            expect(actual.value().at(0) == "Hello");
+            expect(actual.value().at(0) == "hello");
         };
     };
 
-    skip / "write_to_file"_test = [] {};
+    "write_to_file"_test = [] {
+        lines_t expected_buf = {"foo", "bar", "baz"};
+        auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
+        const std::size_t bytes = write_to_file(m);
+        expect(bytes == 12) << bytes;
+    };
 
     "lines"_test = [] {
         std::string s = "foo\nbar\r\nbaz";
