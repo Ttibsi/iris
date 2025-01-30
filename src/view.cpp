@@ -67,10 +67,15 @@ void View::draw_screen() {
 
     for (const auto [idx, line] : std::views::enumerate(viewable_range)) {
         if (LINE_NUMBERS) {
+            rawterm::Color c = COLOR_UI_BG;
+            if (get_active_model()->view_offset + idx + 1 == get_active_model()->current_line + 1) {
+                c = COLOR_DARK_YELLOW;
+            }
+
             screen += rawterm::set_foreground(
                 std::format(
                     "{:>{}}\u2502", get_active_model()->view_offset + idx + 1, line_number_offset),
-                COLOR_UI_BG);
+                c);
         }
 
         // Truncate
@@ -119,25 +124,36 @@ const std::string View::render_tab_bar() const {
     return ret;
 }
 
-void View::draw_line() {
-    rawterm::clear_line();
+void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     const rawterm::Pos cur_pos = cur;
-    cur.move({cur.vertical, 1});
-    std::print("{}", render_line());
+
+    if (redraw_prev) {
+        cur.move({cur.vertical + redraw_prev, 1});
+        rawterm::clear_line();
+        std::print("{}", render_line(get_active_model()->current_line + redraw_prev));
+    }
+
+    cur.move({cur_pos.vertical, 1});
+    rawterm::clear_line();
+    std::print("{}", render_line(get_active_model()->current_line));
     cur.move(cur_pos);
 }
 
-[[nodiscard]] const std::string View::render_line() const {
+[[nodiscard]] const std::string View::render_line(const unsigned int idx) const {
     std::string line = "";
 
     const unsigned int viewable_hor_len =
         view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0);
-    std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
+    std::string_view curr_line = get_active_model()->buf.at(idx);
 
     if (LINE_NUMBERS) {
+        rawterm::Color color = COLOR_UI_BG;
+        if (idx == get_active_model()->current_line) {
+            color = COLOR_DARK_YELLOW;
+        }
+
         line += rawterm::set_foreground(
-            std::format("{:>{}}\u2502", get_active_model()->current_line + 1, line_number_offset),
-            COLOR_UI_BG);
+            std::format("{:>{}}\u2502", idx + 1, line_number_offset), color);
     }
 
     // Truncate

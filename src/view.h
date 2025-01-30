@@ -11,6 +11,12 @@
 
 struct Controller;
 
+// Namespaced instead of an `enum class` because we want the int value but
+// still encapsulated
+namespace Draw_Line_dir {
+    enum values : short { Prev = -1, None = 0, Next = 1 };
+}
+
 struct View {
     Controller* ctrlr_ptr;
     rawterm::Pos view_size;
@@ -26,8 +32,8 @@ struct View {
     void draw_screen();
     [[nodiscard]] const std::string render_screen() const;
     const std::string render_tab_bar() const;
-    void draw_line();
-    [[nodiscard]] const std::string render_line() const;
+    void draw_line(Draw_Line_dir::values);
+    [[nodiscard]] const std::string render_line(const unsigned int) const;
     void draw_status_bar();
     const std::string render_status_bar() const;
     [[maybe_unused]] const rawterm::Pos draw_command_bar();
