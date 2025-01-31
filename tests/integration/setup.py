@@ -28,7 +28,6 @@ class TmuxRunner(Runner):
     def iris_cmd(self, cmd: str) -> None:
         super().press(self.CMD_KEY)
         super().await_text("COMMAND", timeout=2)
-        super().press("q")
 
         for char in cmd:
             super().press(char)

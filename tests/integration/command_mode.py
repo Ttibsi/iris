@@ -46,7 +46,7 @@ def test_write_command(r: TmuxRunner):
 
 
 @setup("tests/fixture/does_not_exist.txt")
-def test_write_to_new_file(r: hecate.Runner):
+def test_write_to_new_file(r: TmuxRunner):
     r.press("i")
     r.press("f")
     r.press("o")
@@ -58,9 +58,8 @@ def test_write_to_new_file(r: hecate.Runner):
 
     r.press('Escape')
 
-    enter_cmd(r, "w")
-    enter_cmd(r, "q")
-
+    r.iris_cmd("w")
+    r.iris_cmd("q")
     r.await_exit()
 
     with open("tests/fixture/does_not_exist.txt") as f:
