@@ -7,7 +7,7 @@ boost::ut::suite<"Model"> model_suite = [] {
     using namespace boost::ut;
 
     "Constructor"_test = [] {
-        auto m = Model(32);
+        auto m = Model(32, "");
 
         expect(m.filename == "");
         expect(m.buf.capacity() == 32);

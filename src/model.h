@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Forward declare from controller.h
@@ -19,8 +20,8 @@ struct Model {
     bool readonly = false;
     bool modified = false;
 
-    Model(const int);
-    Model(std::vector<std::string>, const std::string&);
+    Model(const int, std::string_view);
+    Model(std::vector<std::string>, std::string_view);
     [[nodiscard]] Redraw backspace();
     [[nodiscard]] int newline();
     void insert(const char);

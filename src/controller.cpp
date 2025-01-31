@@ -44,7 +44,7 @@ void Controller::set_mode(Mode m) {
 
 void Controller::create_view(const std::string& file_name) {
     if (file_name.empty()) {
-        models.emplace_back(term_size.vertical - 2);
+        models.emplace_back(term_size.vertical - 2, "");
     } else {
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) {
@@ -56,7 +56,7 @@ void Controller::create_view(const std::string& file_name) {
         if (file_chars.has_value()) {
             models.emplace_back(file_chars.value(), file_name);
         } else {
-            models.emplace_back(term_size.vertical - 2);
+            models.emplace_back(term_size.vertical - 2, (file_name.empty() ? "" : file_name));
         }
     }
 

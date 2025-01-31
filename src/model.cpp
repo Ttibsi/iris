@@ -2,13 +2,13 @@
 
 #include "controller.h"
 
-Model::Model(const int view_height) : buf({""}), filename("") {
+Model::Model(const int view_height, std::string_view file_name) : buf({""}), filename(file_name) {
     buf.reserve(view_height);
 }
 
 // TODO: readonly and modified
 // NOTE: Intentional copy of file_chars
-Model::Model(std::vector<std::string> file_chars, const std::string& filename)
+Model::Model(std::vector<std::string> file_chars, std::string_view filename)
     : buf(file_chars), filename(filename) {}
 
 [[nodiscard]] Redraw Model::backspace() {

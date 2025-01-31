@@ -32,3 +32,12 @@ def get_statusbar_parts(lines: list[str], index: int = 22) -> list[str]:
     status_bar = [x for x in status_bar if x != ""]
 
     return status_bar
+
+
+def enter_cmd(r: Runner, cmd: str) -> None:
+    r.press(CMD_KEY)
+
+    for char in cmd:
+        r.press(char)
+
+    r.press("Enter")

@@ -1,6 +1,5 @@
 # caches
 tests/integration/__pycache__/
-tests/fixture/temp_file.txt
 .cache/
 .mypy_cache/
 .pytest_cache/
@@ -8,6 +7,10 @@ tests/fixture/temp_file.txt
 # build files
 build/
 venv/
+
+# test temp files
+tests/fixture/temp_file.txt
+tests/fixture/does_not_exist.txt
 
 # other
 compile_commands.json
