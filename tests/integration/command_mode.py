@@ -1,5 +1,6 @@
 import hecate
 from setup import CMD_KEY
+from setup import enter_cmd
 from setup import get_statusbar_parts
 from setup import setup
 
@@ -46,3 +47,28 @@ def test_write_command(r: hecate.Runner):
     with open("tests/fixture/temp_file.txt") as f:
         text = f.read()
     assert text.split()[0] == "foo"
+
+
+@setup("tests/fixture/does_not_exist.txt")
+def test_write_to_new_file(r: hecate.Runner):
+    r.press("i")
+    r.press("f")
+    r.press("o")
+    r.press("o")
+    r.press(" ")
+    r.press("b")
+    r.press("a")
+    r.press("r")
+
+    r.press('Escape')
+
+    enter_cmd(r, "w")
+    enter_cmd(r, "q")
+
+    r.await_exit()
+
+    with open("tests/fixture/does_not_exist.txt") as f:
+        text = f.readlines()
+
+    assert len(text) == 1
+    assert text[0] == "foo bar\n"

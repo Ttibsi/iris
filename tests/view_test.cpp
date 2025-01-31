@@ -67,7 +67,7 @@ boost::ut::suite<"View"> view_suite = [] {
         should("Truncated line") = [] {
             Controller c;
             auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(32);
+            auto m = Model(32, "");
             v.add_model(&m);
 
             for (int i = 0; i < 80; i++) {
@@ -130,7 +130,7 @@ boost::ut::suite<"View"> view_suite = [] {
 
         should("Truncated line") = []() {
             Controller c;
-            auto m = Model(32);
+            auto m = Model(32, "");
             auto v = View(&c, rawterm::Pos(24, 80));
             v.add_model(&m);
 

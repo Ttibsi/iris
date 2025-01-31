@@ -41,6 +41,7 @@ def clean() -> None:
         "src/version.h",
         "iris.log",
         "tests/fixture/temp_file.txt",
+        "tests/fixture/does_not_exist.txt",
     ]
 
     for file in files:
