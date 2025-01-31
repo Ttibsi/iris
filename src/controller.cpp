@@ -92,6 +92,8 @@ void Controller::start_action_engine() {
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
                 if (redraw.value()) {
                     redraw_all = true;
+                } else {
+                    view.draw_line(Draw_Line_dir::Prev);
                 }
 
             } else if (k.value() == rawterm::Key('A', rawterm::Mod::Arrow)) {
@@ -99,6 +101,8 @@ void Controller::start_action_engine() {
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
                 if (draw.value()) {
                     redraw_all = true;
+                } else {
+                    view.draw_line(Draw_Line_dir::Next);
                 }
 
             } else if (k.value() == rawterm::Key('C', rawterm::Mod::Arrow)) {
@@ -110,7 +114,7 @@ void Controller::start_action_engine() {
                     case Redraw::Screen:
                         redraw_all = true;
                     case Redraw::Line:
-                        view.draw_line();
+                        view.draw_line(Draw_Line_dir::None);
                     case Redraw::None:
                         break;
                 }
@@ -130,7 +134,7 @@ void Controller::start_action_engine() {
             } else {
                 parse_action<char, None>(
                     &view, Action<char> {ActionType::InsertChar, k.value().code});
-                view.draw_line();
+                view.draw_line(Draw_Line_dir::None);
             }
 
         } else if (mode == Mode::Read) {
@@ -143,12 +147,16 @@ void Controller::start_action_engine() {
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
                 if (redraw.value()) {
                     redraw_all = true;
+                } else {
+                    view.draw_line(Draw_Line_dir::Prev);
                 }
             } else if (k.value() == rawterm::Key('k')) {
                 auto redraw =
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
                 if (redraw.value()) {
                     redraw_all = true;
+                } else {
+                    view.draw_line(Draw_Line_dir::Next);
                 }
             } else if (k.value() == rawterm::Key('l')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});

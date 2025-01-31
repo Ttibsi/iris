@@ -113,7 +113,7 @@ boost::ut::suite<"View"> view_suite = [] {
             auto v = View(&c, rawterm::Pos(24, 80));
             v.add_model(&m);
 
-            const std::string line = rawterm::raw_str(v.render_line());
+            const std::string line = rawterm::raw_str(v.render_line(0));
 
             std::string expected_text = "This is some text";
             unsigned int expected_size = expected_text.size();
@@ -138,7 +138,7 @@ boost::ut::suite<"View"> view_suite = [] {
                 m.buf.at(0).push_back('_');
             }
 
-            const std::string line = rawterm::raw_str(v.render_line());
+            const std::string line = rawterm::raw_str(v.render_line(0));
 
             expect(line.substr(line.size() - 2, 2) == "\u00BB");
             expect(line.size() == 83);  // +3 for unicode chars
