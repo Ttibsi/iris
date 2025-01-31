@@ -206,6 +206,26 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
+[[nodiscard]] int View::clamp_horizontal_movement(const int offset) {
+    // Make sure this only uses adjacent lines
+    if (!(offset == 1 || offset == -1)) {
+        return -1;
+    }
+
+    if (prev_cur_hor_pos > -1) {
+        const int tmp = prev_cur_hor_pos;
+        prev_cur_hor_pos = -1;
+        return tmp;
+    }
+
+    std::string_view previous_line =
+        get_active_model()->buf.at(get_active_model()->current_line + offset);
+    if (static_cast<int>(previous_line.size()) < cur.horizontal) {
+        prev_cur_hor_pos = cur.horizontal;
+        return previous_line.size();
+    }
+}
+
 void View::cursor_left() {
     if (get_active_model()->current_char) {
         get_active_model()->current_char--;
@@ -219,7 +239,7 @@ void View::cursor_left() {
         return false;
     }
 
-    // TODO: Clamp to length of line
+    int horizontal_clamp = clamp_horizontal_movement(-1);
 
     get_active_model()->current_line--;
 
@@ -228,9 +248,11 @@ void View::cursor_left() {
         // Scroll view
         get_active_model()->view_offset--;
         redraw_sentinal = true;
-    } else {
+    } else if (horizontal_clamp == -1) {
         // Move cursor
         cur.move_up();
+    } else {
+        cur.move({cur.vertical - 1, horizontal_clamp});
     }
 
     return redraw_sentinal;
@@ -242,8 +264,7 @@ void View::cursor_left() {
         return false;
     }
 
-    // TODO: Clamp to length of line
-
+    int horizontal_clamp = clamp_horizontal_movement(1);
     get_active_model()->current_line++;
 
     bool redraw_sentinal = false;
@@ -254,9 +275,11 @@ void View::cursor_left() {
         // scroll
         get_active_model()->view_offset++;
         redraw_sentinal = true;
-    } else {
+    } else if (horizontal_clamp == -1) {
         // Move cursor
         cur.move_down();
+    } else {
+        cur.move({cur.vertical + 1, horizontal_clamp});
     }
 
     return redraw_sentinal;
