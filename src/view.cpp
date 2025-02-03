@@ -240,6 +240,8 @@ const std::string View::render_status_bar() const {
         prev_cur_hor_pos = cur.horizontal;
         return previous_line.size();
     }
+
+    return -1;
 }
 
 void View::cursor_left() {
