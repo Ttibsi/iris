@@ -222,10 +222,14 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
-[[nodiscard]] int View::clamp_horizontal_movement(const int offset) {
+[[nodiscard]] std::optional<int> View::clamp_horizontal_movement(const int offset) {
     // Make sure this only uses adjacent lines
     if (!(offset == 1 || offset == -1)) {
-        return -1;
+        return std::nullopt;
+    }
+
+    if (!(get_active_model()->lineno_in_scope(get_active_model()->current_line + offset))) {
+        return std::nullopt;
     }
 
     if (prev_cur_hor_pos > -1) {
@@ -234,14 +238,16 @@ const std::string View::render_status_bar() const {
         return tmp;
     }
 
+    // THis line is faulty
     std::string_view previous_line =
         get_active_model()->buf.at(get_active_model()->current_line + offset);
+
     if (static_cast<int>(previous_line.size()) < cur.horizontal) {
         prev_cur_hor_pos = cur.horizontal;
         return previous_line.size();
     }
 
-    return -1;
+    return std::nullopt;
 }
 
 void View::cursor_left() {
@@ -257,8 +263,7 @@ void View::cursor_left() {
         return false;
     }
 
-    int horizontal_clamp = clamp_horizontal_movement(-1);
-
+    std::optional<int> horizontal_clamp = clamp_horizontal_movement(-1);
     get_active_model()->current_line--;
 
     bool redraw_sentinal = false;
@@ -266,11 +271,11 @@ void View::cursor_left() {
         // Scroll view
         get_active_model()->view_offset--;
         redraw_sentinal = true;
-    } else if (horizontal_clamp == -1) {
+    } else if (!(horizontal_clamp.has_value())) {
         // Move cursor
         cur.move_up();
     } else {
-        cur.move({cur.vertical - 1, horizontal_clamp});
+        cur.move({cur.vertical - 1, horizontal_clamp.value()});
     }
 
     return redraw_sentinal;
@@ -282,7 +287,7 @@ void View::cursor_left() {
         return false;
     }
 
-    int horizontal_clamp = clamp_horizontal_movement(1);
+    std::optional<int> horizontal_clamp = clamp_horizontal_movement(1);
     get_active_model()->current_line++;
 
     bool redraw_sentinal = false;
@@ -293,11 +298,11 @@ void View::cursor_left() {
         // scroll
         get_active_model()->view_offset++;
         redraw_sentinal = true;
-    } else if (horizontal_clamp == -1) {
+    } else if (!(horizontal_clamp.has_value())) {
         // Move cursor
         cur.move_down();
     } else {
-        cur.move({cur.vertical + 1, horizontal_clamp});
+        cur.move({cur.vertical + 1, horizontal_clamp.value()});
     }
 
     return redraw_sentinal;

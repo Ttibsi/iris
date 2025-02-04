@@ -143,4 +143,6 @@ boost::ut::suite<"Model"> model_suite = [] {
             expect(m.buf.size() == 3);
         };
     };
+
+    skip / "lineno_in_range"_test = [] {};
 };

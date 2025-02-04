@@ -1,6 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,7 @@ struct View {
     void draw_status_bar();
     const std::string render_status_bar() const;
     [[maybe_unused]] const rawterm::Pos draw_command_bar();
-    [[nodiscard]] int clamp_horizontal_movement(const int);
+    [[nodiscard]] std::optional<int> clamp_horizontal_movement(const int);
 
     void cursor_left();
     [[maybe_unused]] bool cursor_up();
