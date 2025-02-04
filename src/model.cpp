@@ -54,3 +54,7 @@ void Model::insert(const char c) {
     buf.at(current_line).insert(current_char, 1, c);
     current_char++;
 }
+
+[[nodiscard]] bool Model::lineno_in_scope(const int idx) const {
+    return (idx < static_cast<int>(buf.size()) && idx >= 0);
+}

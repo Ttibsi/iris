@@ -161,6 +161,8 @@ boost::ut::suite<"View"> view_suite = [] {
         expect(rawterm::raw_size(ret) == 80);
     };
 
+    skip / "clamp_horizontal_movement"_test = [] {};
+
     "cursor_left"_test = [] {
         should("Already at left-most position") = [&]() {
             Controller c;

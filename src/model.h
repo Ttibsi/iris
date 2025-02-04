@@ -25,6 +25,7 @@ struct Model {
     [[nodiscard]] Redraw backspace();
     [[nodiscard]] int newline();
     void insert(const char);
+    [[nodiscard]] bool lineno_in_scope(const int) const;
 };
 
 #endif  // MODEL_H
