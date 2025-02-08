@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <format>
-#include <iterator>
 #include <print>
 #include <ranges>
 #include <string>
@@ -222,6 +221,32 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
+[[nodiscard]] std::optional<int> View::clamp_horizontal_movement(const int offset) {
+    // Make sure this only uses adjacent lines
+    if (!(offset == 1 || offset == -1)) {
+        return std::nullopt;
+    }
+
+    if (prev_cur_hor_pos > -1) {
+        const int tmp = prev_cur_hor_pos;
+        prev_cur_hor_pos = -1;
+        get_active_model()->current_char = tmp - (line_number_offset + 2);
+        return tmp;
+    }
+
+    std::string_view line_moving_to =
+        get_active_model()->buf.at(get_active_model()->current_line + offset);
+
+    // if (static_cast<int>(line_moving_to.size()) < (cur.horizontal - line_number_offset)) {
+    if (line_moving_to.size() < get_active_model()->current_char) {
+        prev_cur_hor_pos = cur.horizontal;
+        get_active_model()->current_char = line_moving_to.size();
+        return line_moving_to.size();
+    }
+
+    return std::nullopt;
+}
+
 void View::cursor_left() {
     if (get_active_model()->current_char) {
         get_active_model()->current_char--;
@@ -235,8 +260,7 @@ void View::cursor_left() {
         return false;
     }
 
-    // TODO: Clamp to length of line
-
+    std::optional<int> horizontal_clamp = clamp_horizontal_movement(-1);
     get_active_model()->current_line--;
 
     bool redraw_sentinal = false;
@@ -244,9 +268,11 @@ void View::cursor_left() {
         // Scroll view
         get_active_model()->view_offset--;
         redraw_sentinal = true;
-    } else {
+    } else if (!(horizontal_clamp.has_value())) {
         // Move cursor
         cur.move_up();
+    } else {
+        cur.move({cur.vertical - 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;
@@ -258,8 +284,7 @@ void View::cursor_left() {
         return false;
     }
 
-    // TODO: Clamp to length of line
-
+    std::optional<int> horizontal_clamp = clamp_horizontal_movement(1);
     get_active_model()->current_line++;
 
     bool redraw_sentinal = false;
@@ -270,9 +295,11 @@ void View::cursor_left() {
         // scroll
         get_active_model()->view_offset++;
         redraw_sentinal = true;
-    } else {
+    } else if (!(horizontal_clamp.has_value())) {
         // Move cursor
         cur.move_down();
+    } else {
+        cur.move({cur.vertical + 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;

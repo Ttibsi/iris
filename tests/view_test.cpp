@@ -161,6 +161,29 @@ boost::ut::suite<"View"> view_suite = [] {
         expect(rawterm::raw_size(ret) == 80);
     };
 
+    "clamp_horizontal_movement"_test = [] {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+
+        v.add_model(&m);
+        m.current_line = 7;
+        m.current_char = 7;
+
+        auto ret = v.clamp_horizontal_movement(1);
+        expect(ret.has_value());
+        expect(v.prev_cur_hor_pos == 1);
+        expect(ret.value() == 0);
+
+        m.current_line++;
+        ret = v.clamp_horizontal_movement(1);
+        expect(ret.has_value());
+        expect(ret.value() == 1);
+        expect(v.prev_cur_hor_pos == -1);
+    };
+
     "cursor_left"_test = [] {
         should("Already at left-most position") = [&]() {
             Controller c;

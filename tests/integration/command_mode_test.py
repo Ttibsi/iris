@@ -1,3 +1,5 @@
+import os
+
 from setup import setup
 from setup import TmuxRunner
 
@@ -67,3 +69,5 @@ def test_write_to_new_file(r: TmuxRunner):
 
     assert len(text) == 1
     assert text[0] == "foo bar\n"
+
+    os.remove("tests/fixture/does_not_exist.txt")

@@ -143,4 +143,11 @@ boost::ut::suite<"Model"> model_suite = [] {
             expect(m.buf.size() == 3);
         };
     };
+
+    "lineno_in_scope"_test = [] {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+        expect(m.lineno_in_scope(2));
+        expect(!(m.lineno_in_scope(6)));
+    };
 };
