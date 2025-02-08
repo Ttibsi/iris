@@ -133,6 +133,7 @@ template <typename T, typename U>
                 }
 
                 v->get_active_model()->insert(action.payload);
+                v->prev_cur_hor_pos = -1;
                 v->cur.move_right();
             }
             return {};

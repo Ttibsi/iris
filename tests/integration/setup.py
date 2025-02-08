@@ -34,12 +34,30 @@ class TmuxRunner(Runner):
 
         super().press("Enter")
 
+    def cursor_pos(self) -> tuple[int, ...]:
+        return tuple(
+            map(
+                int,
+                self.tmux.execute_command(
+                    "display-message",
+                    "-p",
+                    "'#{cursor_y},#{cursor_x}'",
+                ).rstrip()
+                .replace("'", "")
+                .split(","),
+            ),
+        )
+
 
 def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
+    temp_file: str = "tests/fixture/temp_file.txt"
 
     def decorator(func: T) -> Callable[[], None]:
         def wrapper() -> None:
-            with open("tests/fixture/temp_file.txt", "w") as f:
+            if os.path.isfile(temp_file):
+                os.remove(temp_file)
+
+            with open(temp_file, "w") as f:
                 f.write("Hello world")
 
             dims = {"width": 80, "height": 24}
@@ -47,6 +65,5 @@ def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
                 r.await_text("READ", timeout=2)
                 func(r)
 
-            os.remove("tests/fixture/temp_file.txt")
         return wrapper
     return decorator

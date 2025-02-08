@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <format>
-#include <iterator>
 #include <print>
 #include <ranges>
 #include <string>
@@ -228,23 +227,21 @@ const std::string View::render_status_bar() const {
         return std::nullopt;
     }
 
-    if (!(get_active_model()->lineno_in_scope(get_active_model()->current_line + offset))) {
-        return std::nullopt;
-    }
-
     if (prev_cur_hor_pos > -1) {
         const int tmp = prev_cur_hor_pos;
         prev_cur_hor_pos = -1;
+        get_active_model()->current_char = tmp - (line_number_offset + 2);
         return tmp;
     }
 
-    // THis line is faulty
-    std::string_view previous_line =
+    std::string_view line_moving_to =
         get_active_model()->buf.at(get_active_model()->current_line + offset);
 
-    if (static_cast<int>(previous_line.size()) < cur.horizontal) {
+    // if (static_cast<int>(line_moving_to.size()) < (cur.horizontal - line_number_offset)) {
+    if (line_moving_to.size() < get_active_model()->current_char) {
         prev_cur_hor_pos = cur.horizontal;
-        return previous_line.size();
+        get_active_model()->current_char = line_moving_to.size();
+        return line_moving_to.size();
     }
 
     return std::nullopt;
@@ -275,7 +272,7 @@ void View::cursor_left() {
         // Move cursor
         cur.move_up();
     } else {
-        cur.move({cur.vertical - 1, horizontal_clamp.value()});
+        cur.move({cur.vertical - 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;
@@ -302,7 +299,7 @@ void View::cursor_left() {
         // Move cursor
         cur.move_down();
     } else {
-        cur.move({cur.vertical + 1, horizontal_clamp.value()});
+        cur.move({cur.vertical + 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;

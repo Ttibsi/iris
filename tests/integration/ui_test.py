@@ -89,3 +89,23 @@ def test_scroll_view_vertically(r: TmuxRunner):
     status_bar = r.statusbar_parts()
     assert status_bar[3] == "23:1"
     assert lines[21][4:9] == "Morbi"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_cursor_clamping_when_moved(r: TmuxRunner):
+    for _ in range(1, 8):
+        r.press("j")
+
+    for _ in range(1, 5):
+        r.press("l")
+
+    assert r.cursor_pos() == (7, 8)
+    assert r.statusbar_parts()[-1] == "8:5"
+
+    r.press("j")
+    assert r.cursor_pos() == (8, 4)
+    assert r.statusbar_parts()[-1] == "9:1"
+
+    r.press("j")
+    assert r.cursor_pos() == (9, 8)
+    assert r.statusbar_parts()[-1] == "10:5"

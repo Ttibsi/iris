@@ -144,5 +144,10 @@ boost::ut::suite<"Model"> model_suite = [] {
         };
     };
 
-    skip / "lineno_in_range"_test = [] {};
+    "lineno_in_scope"_test = [] {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+        expect(m.lineno_in_scope(2));
+        expect(!(m.lineno_in_scope(6)));
+    };
 };
