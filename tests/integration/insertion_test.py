@@ -219,3 +219,29 @@ def test_inserting_newline_into_truncated_line(r: TmuxRunner):
 
     status_bar = r.statusbar_parts()
     assert status_bar[3] == "2:1"
+
+
+@setup()
+def test_newline_with_preceeding_whitespace(r: TmuxRunner):
+    r.press("i")
+
+    text: str = "hello world"
+    for c in text:
+        r.press(c)
+
+    r.press("Escape")
+    r.press("h")
+    r.press("h")
+    r.press("h")
+    r.press("h")
+    r.press("h")
+    r.press("h")
+
+    # Cursor should now be before the space
+    assert r.statusbar_parts()[-1] == "1:6"
+
+    r.press("i")
+    r.press("Enter")
+
+    assert r.lines()[0] == " 1\u2502hello"
+    assert r.lines()[1] == " 2\u2502world"
