@@ -214,7 +214,6 @@ void Controller::parse_command() {
     }
 
     if (cmd == ";w") {
-        // TODO: Display bytes saved
         std::size_t file_bytes = write_to_file(*view.get_active_model());
         std::string msg = std::format("Saved {} bytes", file_bytes);
         view.display_message(msg, rawterm::Colors::green);
