@@ -221,9 +221,14 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
-void View::display_message(std::string_view msg) {
+void View::display_message(std::string& msg, std::optional<rawterm::Color> color) {
     rawterm::Pos prev_pos = cur;
     cur.move({view_size.vertical, 1});
+
+    if (color.has_value()) {
+        msg = rawterm::set_foreground(msg, color.value());
+    }
+
     std::print("{}", msg);
     cur.move(prev_pos);
 }
