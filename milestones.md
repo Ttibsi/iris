@@ -7,6 +7,7 @@
 * [x] Modify and save the file
 * [x] Create and save a new file
 * [ ] Handle linux backgrounding (CTRL+Z)
+* [ ] Handle SIGWINCH
 * [ ] Handle displaying tab characters with specific widths
     This may be a function to add to Rawterm instead
 * [ ] Handle replacing tab chars with spaces on save - make it togglable
