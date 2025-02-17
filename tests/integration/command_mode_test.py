@@ -42,6 +42,12 @@ def test_write_command(r: TmuxRunner):
     status_bar = r.statusbar_parts()
     assert status_bar[0] == "READ"
 
+    # Check highlighting colour
+    message_line: str = r.color_screenshot()[-2]
+    assert "Saved" in message_line
+    assert "bytes" in message_line
+    assert "\x1b[38;2;0;128;0m" in message_line
+
     with open("tests/fixture/temp_file.txt") as f:
         text = f.read()
     assert text.split()[0] == "foo"
