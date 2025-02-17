@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <rawterm/cursor.h>
@@ -39,6 +40,8 @@ struct View {
     void draw_status_bar();
     const std::string render_status_bar() const;
     [[maybe_unused]] const rawterm::Pos draw_command_bar();
+    void display_message(std::string_view);
+
     [[nodiscard]] std::optional<int> clamp_horizontal_movement(const int);
 
     void cursor_left();

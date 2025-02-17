@@ -221,6 +221,13 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
+void View::display_message(std::string_view msg) {
+    rawterm::Pos prev_pos = cur;
+    cur.move({view_size.vertical, 1});
+    std::print("{}", msg);
+    cur.move(prev_pos);
+}
+
 [[nodiscard]] std::optional<int> View::clamp_horizontal_movement(const int offset) {
     // Make sure this only uses adjacent lines
     if (!(offset == 1 || offset == -1)) {

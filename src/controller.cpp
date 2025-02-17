@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include <format>
 #include <string>
 
 #include <rawterm/core.h>
@@ -214,7 +215,9 @@ void Controller::parse_command() {
 
     if (cmd == ";w") {
         // TODO: Display bytes saved
-        std::ignore = write_to_file(*view.get_active_model());
+        std::size_t file_bytes = write_to_file(*view.get_active_model());
+        view.display_message(std::format("Saved {} bytes", file_bytes));
+
     } else if (cmd == ";q") {
         // TODO: Check if file is modified
         quit_flag = true;
