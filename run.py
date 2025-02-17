@@ -75,7 +75,7 @@ def integration_tests(test_name: str = "") -> int:
     ]
 
     if test_name:
-        return run_shell_cmd(f"venv/bin/pytest -v {test_name}")
+        return run_shell_cmd(f"venv/bin/pytest -v -k {test_name}")
     else:
         return run_shell_cmd(f"venv/bin/pytest -v {' '.join(test_paths)}")
 
