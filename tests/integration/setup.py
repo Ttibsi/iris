@@ -1,4 +1,5 @@
 import os
+import time
 from collections.abc import Callable
 from typing import Final
 from typing import TypeVar
@@ -25,14 +26,19 @@ class TmuxRunner(Runner):
     def statusbar_parts(self, index: int = 22) -> list[str]:
         return [part for part in self.lines()[index].split(" ") if part != ""]
 
+    def type_str(self, msg: str) -> None:
+        for c in msg:
+            self.press(c)
+
+    def press_and_enter(self, s: str) -> None:
+        self.type_str(s)
+        time.sleep(0.1)
+        self.press("Enter")
+
     def iris_cmd(self, cmd: str) -> None:
         super().press(self.CMD_KEY)
         super().await_text("COMMAND", timeout=2)
-
-        for char in cmd:
-            super().press(char)
-
-        super().press("Enter")
+        self.press_and_enter(cmd)
 
     def cursor_pos(self) -> tuple[int, ...]:
         return tuple(
@@ -47,6 +53,13 @@ class TmuxRunner(Runner):
                 .split(","),
             ),
         )
+
+    def assert_text_missing(self, text: str, wait: float = 0.1) -> None:
+        time.sleep(wait)
+
+        for line in self.lines():
+            if text in line:
+                raise AssertionError(f"Text: '{text}' found")
 
 
 def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
