@@ -101,6 +101,18 @@ boost::ut::suite<"Model"> model_suite = [] {
             expect(m.buf.at(1).size() == v.at(0).size());
             expect(m.buf.at(1) == "foo");
         };
+
+        should("Remove whitespace from second line") = [] {
+            lines_t v = {"Some long text", "and another"};
+            auto m = Model(v, "");
+            m.current_char = 4;
+
+            const unsigned int prev_line_len = m.newline();
+            expect(prev_line_len == 4);
+            expect(m.buf.at(0) == "Some");
+            expect(m.buf.at(1) == "long text");
+            expect(m.buf.at(2) == "and another");
+        };
     };
 
     "insert"_test = [] {
