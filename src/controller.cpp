@@ -81,6 +81,9 @@ void Controller::start_action_engine() {
             continue;
         }
 
+        // Handle signals
+        rawterm::sigcont_handler([this]() { view.draw_screen(); });
+
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
