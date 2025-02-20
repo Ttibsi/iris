@@ -1,6 +1,7 @@
 #include "view.h"
 
 #include <algorithm>
+#include <cassert>
 #include <format>
 #include <print>
 #include <ranges>
@@ -98,6 +99,7 @@ void View::draw_screen() {
     }
 
     // Any empty lines populate with tildes
+    // TODO: Convert this into using one operation instead looping
     while (end < view_size.vertical - 2) {
         screen += "~\r\n";
         end++;
@@ -194,20 +196,21 @@ const std::string View::render_status_bar() const {
     }
 
     // TODO: file language after highlighting engine
-    std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
-                        std::to_string(get_active_model()->current_char + 1) + " ";
+    const std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
+                              std::to_string(get_active_model()->current_char + 1) + " ";
 
     // TODO: handle overflows
-    float divide =
-        static_cast<float>(view_size.horizontal - (left.size() + filename.size() + right.size())) /
-        2.0;
+    // const int available_space = view_size.horizontal - (left.size() + right.size());
+    // const int filename_start = left.size() + (available_space / 2) - (filename.size() / 2);
+    // const int filename_end = available_space - (filename_start + filename.size() -
+    // (available_space % 2));
+    const int filename_start = (view_size.horizontal / 2) - (filename.size() / 2) - left.size();
+    const int filename_end = (view_size.horizontal / 2) - (filename.size() / 2) - right.size();
 
-    std::string ret =
-        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') + filename +
-        std::string(
-            divide + static_cast<int>(filename.size() / 2) + !(floorf(divide) == divide), ' ') +
-        right;
+    const std::string ret =
+        left + std::string(filename_start, ' ') + filename + std::string(filename_end, ' ') + right;
 
+    assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
