@@ -82,7 +82,13 @@ void Controller::start_action_engine() {
         }
 
         // Handle signals
-        rawterm::sigcont_handler([this]() { view.draw_screen(); });
+        rawterm::signal_handler(rawterm::Signal::SIG_CONT, [this]() { view.draw_screen(); });
+
+        rawterm::signal_handler(rawterm::Signal::SIG_WINCH, [this]() {
+            term_size = rawterm::get_term_size();
+            view.view_size = rawterm::get_term_size();
+            view.draw_screen();
+        });
 
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
