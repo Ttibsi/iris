@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <format>
 #include <print>
 #include <ranges>
@@ -177,7 +178,6 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
-// TODO: The center text isn't aligned right - it ends at the center point
 const std::string View::render_status_bar() const {
     std::string filename = view_models.at(active_model)->filename;
 
@@ -200,13 +200,10 @@ const std::string View::render_status_bar() const {
                               std::to_string(get_active_model()->current_char + 1) + " ";
 
     // TODO: handle overflows
-    // const int available_space = view_size.horizontal - (left.size() + right.size());
-    // const int filename_start = left.size() + (available_space / 2) - (filename.size() / 2);
-    // const int filename_end = available_space - (filename_start + filename.size() -
-    // (available_space % 2));
-    const int filename_start = (view_size.horizontal / 2) - (filename.size() / 2) - left.size();
-    const int filename_end = (view_size.horizontal / 2) - (filename.size() / 2) - right.size();
-
+    const float filename_start =
+        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - left.size());
+    const float filename_end =
+        std::ceil((view_size.horizontal / 2) - (filename.size() / 2) - right.size());
     const std::string ret =
         left + std::string(filename_start, ' ') + filename + std::string(filename_end, ' ') + right;
 
