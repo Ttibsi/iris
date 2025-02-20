@@ -203,11 +203,12 @@ const std::string View::render_status_bar() const {
     const float filename_start =
         std::floor((view_size.horizontal / 2) - (filename.size() / 2) - left.size());
     const float filename_end =
-        std::ceil((view_size.horizontal / 2) - (filename.size() / 2) - right.size());
-    const std::string ret =
-        left + std::string(filename_start, ' ') + filename + std::string(filename_end, ' ') + right;
+        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - right.size());
 
-    assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
+    const std::string ret = left + std::string(filename_start, ' ') + filename +
+                            std::string(filename_end - (filename.size() % 2 ? 1 : 0), ' ') + right;
+
+    // assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
