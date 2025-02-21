@@ -199,13 +199,21 @@ const std::string View::render_status_bar() const {
                               std::to_string(get_active_model()->current_char + 1) + " ";
 
     // TODO: handle overflows
-    const float filename_start =
-        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - left.size());
-    const float filename_end =
-        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - right.size());
 
-    const std::string ret = left + std::string(filename_start, ' ') + filename +
-                            std::string(filename_end - (filename.size() % 2 ? 1 : 0), ' ') + right;
+    std::string viewable_filename = filename;
+    const int two_thirds = (view_size.horizontal * 2) / 3;
+    if (filename.size() > two_thirds) {
+        viewable_filename = filename.substr(two_thirds);
+    }
+
+    const float filename_start =
+        std::floor((view_size.horizontal / 2) - (viewable_filename.size() / 2) - left.size());
+    const float filename_end =
+        std::floor((view_size.horizontal / 2) - (viewable_filename.size() / 2) - right.size());
+
+    const std::string ret =
+        left + std::string(filename_start, ' ') + viewable_filename +
+        std::string(filename_end - (viewable_filename.size() % 2 ? 1 : 0), ' ') + right;
 
     // assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
