@@ -158,7 +158,7 @@ boost::ut::suite<"View"> view_suite = [] {
         expect(ret.find("READ") != std::string::npos);
         expect(ret.find("test_file_1.txt") != std::string::npos);
         expect(ret.find("1:1") != std::string::npos);
-        expect(rawterm::raw_size(ret) == 80);
+        expect(rawterm::raw_size(ret) == 80) << rawterm::raw_size(ret);
     };
 
     "clamp_horizontal_movement"_test = [] {

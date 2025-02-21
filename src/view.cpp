@@ -1,6 +1,8 @@
 #include "view.h"
 
 #include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <format>
 #include <print>
 #include <ranges>
@@ -98,6 +100,7 @@ void View::draw_screen() {
     }
 
     // Any empty lines populate with tildes
+    // TODO: Convert this into using one operation instead looping
     while (end < view_size.vertical - 2) {
         screen += "~\r\n";
         end++;
@@ -175,7 +178,6 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
-// TODO: The center text isn't aligned right - it ends at the center point
 const std::string View::render_status_bar() const {
     std::string filename = view_models.at(active_model)->filename;
 
@@ -194,20 +196,19 @@ const std::string View::render_status_bar() const {
     }
 
     // TODO: file language after highlighting engine
-    std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
-                        std::to_string(get_active_model()->current_char + 1) + " ";
+    const std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
+                              std::to_string(get_active_model()->current_char + 1) + " ";
 
     // TODO: handle overflows
-    float divide =
-        static_cast<float>(view_size.horizontal - (left.size() + filename.size() + right.size())) /
-        2.0;
+    const float filename_start =
+        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - left.size());
+    const float filename_end =
+        std::floor((view_size.horizontal / 2) - (filename.size() / 2) - right.size());
 
-    std::string ret =
-        left + std::string(divide - static_cast<int>(filename.size() / 2), ' ') + filename +
-        std::string(
-            divide + static_cast<int>(filename.size() / 2) + !(floorf(divide) == divide), ' ') +
-        right;
+    const std::string ret = left + std::string(filename_start, ' ') + filename +
+                            std::string(filename_end - (filename.size() % 2 ? 1 : 0), ' ') + right;
 
+    // assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
