@@ -201,7 +201,7 @@ const std::string View::render_status_bar() const {
     // TODO: handle overflows
 
     std::string viewable_filename = filename;
-    const int two_thirds = (view_size.horizontal * 2) / 3;
+    const std::size_t two_thirds = (view_size.horizontal * 2) / 3;
     if (filename.size() > two_thirds) {
         viewable_filename = filename.substr(two_thirds);
     }
