@@ -203,7 +203,7 @@ const std::string View::render_status_bar() const {
     std::string viewable_filename = filename;
     const std::size_t two_thirds = (view_size.horizontal * 2) / 3;
     if (filename.size() > two_thirds) {
-        viewable_filename = filename.substr(two_thirds);
+        viewable_filename = "..." + filename.substr(two_thirds + 3);
     }
 
     const float filename_start =
