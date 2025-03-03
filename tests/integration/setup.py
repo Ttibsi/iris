@@ -2,6 +2,7 @@ import contextlib
 import os
 import time
 from collections.abc import Callable
+from collections.abc import Generator
 from typing import Final
 from typing import TypeVar
 
@@ -84,7 +85,7 @@ def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
 
 
 @contextlib.contextmanager
-def temp_named_file(filename: str):
+def temp_named_file(filename: str) -> Generator[None]:
     with open(filename, "w") as f:
         f.write("This is some text")
 
