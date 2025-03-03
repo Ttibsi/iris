@@ -1,4 +1,5 @@
 from setup import setup
+from setup import temp_named_file
 from setup import TmuxRunner
 
 
@@ -39,6 +40,15 @@ def test_render_truncated_line(r: TmuxRunner):
     lines = r.lines()
     assert lines[0][-1] == "\u00BB"
     assert lines[0][-2] == "5"
+
+
+def test_render_truncated_filename_in_statusbar():
+    file_name = f"This_is_a_{'really_' * 8}long_file_name.txt"
+
+    with temp_named_file(file_name):
+        with TmuxRunner("build/src/iris", file_name) as r:
+            status_bar: list[str] = r.statusbar_parts()
+            assert status_bar[1] == "...ly_really_long_file_name.txt"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")

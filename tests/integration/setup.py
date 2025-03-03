@@ -1,3 +1,4 @@
+import contextlib
 import os
 import time
 from collections.abc import Callable
@@ -80,3 +81,13 @@ def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
 
         return wrapper
     return decorator
+
+
+@contextlib.contextmanager
+def temp_named_file(filename: str):
+    with open(filename, "w") as f:
+        f.write("This is some text")
+
+    yield
+
+    os.remove(filename)
