@@ -1,5 +1,6 @@
 import time
 
+from setup import setup
 from setup import TmuxRunner
 
 
@@ -24,3 +25,15 @@ def test_suspend():
         r.await_text('Hello')
 
         r.iris_cmd("q")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_resize(r: TmuxRunner):
+    # Capture original statusbar content
+    original_statusbar: list[str] = r.statusbar_parts()
+
+    r.tmux.execute_command("split-window", "-hl", "5")
+    time.sleep(0.5)
+
+    split_statusbar: list[str] = r.statusbar_parts()
+    assert original_statusbar == split_statusbar

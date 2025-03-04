@@ -1,4 +1,4 @@
-#include <iostream>
+#include <print>
 
 #include <cli11/CLI11.hpp>
 #include <rawterm/core.h>
@@ -26,19 +26,18 @@ int main(int argc, char* argv[]) {
     try {
         auto logger = spdlog::basic_logger_mt("basic_logger", "iris.log");
     } catch (const spdlog::spdlog_ex& ex) {
-        std::cout << "Log init failed: " << ex.what() << std::endl;
+        std::println("Log init failed: {}", ex.what());
     }
     spdlog::set_pattern("[%H:%M:%S %z] [thread %t] [%l] %v");
 
     if (print_version) {
-        std::cout << version();
+        std::println("{}", version());
         return 0;
     }
 
     spdlog::get("basic_logger")->info("Iris startup");
     rawterm::enter_alt_screen();
     rawterm::enable_raw_mode();
-    rawterm::enable_signals();
 
     try {
         Controller c;
@@ -46,8 +45,8 @@ int main(int argc, char* argv[]) {
         c.start_action_engine();
     } catch (const std::exception& e) {
         rawterm::exit_alt_screen();
-        spdlog::get("basic_logger")->error(e.what());
-        throw e;
+        spdlog::get("basic_logger")->info(e.what());
+        std::println("{}", e.what());
     }
 
     rawterm::exit_alt_screen();
