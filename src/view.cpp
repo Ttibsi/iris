@@ -100,7 +100,6 @@ void View::draw_screen() {
     }
 
     // Any empty lines populate with tildes
-    // TODO: Convert this into using one operation instead looping
     while (end < view_size.vertical - 2) {
         screen += "~\r\n";
         end++;
