@@ -29,7 +29,7 @@ boost::ut::suite<"Text IO"> file_io_suite = [] {
     "write_to_file"_test = [] {
         lines_t expected_buf = {"foo", "bar", "baz"};
         auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
-        const std::size_t bytes = write_to_file(m);
+        const int bytes = write_to_file(m);
         expect(bytes == 12) << bytes;
     };
 
