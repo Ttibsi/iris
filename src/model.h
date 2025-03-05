@@ -20,10 +20,10 @@ struct Model {
     bool readonly = false;
     bool modified = false;
 
-    Model(const int, std::string_view);
+    Model(std::size_t, std::string_view);
     Model(std::vector<std::string>, std::string_view);
     [[nodiscard]] Redraw backspace();
-    [[nodiscard]] int newline();
+    [[nodiscard]] std::size_t newline();
     void insert(const char);
     [[nodiscard]] bool lineno_in_scope(const int) const;
 };
