@@ -46,7 +46,7 @@ template <typename T, typename U>
 
                 return v->get_active_model()->backspace();
             }
-        }
+        } break;
 
         case ActionType::MoveCursorLeft: {
             auto logger = spdlog::get("basic_logger");
@@ -56,7 +56,7 @@ template <typename T, typename U>
 
             v->cursor_left();
             return {};
-        }
+        } break;
 
         case ActionType::MoveCursorUp: {
             if constexpr (std::is_same_v<U, bool>) {
@@ -66,7 +66,7 @@ template <typename T, typename U>
                 }
                 return v->cursor_up();
             }
-        }
+        } break;
 
         case ActionType::MoveCursorDown: {
             if constexpr (std::is_same_v<U, bool>) {
@@ -76,7 +76,7 @@ template <typename T, typename U>
                 }
                 return v->cursor_down();
             }
-        }
+        } break;
 
         case ActionType::MoveCursorRight: {
             auto logger = spdlog::get("basic_logger");
@@ -86,7 +86,7 @@ template <typename T, typename U>
 
             v->cursor_right();
             return {};
-        }
+        } break;
 
         case ActionType::Newline: {
             auto logger = spdlog::get("basic_logger");
@@ -94,23 +94,14 @@ template <typename T, typename U>
                 logger->info("Action called: Newline");
             }
 
-            const int count = v->get_active_model()->newline();
+            const std::size_t count = v->get_active_model()->newline();
             v->cur.move_down();
-            for (int i = 0; i < count; i++) {
+            for (std::size_t i = 0; i < count; i++) {
                 v->cur.move_left();
             }
 
             return {};
-        }
-
-        default: {
-            auto logger = spdlog::get("basic_logger");
-            if (logger != nullptr) {
-                logger->info("Unknown action called");
-            }
-
-            return {};
-        }
+        } break;
 
         case ActionType::ChangeMode: {
             auto logger = spdlog::get("basic_logger");
@@ -123,7 +114,7 @@ template <typename T, typename U>
             }
 
             return {};
-        }
+        } break;
 
         case ActionType::InsertChar: {
             if constexpr (std::is_same_v<T, char>) {
@@ -137,9 +128,20 @@ template <typename T, typename U>
                 v->cur.move_right();
             }
             return {};
-        }
+        } break;
+
+        default: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Unknown action called");
+            }
+
+            return {};
+        } break;
 
     }  // End of switch case
+
+    return {};
 }
 
 #endif  // ACTION_H

@@ -11,6 +11,8 @@
 
 #include "model.h"
 
+using uint_t = unsigned int;
+
 struct Controller;
 
 // Namespaced instead of an `enum class` because we want the int value but
@@ -23,7 +25,7 @@ struct View {
     Controller* ctrlr_ptr;
     rawterm::Pos view_size;
     std::vector<Model*> view_models = {};  // Indexes into controller.models
-    int active_model = 0;                  // 0-indexed
+    std::size_t active_model = 0;          // 0-indexed
     rawterm::Cursor cur;
     int line_number_offset = 0;
     std::string command_text = ";";
@@ -36,7 +38,7 @@ struct View {
     [[nodiscard]] const std::string render_screen() const;
     const std::string render_tab_bar() const;
     void draw_line(Draw_Line_dir::values);
-    [[nodiscard]] const std::string render_line(const unsigned int) const;
+    [[nodiscard]] const std::string render_line(const uint) const;
     void draw_status_bar();
     const std::string render_status_bar() const;
     [[maybe_unused]] const rawterm::Pos draw_command_bar();

@@ -11,7 +11,7 @@ using lines_t = std::vector<std::string>;
 using opt_lines_t = std::optional<std::vector<std::string>>;
 
 [[nodiscard]] opt_lines_t open_file(const std::string&);
-[[nodiscard]] std::size_t write_to_file(const Model&);
+[[nodiscard]] int write_to_file(const Model&);
 [[nodiscard]] lines_t lines(const std::string&);
 
 #endif  // TEXT_IO_H

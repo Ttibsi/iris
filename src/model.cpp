@@ -2,7 +2,8 @@
 
 #include "controller.h"
 
-Model::Model(const int view_height, std::string_view file_name) : buf({""}), filename(file_name) {
+Model::Model(const std::size_t view_height, std::string_view file_name)
+    : buf({""}), filename(file_name) {
     buf.reserve(view_height);
 }
 
@@ -20,12 +21,12 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
             return Redraw::None;
         }
 
-        const int prev_line_len = buf.at(current_line - 1).size();
+        const std::size_t prev_line_len = buf.at(current_line - 1).size();
         buf.at(current_line - 1) += buf.at(current_line);
         buf.erase(buf.begin() + current_line);
 
         current_line--;
-        current_char = prev_line_len;
+        current_char = static_cast<unsigned int>(prev_line_len);
 
         return Redraw::Screen;
     } else {
@@ -36,7 +37,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
     }
 }
 
-[[nodiscard]] int Model::newline() {
+[[nodiscard]] std::size_t Model::newline() {
     std::string first = buf.at(current_line).substr(0, current_char);
     std::string second = buf.at(current_line).substr(current_char);
 

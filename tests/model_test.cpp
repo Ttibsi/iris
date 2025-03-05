@@ -63,7 +63,7 @@ boost::ut::suite<"Model"> model_suite = [] {
             auto m = Model(v, "");
 
             m.current_char = 3;
-            const unsigned int prev_line_len = m.newline();
+            const std::size_t prev_line_len = m.newline();
 
             expect(prev_line_len == v.at(0).size());
             expect(m.buf.size() == 4);
@@ -76,7 +76,7 @@ boost::ut::suite<"Model"> model_suite = [] {
             auto m = Model(v, "");
 
             m.current_char = 1;
-            const int prev_line_len = m.newline();
+            const std::size_t prev_line_len = m.newline();
 
             expect(prev_line_len == 1);
             expect(m.buf.size() == 4);
@@ -90,7 +90,7 @@ boost::ut::suite<"Model"> model_suite = [] {
             lines_t v = {"foo", "bar", "baz"};
             auto m = Model(v, "");
 
-            const unsigned int prev_line_len = m.newline();
+            const std::size_t prev_line_len = m.newline();
 
             expect(prev_line_len == 0);
             expect(m.buf.size() == 4);
@@ -107,7 +107,7 @@ boost::ut::suite<"Model"> model_suite = [] {
             auto m = Model(v, "");
             m.current_char = 4;
 
-            const unsigned int prev_line_len = m.newline();
+            const std::size_t prev_line_len = m.newline();
             expect(prev_line_len == 4);
             expect(m.buf.at(0) == "Some");
             expect(m.buf.at(1) == "long text");
@@ -147,7 +147,7 @@ boost::ut::suite<"Model"> model_suite = [] {
             lines_t v = {"foo", "bar", "baz"};
             auto m = Model(v, "");
 
-            m.current_char = v.at(0).size();
+            m.current_char = static_cast<unsigned int>(v.at(0).size());
             m.insert('x');
 
             expect(m.buf.at(0) == "foox");

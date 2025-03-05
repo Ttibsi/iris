@@ -26,7 +26,7 @@ void View::add_model(Model* m) {
 
     // Set visual offset
     if (LINE_NUMBERS) {
-        line_number_offset = std::to_string(m->buf.size()).size() + 1;
+        line_number_offset = static_cast<int>(std::to_string(m->buf.size()).size() + 1);
     }
 }
 
@@ -80,8 +80,8 @@ void View::draw_screen() {
         }
 
         // Truncate
-        const unsigned int viewable_hor_len =
-            view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0);
+        const uint_t viewable_hor_len = static_cast<unsigned int>(
+            view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
 
         if (line.size() > viewable_hor_len) {
             screen += line.substr(0, viewable_hor_len - 1);
@@ -111,7 +111,7 @@ void View::draw_screen() {
 const std::string View::render_tab_bar() const {
     std::string ret = "| ";
 
-    for (int i = 0; i < static_cast<int>(view_models.size()); ++i) {
+    for (std::size_t i = 0; i < view_models.size(); ++i) {
         if (i == active_model) {
             ret += rawterm::inverse(view_models.at(i)->filename);
         } else {
@@ -131,7 +131,8 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     if (redraw_prev) {
         cur.move({cur.vertical + redraw_prev, 1});
         rawterm::clear_line();
-        std::print("{}", render_line(get_active_model()->current_line + redraw_prev));
+        std::print(
+            "{}", render_line(get_active_model()->current_line + static_cast<uint_t>(redraw_prev)));
     }
 
     cur.move({cur_pos.vertical, 1});
@@ -140,11 +141,12 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     cur.move(cur_pos);
 }
 
-[[nodiscard]] const std::string View::render_line(const unsigned int idx) const {
+[[nodiscard]] const std::string View::render_line(const uint_t idx) const {
     std::string line = "";
 
-    const unsigned int viewable_hor_len =
-        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0);
+    const uint_t viewable_hor_len = static_cast<unsigned int>(
+        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
+
     std::string_view curr_line = get_active_model()->buf.at(idx);
 
     if (LINE_NUMBERS) {
@@ -201,15 +203,18 @@ const std::string View::render_status_bar() const {
     // TODO: handle overflows
 
     std::string viewable_filename = filename;
-    const std::size_t two_thirds = (view_size.horizontal * 2) / 3;
+    const std::size_t two_thirds = static_cast<uint_t>((view_size.horizontal * 2) / 3);
     if (filename.size() > two_thirds) {
         viewable_filename = "..." + filename.substr(two_thirds + 3);
     }
 
-    const float filename_start =
-        std::floor((view_size.horizontal / 2) - (viewable_filename.size() / 2) - left.size());
-    const float filename_end =
-        std::floor((view_size.horizontal / 2) - (viewable_filename.size() / 2) - right.size());
+    const std::size_t filename_start = static_cast<std::size_t>(std::floor(
+        (view_size.horizontal / 2) - (static_cast<int>(viewable_filename.size()) / 2) -
+        static_cast<int>(left.size())));
+
+    const std::size_t filename_end = static_cast<std::size_t>(std::floor(
+        (view_size.horizontal / 2) - (static_cast<int>(viewable_filename.size()) / 2) -
+        static_cast<int>(right.size())));
 
     const std::string ret =
         left + std::string(filename_start, ' ') + viewable_filename +
@@ -250,17 +255,18 @@ void View::display_message(std::string& msg, std::optional<rawterm::Color> color
     if (prev_cur_hor_pos > -1) {
         const int tmp = prev_cur_hor_pos;
         prev_cur_hor_pos = -1;
-        get_active_model()->current_char = tmp - (line_number_offset + 2);
+        get_active_model()->current_char = static_cast<uint_t>(tmp - (line_number_offset + 2));
         return tmp;
     }
 
+    const int line_pos = static_cast<int>(get_active_model()->current_line) + offset;
     std::string_view line_moving_to =
-        get_active_model()->buf.at(get_active_model()->current_line + offset);
+        get_active_model()->buf.at(static_cast<std::size_t>(line_pos));
 
     // if (static_cast<int>(line_moving_to.size()) < (cur.horizontal - line_number_offset)) {
     if (line_moving_to.size() < get_active_model()->current_char) {
         prev_cur_hor_pos = cur.horizontal;
-        get_active_model()->current_char = line_moving_to.size();
+        get_active_model()->current_char = static_cast<uint_t>(line_moving_to.size());
         return line_moving_to.size();
     }
 
@@ -308,8 +314,8 @@ void View::cursor_left() {
     get_active_model()->current_line++;
 
     bool redraw_sentinal = false;
-    const unsigned int text_view_height =
-        get_active_model()->view_offset + (view_size.vertical - 2);
+    const uint_t text_view_height =
+        get_active_model()->view_offset + (static_cast<uint_t>(view_size.vertical) - 2);
 
     if (get_active_model()->current_line >= text_view_height) {
         // scroll
@@ -332,7 +338,9 @@ void View::cursor_right() {
     }
 
     // Only scroll if we're still in the line
-    int line_size = get_active_model()->buf.at(get_active_model()->current_line).size() + 1;
+    int line_size =
+        static_cast<int>(get_active_model()->buf.at(get_active_model()->current_line).size() + 1u);
+
     if (LINE_NUMBERS) {
         line_size += line_number_offset + 1;
     }

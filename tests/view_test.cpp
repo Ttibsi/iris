@@ -116,7 +116,7 @@ boost::ut::suite<"View"> view_suite = [] {
             const std::string line = rawterm::raw_str(v.render_line(0));
 
             std::string expected_text = "This is some text";
-            unsigned int expected_size = expected_text.size();
+            std::size_t expected_size = expected_text.size();
 
             if (LINE_NUMBERS) {
                 const std::string line_prefix = " 1\u2502";
@@ -264,7 +264,7 @@ boost::ut::suite<"View"> view_suite = [] {
             expect(m.current_line == 34);
 
             std::vector<std::string> text = lines(v.render_screen());
-            const int idx = m.current_line - m.view_offset - 1;
+            const uint_t idx = m.current_line - m.view_offset - 1;
             expect(text.at(idx).find("massa.") != std::string::npos);
 
             // Move cursor to top row

@@ -18,6 +18,10 @@ endif()
 
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
+add_compile_options(-pedantic)
+add_compile_options(-Wconversion)
+add_compile_options(-Wno-implicit-int-float-conversion)
+add_compile_options(-Wimplicit-fallthrough)
 
 # TODO: When I'm close to release-1, enable static linkage
 if(ENABLE_ASAN)

@@ -42,7 +42,7 @@
     return ret;
 }
 
-[[nodiscard]] std::size_t write_to_file(const Model& model) {
+[[nodiscard]] int write_to_file(const Model& model) {
     if (model.filename == "") {
         return -1;
     }
@@ -50,7 +50,7 @@
     for (auto&& line : model.buf) {
         out << line << "\n";
     }
-    return out.tellp();
+    return static_cast<int>(out.tellp());
 }
 
 [[nodiscard]] lines_t lines(const std::string& str) {
