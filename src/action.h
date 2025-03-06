@@ -17,6 +17,7 @@ enum class ActionType {
     MoveCursorDown,
     MoveCursorRight,
     Newline,
+    DelCurrentChar,
 
     // Pass value
     ChangeMode,  // Mode
@@ -101,6 +102,18 @@ template <typename T, typename U>
             }
 
             return {};
+        } break;
+
+        case ActionType::DelCurrentChar: {
+            if constexpr (std::is_same_v<U, Redraw>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: DelCurrentChar");
+                }
+
+                v->cursor_right();
+                return v->get_active_model()->backspace();
+            }
         } break;
 
         case ActionType::ChangeMode: {

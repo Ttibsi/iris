@@ -181,6 +181,14 @@ void Controller::start_action_engine() {
                 view.draw_status_bar();
                 enter_command_mode();
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
+
+                // Delete char under key
+            } else if (k.value() == rawterm::Key('x')) {
+                auto draw =
+                    parse_action<void, Redraw>(&view, Action<void> {ActionType::DelCurrentChar});
+                if (draw == Redraw::Line) {
+                    view.draw_line(Draw_Line_dir::None);
+                }
             }
         }
 
