@@ -10,3 +10,12 @@ def test_x_key(r: TmuxRunner):
         pre_text = f.readlines()[0].strip()
 
     assert r.lines()[0] == f" 1\u2502{pre_text[1:]}"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_a_key(r: TmuxRunner):
+    r.press("a")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[0] == "WRITE"
+    assert statusbar[-1] == "1:2"
