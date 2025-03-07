@@ -112,7 +112,10 @@ template <typename T, typename U>
                 }
 
                 v->cursor_right();
-                return v->get_active_model()->backspace();
+                Redraw ret = v->get_active_model()->backspace();
+                v->cur.move_left();
+
+                return ret;
             }
         } break;
 
