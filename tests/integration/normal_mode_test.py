@@ -14,8 +14,8 @@ def test_x_key(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt")
 def test_a_key(r: TmuxRunner):
-    r.press("x")
+    r.press("a")
 
     statusbar: list[str] = r.statusbar_parts()
-    assert statusbar[0] == "INSERT"
+    assert statusbar[0] == "WRITE"
     assert statusbar[-1] == "1:2"
