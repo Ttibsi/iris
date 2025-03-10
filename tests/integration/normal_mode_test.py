@@ -19,3 +19,14 @@ def test_a_key(r: TmuxRunner):
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[0] == "WRITE"
     assert statusbar[-1] == "1:2"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_a_key(r: TmuxRunner):
+    r.press("A")
+
+    with open("tests/fixture/test_file_1.txt") as f:
+        line_1_len: int = len(f.readlines()[0])
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == f"1:{line_1_len}"
