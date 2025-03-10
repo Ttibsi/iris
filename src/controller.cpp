@@ -151,9 +151,14 @@ void Controller::start_action_engine() {
             }
 
         } else if (mode == Mode::Read) {
+            // Move right, then enter insert mode
             if (k.value() == rawterm::Key('a')) {
-                // Move right, then enter insert mode
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
+
+                // Move cur to end of line and enter insert mode
+            } else if (k.value() == rawterm::Key('A', rawterm::Mod::Shift)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
             } else if (k.value() == rawterm::Key('h')) {

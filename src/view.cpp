@@ -350,3 +350,12 @@ void View::cursor_right() {
         cur.move_right();
     }
 }
+
+void View::cursor_end_of_line() {
+    std::size_t line_len = get_active_model()->buf.at(get_active_model()->current_line).size();
+    std::size_t curr_pos = get_active_model()->current_char;
+
+    for (std::size_t i = curr_pos; i < line_len; i++) {
+        cursor_right();
+    }
+}
