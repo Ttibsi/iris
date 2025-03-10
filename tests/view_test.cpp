@@ -408,4 +408,16 @@ boost::ut::suite<"View"> view_suite = [] {
             expect(v.cur == rawterm::Pos(1, 2));
         };
     };
+
+    "cursor_end_of_line"_test = [] {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+
+        expect(v.cur == rawterm::Pos(1, 1));
+        v.cursor_end_of_line();
+        expect(v.cur == rawterm::Pos(1, 18));
+    };
 };

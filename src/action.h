@@ -12,6 +12,7 @@ struct None {};
 enum class ActionType {
     // Pass no values
     Backspace,
+    EndOfLine,
     MoveCursorLeft,
     MoveCursorUp,
     MoveCursorDown,
@@ -47,6 +48,15 @@ template <typename T, typename U>
 
                 return v->get_active_model()->backspace();
             }
+        } break;
+
+        case ActionType::EndOfLine: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: EndOfLine");
+            }
+
+            v->cursor_end_of_line();
         } break;
 
         case ActionType::MoveCursorLeft: {
