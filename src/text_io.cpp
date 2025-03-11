@@ -1,5 +1,6 @@
 #include "text_io.h"
 
+#include <array>
 #include <fstream>
 #include <sstream>
 
@@ -66,4 +67,13 @@
     }
 
     return result;
+}
+
+[[nodiscard]] bool is_letter(const char& c) {
+    std::array<char, 52> alphabet = {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+        's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+    return std::find(alphabet.begin(), alphabet.end(), c) != alphabet.end();
 }

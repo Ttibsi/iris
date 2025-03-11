@@ -184,6 +184,10 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('l')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
 
+                // Jump to next "word"
+            } else if (k.value() == rawterm::Key('w')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpNextWord});
+
                 // Delete char under key
             } else if (k.value() == rawterm::Key('x')) {
                 auto draw =

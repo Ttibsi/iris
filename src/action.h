@@ -14,6 +14,7 @@ enum class ActionType {
     Backspace,
     DelCurrentChar,
     EndOfLine,
+    JumpNextWord,
     MoveCursorLeft,
     MoveCursorUp,
     MoveCursorDown,
@@ -76,6 +77,21 @@ template <typename T, typename U>
             }
 
             v->cursor_end_of_line();
+        } break;
+
+        case ActionType::JumpNextWord: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: JumpNextWord");
+            }
+
+            std::optional<int> count = v->get_active_model()->next_word_pos();
+            if (count.has_value()) {
+                for (int i = 0; i < count.value(); i++) {
+                    v->cursor_right();
+                }
+            }
+
         } break;
 
         case ActionType::MoveCursorLeft: {
