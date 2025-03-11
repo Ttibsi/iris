@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cmath>
 #include <format>
 #include <print>
@@ -357,5 +358,20 @@ void View::cursor_end_of_line() {
 
     for (std::size_t i = curr_pos; i < line_len; i++) {
         cursor_right();
+    }
+}
+
+void View::cursor_start_of_line() {
+    const std::string& cur_line = get_active_model()->buf.at(get_active_model()->current_line);
+
+    if (!(cur_line.empty())) {
+        auto it = std::find_if(
+            cur_line.begin(), cur_line.end(), [](char c) { return !(std::isspace(c)); });
+
+        if (it != cur_line.end()) {
+            while (get_active_model()->current_char > std::distance(cur_line.begin(), it)) {
+                cursor_left();
+            }
+        }
     }
 }

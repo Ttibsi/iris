@@ -12,13 +12,14 @@ struct None {};
 enum class ActionType {
     // Pass no values
     Backspace,
+    DelCurrentChar,
     EndOfLine,
     MoveCursorLeft,
     MoveCursorUp,
     MoveCursorDown,
     MoveCursorRight,
     Newline,
-    DelCurrentChar,
+    StartOfLine,
 
     // Pass value
     ChangeMode,  // Mode
@@ -47,6 +48,21 @@ template <typename T, typename U>
                 }
 
                 return v->get_active_model()->backspace();
+            }
+        } break;
+
+        case ActionType::DelCurrentChar: {
+            if constexpr (std::is_same_v<U, Redraw>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: DelCurrentChar");
+                }
+
+                v->cursor_right();
+                Redraw ret = v->get_active_model()->backspace();
+                v->cur.move_left();
+
+                return ret;
             }
         } break;
 
@@ -114,19 +130,14 @@ template <typename T, typename U>
             return {};
         } break;
 
-        case ActionType::DelCurrentChar: {
-            if constexpr (std::is_same_v<U, Redraw>) {
-                auto logger = spdlog::get("basic_logger");
-                if (logger != nullptr) {
-                    logger->info("Action called: DelCurrentChar");
-                }
-
-                v->cursor_right();
-                Redraw ret = v->get_active_model()->backspace();
-                v->cur.move_left();
-
-                return ret;
+        case ActionType::StartOfLine: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: Newline");
             }
+
+            v->cursor_start_of_line();
+
         } break;
 
         case ActionType::ChangeMode: {
