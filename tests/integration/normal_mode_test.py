@@ -58,3 +58,23 @@ def test_dollar_key(r: TmuxRunner):
 
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[-1] == f"1:{line_1_len}"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_w_key(r: TmuxRunner):
+    r.press("w")
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "1:6"
+
+    r.press("w")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:9"
+
+    r.press("w")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:14"
+
+    # press again should not move
+    r.press("w")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:14"
