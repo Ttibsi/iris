@@ -30,3 +30,20 @@ def test_upper_a_key(r: TmuxRunner):
 
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[-1] == f"1:{line_1_len}"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_underscore_key(r: TmuxRunner):
+    r.type_str("llllllllj")
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "2:9"
+
+    r.press("_")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "2:5"
+
+    r.press("k")
+    r.press("_")
+
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:1"

@@ -199,6 +199,10 @@ void Controller::start_action_engine() {
                 view.draw_status_bar();
                 enter_command_mode();
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
+
+                // Move to beginning of line
+            } else if (k.value() == rawterm::Key('_')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::StartOfLine});
             }
         }
 

@@ -50,6 +50,7 @@ struct View {
     [[maybe_unused]] bool cursor_down();
     void cursor_right();
     void cursor_end_of_line();
+    void cursor_start_of_line();
 };
 
 #endif  // VIEW_H
