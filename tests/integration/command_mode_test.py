@@ -77,3 +77,12 @@ def test_write_to_new_file(r: TmuxRunner):
     assert text[0] == "foo bar\n"
 
     os.remove("tests/fixture/does_not_exist.txt")
+
+
+@setup()
+def test_invalid_command(r: TmuxRunner):
+    r.iris_cmd("error")
+
+    message_line: str = r.color_screenshot()[-2]
+    assert "Unknown command" in message_line
+    assert "\x1b[38;2;255;0;0m" in message_line
