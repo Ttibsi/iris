@@ -249,7 +249,12 @@ void Controller::parse_command() {
         return;
     }
 
-    if (cmd == ";w") {
+    if (cmd == ";wq") {
+        // This just does the same as ;w and ;q
+        std::ignore = write_to_file(*view.get_active_model());
+        quit_flag = true;
+
+    } else if (cmd == ";w") {
         int file_bytes = write_to_file(*view.get_active_model());
         std::string msg = std::format("Saved {} bytes", file_bytes);
         view.display_message(msg, rawterm::Colors::green);
@@ -257,5 +262,9 @@ void Controller::parse_command() {
     } else if (cmd == ";q") {
         // TODO: Check if file is modified
         quit_flag = true;
+
+    } else {
+        std::string msg = "Unknown command";
+        view.display_message(msg, rawterm::Colors::red);
     }
 }
