@@ -47,7 +47,10 @@ template <typename T, typename U>
                     logger->info("Action called: Backspace");
                 }
 
-                return v->get_active_model()->backspace();
+                Redraw ret = v->get_active_model()->backspace();
+                v->cur.move_left();
+
+                return ret;
             }
         } break;
 
