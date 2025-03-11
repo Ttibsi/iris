@@ -203,6 +203,8 @@ void Controller::start_action_engine() {
                 // Move to beginning of line
             } else if (k.value() == rawterm::Key('_')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::StartOfLine});
+            } else if (k.value() == rawterm::Key('$')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
             }
         }
 
