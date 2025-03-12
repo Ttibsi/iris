@@ -42,4 +42,11 @@ boost::ut::suite<"Text IO"> file_io_suite = [] {
         expect(actual.at(1) == "bar");
         expect(actual.at(2) == "baz");
     };
+
+    "is_letter"_test = [] {
+        expect(is_letter('a'));
+        expect(is_letter('L'));
+        expect(!(is_letter('_')));
+        expect(!(is_letter(':')));
+    };
 };
