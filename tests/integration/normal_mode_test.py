@@ -111,3 +111,29 @@ def test_b_key(r: TmuxRunner):
     r.press("b")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "1:1"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_o_key(r: TmuxRunner):
+    r.press("O")
+
+    lines: list[str] = r.lines()
+    assert lines[0] == " 1\u2502"
+    assert lines[1] == " 2\u2502This is some text"
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[0] == "WRITE"
+    assert statusbar[-1] == "1:1"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_o_key(r: TmuxRunner):
+    r.press("o")
+
+    lines: list[str] = r.lines()
+    assert lines[0] == " 1\u2502This is some text"
+    assert lines[1] == " 2\u2502"
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[0] == "WRITE"
+    assert statusbar[-1] == "2:1"
