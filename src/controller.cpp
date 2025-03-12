@@ -188,6 +188,22 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('l')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
 
+                // add new line and go to insert mode (below)
+            } else if (k.value() == rawterm::Key('o')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
+                parse_action<void, None>(&view, Action<void> {ActionType::Newline});
+                redraw_all = true;
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
+
+                // add new line and go to insert mode (above)
+            } else if (k.value() == rawterm::Key('O', rawterm::Mod::Shift)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::StartOfLine});
+                parse_action<void, None>(&view, Action<void> {ActionType::Newline});
+                std::ignore =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
+                redraw_all = true;
+                parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
+
                 // Jump to next "word"
             } else if (k.value() == rawterm::Key('w')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpNextWord});
