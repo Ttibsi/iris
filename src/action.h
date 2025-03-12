@@ -15,6 +15,7 @@ enum class ActionType {
     DelCurrentChar,
     EndOfLine,
     JumpNextWord,
+    JumpPrevWord,
     MoveCursorLeft,
     MoveCursorUp,
     MoveCursorDown,
@@ -89,6 +90,21 @@ template <typename T, typename U>
             if (count.has_value()) {
                 for (int i = 0; i < count.value(); i++) {
                     v->cursor_right();
+                }
+            }
+
+        } break;
+
+        case ActionType::JumpPrevWord: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: JumpPrevWord");
+            }
+
+            std::optional<int> count = v->get_active_model()->prev_word_pos();
+            if (count.has_value()) {
+                for (int i = 0; i < count.value(); i++) {
+                    v->cursor_left();
                 }
             }
 

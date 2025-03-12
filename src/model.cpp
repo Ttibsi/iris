@@ -95,3 +95,28 @@ void Model::insert(const char c) {
 
     return incrementer;
 }
+
+[[nodiscard]] std::optional<int> Model::prev_word_pos() {
+    std::string_view line_frag = std::string_view(buf.at(current_line)).substr(0, current_char);
+    uint incrementer = 1;
+
+    while (is_letter(line_frag.at(current_char - incrementer))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size()) {
+            return {};
+        }
+    }
+
+    while (!(is_letter(line_frag.at(current_char - incrementer)))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size()) {
+            return incrementer;
+        }
+    }
+
+    return incrementer;
+}
