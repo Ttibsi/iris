@@ -258,6 +258,8 @@ void Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             parse_command();
             break;
+        } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
+            view.command_text.pop_back();
         } else if (in.isCharInput()) {
             view.command_text.push_back(in.code);
         }
