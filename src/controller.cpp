@@ -291,6 +291,10 @@ void Controller::parse_command() {
         // TODO: Check if file is modified
         quit_flag = true;
 
+        // ping cmd used for testing
+    } else if (cmd == ";ping") {
+        view.display_message(std::string("pong"), rawterm::Colors::white);
+
     } else {
         std::string msg = "Unknown command";
         view.display_message(msg, rawterm::Colors::red);
