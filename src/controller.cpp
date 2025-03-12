@@ -258,6 +258,8 @@ void Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             parse_command();
             break;
+        } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
+            view.command_text.pop_back();
         } else if (in.isCharInput()) {
             view.command_text.push_back(in.code);
         }
@@ -288,6 +290,10 @@ void Controller::parse_command() {
     } else if (cmd == ";q") {
         // TODO: Check if file is modified
         quit_flag = true;
+
+        // ping cmd used for testing
+    } else if (cmd == ";ping") {
+        view.display_message(std::string("pong"), rawterm::Colors::white);
 
     } else {
         std::string msg = "Unknown command";

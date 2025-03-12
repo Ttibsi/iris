@@ -11,7 +11,7 @@ def test_quit_command(r: TmuxRunner):
     r.press("q")
 
     lines = r.lines()
-    assert lines[-2] == ";q"  # There's an extra \n so the last line is empty
+    assert lines[-1] == ";q"
 
     r.press("Enter")
     r.await_exit()
@@ -33,7 +33,7 @@ def test_write_command(r: TmuxRunner):
     r.press(r.CMD_KEY)
     r.press("w")
     lines = r.lines()
-    assert lines[-2] == ";w"
+    assert lines[-1] == ";w"
 
     status_bar = r.statusbar_parts()
     assert status_bar[0] == "COMMAND"

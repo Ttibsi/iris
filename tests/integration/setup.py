@@ -19,7 +19,7 @@ class TmuxRunner(Runner):
         super().__init__(*args, **kwargs)
 
     def lines(self) -> list[str]:
-        return super().screenshot().split("\n")
+        return super().screenshot().split("\n")[:-1]
 
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:

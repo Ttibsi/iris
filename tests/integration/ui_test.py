@@ -7,7 +7,7 @@ from setup import TmuxRunner
 def test_clean_startup(r: TmuxRunner):
     lines = r.lines()
 
-    assert len(lines) == 25  # TODO: Investigate why theres an extra line here
+    assert len(lines) == 24
     assert str(1) in lines[0]
 
     for i in range(1, 22):
