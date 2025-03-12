@@ -1,6 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -26,6 +27,7 @@ struct Model {
     [[nodiscard]] std::size_t newline();
     void insert(const char);
     [[nodiscard]] bool lineno_in_scope(const int) const;
+    [[nodiscard]] std::optional<int> next_word_pos();
 };
 
 #endif  // MODEL_H

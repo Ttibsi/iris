@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include "controller.h"
+#include "text_io.h"
 
 Model::Model(const std::size_t view_height, std::string_view file_name)
     : buf({""}), filename(file_name) {
@@ -65,4 +66,32 @@ void Model::insert(const char c) {
 
 [[nodiscard]] bool Model::lineno_in_scope(const int idx) const {
     return (idx < static_cast<int>(buf.size()) && idx >= 0);
+}
+
+// Word (noun) - a sequence of characters that match regex A-Za-z
+[[nodiscard]] std::optional<int> Model::next_word_pos() {
+    std::string_view line_frag = std::string_view(buf.at(current_line)).substr(current_char);
+    uint incrementer = 0;
+
+    // go to end of current "word"
+    while (is_letter(line_frag.at(incrementer))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size() - 1) {
+            return {};
+        }
+    }
+
+    // go to start of next word
+    while (!(is_letter(line_frag.at(incrementer)))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size() - 1) {
+            return incrementer;
+        }
+    }
+
+    return incrementer;
 }

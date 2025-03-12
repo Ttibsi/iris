@@ -162,4 +162,19 @@ boost::ut::suite<"Model"> model_suite = [] {
         expect(m.lineno_in_scope(2));
         expect(!(m.lineno_in_scope(6)));
     };
+
+    "next_word_pos"_test = [] {
+        auto m = Model({"This is the first line", "std::foo();"}, "");
+
+        expect(m.next_word_pos().has_value());
+        expect(m.next_word_pos().value() == 5);
+        m.current_char = 19;
+        expect(!(m.next_word_pos().has_value()));
+
+        m.current_line++;
+        m.current_char = 1;
+
+        expect(m.next_word_pos().has_value());
+        expect(m.next_word_pos().value() == 4);
+    };
 };
