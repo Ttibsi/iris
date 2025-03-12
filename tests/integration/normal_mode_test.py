@@ -78,3 +78,36 @@ def test_w_key(r: TmuxRunner):
     r.press("w")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "1:14"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_b_key(r: TmuxRunner):
+    # start at end of line
+    r.press("$")
+
+    with open("tests/fixture/test_file_1.txt") as f:
+        line_1_len: int = len(f.readlines()[0])
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == f"1:{line_1_len}"
+
+    r.press("b")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:12"
+
+    r.press("b")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:7"
+
+    r.press("b")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:4"
+
+    r.press("b")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:1"
+
+    # After reaching the start of the line, we don't crash
+    r.press("b")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:1"

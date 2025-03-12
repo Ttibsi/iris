@@ -176,5 +176,30 @@ boost::ut::suite<"Model"> model_suite = [] {
 
         expect(m.next_word_pos().has_value());
         expect(m.next_word_pos().value() == 4);
+
+        // if at end of line, don't crash
+        m.current_line = 0;
+        m.current_char = static_cast<uint>(m.buf.at(0).size()) - 1;
+        expect(!(m.next_word_pos().has_value()));
+    };
+
+    "prev_word_pos"_test = [] {
+        auto m = Model({"This is the first line", "std::foo();"}, "");
+
+        m.current_char = 21;
+        expect(m.prev_word_pos().has_value());
+        expect(m.prev_word_pos().value() == 5);
+
+        m.current_char -= 5;
+        expect(m.prev_word_pos().has_value());
+        expect(m.prev_word_pos().value() == 6);
+
+        m.current_char -= 6;
+        expect(m.prev_word_pos().has_value());
+        expect(m.prev_word_pos().value() == 4);
+
+        // If at start of line, don't crash
+        m.current_char = 0;
+        expect(!(m.prev_word_pos().has_value()));
     };
 };

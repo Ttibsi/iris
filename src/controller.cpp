@@ -161,6 +161,10 @@ void Controller::start_action_engine() {
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
+                // Jump to prev "word"
+            } else if (k.value() == rawterm::Key('b')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevWord});
+
             } else if (k.value() == rawterm::Key('h')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
             } else if (k.value() == rawterm::Key('i')) {

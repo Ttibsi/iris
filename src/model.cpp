@@ -70,6 +70,10 @@ void Model::insert(const char c) {
 
 // Word (noun) - a sequence of characters that match regex A-Za-z
 [[nodiscard]] std::optional<int> Model::next_word_pos() {
+    if (current_char == buf.at(current_line).size() - 1) {
+        return {};
+    }
+
     std::string_view line_frag = std::string_view(buf.at(current_line)).substr(current_char);
     uint incrementer = 0;
 
@@ -88,7 +92,36 @@ void Model::insert(const char c) {
         incrementer++;
 
         // At end of line, don't move
-        if (incrementer == line_frag.size() - 1) {
+        if (incrementer >= line_frag.size() - 1) {
+            return incrementer;
+        }
+    }
+
+    return incrementer;
+}
+
+[[nodiscard]] std::optional<int> Model::prev_word_pos() {
+    if (!(current_char)) {
+        return {};
+    }
+
+    std::string_view line_frag = std::string_view(buf.at(current_line)).substr(0, current_char);
+    uint incrementer = 1;
+
+    while (is_letter(line_frag.at(current_char - incrementer))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size()) {
+            return incrementer;
+        }
+    }
+
+    while (!(is_letter(line_frag.at(current_char - incrementer)))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size()) {
             return incrementer;
         }
     }
