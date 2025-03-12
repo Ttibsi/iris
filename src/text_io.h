@@ -10,8 +10,19 @@
 using lines_t = std::vector<std::string>;
 using opt_lines_t = std::optional<std::vector<std::string>>;
 
+struct WriteData {
+    int bytes = 0;
+    int lines = 0;
+    bool valid = false;
+
+    WriteData() {}
+    WriteData(int file_bytes, int file_lines) : bytes(file_bytes), lines(file_lines) {
+        valid = true;
+    }
+};
+
 [[nodiscard]] opt_lines_t open_file(const std::string&);
-[[nodiscard]] int write_to_file(const Model&);
+[[nodiscard]] WriteData write_to_file(const Model&);
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
 
