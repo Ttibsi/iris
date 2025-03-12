@@ -43,15 +43,15 @@
     return ret;
 }
 
-[[nodiscard]] int write_to_file(const Model& model) {
+[[nodiscard]] WriteData write_to_file(const Model& model) {
     if (model.filename == "") {
-        return -1;
+        return WriteData();
     }
     std::ofstream out(model.filename);
     for (auto&& line : model.buf) {
         out << line << "\n";
     }
-    return static_cast<int>(out.tellp());
+    return WriteData(static_cast<int>(out.tellp()), int32_t(model.buf.size()));
 }
 
 [[nodiscard]] lines_t lines(const std::string& str) {

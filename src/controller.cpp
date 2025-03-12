@@ -265,9 +265,12 @@ void Controller::parse_command() {
         quit_flag = true;
 
     } else if (cmd == ";w") {
-        int file_bytes = write_to_file(*view.get_active_model());
-        std::string msg = std::format("Saved {} bytes", file_bytes);
-        view.display_message(msg, rawterm::Colors::green);
+        WriteData file_write = write_to_file(*view.get_active_model());
+        if (file_write.valid) {
+            std::string msg =
+                std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
+            view.display_message(msg, rawterm::Colors::green);
+        }
 
     } else if (cmd == ";q") {
         // TODO: Check if file is modified
