@@ -93,15 +93,15 @@ def test_b_key(r: TmuxRunner):
 
     r.press("b")
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "1:14"
+    assert statusbar[-1] == "1:12"
 
     r.press("b")
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "1:9"
+    assert statusbar[-1] == "1:7"
 
     r.press("b")
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "1:6"
+    assert statusbar[-1] == "1:4"
 
     r.press("b")
     statusbar = r.statusbar_parts()
