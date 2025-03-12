@@ -22,6 +22,7 @@ def test_suspend():
 
         r.press_and_enter('fg')
         r.press("Enter")
+        time.sleep(0.1)
         r.await_text('Hello')
 
         r.iris_cmd("q")

@@ -42,12 +42,14 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
     std::string first = buf.at(current_line).substr(0, current_char);
     std::string second = buf.at(current_line).substr(current_char);
 
-    // trip preceeding whitespace from second line
+    // clean up whitespace
     std::size_t start = second.find_first_not_of(" \t\n\r\f\v");
-    if (start != std::string::npos) {
-        second.erase(0, start);
-    } else {
+    if (start == std::string::npos) {
         second.clear();
+    } else if (start == 1) {
+        // if we have a single whitespace char at the start, trim that off
+        // NOTE: We don't want to strip all whitespace as it messes with indentation
+        second.erase(0, 1);
     }
 
     buf.at(current_line) = first;
