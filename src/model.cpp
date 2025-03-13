@@ -150,7 +150,8 @@ void Model::insert(const char c) {
     if (current_line == 0) {
         return {};
     }
-    auto rev_pos = std::find(buf.rbegin() + (buf.size() - current_line + 1), buf.rend(), "");
+    auto rev_pos =
+        std::find(buf.rbegin() + static_cast<long>(buf.size() - current_line + 1), buf.rend(), "");
     rev_pos++;
     auto pos = rev_pos.base();
     unsigned int distance =
