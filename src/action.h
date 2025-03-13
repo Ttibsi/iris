@@ -88,11 +88,10 @@ template <typename T, typename U>
                 logger->info("Action called: JumpNextPara");
             }
 
-            std::optional<int> count = v->get_active_model()->next_para_pos();
+            std::optional<unsigned int> count = v->get_active_model()->next_para_pos();
             if (count.has_value()) {
-                for (int i = 0; i < count.value(); i++) {
-                    v->cursor_down();
-                }
+                logger->info("JumpNextPara count: {}", count.value());
+                v->cursor_down(count.value());
             }
 
         } break;
@@ -103,11 +102,9 @@ template <typename T, typename U>
                 logger->info("Action called: JumpPrevPara");
             }
 
-            std::optional<int> count = v->get_active_model()->prev_para_pos();
+            std::optional<unsigned int> count = v->get_active_model()->prev_para_pos();
             if (count.has_value()) {
-                for (int i = 0; i < count.value(); i++) {
-                    v->cursor_up();
-                }
+                v->cursor_up(count.value());
             }
 
         } break;

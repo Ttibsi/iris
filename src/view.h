@@ -46,8 +46,8 @@ struct View {
     [[nodiscard]] std::optional<int> clamp_horizontal_movement(const int);
 
     void cursor_left();
-    [[maybe_unused]] bool cursor_up();
-    [[maybe_unused]] bool cursor_down();
+    [[maybe_unused]] bool cursor_up(unsigned int count = 1);
+    [[maybe_unused]] bool cursor_down(unsigned int count = 1);
     void cursor_right();
     void cursor_end_of_line();
     void cursor_start_of_line();

@@ -133,7 +133,7 @@ void Model::insert(const char c) {
     return incrementer;
 }
 
-[[nodiscard]] std::optional<int> Model::next_para_pos() {
+[[nodiscard]] std::optional<unsigned int> Model::next_para_pos() {
     if (current_line == buf.size() - 1) {
         return {};
     }
@@ -141,11 +141,11 @@ void Model::insert(const char c) {
     return std::distance(buf.begin() + current_line, pos);
 }
 
-[[nodiscard]] std::optional<int> Model::prev_para_pos() {
+[[nodiscard]] std::optional<unsigned int> Model::prev_para_pos() {
     if (current_line == 0) {
         return {};
     }
     auto rev_pos = std::find(buf.rbegin() + (buf.size() - current_line), buf.rend(), "");
-    auto pos = rev_pos.base() - 1;
+    auto pos = rev_pos.base();
     return std::distance(pos, buf.begin() + current_line);
 }
