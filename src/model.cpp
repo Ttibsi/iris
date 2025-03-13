@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <algorithm>
+
 #include "controller.h"
 #include "text_io.h"
 
@@ -129,4 +131,21 @@ void Model::insert(const char c) {
     }
 
     return incrementer;
+}
+
+[[nodiscard]] std::optional<int> Model::next_para_pos() {
+    if (current_line == buf.size() - 1) {
+        return {};
+    }
+    auto pos = std::find(buf.begin() + current_line + 1, buf.end(), "");
+    return std::distance(buf.begin() + current_line, pos);
+}
+
+[[nodiscard]] std::optional<int> Model::prev_para_pos() {
+    if (current_line == 0) {
+        return {};
+    }
+    auto rev_pos = std::find(buf.rbegin() + (buf.size() - current_line), buf.rend(), "");
+    auto pos = rev_pos.base() - 1;
+    return std::distance(pos, buf.begin() + current_line);
 }

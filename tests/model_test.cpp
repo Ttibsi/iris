@@ -202,4 +202,7 @@ boost::ut::suite<"Model"> model_suite = [] {
         m.current_char = 0;
         expect(!(m.prev_word_pos().has_value()));
     };
+
+    skip / "next_para_pos"_test = [] {};
+    skip / "prev_para_pos"_test = [] {};
 };
