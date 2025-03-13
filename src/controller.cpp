@@ -233,8 +233,10 @@ void Controller::start_action_engine() {
                 // Move cursor by paragraph
             } else if (k.value() == rawterm::Key('[')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevPara});
+                redraw_all = true;
             } else if (k.value() == rawterm::Key(']')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpNextPara});
+                redraw_all = true;
             }
         }
 

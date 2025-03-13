@@ -151,11 +151,8 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     std::string_view curr_line = get_active_model()->buf.at(idx);
 
     if (LINE_NUMBERS) {
-        rawterm::Color color = COLOR_UI_BG;
-        if (idx == get_active_model()->current_line) {
-            color = COLOR_DARK_YELLOW;
-        }
-
+        const rawterm::Color color =
+            (idx == get_active_model()->current_line) ? COLOR_DARK_YELLOW : COLOR_UI_BG;
         line += rawterm::set_foreground(
             std::format("{:>{}}\u2502", idx + 1, line_number_offset), color);
     }
@@ -299,9 +296,13 @@ void View::cursor_left() {
         redraw_sentinal = true;
     } else if (!(horizontal_clamp.has_value())) {
         // Move cursor
-        for (int i = 0; i < count; i++) { cur.move_up(); }
+        for (int i = 0; i < count; i++) {
+            cur.move_up();
+        }
     } else {
-        cur.move({static_cast<int>(cur.vertical - count), std::max(horizontal_clamp.value(), line_number_offset + 2)});
+        cur.move(
+            {static_cast<int>(cur.vertical - count),
+             std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;
@@ -315,21 +316,23 @@ void View::cursor_left() {
 
     std::optional<int> horizontal_clamp = clamp_horizontal_movement(1);
     get_active_model()->current_line += count;
-    get_active_model()->current_line--;
 
     bool redraw_sentinal = false;
     const uint_t text_view_height =
         get_active_model()->view_offset + (static_cast<uint_t>(view_size.vertical) - 2);
 
-    if (get_active_model()->current_line >= text_view_height) {
-        // scroll
-        get_active_model()->view_offset += count;
-        redraw_sentinal = true;
-    } else if (!(horizontal_clamp.has_value())) {
-        // Move cursor
-        for (int i = 0; i < count; i++) { cur.move_down(); }
-    } else {
-        cur.move({static_cast<int>(cur.vertical + count), std::max(horizontal_clamp.value(), line_number_offset + 2)});
+    for (unsigned int i = 0; i < count; i++) {
+        if (get_active_model()->current_line >= text_view_height) {
+            // scroll
+            get_active_model()->view_offset += count;
+            redraw_sentinal = true;
+        } else if (!(horizontal_clamp.has_value())) {
+            // Move cursor
+            cur.move_down();
+        } else {
+            cur.move(
+                {cur.vertical + 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
+        }
     }
 
     return redraw_sentinal;

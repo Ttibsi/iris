@@ -90,7 +90,6 @@ template <typename T, typename U>
 
             std::optional<unsigned int> count = v->get_active_model()->next_para_pos();
             if (count.has_value()) {
-                logger->info("JumpNextPara count: {}", count.value());
                 v->cursor_down(count.value());
             }
 

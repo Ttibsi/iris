@@ -138,7 +138,12 @@ void Model::insert(const char c) {
         return {};
     }
     auto pos = std::find(buf.begin() + current_line + 1, buf.end(), "");
-    return std::distance(buf.begin() + current_line, pos);
+    unsigned int distance =
+        static_cast<unsigned int>(std::distance(buf.begin() + current_line, pos));
+    if (current_line + distance >= buf.size()) {
+        return buf.size() - current_line - 1;
+    }
+    return distance;
 }
 
 [[nodiscard]] std::optional<unsigned int> Model::prev_para_pos() {
