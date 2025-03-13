@@ -290,19 +290,20 @@ void View::cursor_left() {
     get_active_model()->current_line -= count;
 
     bool redraw_sentinal = false;
-    if (get_active_model()->view_offset > get_active_model()->current_line) {
-        // Scroll view
-        get_active_model()->view_offset -= count;
-        redraw_sentinal = true;
-    } else if (!(horizontal_clamp.has_value())) {
-        // Move cursor
-        for (int i = 0; i < count; i++) {
+
+    for (unsigned int i = 0; i < count; i++) {
+        if (get_active_model()->view_offset > get_active_model()->current_line) {
+            // Scroll view
+            get_active_model()->view_offset -= 1;
+            redraw_sentinal = true;
+        } else if (!(horizontal_clamp.has_value())) {
+            // Move cursor
             cur.move_up();
+        } else {
+            cur.move(
+                {static_cast<int>(cur.vertical - 1),
+                 std::max(horizontal_clamp.value(), line_number_offset + 2)});
         }
-    } else {
-        cur.move(
-            {static_cast<int>(cur.vertical - count),
-             std::max(horizontal_clamp.value(), line_number_offset + 2)});
     }
 
     return redraw_sentinal;
@@ -324,7 +325,7 @@ void View::cursor_left() {
     for (unsigned int i = 0; i < count; i++) {
         if (get_active_model()->current_line >= text_view_height) {
             // scroll
-            get_active_model()->view_offset += count;
+            get_active_model()->view_offset += 1;
             redraw_sentinal = true;
         } else if (!(horizontal_clamp.has_value())) {
             // Move cursor
