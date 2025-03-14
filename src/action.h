@@ -185,7 +185,12 @@ template <typename T, typename U>
             }
 
             const std::size_t count = v->get_active_model()->newline();
-            v->cur.move_down();
+            if (!(v->cur.vertical == v->view_size.vertical - 2)) {
+                v->cur.move_down();
+            } else {
+                v->get_active_model()->view_offset++;
+            }
+
             for (std::size_t i = 0; i < count; i++) {
                 v->cur.move_left();
             }
