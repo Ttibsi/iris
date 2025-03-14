@@ -204,6 +204,15 @@ void Controller::start_action_engine() {
                 redraw_all = true;
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
+                // Replace current char
+            } else if (k.value() == rawterm::Key('r')) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput()) {
+                    parse_action<char, None>(
+                        &view, Action<char> {ActionType::ReplaceChar, k2.code});
+                }
+                view.draw_line(Draw_Line_dir::None);
+
                 // Jump to next "word"
             } else if (k.value() == rawterm::Key('w')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpNextWord});

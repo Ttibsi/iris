@@ -31,6 +31,7 @@ struct Model {
     [[nodiscard]] std::optional<int> prev_word_pos();
     [[nodiscard]] std::optional<unsigned int> next_para_pos();
     [[nodiscard]] std::optional<unsigned int> prev_para_pos();
+    void replace_char(const char);
 };
 
 #endif  // MODEL_H

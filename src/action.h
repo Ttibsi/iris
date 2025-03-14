@@ -23,6 +23,7 @@ enum class ActionType {
     MoveCursorDown,
     MoveCursorRight,
     Newline,
+    ReplaceChar,
     StartOfLine,
 
     // Pass value
@@ -198,6 +199,17 @@ template <typename T, typename U>
             return {};
         } break;
 
+        case ActionType::ReplaceChar: {
+            if constexpr (std::is_same_v<T, char>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: ReplaceChar");
+                }
+
+                v->get_active_model()->replace_char(action.payload);
+            }
+        } break;
+
         case ActionType::StartOfLine: {
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) {
@@ -209,12 +221,12 @@ template <typename T, typename U>
         } break;
 
         case ActionType::ChangeMode: {
-            auto logger = spdlog::get("basic_logger");
-            if (logger != nullptr) {
-                logger->info("Action called: ChangeMode");
-            }
-
             if constexpr (std::is_same_v<T, Mode>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: ChangeMode");
+                }
+
                 v->ctrlr_ptr->set_mode(action.payload);
             }
 

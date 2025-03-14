@@ -161,3 +161,12 @@ void Model::insert(const char c) {
     }
     return distance;
 }
+
+void Model::replace_char(const char c) {
+    if (buf.at(current_line).empty()) {
+        buf.at(current_line).push_back(c);
+        return;
+    }
+
+    buf.at(current_line).at(current_char) = c;
+}
