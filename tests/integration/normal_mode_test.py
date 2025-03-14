@@ -137,3 +137,43 @@ def test_o_key(r: TmuxRunner):
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[0] == "WRITE"
     assert statusbar[-1] == "2:1"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_open_squacket_key(r: TmuxRunner):
+    r.type_str("j" * 14)
+    r.press("[")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "9:1"
+
+    r.press("[")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:1"
+
+    # Don't move when we're at the top line
+    r.press("[")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "1:1"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_close_squacket_key(r: TmuxRunner):
+    r.type_str("j" * 14)
+    r.press("]")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "19:1"
+
+    r.type_str("]" * 7)
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "80:1"
+
+    # Go to end of file
+    r.type_str("]")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "88:1"
+
+    r.type_str("]")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "88:1"

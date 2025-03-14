@@ -29,6 +29,8 @@ struct Model {
     [[nodiscard]] bool lineno_in_scope(const int) const;
     [[nodiscard]] std::optional<int> next_word_pos();
     [[nodiscard]] std::optional<int> prev_word_pos();
+    [[nodiscard]] std::optional<unsigned int> next_para_pos();
+    [[nodiscard]] std::optional<unsigned int> prev_para_pos();
 };
 
 #endif  // MODEL_H

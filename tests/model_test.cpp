@@ -202,4 +202,40 @@ boost::ut::suite<"Model"> model_suite = [] {
         m.current_char = 0;
         expect(!(m.prev_word_pos().has_value()));
     };
+
+    "next_para_pos"_test = [] {
+        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+        auto opt = m.next_para_pos();
+        expect(opt.has_value());
+        expect(opt.value() == 3);
+
+        m.current_line = 4;
+
+        opt = m.next_para_pos();
+        expect(opt.has_value());
+        expect(opt.value() == 1);
+
+        m.current_line = 5;
+        opt = m.next_para_pos();
+        expect(!(opt.has_value()));
+    };
+
+    "prev_para_pos"_test = [] {
+        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+        auto opt = m.prev_para_pos();
+        expect(!(opt.has_value()));
+
+        m.current_line = static_cast<unsigned int>(m.buf.size() - 1);
+
+        opt = m.prev_para_pos();
+        expect(opt.has_value());
+        expect(opt.value() == 2);
+
+        m.current_line = 2;
+        opt = m.prev_para_pos();
+        expect(opt.has_value());
+        expect(opt.value() == 2);
+    };
 };

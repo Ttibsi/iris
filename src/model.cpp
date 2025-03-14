@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <algorithm>
+
 #include "controller.h"
 #include "text_io.h"
 
@@ -129,4 +131,33 @@ void Model::insert(const char c) {
     }
 
     return incrementer;
+}
+
+[[nodiscard]] std::optional<unsigned int> Model::next_para_pos() {
+    if (current_line == buf.size() - 1) {
+        return {};
+    }
+    auto pos = std::find(buf.begin() + current_line + 1, buf.end(), "");
+    unsigned int distance =
+        static_cast<unsigned int>(std::distance(buf.begin() + current_line, pos));
+    if (current_line + distance >= buf.size()) {
+        return buf.size() - current_line - 1;
+    }
+    return distance;
+}
+
+[[nodiscard]] std::optional<unsigned int> Model::prev_para_pos() {
+    if (current_line == 0) {
+        return {};
+    }
+    auto rev_pos =
+        std::find(buf.rbegin() + static_cast<long>(buf.size() - current_line + 1), buf.rend(), "");
+    rev_pos++;
+    auto pos = rev_pos.base();
+    unsigned int distance =
+        static_cast<unsigned int>(std::distance(pos, buf.begin() + current_line));
+    if (distance > current_line) {
+        return current_line;
+    }
+    return distance;
 }

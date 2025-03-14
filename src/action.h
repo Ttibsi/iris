@@ -14,6 +14,8 @@ enum class ActionType {
     Backspace,
     DelCurrentChar,
     EndOfLine,
+    JumpNextPara,
+    JumpPrevPara,
     JumpNextWord,
     JumpPrevWord,
     MoveCursorLeft,
@@ -78,6 +80,32 @@ template <typename T, typename U>
             }
 
             v->cursor_end_of_line();
+        } break;
+
+        case ActionType::JumpNextPara: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: JumpNextPara");
+            }
+
+            std::optional<unsigned int> count = v->get_active_model()->next_para_pos();
+            if (count.has_value()) {
+                v->cursor_down(count.value());
+            }
+
+        } break;
+
+        case ActionType::JumpPrevPara: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: JumpPrevPara");
+            }
+
+            std::optional<unsigned int> count = v->get_active_model()->prev_para_pos();
+            if (count.has_value()) {
+                v->cursor_up(count.value());
+            }
+
         } break;
 
         case ActionType::JumpNextWord: {

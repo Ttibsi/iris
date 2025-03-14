@@ -224,11 +224,19 @@ void Controller::start_action_engine() {
                 enter_command_mode();
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
-                // Move to beginning of line
+                // Move to beginning/end of line
             } else if (k.value() == rawterm::Key('_')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::StartOfLine});
             } else if (k.value() == rawterm::Key('$')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
+
+                // Move cursor by paragraph
+            } else if (k.value() == rawterm::Key('[')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevPara});
+                redraw_all = true;
+            } else if (k.value() == rawterm::Key(']')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpNextPara});
+                redraw_all = true;
             }
         }
 
