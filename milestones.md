@@ -7,20 +7,26 @@
 * [x] Modify and save the file
 * [x] Create and save a new file
 * [x] Handle linux backgrounding (CTRL+Z)
-* [ ] Handle SIGWINCH
-* [ ] Handle displaying tab characters with specific widths
-    This may be a function to add to Rawterm instead
-* [ ] Handle replacing tab chars with spaces on save - make it togglable
+* [x] Handle SIGWINCH
+* [x] Handle displaying tab characters with specific widths
+* [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
+* [ ] Open a second file in a separate buffer and switch between views
+* [ ] Open a second file in a tab and switch tabs
+* [ ] Handle tab characters in text
+    * [ ] Toggle an `expandtab` config variable with a command (default true)
+    * [ ] Ensure pressing <TAB> inserts the right character where needed
+    * [ ] If `expandtab` is false, have a way of calculating the logical
+    and visual positions of the cursor separately for vertical movement and
+    char insertion
 * [ ] Handle undo/redo as two stacks of Actions, and a system to know how
     to perform the opposite of the action
-* [ ] Open a second file in a split
-* [ ] Highlight trailing whitespace at the end of a line and delete on save
-* [ ] Add handling for terminal resizing
+    * [ ] Mark the buffer as modified and update quitting logic as appropriate
 * [ ] Handle viewing files you don't have access rights to edit as readonly
+* [ ] Highlight trailing whitespace at the end of a line and delete on save
+* [ ] Open a second file in a split
 * [ ] Open a command pallete at the bottom third of the screen
 * [ ] Syntax highlighting via lexical analysis and regex
 * [ ] Use the command pallete to run a shell command - investigate forking
-* [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [ ] Find and replace in the current buffer using the command pallete
 * [ ] Open a file with the cursor on a specified line using `-l` on the CLI
 * [ ] Some form of simple file manager like vim's netrw
@@ -50,3 +56,6 @@
 * [x] `r`
 * [ ] `f`
 * [ ] `F`
+* [ ] `g` (vim `gg`)
+* [ ] `G`
+* [ ] `z` (vim `zz`)
