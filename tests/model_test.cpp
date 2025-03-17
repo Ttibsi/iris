@@ -239,5 +239,13 @@ boost::ut::suite<"Model"> model_suite = [] {
         expect(opt.value() == 2);
     };
 
-    skip / "toggle_case"_test = [] {};
+    "toggle_case"_test = [] {
+        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+        m.toggle_case();
+        expect(m.buf.at(0).at(0) == 'L');
+
+        m.current_char = 4;
+        expect(m.buf.at(0).at(4) == ' ');
+    };
 };
