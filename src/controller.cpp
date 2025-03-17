@@ -184,6 +184,20 @@ void Controller::start_action_engine() {
                 }
                 redraw_all = true;
 
+                // find forward
+            } else if (k.value() == rawterm::Key('f')) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput()) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::FindNext, k2.code});
+                }
+
+                // find backward
+            } else if (k.value() == rawterm::Key('F', rawterm::Mod::Shift)) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput()) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::FindPrev, k2.code});
+                }
+
             } else if (k.value() == rawterm::Key('h')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
             } else if (k.value() == rawterm::Key('i')) {

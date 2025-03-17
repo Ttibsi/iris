@@ -24,13 +24,15 @@ enum class ActionType {
     MoveCursorDown,
     MoveCursorRight,
     Newline,
-    ReplaceChar,
     StartOfLine,
     ToggleCase,
 
     // Pass value
-    ChangeMode,  // Mode
-    InsertChar,  // Char
+    ChangeMode,   // Mode
+    FindNext,     // Char
+    FindPrev,     // Char
+    InsertChar,   // Char
+    ReplaceChar,  // Char
 };
 
 template <typename T>
@@ -205,17 +207,6 @@ template <typename T, typename U>
             return {};
         } break;
 
-        case ActionType::ReplaceChar: {
-            if constexpr (std::is_same_v<T, char>) {
-                auto logger = spdlog::get("basic_logger");
-                if (logger != nullptr) {
-                    logger->info("Action called: ReplaceChar");
-                }
-
-                v->get_active_model()->replace_char(action.payload);
-            }
-        } break;
-
         case ActionType::StartOfLine: {
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) {
@@ -249,6 +240,17 @@ template <typename T, typename U>
             return {};
         } break;
 
+        case ActionType::FindNext: {
+            if constexpr (std::is_same_v<T, char>) {
+            }
+
+        } break;
+
+        case ActionType::FindPrev: {
+            if constexpr (std::is_same_v<T, char>) {
+            }
+        } break;
+
         case ActionType::InsertChar: {
             if constexpr (std::is_same_v<T, char>) {
                 auto logger = spdlog::get("basic_logger");
@@ -261,6 +263,17 @@ template <typename T, typename U>
                 v->cur.move_right();
             }
             return {};
+        } break;
+
+        case ActionType::ReplaceChar: {
+            if constexpr (std::is_same_v<T, char>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: ReplaceChar");
+                }
+
+                v->get_active_model()->replace_char(action.payload);
+            }
         } break;
 
         default: {
