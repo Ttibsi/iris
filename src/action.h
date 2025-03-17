@@ -26,6 +26,7 @@ enum class ActionType {
     Newline,
     ReplaceChar,
     StartOfLine,
+    ToggleCase,
 
     // Pass value
     ChangeMode,  // Mode
@@ -222,6 +223,16 @@ template <typename T, typename U>
             }
 
             v->cursor_start_of_line();
+
+        } break;
+
+        case ActionType::ToggleCase: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: Newline");
+            }
+
+            v->get_active_model()->toggle_case();
 
         } break;
 

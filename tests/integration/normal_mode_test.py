@@ -229,3 +229,14 @@ def test_g_key(r: TmuxRunner):
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "1:1"
     assert r.cursor_pos() == (0, 4)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_tilde_key(r: TmuxRunner):
+    r.press("~")
+    assert r.lines()[0][3] == "t"
+
+    # Do nothing on a non-char character
+    r.type_str("l" * 4)
+    r.press("~")
+    assert r.lines()[0][7] == " "
