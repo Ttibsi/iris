@@ -382,3 +382,13 @@ void View::cursor_start_of_line() {
         }
     }
 }
+
+void View::center_current_line() {
+    uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
+    if (get_active_model()->current_line < half_view) {
+        return;
+    }
+
+    get_active_model()->view_offset = get_active_model()->current_line - half_view;
+    cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
+}

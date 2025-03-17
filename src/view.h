@@ -51,6 +51,7 @@ struct View {
     void cursor_right();
     void cursor_end_of_line();
     void cursor_start_of_line();
+    void center_current_line();
 };
 
 #endif  // VIEW_H

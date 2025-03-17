@@ -420,4 +420,55 @@ boost::ut::suite<"View"> view_suite = [] {
         v.cursor_end_of_line();
         expect(v.cur == rawterm::Pos(1, 18));
     };
+
+    "center_current_line"_test = [] {
+        should("Do nothing if current line is already near the top") = [] {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/lorem_ipsum.txt").value(),
+                "tests/fixture/lorem_ipsum.txt");
+            v.add_model(&m);
+
+            // Initial state
+            expect(m.current_line == 0);
+            expect(m.view_offset == 0);
+            expect(v.cur == rawterm::Pos(1, 1));
+
+            v.center_current_line();
+
+            // Should not change anything
+            expect(m.current_line == 0);
+            expect(m.view_offset == 0);
+            expect(v.cur == rawterm::Pos(1, 1));
+        };
+
+        should("Center the view when current line is far down") = [] {
+            Controller c;
+            auto v = View(&c, rawterm::Pos(24, 80));
+            auto m = Model(
+                open_file("tests/fixture/lorem_ipsum.txt").value(),
+                "tests/fixture/lorem_ipsum.txt");
+            v.add_model(&m);
+
+            // Move cursor far down
+            for (int i = 0; i < 30; i++) {
+                v.cursor_down();
+            }
+
+            // Check state before centering
+            expect(m.current_line == 30);
+            expect(m.view_offset > 0);
+
+            v.center_current_line();
+
+            // View should be centered on line 30
+            expect(m.current_line == 30);
+            expect(m.view_offset == 30 - std::floor(v.view_size.vertical / 2));
+            expect(
+                v.cur == rawterm::Pos(
+                             static_cast<int>(std::floor(v.view_size.vertical / 2)) + 1,
+                             v.line_number_offset + 2));
+        };
+    };
 };

@@ -195,3 +195,17 @@ def test_r_key(r: TmuxRunner):
     r.press("r")
     r.press("!")
     assert r.lines()[1] == " 2\u2502!"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_z_key(r: TmuxRunner):
+    r.type_str("]" * 5)
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "48:1"
+    assert r.cursor_pos() == (18, 4)
+
+    r.press("z")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "48:1"
+    assert r.cursor_pos() == (12, 4)
