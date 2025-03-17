@@ -32,6 +32,7 @@ struct Model {
     [[nodiscard]] std::optional<unsigned int> next_para_pos();
     [[nodiscard]] std::optional<unsigned int> prev_para_pos();
     void replace_char(const char);
+    void toggle_case();
 };
 
 #endif  // MODEL_H

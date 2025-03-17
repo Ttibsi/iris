@@ -170,3 +170,13 @@ void Model::replace_char(const char c) {
 
     buf.at(current_line).at(current_char) = c;
 }
+
+void Model::toggle_case() {
+    char c = buf.at(current_line).at(current_char);
+
+    if (c >= 'A' && c <= 'Z') {
+        buf.at(current_line).at(current_char) = c + 32;
+    } else if (c >= 'a' && c <= 'z') {
+        buf.at(current_line).at(current_char) = c - 32;
+    }
+}

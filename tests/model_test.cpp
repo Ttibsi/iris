@@ -238,4 +238,6 @@ boost::ut::suite<"Model"> model_suite = [] {
         expect(opt.has_value());
         expect(opt.value() == 2);
     };
+
+    skip / "toggle_case"_test = [] {};
 };

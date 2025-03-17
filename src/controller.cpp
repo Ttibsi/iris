@@ -270,6 +270,11 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key(']')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpNextPara});
                 redraw_all = true;
+
+                // toggle case of char
+            } else if (k.value() == rawterm::Key('~')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::ToggleCase});
+                view.draw_line(Draw_Line_dir::None);
             }
         }
 
