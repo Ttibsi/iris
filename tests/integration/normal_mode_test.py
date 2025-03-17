@@ -200,12 +200,32 @@ def test_r_key(r: TmuxRunner):
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_z_key(r: TmuxRunner):
     r.type_str("]" * 5)
+    r.press("z")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "48:1"
+    assert r.cursor_pos() == (12, 4)
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_upper_g_key(r: TmuxRunner):
+    r.press("G")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "88:1"
+
+    assert r.cursor_pos() == (21, 4)
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_g_key(r: TmuxRunner):
+    r.type_str("]]]]]")
 
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[-1] == "48:1"
     assert r.cursor_pos() == (18, 4)
 
-    r.press("z")
+    r.press("g")
+
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "48:1"
-    assert r.cursor_pos() == (12, 4)
+    assert statusbar[-1] == "1:1"
+    assert r.cursor_pos() == (0, 4)

@@ -165,6 +165,25 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('b')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevWord});
 
+                // Move to top of file
+            } else if (k.value() == rawterm::Key('g')) {
+                std::size_t count = view.get_active_model()->current_line;
+                for (std::size_t i = 0; i < count; i++) {
+                    std::ignore =
+                        parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
+                }
+                redraw_all = true;
+
+                // Move to bottom of file
+            } else if (k.value() == rawterm::Key('G', rawterm::Mod::Shift)) {
+                std::size_t count =
+                    view.get_active_model()->buf.size() - view.get_active_model()->current_line;
+                for (std::size_t i = 0; i < count; i++) {
+                    std::ignore =
+                        parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
+                }
+                redraw_all = true;
+
             } else if (k.value() == rawterm::Key('h')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
             } else if (k.value() == rawterm::Key('i')) {
