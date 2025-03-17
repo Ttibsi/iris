@@ -466,8 +466,9 @@ boost::ut::suite<"View"> view_suite = [] {
             expect(m.current_line == 30);
             expect(m.view_offset == 30 - std::floor(v.view_size.vertical / 2));
             expect(
-                v.cur ==
-                rawterm::Pos(std::floor(v.view_size.vertical / 2) + 1, v.line_number_offset + 2));
+                v.cur == rawterm::Pos(
+                             static_cast<int>(std::floor(v.view_size.vertical / 2)) + 1,
+                             v.line_number_offset + 2));
         };
     };
 };
