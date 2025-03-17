@@ -167,8 +167,8 @@ void Controller::start_action_engine() {
 
                 // Move to top of file
             } else if (k.value() == rawterm::Key('g')) {
-                int count = view.get_active_model()->current_line;
-                for (int i = 0; i < count; i++) {
+                std::size_t count = view.get_active_model()->current_line;
+                for (std::size_t i = 0; i < count; i++) {
                     std::ignore =
                         parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
                 }
@@ -176,9 +176,9 @@ void Controller::start_action_engine() {
 
                 // Move to bottom of file
             } else if (k.value() == rawterm::Key('G', rawterm::Mod::Shift)) {
-                int count =
+                std::size_t count =
                     view.get_active_model()->buf.size() - view.get_active_model()->current_line;
-                for (int i = 0; i < count; i++) {
+                for (std::size_t i = 0; i < count; i++) {
                     std::ignore =
                         parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
                 }
