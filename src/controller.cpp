@@ -225,6 +225,11 @@ void Controller::start_action_engine() {
                     view.draw_line(Draw_Line_dir::None);
                 }
 
+                // Center current line on view
+            } else if (k.value() == rawterm::Key('z')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::CenterCurrentLine});
+                redraw_all = true;
+
                 // Trigger command mode
             } else if (k.value() == rawterm::Key(';')) {
                 parse_action<Mode, None>(

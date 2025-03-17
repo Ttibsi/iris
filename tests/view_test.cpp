@@ -420,4 +420,6 @@ boost::ut::suite<"View"> view_suite = [] {
         v.cursor_end_of_line();
         expect(v.cur == rawterm::Pos(1, 18));
     };
+
+    skip / "center_current_line"_test = [] {};
 };

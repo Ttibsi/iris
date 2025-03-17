@@ -12,6 +12,7 @@ struct None {};
 enum class ActionType {
     // Pass no values
     Backspace,
+    CenterCurrentLine,
     DelCurrentChar,
     EndOfLine,
     JumpNextPara,
@@ -57,6 +58,10 @@ template <typename T, typename U>
 
                 return ret;
             }
+        } break;
+
+        case ActionType::CenterCurrentLine: {
+            v->center_current_line();
         } break;
 
         case ActionType::DelCurrentChar: {
