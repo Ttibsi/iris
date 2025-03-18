@@ -248,4 +248,7 @@ boost::ut::suite<"Model"> model_suite = [] {
         m.current_char = 4;
         expect(m.buf.at(0).at(4) == ' ');
     };
+
+    skip / "find_next"_test = [] {};
+    skip / "find_prev"_test = [] {};
 };
