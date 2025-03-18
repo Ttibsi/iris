@@ -242,12 +242,33 @@ template <typename T, typename U>
 
         case ActionType::FindNext: {
             if constexpr (std::is_same_v<T, char>) {
-            }
+                auto ret = v->get_active_model()->find_next(action.payload);
+                if (ret.has_value()) {
+                    for (int i = 0; i < ret.value().vertical; i++) {
+                        v->cursor_down();
+                    }
 
+                    for (int i = 0; i < ret.value().horizontal; i++) {
+                        v->cursor_right();
+                    }
+
+                    v->draw_status_bar();
+                }
+            }
         } break;
 
         case ActionType::FindPrev: {
             if constexpr (std::is_same_v<T, char>) {
+                auto ret = v->get_active_model()->find_prev(action.payload);
+                if (ret.has_value()) {
+                    for (int i = 0; i < ret.value().vertical; i++) {
+                        v->cursor_up();
+                    }
+
+                    for (int i = 0; i < ret.value().horizontal; i++) {
+                        v->cursor_left();
+                    }
+                }
             }
         } break;
 
