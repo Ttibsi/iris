@@ -248,7 +248,8 @@ def test_f_key(r: TmuxRunner):
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[-1] == "1:5"
 
-    r.type_str("fn")  # go to next line
+    # Search on next line
+    r.type_str("fn")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "2:15"
 
