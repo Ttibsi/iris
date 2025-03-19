@@ -190,7 +190,7 @@ void Model::toggle_case() {
         auto iter = std::find(buf.at(cur_line).begin() + cur_char + 1, buf.at(cur_line).end(), c);
 
         if (iter != buf.at(cur_line).end()) {
-            cur_char = std::distance(buf.at(cur_line).begin(), iter);
+            cur_char = static_cast<unsigned int>(std::distance(buf.at(cur_line).begin(), iter));
             auto ret = rawterm::Pos(
                 {std::abs(static_cast<int>(current_line - cur_line)),
                  std::abs(static_cast<int>(current_char - cur_char))});
@@ -216,7 +216,8 @@ void Model::toggle_case() {
             buf.at(cur_line).rend(), c);
 
         if (iter != buf.at(cur_line).rend()) {
-            cur_char = std::distance(buf.at(cur_line).begin(), iter.base() - 1);
+            cur_char =
+                static_cast<unsigned int>(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
             auto ret = rawterm::Pos(
                 {static_cast<int>(current_line - cur_line),
                  static_cast<int>(current_char - cur_char)});
