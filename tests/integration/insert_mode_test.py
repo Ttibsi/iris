@@ -123,13 +123,15 @@ def test_backspace_newline(r: TmuxRunner):
     r.press("i")
     r.press("BSpace")
 
-    lines = r.lines()
+    lines = r.color_screenshot()
     with open("tests/fixture/test_file_1.txt") as f:
         contents = f.readlines()
 
     line_1_clean: str = contents[1].rstrip().replace("\t", "    ")
     line_2_clean: str = contents[2].rstrip()
-    assert lines[1] == f" 2\u2502{line_1_clean}{line_2_clean}"
+    highlight_line_num: str = "\x1b[38;2;255;221;51m 2\u2502\x1b[39m"
+
+    assert lines[1] == f"{highlight_line_num}{line_1_clean}{line_2_clean}"
     assert lines[len(contents) - 1] == "~"
 
     status_bar = r.statusbar_parts()
