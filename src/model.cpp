@@ -180,3 +180,47 @@ void Model::toggle_case() {
         buf.at(current_line).at(current_char) = c - 32;
     }
 }
+
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
+    unsigned int cur_line = current_line;
+    int cur_char = int32_t(current_char);
+
+    for (; cur_line < buf.size(); cur_line++) {
+        auto iter = std::find(buf.at(cur_line).begin() + cur_char + 1, buf.at(cur_line).end(), c);
+
+        if (iter != buf.at(cur_line).end()) {
+            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter));
+
+            // line is a relative value, char is an absolute value
+            return rawterm::Pos(
+                {static_cast<int>(cur_line - current_line), static_cast<int>(cur_char)});
+        }
+    }
+
+    return {};
+}
+
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) {
+    unsigned int cur_line = current_line;
+    int cur_char = int32_t(current_char);
+
+    for (; cur_line >= 0 && cur_line < buf.size(); cur_line--) {
+        if (!(cur_line == current_line)) {
+            cur_char = int32_t(buf.at(cur_line).size() - 1);
+        }
+
+        auto iter = std::find(
+            buf.at(cur_line).rbegin() + int32_t(buf.at(cur_line).size()) - cur_char,
+            buf.at(cur_line).rend(), c);
+
+        if (iter != buf.at(cur_line).rend()) {
+            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
+
+            // line is a relative value, char is an absolute value
+            return rawterm::Pos(
+                {static_cast<int>(current_line - cur_line), static_cast<int>(cur_char)});
+        }
+    }
+
+    return {};
+}

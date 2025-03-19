@@ -6,6 +6,8 @@
 #include <string_view>
 #include <vector>
 
+#include <rawterm/screen.h>
+
 // Forward declare from controller.h
 enum class Redraw;
 
@@ -33,6 +35,8 @@ struct Model {
     [[nodiscard]] std::optional<unsigned int> prev_para_pos();
     void replace_char(const char);
     void toggle_case();
+    [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
+    [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
 };
 
 #endif  // MODEL_H

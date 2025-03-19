@@ -24,13 +24,15 @@ enum class ActionType {
     MoveCursorDown,
     MoveCursorRight,
     Newline,
-    ReplaceChar,
     StartOfLine,
     ToggleCase,
 
     // Pass value
-    ChangeMode,  // Mode
-    InsertChar,  // Char
+    ChangeMode,   // Mode
+    FindNext,     // Char
+    FindPrev,     // Char
+    InsertChar,   // Char
+    ReplaceChar,  // Char
 };
 
 template <typename T>
@@ -217,17 +219,6 @@ template <typename T, typename U>
             return {};
         } break;
 
-        case ActionType::ReplaceChar: {
-            if constexpr (std::is_same_v<T, char>) {
-                auto logger = spdlog::get("basic_logger");
-                if (logger != nullptr) {
-                    logger->info("Action called: ReplaceChar");
-                }
-
-                v->get_active_model()->replace_char(action.payload);
-            }
-        } break;
-
         case ActionType::StartOfLine: {
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) {
@@ -261,6 +252,54 @@ template <typename T, typename U>
             return {};
         } break;
 
+        case ActionType::FindNext: {
+            if constexpr (std::is_same_v<T, char>) {
+                auto ret = v->get_active_model()->find_next(action.payload);
+                if (ret.has_value()) {
+                    for (int i = 0; i < ret.value().vertical; i++) {
+                        v->cursor_down();
+                    }
+
+                    if (ret.value().horizontal > v->get_active_model()->current_char) {
+                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_right();
+                        }
+                    } else {
+                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_left();
+                        }
+                    }
+
+                    v->draw_status_bar();
+                }
+            }
+        } break;
+
+        case ActionType::FindPrev: {
+            if constexpr (std::is_same_v<T, char>) {
+                auto ret = v->get_active_model()->find_prev(action.payload);
+                if (ret.has_value()) {
+                    for (int i = 0; i < ret.value().vertical; i++) {
+                        v->cursor_up();
+                    }
+
+                    if (ret.value().horizontal > v->get_active_model()->current_char) {
+                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_right();
+                        }
+                    } else {
+                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_left();
+                        }
+                    }
+                }
+            }
+        } break;
+
         case ActionType::InsertChar: {
             if constexpr (std::is_same_v<T, char>) {
                 auto logger = spdlog::get("basic_logger");
@@ -273,6 +312,17 @@ template <typename T, typename U>
                 v->cur.move_right();
             }
             return {};
+        } break;
+
+        case ActionType::ReplaceChar: {
+            if constexpr (std::is_same_v<T, char>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: ReplaceChar");
+                }
+
+                v->get_active_model()->replace_char(action.payload);
+            }
         } break;
 
         default: {

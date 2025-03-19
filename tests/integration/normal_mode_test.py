@@ -240,3 +240,33 @@ def test_tilde_key(r: TmuxRunner):
     r.type_str("l" * 4)
     r.press("~")
     assert r.lines()[0][7] == " "
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_f_key(r: TmuxRunner):
+    r.type_str("f ")
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "1:5"
+
+    # Search on next line
+    r.type_str("fn")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "2:15"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_f_key(r: TmuxRunner):
+    r.type_str("j" * 2)
+    r.press("$")
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[-1] == "3:20"
+
+    r.type_str("Fw")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "3:15"
+
+    # Search backwards on prev line
+    r.type_str("G_")
+    r.type_str("Ft")
+    statusbar = r.statusbar_parts()
+    assert statusbar[-1] == "2:29"
