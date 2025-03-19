@@ -1,6 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <format>
 #include <optional>
 
 #include "controller.h"
@@ -54,8 +55,23 @@ template <typename T, typename U>
                     logger->info("Action called: Backspace");
                 }
 
+                int prev_line_len = 0;
+                if (v->get_active_model()->current_line > 0) {
+                    prev_line_len = v->get_active_model()
+                                        ->buf.at(v->get_active_model()->current_line - 1)
+                                        .size();
+                    if (logger != nullptr) {
+                        logger->info(std::format("line len: {}", prev_line_len));
+                    }
+                }
+
                 Redraw ret = v->get_active_model()->backspace();
-                v->cur.move_left();
+                if (ret == Redraw::Screen) {
+                    v->cur.move_up();
+                    v->cur.move_right(prev_line_len);
+                } else {
+                    v->cur.move_left();
+                }
 
                 return ret;
             }
