@@ -250,15 +250,15 @@ def test_f_key(r: TmuxRunner):
 
     r.type_str("fn")  # go to next line
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "2:1"
+    assert statusbar[-1] == "2:15"
 
 
 @setup("tests/fixture/test_file_1.txt")
 def test_upper_f_key(r: TmuxRunner):
-    r.type_str("w" * 3)
+    r.type_str("j" * 2)
     r.press("$")
     statusbar: list[str] = r.statusbar_parts()
-    assert statusbar[-1] == "3:19"
+    assert statusbar[-1] == "3:20"
 
     r.type_str("Fw")
     statusbar = r.statusbar_parts()
@@ -268,4 +268,4 @@ def test_upper_f_key(r: TmuxRunner):
     r.type_str("G_")
     r.type_str("Ft")
     statusbar = r.statusbar_parts()
-    assert statusbar[-1] == "2:15"
+    assert statusbar[-1] == "2:29"

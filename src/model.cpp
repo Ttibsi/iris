@@ -184,18 +184,17 @@ void Model::toggle_case() {
 
 [[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
     unsigned int cur_line = current_line;
-    unsigned int cur_char = current_char;
+    int cur_char = int32_t(current_char);
 
     for (; cur_line < buf.size(); cur_line++) {
         auto iter = std::find(buf.at(cur_line).begin() + cur_char + 1, buf.at(cur_line).end(), c);
 
         if (iter != buf.at(cur_line).end()) {
-            cur_char = static_cast<unsigned int>(std::distance(buf.at(cur_line).begin(), iter));
-            auto ret = rawterm::Pos(
-                {std::abs(static_cast<int>(current_line - cur_line)),
-                 std::abs(static_cast<int>(current_char - cur_char))});
+            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter));
 
-            return ret;
+            // line is a relative value, char is an absolute value
+            return rawterm::Pos(
+                {static_cast<int>(cur_line - current_line), static_cast<int>(cur_char)});
         }
     }
 
@@ -204,25 +203,23 @@ void Model::toggle_case() {
 
 [[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) {
     unsigned int cur_line = current_line;
-    unsigned int cur_char = current_char;
+    int cur_char = int32_t(current_char);
 
     for (; cur_line >= 0 && cur_line < buf.size(); cur_line--) {
         if (!(cur_line == current_line)) {
-            cur_char = static_cast<uint_t>(buf.at(cur_line).size() - 1);
+            cur_char = int32_t(buf.at(cur_line).size() - 1);
         }
 
         auto iter = std::find(
-            buf.at(cur_line).rbegin() + static_cast<uint_t>(buf.at(cur_line).size() - cur_char),
+            buf.at(cur_line).rbegin() + int32_t(buf.at(cur_line).size()) - cur_char,
             buf.at(cur_line).rend(), c);
 
         if (iter != buf.at(cur_line).rend()) {
-            cur_char =
-                static_cast<unsigned int>(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
-            auto ret = rawterm::Pos(
-                {static_cast<int>(current_line - cur_line),
-                 static_cast<int>(current_char - cur_char)});
+            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
 
-            return ret;
+            // line is a relative value, char is an absolute value
+            return rawterm::Pos(
+                {static_cast<int>(current_line - cur_line), static_cast<int>(cur_char)});
         }
     }
 

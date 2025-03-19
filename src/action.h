@@ -248,8 +248,16 @@ template <typename T, typename U>
                         v->cursor_down();
                     }
 
-                    for (int i = 0; i < ret.value().horizontal; i++) {
-                        v->cursor_right();
+                    if (ret.value().horizontal > v->get_active_model()->current_char) {
+                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_right();
+                        }
+                    } else {
+                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_left();
+                        }
                     }
 
                     v->draw_status_bar();
@@ -265,8 +273,16 @@ template <typename T, typename U>
                         v->cursor_up();
                     }
 
-                    for (int i = 0; i < ret.value().horizontal; i++) {
-                        v->cursor_left();
+                    if (ret.value().horizontal > v->get_active_model()->current_char) {
+                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_right();
+                        }
+                    } else {
+                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
+                        for (int i = 0; i < diff; i++) {
+                            v->cursor_left();
+                        }
                     }
                 }
             }

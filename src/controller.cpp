@@ -187,14 +187,14 @@ void Controller::start_action_engine() {
                 // find forward
             } else if (k.value() == rawterm::Key('f')) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput()) {
+                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
                     parse_action<char, None>(&view, Action<char> {ActionType::FindNext, k2.code});
                 }
 
                 // find backward
             } else if (k.value() == rawterm::Key('F', rawterm::Mod::Shift)) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput()) {
+                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
                     parse_action<char, None>(&view, Action<char> {ActionType::FindPrev, k2.code});
                 }
 
