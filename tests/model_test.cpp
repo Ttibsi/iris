@@ -263,7 +263,7 @@ boost::ut::suite<"Model"> model_suite = [] {
         ret = m.find_next('o');
         expect(ret.has_value());
         expect(ret.value().vertical == 1);
-        expect(ret.value().horizontal == 2);
+        expect(ret.value().horizontal == 7);
 
         m.current_line += static_cast<unsigned int>(ret.value().vertical);
         m.current_char += static_cast<unsigned int>(ret.value().horizontal);
@@ -280,7 +280,7 @@ boost::ut::suite<"Model"> model_suite = [] {
         auto ret = m.find_prev('f');
         expect(ret.has_value());
         expect(ret.value().vertical == 0);
-        expect(ret.value().horizontal == 3);
+        expect(ret.value().horizontal == 5);
 
         m.current_line -= static_cast<unsigned int>(ret.value().vertical);
         m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
@@ -288,7 +288,7 @@ boost::ut::suite<"Model"> model_suite = [] {
         ret = m.find_prev('t');
         expect(ret.has_value());
         expect(ret.value().vertical == 3);
-        expect(ret.value().horizontal == 0);
+        expect(ret.value().horizontal == 5);
 
         m.current_line -= static_cast<unsigned int>(ret.value().vertical);
         m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
