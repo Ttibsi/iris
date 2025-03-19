@@ -249,6 +249,51 @@ boost::ut::suite<"Model"> model_suite = [] {
         expect(m.buf.at(0).at(4) == ' ');
     };
 
-    skip / "find_next"_test = [] {};
-    skip / "find_prev"_test = [] {};
+    "find_next"_test = [] {
+        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+        auto ret = m.find_next('o');
+        expect(ret.has_value());
+        expect(ret.value().vertical == 0);
+        expect(ret.value().horizontal == 5);
+
+        m.current_line += static_cast<unsigned int>(ret.value().vertical);
+        m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+
+        ret = m.find_next('o');
+        expect(ret.has_value());
+        expect(ret.value().vertical == 1);
+        expect(ret.value().horizontal == 2);
+
+        m.current_line += static_cast<unsigned int>(ret.value().vertical);
+        m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+
+        ret = m.find_next('_');
+        expect(!(ret.has_value()));
+    };
+
+    "find_prev"_test = [] {
+        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+        m.current_line = 5;
+        m.current_char = 8;
+
+        auto ret = m.find_prev('f');
+        expect(ret.has_value());
+        expect(ret.value().vertical == 0);
+        expect(ret.value().horizontal == 3);
+
+        m.current_line -= static_cast<unsigned int>(ret.value().vertical);
+        m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+
+        ret = m.find_prev('t');
+        expect(ret.has_value());
+        expect(ret.value().vertical == 3);
+        expect(ret.value().horizontal == 0);
+
+        m.current_line -= static_cast<unsigned int>(ret.value().vertical);
+        m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+
+        ret = m.find_prev('q');
+        expect(!(ret.has_value()));
+    };
 };

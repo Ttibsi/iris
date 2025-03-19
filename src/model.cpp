@@ -206,7 +206,7 @@ void Model::toggle_case() {
     unsigned int cur_line = current_line;
     unsigned int cur_char = current_char;
 
-    for (; cur_line >= 0; cur_line++) {
+    for (; cur_line >= 0 && cur_line < buf.size(); cur_line--) {
         if (!(cur_line == current_line)) {
             cur_char = static_cast<uint_t>(buf.at(cur_line).size() - 1);
         }
@@ -216,10 +216,10 @@ void Model::toggle_case() {
             buf.at(cur_line).rend(), c);
 
         if (iter != buf.at(cur_line).rend()) {
-            cur_char = std::distance(buf.at(cur_line).rbegin(), iter);
+            cur_char = std::distance(buf.at(cur_line).begin(), iter.base() - 1);
             auto ret = rawterm::Pos(
-                {std::abs(static_cast<int>(current_line - cur_line)),
-                 std::abs(static_cast<int>(current_char - cur_char))});
+                {static_cast<int>(current_line - cur_line),
+                 static_cast<int>(current_char - cur_char)});
 
             return ret;
         }
