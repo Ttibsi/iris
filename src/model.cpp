@@ -1,7 +1,6 @@
 #include "model.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "controller.h"
 #include "text_io.h"
