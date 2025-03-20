@@ -216,8 +216,9 @@ template <
     typename OutputIt,
     typename... Args,
     typename Char = detail::format_string_char_t<S>,
-    FMT_ENABLE_IF(detail::is_output_iterator<OutputIt, Char>::value&&
-                      detail::is_locale<Locale>::value&& detail::is_exotic_char<Char>::value)>
+    FMT_ENABLE_IF(
+        detail::is_output_iterator<OutputIt, Char>::value&& detail::is_locale<Locale>::value&&
+            detail::is_exotic_char<Char>::value)>
 inline auto vformat_to(
     OutputIt out,
     const Locale& loc,

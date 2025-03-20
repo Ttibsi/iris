@@ -80,7 +80,7 @@ def integration_tests(test_name: str = "") -> int:
         return run_shell_cmd(f"venv/bin/pytest -v {' '.join(test_paths)}")
 
 
-def test(testname: str | None, asan: bool, success: bool) -> int:
+def test(testname: str | None, asan: bool) -> int:
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
@@ -94,11 +94,9 @@ def test(testname: str | None, asan: bool, success: bool) -> int:
     if ret:
         return ret
 
-    if testname is None:
-        testname = ""
-    shell_cmd: str = f"./build/tests/test_exe {testname} --order rand"
-    if success:
-        shell_cmd += " -s"
+    testname = testname if testname is not None else ""
+    test_flags: str = "-sr compact --order rand"
+    shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"
 
     return run_shell_cmd(
         shell_cmd, env={
@@ -127,9 +125,6 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     test_parser = subparsers.add_parser("test")
     test_parser.add_argument("testname", nargs="?", default=None)
-    test_parser.add_argument(
-        "--success", "-s", action="store_true", default=False,
-    )
     test_parser.add_argument("--asan", action="store_true", default=False)
     test_parser.add_argument(
         "-I", "--integration",
@@ -148,7 +143,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.integration:
             return integration_tests(args.testname)
         else:
-            return test(args.testname, args.asan, args.success)
+            return test(args.testname, args.asan)
     else:
         return build()
 

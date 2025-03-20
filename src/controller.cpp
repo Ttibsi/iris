@@ -230,7 +230,12 @@ void Controller::start_action_engine() {
 
                 // add new line and go to insert mode (above)
             } else if (k.value() == rawterm::Key('O', rawterm::Mod::Shift)) {
-                parse_action<void, None>(&view, Action<void> {ActionType::StartOfLine});
+                uint32_t horizontal_cursor_pos = view.get_active_model()->current_char;
+                while (horizontal_cursor_pos) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                    horizontal_cursor_pos--;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
                 std::ignore =
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});

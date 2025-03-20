@@ -523,8 +523,9 @@ namespace detail {
     // Returns a pointer to the reserved range or a reference to it.
     template <
         typename OutputIt,
-        FMT_ENABLE_IF(is_back_insert_iterator<OutputIt>::value&&
-                          is_contiguous<typename OutputIt::container>::value)>
+        FMT_ENABLE_IF(
+            is_back_insert_iterator<OutputIt>::value&&
+                is_contiguous<typename OutputIt::container>::value)>
 #if FMT_CLANG_VERSION >= 307 && !FMT_ICC_VERSION
     __attribute__((no_sanitize("undefined")))
 #endif
@@ -567,8 +568,9 @@ namespace detail {
 
     template <
         typename OutputIt,
-        FMT_ENABLE_IF(is_back_insert_iterator<OutputIt>::value&&
-                          is_contiguous<typename OutputIt::container>::value)>
+        FMT_ENABLE_IF(
+            is_back_insert_iterator<OutputIt>::value&&
+                is_contiguous<typename OutputIt::container>::value)>
     inline auto base_iterator(OutputIt it, typename OutputIt::container_type::value_type*)
         -> OutputIt {
         return it;

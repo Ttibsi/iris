@@ -26,14 +26,13 @@ namespace spdlog {
             systemd_sink(std::string ident = "", bool enable_formatting = false)
                 : ident_ {std::move(ident)},
                   enable_formatting_ {enable_formatting},
-                  syslog_levels_ {
-                      {/* spdlog::level::trace      */ LOG_DEBUG,
-                       /* spdlog::level::debug      */ LOG_DEBUG,
-                       /* spdlog::level::info       */ LOG_INFO,
-                       /* spdlog::level::warn       */ LOG_WARNING,
-                       /* spdlog::level::err        */ LOG_ERR,
-                       /* spdlog::level::critical   */ LOG_CRIT,
-                       /* spdlog::level::off        */ LOG_INFO}} {}
+                  syslog_levels_ {{/* spdlog::level::trace      */ LOG_DEBUG,
+                                   /* spdlog::level::debug      */ LOG_DEBUG,
+                                   /* spdlog::level::info       */ LOG_INFO,
+                                   /* spdlog::level::warn       */ LOG_WARNING,
+                                   /* spdlog::level::err        */ LOG_ERR,
+                                   /* spdlog::level::critical   */ LOG_CRIT,
+                                   /* spdlog::level::off        */ LOG_INFO}} {}
 
             ~systemd_sink() override {}
 

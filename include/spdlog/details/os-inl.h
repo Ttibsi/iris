@@ -476,8 +476,9 @@ namespace spdlog {
                     }
                 }
 
-                throw_spdlog_ex(fmt_lib::format(
-                    "WideCharToMultiByte failed. Last error: {}", ::GetLastError()));
+                throw_spdlog_ex(
+                    fmt_lib::format(
+                        "WideCharToMultiByte failed. Last error: {}", ::GetLastError()));
             }
 
             SPDLOG_INLINE void utf8_to_wstrbuf(string_view_t str, wmemory_buf_t& target) {
@@ -504,8 +505,9 @@ namespace spdlog {
                     }
                 }
 
-                throw_spdlog_ex(fmt_lib::format(
-                    "MultiByteToWideChar failed. Last error: {}", ::GetLastError()));
+                throw_spdlog_ex(
+                    fmt_lib::format(
+                        "MultiByteToWideChar failed. Last error: {}", ::GetLastError()));
             }
 #endif  // (defined(SPDLOG_WCHAR_TO_UTF8_SUPPORT) || defined(SPDLOG_WCHAR_FILENAMES)) &&
         // defined(_WIN32)

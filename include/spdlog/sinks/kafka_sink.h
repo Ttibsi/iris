@@ -60,8 +60,9 @@ namespace spdlog {
                     if (producer_ == nullptr) {
                         throw_spdlog_ex(fmt_lib::format("create producer failed err:{}", errstr));
                     }
-                    topic_.reset(RdKafka::Topic::create(
-                        producer_.get(), config_.produce_topic, tconf_.get(), errstr));
+                    topic_.reset(
+                        RdKafka::Topic::create(
+                            producer_.get(), config_.produce_topic, tconf_.get(), errstr));
                     if (topic_ == nullptr) {
                         throw_spdlog_ex(fmt_lib::format("create topic failed err:{}", errstr));
                     }

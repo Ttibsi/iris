@@ -1,474 +1,452 @@
 #include "view.h"
 
-#include <utility>
-
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <rawterm/text.h>
-#include <ut/ut.hpp>
 
 #include "constants.h"
 #include "controller.h"
 #include "text_io.h"
 
-boost::ut::suite<"View"> view_suite = [] {
-    using namespace boost::ut;
+TEST_CASE("Constructor", "[view]") {
+    Controller c;
+    auto v = View(&c, {24, 80});
 
-    "Constructor"_test = [] {
+    REQUIRE(v.view_models.capacity() == 8);
+    REQUIRE(v.view_size.horizontal == 80);
+    REQUIRE(v.view_size.vertical == 24);
+}
+
+TEST_CASE("add_model", "[view]") {
+    Controller c;
+    lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
+
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m = Model(raw, "test_file.txt");
+    v.add_model(&m);
+
+    REQUIRE(v.active_model == 0);
+    REQUIRE(v.get_active_model()->filename == "test_file.txt");
+
+    if (LINE_NUMBERS) {
+        REQUIRE(v.line_number_offset == 2);
+    }
+}
+
+TEST_CASE("get_active_model", "[view]") {
+    Controller c;
+    lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
+
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m = Model(raw, "test_file.txt");
+    v.add_model(&m);
+
+    REQUIRE(v.get_active_model() == &m);
+}
+
+TEST_CASE("render_screen", "[view]") {
+    SECTION("Render single text file") {
         Controller c;
-        auto v = View(&c, {24, 80});
-
-        expect(v.view_models.capacity() == 8);
-        expect(v.view_size.horizontal == 80);
-        expect(v.view_size.vertical == 24);
-    };
-
-    "add_model"_test = [] {
-        Controller c;
-        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
-
         auto v = View(&c, rawterm::Pos(24, 80));
-        auto m = Model(raw, "test_file.txt");
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
 
-        expect(v.active_model == 0);
-        expect(v.get_active_model()->filename == "test_file.txt");
+        auto buffer = lines(v.render_screen());
+
+        REQUIRE(buffer.size() == 22);
+        REQUIRE(buffer.at(0).at(5) == 'T');
+        REQUIRE(buffer.at(1).at(1) == '2');
+    }
+
+    SECTION("Truncated line") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(32, "");
+        v.add_model(&m);
+
+        for (int i = 0; i < 80; i++) {
+            m.buf.at(0).push_back('_');
+        }
+
+        auto buffer = lines(v.render_screen());
+
+        REQUIRE(buffer.size() == 22);
+        REQUIRE(buffer.at(0).substr(buffer.at(0).size() - 2, 2) == "\u00bb");
+        REQUIRE(buffer.at(0).size() == 83);  // +3 for unicode chars
+    }
+}
+
+TEST_CASE("generate_tab_bar", "[view]") {
+    Controller c;
+    lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
+
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m = Model(raw, "test_file.txt");
+
+    v.add_model(&m);
+    auto m2 =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    v.add_model(&m2);
+
+    std::string ret = v.render_tab_bar();
+    std::string expected = "| test_file.txt | \x1B[7mtests/fixture/test_file_1.txt\x1B[27m | \n";
+
+    REQUIRE(v.view_models.size() == 2);
+    REQUIRE(v.active_model == 1);
+    REQUIRE(expected == ret);
+}
+
+TEST_CASE("render_line", "[view]") {
+    SECTION("Standard line rendering") {
+        Controller c;
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+
+        auto v = View(&c, rawterm::Pos(24, 80));
+        v.add_model(&m);
+
+        const std::string line = rawterm::raw_str(v.render_line(0));
+
+        std::string expected_text = "This is some text";
+        std::size_t expected_size = expected_text.size();
 
         if (LINE_NUMBERS) {
-            expect(v.line_number_offset == 2);
+            const std::string line_prefix = " 1\u2502";
+            expected_text = line_prefix + expected_text;
+            expected_size += line_prefix.size();
         }
-    };
 
-    "get_active_model"_test = [] {
+        REQUIRE(line == expected_text);
+        REQUIRE(line.size() == expected_size);
+    }
+
+    SECTION("Truncated line") {
         Controller c;
-        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
-
+        auto m = Model(32, "");
         auto v = View(&c, rawterm::Pos(24, 80));
-        auto m = Model(raw, "test_file.txt");
         v.add_model(&m);
 
-        expect(v.get_active_model() == &m);
-    };
+        for (int i = 0; i <= 80; i++) {
+            m.buf.at(0).push_back('_');
+        }
 
-    "render_screen"_test = [] {
-        should("Render single text file") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
+        const std::string line = rawterm::raw_str(v.render_line(0));
 
-            auto buffer = lines(v.render_screen());
+        REQUIRE(line.substr(line.size() - 2, 2) == "\u00BB");
+        REQUIRE(line.size() == 83);  // +3 for unicode chars
+    }
+}
 
-            expect(buffer.size() == 22);
-            expect(buffer.at(0).at(5) == 'T');
-            expect(buffer.at(1).at(1) == '2');
-        };
+TEST_CASE("render_status_bar", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
 
-        should("Truncated line") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(32, "");
-            v.add_model(&m);
+    auto m =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
 
-            for (int i = 0; i < 80; i++) {
-                m.buf.at(0).push_back('_');
-            }
+    v.add_model(&m);
+    std::string ret = v.render_status_bar();
 
-            auto buffer = lines(v.render_screen());
+    REQUIRE(ret.find("READ") != std::string::npos);
+    REQUIRE(ret.find("test_file_1.txt") != std::string::npos);
+    REQUIRE(ret.find("1:1") != std::string::npos);
+    REQUIRE(rawterm::raw_size(ret) == 80);
+}
 
-            expect(buffer.size() == 22);
-            expect(buffer.at(0).substr(buffer.at(0).size() - 2, 2) == "\u00bb");
-            expect(buffer.at(0).size() == 83);  // +3 for unicode chars
-        };
-    };
+TEST_CASE("clamp_horizontal_movement", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
 
-    "generate_tab_bar"_test = [] {
-        Controller c;
-        lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
 
-        auto v = View(&c, rawterm::Pos(24, 80));
-        auto m = Model(raw, "test_file.txt");
+    v.add_model(&m);
+    m.current_line = 7;
+    m.current_char = 7;
 
-        v.add_model(&m);
-        auto m2 = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-        v.add_model(&m2);
+    auto ret = v.clamp_horizontal_movement(1);
+    REQUIRE(ret.has_value());
+    REQUIRE(v.prev_cur_hor_pos == 1);
+    REQUIRE(ret.value() == 0);
 
-        std::string ret = v.render_tab_bar();
-        std::string expected =
-            "| test_file.txt | \x1B[7mtests/fixture/test_file_1.txt\x1B[27m | \n";
+    m.current_line++;
+    ret = v.clamp_horizontal_movement(1);
+    REQUIRE(ret.has_value());
+    REQUIRE(ret.value() == 1);
+    REQUIRE(v.prev_cur_hor_pos == -1);
+}
 
-        expect(v.view_models.size() == 2);
-        expect(v.active_model == 1);
-        expect(expected == ret);
-    };
-
-    "render_line"_test = [] {
-        should("Standard line rendering") = []() {
-            Controller c;
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            const std::string line = rawterm::raw_str(v.render_line(0));
-
-            std::string expected_text = "This is some text";
-            std::size_t expected_size = expected_text.size();
-
-            if (LINE_NUMBERS) {
-                const std::string line_prefix = " 1\u2502";
-                expected_text = line_prefix + expected_text;
-                expected_size += line_prefix.size();
-            }
-
-            expect(line == expected_text);
-            expect(line.size() == expected_size);
-        };
-
-        should("Truncated line") = []() {
-            Controller c;
-            auto m = Model(32, "");
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            for (int i = 0; i <= 80; i++) {
-                m.buf.at(0).push_back('_');
-            }
-
-            const std::string line = rawterm::raw_str(v.render_line(0));
-
-            expect(line.substr(line.size() - 2, 2) == "\u00BB");
-            expect(line.size() == 83);  // +3 for unicode chars
-        };
-    };
-
-    "render_status_bar"_test = [] {
+TEST_CASE("cursor_left", "[view]") {
+    SECTION("Already at left-most position") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
-
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
-
         v.add_model(&m);
-        std::string ret = v.render_status_bar();
 
-        expect(ret.find("READ") != std::string::npos);
-        expect(ret.find("test_file_1.txt") != std::string::npos);
-        expect(ret.find("1:1") != std::string::npos);
-        expect(rawterm::raw_size(ret) == 80) << rawterm::raw_size(ret);
-    };
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        v.cursor_left();
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+    }
 
-    "clamp_horizontal_movement"_test = [] {
+    SECTION("Move left") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
 
+        for (int i = 1; i < 5; i++) {
+            v.cursor_right();
+        }
+        v.cursor_left();
+        REQUIRE(v.cur == rawterm::Pos(1, 4));
+        REQUIRE(m.current_line == 0);
+        REQUIRE(m.current_char == 3);
+    }
+}
+
+TEST_CASE("cursor_up", "[view]") {
+    SECTION("Already at top-most row") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        v.cursor_up();
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+    }
+
+    SECTION("Move cursor up") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+        v.cursor_down();
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+
+        std::ignore = v.cursor_up();
+
+        REQUIRE(v.cur == rawterm::Pos(2, 1));
+        REQUIRE(m.current_line == 1);
+    }
+
+    SECTION("Move view up (scroll)") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
             open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
-
         v.add_model(&m);
-        m.current_line = 7;
-        m.current_char = 7;
 
-        auto ret = v.clamp_horizontal_movement(1);
-        expect(ret.has_value());
-        expect(v.prev_cur_hor_pos == 1);
-        expect(ret.value() == 0);
+        // Scroll down below initial view
+        for (int i = 1; i < 35; i++) {
+            v.cursor_down();
+        }
 
-        m.current_line++;
-        ret = v.clamp_horizontal_movement(1);
-        expect(ret.has_value());
-        expect(ret.value() == 1);
-        expect(v.prev_cur_hor_pos == -1);
-    };
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 34);
 
-    "cursor_left"_test = [] {
-        should("Already at left-most position") = [&]() {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
+        std::vector<std::string> text = lines(v.render_screen());
+        const uint_t idx = m.current_line - m.view_offset - 1;
+        REQUIRE(text.at(idx).find("massa.") != std::string::npos);
 
-            expect(v.cur == rawterm::Pos(1, 1));
-            v.cursor_left();
-            expect(v.cur == rawterm::Pos(1, 1));
-        };
-
-        should("Move left") = [&]() {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
-
-            for (int i = 1; i < 5; i++) {
-                v.cursor_right();
-            }
-            v.cursor_left();
-            expect(v.cur == rawterm::Pos(1, 4));
-            expect(m.current_line == 0);
-            expect(m.current_char == 3) << m.current_char;
-        };
-    };
-
-    "cursor_up"_test = [] {
-        should("Already at top-most row") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
-
-            expect(v.cur == rawterm::Pos(1, 1));
+        // Move cursor to top row
+        for (int i = 1; i < 23; i++) {
             v.cursor_up();
-            expect(v.cur == rawterm::Pos(1, 1));
-        };
+        }
 
-        should("Move cursor up") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        REQUIRE(m.current_line == 12);
+
+        text = lines(v.render_screen());
+        REQUIRE(text.at(0).find("Lorem ipsum") == std::string::npos);
+    }
+}
+
+TEST_CASE("cursor_down", "[view]") {
+    SECTION("Move cursor down") {
+        Controller c;
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
+        v.add_model(&m);
+
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(2, 1));
+        REQUIRE(m.current_line == 1);
+    }
+
+    SECTION("Move view down (scroll)") {
+        Controller c;
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
+        v.add_model(&m);
+
+        for (int i = 1; i < 22; i++) {
             v.cursor_down();
+        }
+
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 21);
+
+        v.cursor_down();  // trigger scrolling
+
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 22);
+
+        v.cursor_down();  // trigger scrolling
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == 23);
+    }
+
+    SECTION("Already at bottom-most row in file") {
+        Controller c;
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
+        v.add_model(&m);
+
+        for (unsigned int i = 1; i < m.buf.size(); i++) {
             v.cursor_down();
-            expect(v.cur == rawterm::Pos(3, 1));
+        }
 
-            std::ignore = v.cursor_up();
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == m.buf.size() - 1);
 
-            expect(v.cur == rawterm::Pos(2, 1));
-            expect(m.current_line == 1);
-        };
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(22, 1));
+        REQUIRE(m.current_line == m.buf.size() - 1);
+    }
 
-        should("Move view up (scroll)") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            v.add_model(&m);
+    SECTION("bottom row of file within view (no scrolling required)") {
+        Controller c;
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        auto v = View(&c, rawterm::Pos(24, 80));
+        v.add_model(&m);
 
-            // Scroll down below initial view
-            for (int i = 1; i < 35; i++) {
-                v.cursor_down();
-            }
+        // Move to end of file
+        v.cursor_down();
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 2);
 
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == 34);
+        // No cursor movement as we're already at end of file
+        v.cursor_down();
+        REQUIRE(v.cur == rawterm::Pos(3, 1));
+        REQUIRE(m.current_line == 2);
+    }
+}
 
-            std::vector<std::string> text = lines(v.render_screen());
-            const uint_t idx = m.current_line - m.view_offset - 1;
-            expect(text.at(idx).find("massa.") != std::string::npos);
+TEST_CASE("cursor_right", "[view]") {
+    SECTION("Already at right-most position in view") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+        v.cur.move({v.cur.vertical, v.line_number_offset + 1});
 
-            // Move cursor to top row
-            for (int i = 1; i < 23; i++) {
-                v.cursor_up();
-            }
-
-            expect(v.cur == rawterm::Pos(1, 1));
-            expect(m.current_line == 12);
-
-            text = lines(v.render_screen());
-            expect(text.at(0).find("Lorem ipsum") == std::string::npos);
-        };
-    };
-
-    "cursor_down"_test = [] {
-        should("Move cursor down") = [&] {
-            Controller c;
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            expect(v.cur == rawterm::Pos(1, 1));
-            v.cursor_down();
-            expect(v.cur == rawterm::Pos(2, 1));
-            expect(m.current_line == 1);
-        };
-
-        should("Move view down (scroll)") = [&] {
-            Controller c;
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            for (int i = 1; i < 22; i++) {
-                v.cursor_down();
-            }
-
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == 21);
-
-            v.cursor_down();  // trigger scrolling
-
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == 22);
-
-            v.cursor_down();  // trigger scrolling
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == 23);
-        };
-
-        should("Already at bottom-most row in file") = [&] {
-            Controller c;
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            for (unsigned int i = 1; i < m.buf.size(); i++) {
-                v.cursor_down();
-            }
-
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == m.buf.size() - 1);
-
-            v.cursor_down();
-            expect(v.cur == rawterm::Pos(22, 1));
-            expect(m.current_line == m.buf.size() - 1);
-        };
-
-        should("bottom row of file within view (no scrolling required)") = [&] {
-            Controller c;
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            auto v = View(&c, rawterm::Pos(24, 80));
-            v.add_model(&m);
-
-            // Move to end of file
-            v.cursor_down();
-            v.cursor_down();
-            expect(v.cur == rawterm::Pos(3, 1)) << v.cur;
-            expect(m.current_line == 2);
-
-            // No cursor movement as we're already at end of file
-            v.cursor_down();
-            expect(v.cur == rawterm::Pos(3, 1)) << v.cur;
-            expect(m.current_line == 2);
-        };
-    };
-
-    "cursor_right"_test = [] {
-        should("Already at right-most position in view") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
-            v.cur.move({v.cur.vertical, v.line_number_offset + 1});
-
-            for (int i = 1; i <= 80; i++) {
-                v.cursor_right();
-            }
-            expect(v.cur == rawterm::Pos(1, 21));
+        for (int i = 1; i <= 80; i++) {
             v.cursor_right();
-            expect(v.cur == rawterm::Pos(1, 21));
-        };
+        }
+        REQUIRE(v.cur == rawterm::Pos(1, 21));
+        v.cursor_right();
+        REQUIRE(v.cur == rawterm::Pos(1, 21));
+    }
 
-        should("Already at right-most position in line") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
-            v.cur.move({v.cur.vertical, v.line_number_offset + 1});
+    SECTION("Already at right-most position in line") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+        v.add_model(&m);
+        v.cur.move({v.cur.vertical, v.line_number_offset + 1});
 
-            for (int i = 1; i <= 100; i++) {
-                v.cursor_right();
-            }
-
-            expect(v.cur == rawterm::Pos(1, 21));
-            expect(m.current_char == 18);
-        };
-
-        should("Move right") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/test_file_1.txt").value(),
-                "tests/fixture/test_file_1.txt");
-            v.add_model(&m);
-
+        for (int i = 1; i <= 100; i++) {
             v.cursor_right();
-            expect(v.cur == rawterm::Pos(1, 2));
-        };
-    };
+        }
 
-    "cursor_end_of_line"_test = [] {
+        REQUIRE(v.cur == rawterm::Pos(1, 21));
+        REQUIRE(m.current_char == 18);
+    }
+
+    SECTION("Move right") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
 
-        expect(v.cur == rawterm::Pos(1, 1));
-        v.cursor_end_of_line();
-        expect(v.cur == rawterm::Pos(1, 18));
-    };
+        v.cursor_right();
+        REQUIRE(v.cur == rawterm::Pos(1, 2));
+    }
+}
 
-    "center_current_line"_test = [] {
-        should("Do nothing if current line is already near the top") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            v.add_model(&m);
+TEST_CASE("cursor_end_of_line", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    v.add_model(&m);
 
-            // Initial state
-            expect(m.current_line == 0);
-            expect(m.view_offset == 0);
-            expect(v.cur == rawterm::Pos(1, 1));
+    REQUIRE(v.cur == rawterm::Pos(1, 1));
+    v.cursor_end_of_line();
+    REQUIRE(v.cur == rawterm::Pos(1, 18));
+}
 
-            v.center_current_line();
+TEST_CASE("center_current_line", "[view]") {
+    SECTION("Do nothing if current line is already near the top") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+        v.add_model(&m);
 
-            // Should not change anything
-            expect(m.current_line == 0);
-            expect(m.view_offset == 0);
-            expect(v.cur == rawterm::Pos(1, 1));
-        };
+        // Initial state
+        REQUIRE(m.current_line == 0);
+        REQUIRE(m.view_offset == 0);
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
 
-        should("Center the view when current line is far down") = [] {
-            Controller c;
-            auto v = View(&c, rawterm::Pos(24, 80));
-            auto m = Model(
-                open_file("tests/fixture/lorem_ipsum.txt").value(),
-                "tests/fixture/lorem_ipsum.txt");
-            v.add_model(&m);
+        v.center_current_line();
 
-            // Move cursor far down
-            for (int i = 0; i < 30; i++) {
-                v.cursor_down();
-            }
+        // Should not change anything
+        REQUIRE(m.current_line == 0);
+        REQUIRE(m.view_offset == 0);
+        REQUIRE(v.cur == rawterm::Pos(1, 1));
+    }
 
-            // Check state before centering
-            expect(m.current_line == 30);
-            expect(m.view_offset > 0);
+    SECTION("Center the view when current line is far down") {
+        Controller c;
+        auto v = View(&c, rawterm::Pos(24, 80));
+        auto m = Model(
+            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+        v.add_model(&m);
 
-            v.center_current_line();
+        // Move cursor far down
+        for (int i = 0; i < 30; i++) {
+            v.cursor_down();
+        }
 
-            // View should be centered on line 30
-            expect(m.current_line == 30);
-            expect(m.view_offset == 30 - std::floor(v.view_size.vertical / 2));
-            expect(
-                v.cur == rawterm::Pos(
-                             static_cast<int>(std::floor(v.view_size.vertical / 2)) + 1,
-                             v.line_number_offset + 2));
-        };
-    };
-};
+        // Check state before centering
+        REQUIRE(m.current_line == 30);
+        REQUIRE(m.view_offset > 0);
+
+        v.center_current_line();
+
+        // View should be centered on line 30
+        REQUIRE(m.current_line == 30);
+        REQUIRE(m.view_offset == 30 - std::floor(v.view_size.vertical / 2));
+        REQUIRE(
+            v.cur == rawterm::Pos(
+                         static_cast<int>(std::floor(v.view_size.vertical / 2)) + 1,
+                         v.line_number_offset + 2));
+    }
+}
