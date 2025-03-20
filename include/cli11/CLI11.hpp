@@ -4409,10 +4409,13 @@ namespace CLI {
                 typename detail::pair_adaptor<element_t>::value_type;  // the type of the object
                                                                        // pair
             std::string out(1, '{');
-            out.append(detail::join(
-                detail::smart_deref(set),
-                [](const iteration_type_t& v) { return detail::pair_adaptor<element_t>::first(v); },
-                ","));
+            out.append(
+                detail::join(
+                    detail::smart_deref(set),
+                    [](const iteration_type_t& v) {
+                        return detail::pair_adaptor<element_t>::first(v);
+                    },
+                    ","));
             out.push_back('}');
             return out;
         }
@@ -4425,18 +4428,20 @@ namespace CLI {
                 typename detail::pair_adaptor<element_t>::value_type;  // the type of the object
                                                                        // pair
             std::string out(1, '{');
-            out.append(detail::join(
-                detail::smart_deref(map),
-                [key_only](const iteration_type_t& v) {
-                    std::string res {detail::to_string(detail::pair_adaptor<element_t>::first(v))};
+            out.append(
+                detail::join(
+                    detail::smart_deref(map),
+                    [key_only](const iteration_type_t& v) {
+                        std::string res {
+                            detail::to_string(detail::pair_adaptor<element_t>::first(v))};
 
-                    if (!key_only) {
-                        res.append("->");
-                        res += detail::to_string(detail::pair_adaptor<element_t>::second(v));
-                    }
-                    return res;
-                },
-                ","));
+                        if (!key_only) {
+                            res.append("->");
+                            res += detail::to_string(detail::pair_adaptor<element_t>::second(v));
+                        }
+                        return res;
+                    },
+                    ","));
             out.push_back('}');
             return out;
         }
@@ -6938,8 +6943,9 @@ namespace CLI {
             } break;
             case MultiOptionPolicy::Join:
                 if (results_.size() > 1) {
-                    out.push_back(detail::join(
-                        original, std::string(1, (delimiter_ == '\0') ? '\n' : delimiter_)));
+                    out.push_back(
+                        detail::join(
+                            original, std::string(1, (delimiter_ == '\0') ? '\n' : delimiter_)));
                 }
                 break;
             case MultiOptionPolicy::Sum:

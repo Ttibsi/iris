@@ -180,11 +180,13 @@ namespace spdlog {
     SPDLOG_INLINE void logger::dump_backtrace_() {
         using details::log_msg;
         if (tracer_.enabled() && !tracer_.empty()) {
-            sink_it_(log_msg {
-                name(), level::info, "****************** Backtrace Start ******************"});
+            sink_it_(
+                log_msg {
+                    name(), level::info, "****************** Backtrace Start ******************"});
             tracer_.foreach_pop([this](const log_msg& msg) { this->sink_it_(msg); });
-            sink_it_(log_msg {
-                name(), level::info, "****************** Backtrace End ********************"});
+            sink_it_(
+                log_msg {
+                    name(), level::info, "****************** Backtrace End ********************"});
         }
     }
 

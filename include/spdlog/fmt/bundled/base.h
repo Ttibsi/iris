@@ -552,8 +552,9 @@ class basic_string_view {
     /// `std::basic_string_view` object.
     template <
         typename S,
-        FMT_ENABLE_IF(detail::is_std_string_like<S>::value&&
-                          std::is_same<typename S::value_type, Char>::value)>
+        FMT_ENABLE_IF(
+            detail::is_std_string_like<S>::value&&
+                std::is_same<typename S::value_type, Char>::value)>
     FMT_CONSTEXPR basic_string_view(const S& s) noexcept : data_(s.data()), size_(s.size()) {}
 
     /// Returns a pointer to the string data.

@@ -28,18 +28,20 @@
 #include <vector>
 
 #ifndef SPDLOG_NO_EXCEPTIONS
-#define SPDLOG_LOGGER_CATCH(location)                                                            \
-    catch (const std::exception& ex) {                                                           \
-        if (location.filename) {                                                                 \
-            err_handler_(fmt_lib::format(                                                        \
-                SPDLOG_FMT_STRING("{} [{}({})]"), ex.what(), location.filename, location.line)); \
-        } else {                                                                                 \
-            err_handler_(ex.what());                                                             \
-        }                                                                                        \
-    }                                                                                            \
-    catch (...) {                                                                                \
-        err_handler_("Rethrowing unknown exception in logger");                                  \
-        throw;                                                                                   \
+#define SPDLOG_LOGGER_CATCH(location)                                               \
+    catch (const std::exception& ex) {                                              \
+        if (location.filename) {                                                    \
+            err_handler_(                                                           \
+                fmt_lib::format(                                                    \
+                    SPDLOG_FMT_STRING("{} [{}({})]"), ex.what(), location.filename, \
+                    location.line));                                                \
+        } else {                                                                    \
+            err_handler_(ex.what());                                                \
+        }                                                                           \
+    }                                                                               \
+    catch (...) {                                                                   \
+        err_handler_("Rethrowing unknown exception in logger");                     \
+        throw;                                                                      \
     }
 #else
 #define SPDLOG_LOGGER_CATCH(location)
