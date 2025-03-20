@@ -56,7 +56,7 @@ template <typename T, typename U>
                     logger->info("Action called: Backspace");
                 }
 
-                int prev_line_len = 0;
+                std::size_t prev_line_len = 0;
                 if (v->get_active_model()->current_line > 0) {
                     prev_line_len = v->get_active_model()
                                         ->buf.at(v->get_active_model()->current_line - 1)
@@ -66,7 +66,7 @@ template <typename T, typename U>
                 Redraw ret = v->get_active_model()->backspace();
                 if (ret == Redraw::Screen) {
                     v->cur.move_up();
-                    v->cur.move_right(prev_line_len);
+                    v->cur.move_right(int32_t(prev_line_len));
                 } else {
                     v->cur.move_left();
                 }
@@ -260,14 +260,16 @@ template <typename T, typename U>
                         v->cursor_down();
                     }
 
-                    if (ret.value().horizontal > v->get_active_model()->current_char) {
-                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
-                        for (int i = 0; i < diff; i++) {
+                    if (ret.value().horizontal > int32_t(v->get_active_model()->current_char)) {
+                        std::size_t diff =
+                            uint32_t(ret.value().horizontal) - v->get_active_model()->current_char;
+                        for (std::size_t i = 0; i < diff; i++) {
                             v->cursor_right();
                         }
                     } else {
-                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
-                        for (int i = 0; i < diff; i++) {
+                        uint32_t diff =
+                            v->get_active_model()->current_char - uint32_t(ret.value().horizontal);
+                        for (unsigned int i = 0; i < diff; i++) {
                             v->cursor_left();
                         }
                     }
@@ -285,14 +287,16 @@ template <typename T, typename U>
                         v->cursor_up();
                     }
 
-                    if (ret.value().horizontal > v->get_active_model()->current_char) {
-                        int diff = ret.value().horizontal - v->get_active_model()->current_char;
-                        for (int i = 0; i < diff; i++) {
+                    if (ret.value().horizontal > int32_t(v->get_active_model()->current_char)) {
+                        uint32_t diff =
+                            uint32_t(ret.value().horizontal) - v->get_active_model()->current_char;
+                        for (uint32_t i = 0; i < diff; i++) {
                             v->cursor_right();
                         }
                     } else {
-                        int diff = v->get_active_model()->current_char - ret.value().horizontal;
-                        for (int i = 0; i < diff; i++) {
+                        uint32_t diff =
+                            v->get_active_model()->current_char - uint32_t(ret.value().horizontal);
+                        for (uint32_t i = 0; i < diff; i++) {
                             v->cursor_left();
                         }
                     }
