@@ -165,6 +165,20 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('b')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevWord});
 
+                // find forward
+            } else if (k.value() == rawterm::Key('f')) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::FindNext, k2.code});
+                }
+
+                // find backward
+            } else if (k.value() == rawterm::Key('F', rawterm::Mod::Shift)) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::FindPrev, k2.code});
+                }
+
                 // Move to top of file
             } else if (k.value() == rawterm::Key('g')) {
                 std::size_t count = view.get_active_model()->current_line;
@@ -183,20 +197,6 @@ void Controller::start_action_engine() {
                         parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorDown});
                 }
                 redraw_all = true;
-
-                // find forward
-            } else if (k.value() == rawterm::Key('f')) {
-                auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
-                    parse_action<char, None>(&view, Action<char> {ActionType::FindNext, k2.code});
-                }
-
-                // find backward
-            } else if (k.value() == rawterm::Key('F', rawterm::Mod::Shift)) {
-                auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
-                    parse_action<char, None>(&view, Action<char> {ActionType::FindPrev, k2.code});
-                }
 
             } else if (k.value() == rawterm::Key('h')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
