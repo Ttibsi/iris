@@ -1,299 +1,294 @@
 #include "model.h"
 
+#include <catch2/catch_test_macros.hpp>
+
 #include "text_io.h"
-#include "ut/ut.hpp"
 
-boost::ut::suite<"Model"> model_suite = [] {
-    using namespace boost::ut;
+TEST_CASE("Constructor", "[model]") {
+    auto m = Model(32, "");
 
-    "Constructor"_test = [] {
-        auto m = Model(32, "");
+    REQUIRE(m.filename == "");
+    REQUIRE(m.buf.capacity() == 32);
+}
 
-        expect(m.filename == "");
-        expect(m.buf.capacity() == 32);
-    };
+TEST_CASE("Constructor with params", "[model]") {
+    lines_t expected_buf = {"foo", "bar", "baz"};
+    auto m = Model(expected_buf, "");
 
-    "Constructor with params"_test = [] {
-        lines_t expected_buf = {"foo", "bar", "baz"};
-        auto m = Model(expected_buf, "");
+    REQUIRE(m.filename == "");
+    REQUIRE(m.buf.at(0) == "foo");
+}
 
-        expect(m.filename == "");
-        expect(m.buf.at(0) == "foo");
-    };
-
-    "backspace"_test = [] {
-        should("backspace a newline") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-            m.current_line = 1;
-            std::ignore = m.backspace();
-
-            expect(m.buf.size() == 2);
-            expect(m.buf.at(0) == "foobar");
-        };
-
-        should("backspace a char") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-            m.current_line = 1;
-            m.current_char = 2;
-            std::ignore = m.backspace();
-
-            expect(m.buf.size() == 3);
-            expect(m.buf.at(1) == "br") << m.buf.at(1);
-            expect(m.buf.at(1).size() == 2);
-        };
-
-        should("backspace the last char") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-            m.current_line = 1;
-            m.current_char = 3;
-            std::ignore = m.backspace();
-
-            expect(m.buf.size() == 3);
-            expect(m.buf.at(1) == "ba");
-            expect(m.buf.at(1).size() == 2);
-        };
-    };
-
-    "newline"_test = [] {
-        should("At end of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            m.current_char = 3;
-            const std::size_t prev_line_len = m.newline();
-
-            expect(prev_line_len == v.at(0).size());
-            expect(m.buf.size() == 4);
-            expect(m.buf.at(0).size() == 3);
-            expect(m.buf.at(1).size() == 0);
-        };
-
-        should("At mid of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            m.current_char = 1;
-            const std::size_t prev_line_len = m.newline();
-
-            expect(prev_line_len == 1);
-            expect(m.buf.size() == 4);
-            expect(m.buf.at(0).size() == 1);
-            expect(m.buf.at(0) == "f");
-            expect(m.buf.at(1).size() == 2);
-            expect(m.buf.at(1) == "oo");
-        };
-
-        should("At start of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            const std::size_t prev_line_len = m.newline();
-
-            expect(prev_line_len == 0);
-            expect(m.buf.size() == 4);
-
-            expect(m.buf.at(0).size() == 0);
-            expect(m.buf.at(0) == "");
-
-            expect(m.buf.at(1).size() == v.at(0).size());
-            expect(m.buf.at(1) == "foo");
-        };
-
-        should("Remove whitespace from second line") = [] {
-            lines_t v = {"Some long text", "and another"};
-            auto m = Model(v, "");
-            m.current_char = 4;
-
-            const std::size_t prev_line_len = m.newline();
-            expect(prev_line_len == 4);
-            expect(m.buf.at(0) == "Some");
-            expect(m.buf.at(1) == "long text");
-            expect(m.buf.at(2) == "and another");
-        };
-    };
-
-    "insert"_test = [] {
-        should("Insert at start of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            m.insert('x');
-            expect(m.buf.at(0) == "xfoo");
-            expect(m.buf.at(0).size() == 4);
-            expect(m.buf.size() == 3);
-
-            m.insert('y');
-            expect(m.buf.at(0) == "xyfoo");
-            expect(m.buf.at(0).size() == 5);
-            expect(m.buf.size() == 3);
-        };
-
-        should("Insert in mid of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            m.current_char++;
-            m.insert('x');
-
-            expect(m.buf.at(0) == "fxoo");
-            expect(m.buf.at(0).size() == 4);
-            expect(m.buf.size() == 3);
-        };
-
-        should("Insert at end of line") = [] {
-            lines_t v = {"foo", "bar", "baz"};
-            auto m = Model(v, "");
-
-            m.current_char = static_cast<unsigned int>(v.at(0).size());
-            m.insert('x');
-
-            expect(m.buf.at(0) == "foox");
-            expect(m.buf.at(0).size() == 4);
-            expect(m.buf.size() == 3);
-        };
-    };
-
-    "lineno_in_scope"_test = [] {
+TEST_CASE("backspace", "[model]") {
+    SECTION("backspace a newline") {
         lines_t v = {"foo", "bar", "baz"};
         auto m = Model(v, "");
-        expect(m.lineno_in_scope(2));
-        expect(!(m.lineno_in_scope(6)));
-    };
+        m.current_line = 1;
+        std::ignore = m.backspace();
 
-    "next_word_pos"_test = [] {
-        auto m = Model({"This is the first line", "std::foo();"}, "");
+        REQUIRE(m.buf.size() == 2);
+        REQUIRE(m.buf.at(0) == "foobar");
+    }
 
-        expect(m.next_word_pos().has_value());
-        expect(m.next_word_pos().value() == 5);
-        m.current_char = 19;
-        expect(!(m.next_word_pos().has_value()));
+    SECTION("backspace a char") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+        m.current_line = 1;
+        m.current_char = 2;
+        std::ignore = m.backspace();
 
-        m.current_line++;
+        REQUIRE(m.buf.size() == 3);
+        REQUIRE(m.buf.at(1) == "br");
+        REQUIRE(m.buf.at(1).size() == 2);
+    }
+
+    SECTION("backspace the last char") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+        m.current_line = 1;
+        m.current_char = 3;
+        std::ignore = m.backspace();
+
+        REQUIRE(m.buf.size() == 3);
+        REQUIRE(m.buf.at(1) == "ba");
+        REQUIRE(m.buf.at(1).size() == 2);
+    }
+}
+
+TEST_CASE("newline", "[model]") {
+    SECTION("At end of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+
+        m.current_char = 3;
+        const std::size_t prev_line_len = m.newline();
+
+        REQUIRE(prev_line_len == v.at(0).size());
+        REQUIRE(m.buf.size() == 4);
+        REQUIRE(m.buf.at(0).size() == 3);
+        REQUIRE(m.buf.at(1).size() == 0);
+    }
+
+    SECTION("At mid of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
+
         m.current_char = 1;
+        const std::size_t prev_line_len = m.newline();
 
-        expect(m.next_word_pos().has_value());
-        expect(m.next_word_pos().value() == 4);
+        REQUIRE(prev_line_len == 1);
+        REQUIRE(m.buf.size() == 4);
+        REQUIRE(m.buf.at(0).size() == 1);
+        REQUIRE(m.buf.at(0) == "f");
+        REQUIRE(m.buf.at(1).size() == 2);
+        REQUIRE(m.buf.at(1) == "oo");
+    }
 
-        // if at end of line, don't crash
-        m.current_line = 0;
-        m.current_char = static_cast<uint>(m.buf.at(0).size()) - 1;
-        expect(!(m.next_word_pos().has_value()));
-    };
+    SECTION("At start of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
 
-    "prev_word_pos"_test = [] {
-        auto m = Model({"This is the first line", "std::foo();"}, "");
+        const std::size_t prev_line_len = m.newline();
 
-        m.current_char = 21;
-        expect(m.prev_word_pos().has_value());
-        expect(m.prev_word_pos().value() == 5);
+        REQUIRE(prev_line_len == 0);
+        REQUIRE(m.buf.size() == 4);
+        REQUIRE(m.buf.at(0).size() == 0);
+        REQUIRE(m.buf.at(0) == "");
+        REQUIRE(m.buf.at(1).size() == v.at(0).size());
+        REQUIRE(m.buf.at(1) == "foo");
+    }
 
-        m.current_char -= 5;
-        expect(m.prev_word_pos().has_value());
-        expect(m.prev_word_pos().value() == 6);
-
-        m.current_char -= 6;
-        expect(m.prev_word_pos().has_value());
-        expect(m.prev_word_pos().value() == 4);
-
-        // If at start of line, don't crash
-        m.current_char = 0;
-        expect(!(m.prev_word_pos().has_value()));
-    };
-
-    "next_para_pos"_test = [] {
-        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
-
-        auto opt = m.next_para_pos();
-        expect(opt.has_value());
-        expect(opt.value() == 3);
-
-        m.current_line = 4;
-
-        opt = m.next_para_pos();
-        expect(opt.has_value());
-        expect(opt.value() == 1);
-
-        m.current_line = 5;
-        opt = m.next_para_pos();
-        expect(!(opt.has_value()));
-    };
-
-    "prev_para_pos"_test = [] {
-        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
-
-        auto opt = m.prev_para_pos();
-        expect(!(opt.has_value()));
-
-        m.current_line = static_cast<unsigned int>(m.buf.size() - 1);
-
-        opt = m.prev_para_pos();
-        expect(opt.has_value());
-        expect(opt.value() == 2);
-
-        m.current_line = 2;
-        opt = m.prev_para_pos();
-        expect(opt.has_value());
-        expect(opt.value() == 2);
-    };
-
-    "toggle_case"_test = [] {
-        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
-
-        m.toggle_case();
-        expect(m.buf.at(0).at(0) == 'L');
-
+    SECTION("Remove whitespace from second line") {
+        lines_t v = {"Some long text", "and another"};
+        auto m = Model(v, "");
         m.current_char = 4;
-        expect(m.buf.at(0).at(4) == ' ');
-    };
 
-    "find_next"_test = [] {
-        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+        const std::size_t prev_line_len = m.newline();
+        REQUIRE(prev_line_len == 4);
+        REQUIRE(m.buf.at(0) == "Some");
+        REQUIRE(m.buf.at(1) == "long text");
+        REQUIRE(m.buf.at(2) == "and another");
+    }
+}
 
-        auto ret = m.find_next('o');
-        expect(ret.has_value());
-        expect(ret.value().vertical == 0);
-        expect(ret.value().horizontal == 5);
+TEST_CASE("insert", "[model]") {
+    SECTION("Insert at start of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
 
-        m.current_line += static_cast<unsigned int>(ret.value().vertical);
-        m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+        m.insert('x');
+        REQUIRE(m.buf.at(0) == "xfoo");
+        REQUIRE(m.buf.at(0).size() == 4);
+        REQUIRE(m.buf.size() == 3);
 
-        ret = m.find_next('o');
-        expect(ret.has_value());
-        expect(ret.value().vertical == 1);
-        expect(ret.value().horizontal == 7);
+        m.insert('y');
+        REQUIRE(m.buf.at(0) == "xyfoo");
+        REQUIRE(m.buf.at(0).size() == 5);
+        REQUIRE(m.buf.size() == 3);
+    }
 
-        m.current_line += static_cast<unsigned int>(ret.value().vertical);
-        m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+    SECTION("Insert in mid of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
 
-        ret = m.find_next('_');
-        expect(!(ret.has_value()));
-    };
+        m.current_char++;
+        m.insert('x');
 
-    "find_prev"_test = [] {
-        auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
-        m.current_line = 5;
-        m.current_char = 8;
+        REQUIRE(m.buf.at(0) == "fxoo");
+        REQUIRE(m.buf.at(0).size() == 4);
+        REQUIRE(m.buf.size() == 3);
+    }
 
-        auto ret = m.find_prev('f');
-        expect(ret.has_value());
-        expect(ret.value().vertical == 0);
-        expect(ret.value().horizontal == 5);
+    SECTION("Insert at end of line") {
+        lines_t v = {"foo", "bar", "baz"};
+        auto m = Model(v, "");
 
-        m.current_line -= static_cast<unsigned int>(ret.value().vertical);
-        m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+        m.current_char = static_cast<unsigned int>(v.at(0).size());
+        m.insert('x');
 
-        ret = m.find_prev('t');
-        expect(ret.has_value());
-        expect(ret.value().vertical == 3);
-        expect(ret.value().horizontal == 5);
+        REQUIRE(m.buf.at(0) == "foox");
+        REQUIRE(m.buf.at(0).size() == 4);
+        REQUIRE(m.buf.size() == 3);
+    }
+}
 
-        m.current_line -= static_cast<unsigned int>(ret.value().vertical);
-        m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+TEST_CASE("lineno_in_scope", "[model]") {
+    lines_t v = {"foo", "bar", "baz"};
+    auto m = Model(v, "");
+    REQUIRE(m.lineno_in_scope(2));
+    REQUIRE_FALSE(m.lineno_in_scope(6));
+}
 
-        ret = m.find_prev('q');
-        expect(!(ret.has_value()));
-    };
-};
+TEST_CASE("next_word_pos", "[model]") {
+    auto m = Model({"This is the first line", "std::foo();"}, "");
+
+    REQUIRE(m.next_word_pos().has_value());
+    REQUIRE(m.next_word_pos().value() == 5);
+    m.current_char = 19;
+    REQUIRE_FALSE(m.next_word_pos().has_value());
+
+    m.current_line++;
+    m.current_char = 1;
+
+    REQUIRE(m.next_word_pos().has_value());
+    REQUIRE(m.next_word_pos().value() == 4);
+
+    // if at end of line, don't crash
+    m.current_line = 0;
+    m.current_char = static_cast<uint>(m.buf.at(0).size()) - 1;
+    REQUIRE_FALSE(m.next_word_pos().has_value());
+}
+
+TEST_CASE("prev_word_pos", "[model]") {
+    auto m = Model({"This is the first line", "std::foo();"}, "");
+
+    m.current_char = 21;
+    REQUIRE(m.prev_word_pos().has_value());
+    REQUIRE(m.prev_word_pos().value() == 5);
+
+    m.current_char -= 5;
+    REQUIRE(m.prev_word_pos().has_value());
+    REQUIRE(m.prev_word_pos().value() == 6);
+
+    m.current_char -= 6;
+    REQUIRE(m.prev_word_pos().has_value());
+    REQUIRE(m.prev_word_pos().value() == 4);
+
+    // If at start of line, don't crash
+    m.current_char = 0;
+    REQUIRE_FALSE(m.prev_word_pos().has_value());
+}
+
+TEST_CASE("next_para_pos", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    auto opt = m.next_para_pos();
+    REQUIRE(opt.has_value());
+    REQUIRE(opt.value() == 3);
+
+    m.current_line = 4;
+
+    opt = m.next_para_pos();
+    REQUIRE(opt.has_value());
+    REQUIRE(opt.value() == 1);
+
+    m.current_line = 5;
+    opt = m.next_para_pos();
+    REQUIRE_FALSE(opt.has_value());
+}
+
+TEST_CASE("prev_para_pos", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    auto opt = m.prev_para_pos();
+    REQUIRE_FALSE(opt.has_value());
+
+    m.current_line = static_cast<unsigned int>(m.buf.size() - 1);
+
+    opt = m.prev_para_pos();
+    REQUIRE(opt.has_value());
+    REQUIRE(opt.value() == 2);
+
+    m.current_line = 2;
+    opt = m.prev_para_pos();
+    REQUIRE(opt.has_value());
+    REQUIRE(opt.value() == 2);
+}
+
+TEST_CASE("toggle_case", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    m.toggle_case();
+    REQUIRE(m.buf.at(0).at(0) == 'L');
+
+    m.current_char = 4;
+    REQUIRE(m.buf.at(0).at(4) == ' ');
+}
+
+TEST_CASE("find_next", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    auto ret = m.find_next('o');
+    REQUIRE(ret.has_value());
+    REQUIRE(ret.value().vertical == 0);
+    REQUIRE(ret.value().horizontal == 5);
+
+    m.current_line += static_cast<unsigned int>(ret.value().vertical);
+    m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+
+    ret = m.find_next('o');
+    REQUIRE(ret.has_value());
+    REQUIRE(ret.value().vertical == 1);
+    REQUIRE(ret.value().horizontal == 7);
+
+    m.current_line += static_cast<unsigned int>(ret.value().vertical);
+    m.current_char += static_cast<unsigned int>(ret.value().horizontal);
+
+    ret = m.find_next('_');
+    REQUIRE_FALSE(ret.has_value());
+}
+
+TEST_CASE("find_prev", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.current_line = 5;
+    m.current_char = 8;
+
+    auto ret = m.find_prev('f');
+    REQUIRE(ret.has_value());
+    REQUIRE(ret.value().vertical == 0);
+    REQUIRE(ret.value().horizontal == 5);
+
+    m.current_line -= static_cast<unsigned int>(ret.value().vertical);
+    m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+
+    ret = m.find_prev('t');
+    REQUIRE(ret.has_value());
+    REQUIRE(ret.value().vertical == 3);
+    REQUIRE(ret.value().horizontal == 5);
+
+    m.current_line -= static_cast<unsigned int>(ret.value().vertical);
+    m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+
+    ret = m.find_prev('q');
+    REQUIRE_FALSE(ret.has_value());
+}

@@ -1,50 +1,49 @@
 #include "controller.h"
 
-#include "ut/ut.hpp"
+#include <catch2/catch_test_case_info.hpp>
+#include <catch2/catch_test_macros.hpp>
 
-boost::ut::suite<"Controller"> controller_suite = [] {
-    using namespace boost::ut;
+TEST_CASE("Construction", "[controller]") {
+    Controller c;
+    REQUIRE(c.models.capacity() == 8);
+}
 
-    "Constructor"_test = [] {
+TEST_CASE("set_mode", "[controller]") {
+    Controller c;
+
+    c.set_mode(Mode::Write);
+    REQUIRE(c.mode == Mode::Write);
+
+    c.set_mode(Mode::Read);
+    REQUIRE(c.mode == Mode::Read);
+}
+
+TEST_CASE("get_mode", "[controller]") {
+    Controller c;
+
+    REQUIRE(c.get_mode() == "READ");
+    c.set_mode(Mode::Write);
+    REQUIRE(c.get_mode() == "WRITE");
+}
+
+TEST_CASE("create_view", "[controller]") {
+    SECTION("View with file") {
         Controller c;
-        expect(c.models.capacity() == 8);
-    };
+        c.create_view("tests/fixture/test_file_1.txt");
 
-    "set_mode"_test = [] {
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(*c.models.at(0).buf.at(0).begin() == 'T');
+    }
+
+    SECTION("Empty view") {
         Controller c;
+        c.create_view("");
 
-        c.set_mode(Mode::Write);
-        expect(c.mode == Mode::Write);
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(c.models.at(0).buf.size() == 1);
+    }
+}
 
-        c.set_mode(Mode::Read);
-        expect(c.mode == Mode::Read);
-    };
-
-    "get_mode"_test = [] {
-        Controller c;
-
-        expect(c.get_mode() == "READ");
-        c.set_mode(Mode::Write);
-        expect(c.get_mode() == "WRITE");
-    };
-
-    "create_view"_test = [] {
-        should("View with file") = [=] {
-            Controller c;
-            c.create_view("tests/fixture/test_file_1.txt");
-
-            expect(c.models.size() == 1);
-            expect(*c.models.at(0).buf.at(0).begin() == 'T');
-        };
-
-        should("Empty view") = [=] {
-            Controller c;
-            c.create_view("");
-
-            expect(c.models.size() == 1);
-            expect(c.models.at(0).buf.size() == 1);
-        };
-    };
-
-    skip / "start_action_engine"_test = [] {};
-};
+TEST_CASE("start_action_engine", "[controller]") {
+    SKIP("TODO");
+}

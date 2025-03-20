@@ -23,4 +23,4 @@ if(ENABLE_ASAN)
     target_link_libraries(test_exe PRIVATE -fsanitize=address)
 endif()
 
-target_link_libraries(test_exe PUBLIC rawterm iris_src)
+target_link_libraries(test_exe PUBLIC iris_src rawterm Catch2::Catch2WithMain)

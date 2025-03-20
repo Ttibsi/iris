@@ -1,54 +1,51 @@
 #include "text_io.h"
 
+#include <catch2/catch_test_macros.hpp>
+
 #include "model.h"
-#include "ut/ut.hpp"
 
-boost::ut::suite<"Text IO"> file_io_suite = [] {
-    using namespace boost::ut;
+TEST_CASE("open_file", "[textio]") {
+    SECTION("Normal file") {
+        lines_t expected = {
+            "This is some text", "    here is a newline and a tab", "and another newline"};
 
-    "open_file"_test = [] {
-        should("Normal file") = [] {
-            lines_t expected = {
-                "This is some text", "    here is a newline and a tab", "and another newline"};
+        opt_lines_t actual = open_file("tests/fixture/test_file_1.txt");
 
-            opt_lines_t actual = open_file("tests/fixture/test_file_1.txt");
+        REQUIRE(actual.has_value() == true);
+        REQUIRE(actual.value() == expected);
+        REQUIRE(actual.value().at(1) == expected.at(1));
+    }
 
-            expect(actual.has_value() == true);
-            expect(actual.value() == expected);
-            expect(actual.value().at(1) == expected.at(1));
-        };
+    SECTION("One line, no newlines") {
+        opt_lines_t actual = open_file("tests/fixture/no_newline_file.txt");
+        REQUIRE(actual.has_value() == true);
+        REQUIRE(actual.value().size() == 1);
+        REQUIRE(actual.value().at(0) == "hello");
+    }
+}
 
-        should("One line, no newlines") = [] {
-            opt_lines_t actual = open_file("tests/fixture/no_newline_file.txt");
-            expect(actual.has_value() == true);
-            expect(actual.value().size() == 1);
-            expect(actual.value().at(0) == "hello");
-        };
-    };
+TEST_CASE("write_to_file", "[textio]") {
+    lines_t expected_buf = {"foo", "bar", "baz"};
+    auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
+    const WriteData data = write_to_file(m);
+    REQUIRE(data.valid == true);
+    REQUIRE(data.bytes == 12);
+    REQUIRE(data.lines == 3);
+}
 
-    "write_to_file"_test = [] {
-        lines_t expected_buf = {"foo", "bar", "baz"};
-        auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
-        const WriteData data = write_to_file(m);
-        expect(data.valid == true);
-        expect(data.bytes == 12);
-        expect(data.lines == 3);
-    };
+TEST_CASE("lines", "[textio]") {
+    std::string s = "foo\nbar\r\nbaz";
+    auto actual = lines(s);
 
-    "lines"_test = [] {
-        std::string s = "foo\nbar\r\nbaz";
-        auto actual = lines(s);
+    REQUIRE(actual.size() == 3);
+    REQUIRE(actual.at(0) == "foo");
+    REQUIRE(actual.at(1) == "bar");
+    REQUIRE(actual.at(2) == "baz");
+}
 
-        expect(actual.size() == 3);
-        expect(actual.at(0) == "foo");
-        expect(actual.at(1) == "bar");
-        expect(actual.at(2) == "baz");
-    };
-
-    "is_letter"_test = [] {
-        expect(is_letter('a'));
-        expect(is_letter('L'));
-        expect(!(is_letter('_')));
-        expect(!(is_letter(':')));
-    };
-};
+TEST_CASE("is_letter", "[textio]") {
+    REQUIRE(is_letter('a'));
+    REQUIRE(is_letter('L'));
+    REQUIRE_FALSE(is_letter('_'));
+    REQUIRE_FALSE(is_letter(':'));
+}
