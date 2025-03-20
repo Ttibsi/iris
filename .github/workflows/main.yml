@@ -1,7 +1,7 @@
 name: main
 on:
   pull_request:
-    branches: [ main, rewrite-vecstr ]
+    branches: [ main ]
 jobs:
   pre_commit_run:
     runs-on: ubuntu-24.04
@@ -13,6 +13,7 @@ jobs:
         with:
           run-build: true
           generator: Ninja
+          options: RUN_TESTS=true
       - uses: pre-commit/action@v3.0.0
   unit_tests:
     runs-on: ubuntu-24.04
