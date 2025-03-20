@@ -16,3 +16,8 @@ ChatGPT)
 
 ### HOW TO RUN
 Prerequisites: `cmake`, `ninja`, `Python`
+
+I provide a wrapper python script to run all the required commands.
+* To build just the binary, run `./run.py`
+* To also run the unit tests: `./run.py test`
+* For integration tests using hecate and tmux, run `./run.py test -I`
