@@ -8,6 +8,8 @@
 #include "spdlog/spdlog.h"
 #include "version.h"
 
+// TODO: A way of detecting if the file is already open in another iris
+// instance
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 

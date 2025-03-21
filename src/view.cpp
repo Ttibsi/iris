@@ -389,6 +389,7 @@ void View::center_current_line() {
         return;
     }
 
+    prev_cur_hor_pos = -1;
     get_active_model()->view_offset = get_active_model()->current_line - half_view;
     cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
 }

@@ -76,6 +76,8 @@ void Model::insert(const char c) {
 [[nodiscard]] std::optional<int> Model::next_word_pos() {
     if (current_char == buf.at(current_line).size() - 1) {
         return {};
+    } else if (buf.at(current_line).empty()) {
+        return {};
     }
 
     std::string_view line_frag = std::string_view(buf.at(current_line)).substr(current_char);
@@ -106,6 +108,8 @@ void Model::insert(const char c) {
 
 [[nodiscard]] std::optional<int> Model::prev_word_pos() {
     if (!(current_char)) {
+        return {};
+    } else if (buf.at(current_line).empty()) {
         return {};
     }
 
