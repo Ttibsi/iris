@@ -22,6 +22,13 @@ I provide a wrapper python script to run all the required commands.
 * To also run the unit tests: `./run.py test`
 * For integration tests using hecate and tmux, run `./run.py test -I`
 
+To make a release binary, run the following commands on a Fedora-based system.
+(Adjust as needed for your local system)
+```console
+$ sudo dnf install glibc-static libstdc++-static
+$ ./run.py --release
+```
+
 # How to use
 `iris` is a vim-inspired modal text editor. As with vim, any you'll need to
 switch to `write` mode to insert any characters. In `read` mode, you can
