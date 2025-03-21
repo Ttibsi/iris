@@ -107,18 +107,27 @@ def test(testname: str | None, asan: bool) -> int:
     )
 
 
-def build() -> int:
+def build(release: bool = False) -> int:
     ret: int = 0
-    ret = run_shell_cmd("cmake -G Ninja -S . -B build")
+    cmd: str = "cmake -G Ninja -S . -B build"
+    if release:
+        cmd += " -DRELEASE=true"
+
+    ret = run_shell_cmd(cmd)
 
     if ret == 0:
         ret = run_shell_cmd("cmake --build build/")
+
+    if release and ret == 0:
+        ret = run_shell_cmd("strip build/src/iris")
 
     return ret
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--release", action="store_true", default=False)
+
     subparsers = parser.add_subparsers(dest="cmd")
     subparsers.add_parser("clean")
     subparsers.add_parser("loc")
@@ -145,7 +154,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             return test(args.testname, args.asan)
     else:
-        return build()
+        return build(args.release)
 
     print(f"Elapsed time: {round(timeit.default_timer() - start, 2)} Seconds")
 
