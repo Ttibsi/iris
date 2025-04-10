@@ -274,7 +274,7 @@ void Controller::start_action_engine() {
                 parse_action<Mode, None>(
                     &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
                 view.draw_status_bar();
-                enter_command_mode();
+                redraw_all = enter_command_mode();
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
                 // Move to beginning/end of line
@@ -307,8 +307,9 @@ void Controller::start_action_engine() {
 
 // TODO: Command history
 // TODO: Autocomplete with Tab
-void Controller::enter_command_mode() {
+bool Controller::enter_command_mode() {
     std::optional<rawterm::Pos> prev_cursor_pos;
+    bool ret = false;
 
     while (true) {
         auto previous = view.draw_command_bar();
@@ -322,7 +323,7 @@ void Controller::enter_command_mode() {
             rawterm::clear_line();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
-            parse_command();
+            ret = parse_command();
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
@@ -332,18 +333,27 @@ void Controller::enter_command_mode() {
     }
 
     view.command_text = ";";
-    view.cur = prev_cursor_pos.value();
+    if (!ret) {
+        view.cur = prev_cursor_pos.value();
+    }
+
+    return ret;
 }
 
-void Controller::parse_command() {
+bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
 
     // Empty command
     if (cmd.size() < 2) {
-        return;
+        return false;
     }
 
-    if (cmd == ";wq") {
+    if (std::isdigit(cmd.at(1))) {
+        const unsigned int offset = uint32_t(std::stoi(cmd.substr(1, cmd.size())));
+        view.set_current_line(offset);
+        return true;
+
+    } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
         std::ignore = write_to_file(*view.get_active_model());
         quit_flag = true;
@@ -368,4 +378,6 @@ void Controller::parse_command() {
         std::string msg = "Unknown command";
         view.display_message(msg, rawterm::Colors::red);
     }
+
+    return false;
 }
