@@ -450,3 +450,29 @@ TEST_CASE("center_current_line", "[view]") {
                          v.line_number_offset + 2));
     }
 }
+
+TEST_CASE("set_current_line", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    SECTION("Move cursor to line already on screen") {
+        v.set_current_line(20);
+
+        REQUIRE(m.current_line == 19);
+        REQUIRE(m.current_char == 0);
+        REQUIRE(m.view_offset == 7);
+        REQUIRE(v.prev_cur_hor_pos == -1);
+    }
+
+    SECTION("Move cursor to line off-screen") {
+        v.set_current_line(77);
+
+        REQUIRE(m.current_line == 76);
+        REQUIRE(m.current_char == 0);
+        REQUIRE(m.view_offset == 64);
+        REQUIRE(v.prev_cur_hor_pos == -1);
+    }
+}
