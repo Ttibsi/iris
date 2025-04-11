@@ -384,13 +384,24 @@ void View::cursor_start_of_line() {
 }
 
 void View::center_current_line() {
-    uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
-    if (get_active_model()->current_line < half_view) {
+    set_current_line(get_active_model()->current_line + 1);
+}
+
+void View::set_current_line(const unsigned int lineno) {
+    if (lineno > get_active_model()->buf.size()) {
         return;
     }
 
     prev_cur_hor_pos = -1;
     get_active_model()->current_char = 0;
-    get_active_model()->view_offset = get_active_model()->current_line - half_view;
-    cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
+    get_active_model()->current_line = lineno - 1;
+
+    uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
+    if (lineno < half_view) {
+        get_active_model()->view_offset = 0;
+        cur.move({static_cast<int>(lineno), line_number_offset + 2});
+    } else {
+        get_active_model()->view_offset = lineno - half_view - 1;
+        cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
+    }
 }
