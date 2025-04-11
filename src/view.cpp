@@ -384,7 +384,7 @@ void View::cursor_start_of_line() {
 }
 
 void View::center_current_line() {
-    set_current_line(get_active_model()->current_line);
+    set_current_line(get_active_model()->current_line + 1);
 }
 
 void View::set_current_line(const unsigned int lineno) {

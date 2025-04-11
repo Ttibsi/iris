@@ -420,7 +420,7 @@ TEST_CASE("center_current_line", "[view]") {
         // Should not change anything
         REQUIRE(m.current_line == 0);
         REQUIRE(m.view_offset == 0);
-        REQUIRE(v.cur == rawterm::Pos(1, 1));
+        REQUIRE(v.cur == rawterm::Pos(1, 5));
     }
 
     SECTION("Center the view when current line is far down") {
