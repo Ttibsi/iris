@@ -86,3 +86,26 @@ def test_invalid_command(r: TmuxRunner):
     message_line: str = r.color_screenshot()[-2]
     assert "Unknown command" in message_line
     assert "\x1b[38;2;255;0;0m" in message_line
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_lineno_command(r: TmuxRunner):
+    # Don't scroll
+    r.iris_cmd("7")
+
+    statusbar_parts: list[str] = r.statusbar_parts()
+    assert statusbar_parts[-1] == "7:1"
+
+    first_line: str = r.lines()[0]
+    prefix: str = "  1\u2502"
+    assert first_line[0:len(prefix)] == prefix
+
+    # scroll view
+    r.iris_cmd("77")
+
+    statusbar_parts = r.statusbar_parts()
+    assert statusbar_parts[-1] == "77:1"
+
+    first_line = r.lines()[0]
+    prefix = " 65\u2502"
+    assert first_line[0:len(prefix)] == prefix
