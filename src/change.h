@@ -9,11 +9,13 @@ enum class ActionType;
 struct Change {
     const ActionType action;
     const std::optional<char> payload;
-    const std::optional<int> line_pos;
-    const std::optional<int> char_pos;
+    const std::optional<unsigned int> line_pos;
+    const std::optional<unsigned int> char_pos;
 
     Change(ActionType a) : action(a) {}
-    Change(ActionType a, char c, int ln, int ch)
+    Change(ActionType a, unsigned int ln, unsigned int ch)
+        : action(a), payload({}), line_pos(ln), char_pos(ch) {}
+    Change(ActionType a, char c, unsigned int ln, unsigned int ch)
         : action(a), payload(c), line_pos(ln), char_pos(ch) {}
 };
 

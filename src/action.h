@@ -81,7 +81,9 @@ template <typename T, typename U>
                     v->cur.move_left();
                 }
 
-                // v.get_active_model()->undo_stack.push_back(Change());
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::Backspace, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
                 return ret;
             }
         } break;
