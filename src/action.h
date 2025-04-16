@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "change.h"
 #include "controller.h"
 #include "spdlog/spdlog.h"
 #include "view.h"
@@ -80,6 +81,7 @@ template <typename T, typename U>
                     v->cur.move_left();
                 }
 
+                // v.get_active_model()->undo_stack.push_back(Change());
                 return ret;
             }
         } break;
