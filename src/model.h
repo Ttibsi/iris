@@ -8,6 +8,8 @@
 
 #include <rawterm/screen.h>
 
+#include "change.h"
+
 // Forward declare from controller.h
 enum class Redraw;
 
@@ -22,6 +24,9 @@ struct Model {
 
     bool readonly = false;
     bool modified = false;
+
+    std::vector<Change> undo_stack = {};
+    std::vector<Change> redo_stack = {};
 
     Model(std::size_t, std::string_view);
     Model(std::vector<std::string>, std::string_view);

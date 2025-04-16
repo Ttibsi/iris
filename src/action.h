@@ -1,6 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <cstdint>
 #include <optional>
 
 #include "controller.h"
@@ -39,6 +40,14 @@ template <typename T>
 struct Action {
     const ActionType type;
     const T payload;
+
+    void undo() {
+        switch (type) {};
+    }
+
+    void redo() {
+        switch (type) {};
+    }
 };
 
 template <>
