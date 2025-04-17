@@ -103,6 +103,9 @@ template <typename T, typename U>
                 Redraw ret = v->get_active_model()->backspace();
                 v->cur.move_left();
 
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::DelCurrentChar, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
                 return ret;
             }
         } break;
@@ -229,6 +232,9 @@ template <typename T, typename U>
                 v->cur.move_left();
             }
 
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::Newline, v->get_active_model()->current_line,
+                v->get_active_model()->current_char));
             return {};
         } break;
 
@@ -249,6 +255,10 @@ template <typename T, typename U>
             }
 
             v->get_active_model()->toggle_case();
+
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::ToggleCase, v->get_active_model()->current_line,
+                v->get_active_model()->current_char));
 
         } break;
 
@@ -327,6 +337,10 @@ template <typename T, typename U>
                 v->get_active_model()->insert(action.payload);
                 v->prev_cur_hor_pos = -1;
                 v->cur.move_right();
+
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::InsertChar, action.payload, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
             }
             return {};
         } break;
@@ -339,6 +353,9 @@ template <typename T, typename U>
                 }
 
                 v->get_active_model()->replace_char(action.payload);
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::ReplaceChar, action.payload, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
             }
         } break;
 
