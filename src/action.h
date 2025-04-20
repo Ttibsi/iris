@@ -28,6 +28,7 @@ enum class ActionType {
     Newline,
     StartOfLine,
     ToggleCase,
+    TriggerUndo,
 
     // Pass value
     ChangeMode,   // Mode
@@ -41,14 +42,6 @@ template <typename T>
 struct Action {
     const ActionType type;
     const T payload;
-
-    void undo() {
-        switch (type) {};
-    }
-
-    void redo() {
-        switch (type) {};
-    }
 };
 
 template <>
@@ -260,6 +253,19 @@ template <typename T, typename U>
                 ActionType::ToggleCase, v->get_active_model()->current_line,
                 v->get_active_model()->current_char));
 
+        } break;
+
+        case ActionType::TriggerUndo: {
+            if constexpr (std::is_same_v<U, bool>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: TriggerUndo");
+                }
+
+                return v->get_active_model()->undo(v->view_size.horizontal);
+            }
+
+            return {};
         } break;
 
         case ActionType::ChangeMode: {

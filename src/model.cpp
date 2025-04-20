@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "action.h"
 #include "controller.h"
 #include "text_io.h"
 
@@ -227,4 +228,33 @@ void Model::toggle_case() {
     }
 
     return {};
+}
+
+[[nodiscard]] bool Model::undo(const int height) {
+    const Change undo_change = undo_stack.at(undo_stack.size() - 1);
+    undo_stack.pop_back();
+    redo_stack.push(undo_change);
+
+    switch (undo_change.action) {
+        case ActionType::Backspace: {
+        } break;
+        case ActionType::DelCurrentChar: {
+        } break;
+        case ActionType::Newline: {
+        } break;
+        case ActionType::ToggleCase: {
+        } break;
+        case ActionType::InsertChar: {
+        } break;
+        case ActionType::ReplaceChar: {
+        } break;
+        default: {
+        } break;
+    };
+
+    if (view_offset <= undo_change.line_pos.value() <= view_offset + uint32_t(height)) {
+        return true;
+    }
+
+    return false;
 }

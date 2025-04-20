@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <optional>
+#include <stack>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -23,10 +24,9 @@ struct Model {
     unsigned int view_offset = 0;
 
     bool readonly = false;
-    bool modified = false;
 
     std::vector<Change> undo_stack = {};
-    std::vector<Change> redo_stack = {};
+    std::stack<Change> redo_stack = {};
 
     Model(std::size_t, std::string_view);
     Model(std::vector<std::string>, std::string_view);
@@ -42,6 +42,7 @@ struct Model {
     void toggle_case();
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
     [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
+    [[nodiscard]] bool undo(const int);
 };
 
 #endif  // MODEL_H
