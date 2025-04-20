@@ -43,6 +43,7 @@ struct Model {
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
     [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
     [[nodiscard]] bool undo(const int);
+    [[nodiscard]] char get_current_char() const;
 };
 
 #endif  // MODEL_H

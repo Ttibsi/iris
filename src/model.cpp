@@ -11,7 +11,7 @@ Model::Model(const std::size_t view_height, std::string_view file_name)
     buf.reserve(view_height);
 }
 
-// TODO: readonly and modified
+// TODO: readonly
 // NOTE: Intentional copy of file_chars
 Model::Model(std::vector<std::string> file_chars, std::string_view filename)
     : buf(file_chars), filename(filename) {}
@@ -252,9 +252,14 @@ void Model::toggle_case() {
         } break;
     };
 
-    if (view_offset <= undo_change.line_pos.value() <= view_offset + uint32_t(height)) {
+    if ((view_offset <= undo_change.line_pos.value()) ||
+        (undo_change.line_pos.value() <= view_offset + uint32_t(height))) {
         return true;
     }
 
     return false;
+}
+
+[[nodiscard]] char Model::get_current_char() const {
+    return buf.at(current_line).at(current_char);
 }
