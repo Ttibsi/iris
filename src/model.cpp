@@ -230,7 +230,7 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] bool Model::undo(const int height) {
+[[nodiscard]] bool Model::undo(View* view_ptr) {
     const Change undo_change = undo_stack.at(undo_stack.size() - 1);
     undo_stack.pop_back();
     redo_stack.push(undo_change);
@@ -242,16 +242,19 @@ void Model::toggle_case() {
     switch (undo_change.action) {
         case ActionType::Backspace: {
             insert(undo_change.payload.value());
+            view_ptr->cursor_right();
         } break;
 
         case ActionType::DelCurrentChar: {
             current_char++;
             insert(undo_change.payload.value());
+            view_ptr->cursor_right();
         } break;
 
         case ActionType::Newline: {
             current_char = 0;
             std::ignore = backspace();
+            view_ptr->cursor_up();
         } break;
 
         case ActionType::ToggleCase: {
@@ -260,6 +263,7 @@ void Model::toggle_case() {
 
         case ActionType::InsertChar: {
             std::ignore = backspace();
+            view_ptr->cursor_left();
         } break;
 
         case ActionType::ReplaceChar: {
@@ -273,7 +277,7 @@ void Model::toggle_case() {
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
     if ((view_offset <= undo_change.line_pos.value()) ||
-        (undo_change.line_pos.value() <= view_offset + uint32_t(height))) {
+        (undo_change.line_pos.value() <= view_offset + uint32_t(view_ptr->view_size.horizontal))) {
         return true;
     }
 

@@ -5,6 +5,7 @@
 #include "action.h"
 #include "change.h"
 #include "text_io.h"
+#include "view.h"
 
 TEST_CASE("Constructor", "[model]") {
     auto m = Model(32, "");
@@ -298,6 +299,10 @@ TEST_CASE("find_prev", "[model]") {
 TEST_CASE("undo", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
+    Controller c;
+    auto v = View(&c, {24, 80});
+    v.add_model(&m);
+
     SECTION("Backspace") {
         m.current_line = 1;
         m.current_char = 1;
@@ -307,7 +312,7 @@ TEST_CASE("undo", "[model]") {
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lne two");
 
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -321,7 +326,7 @@ TEST_CASE("undo", "[model]") {
         m.buf.at(m.current_line).erase(m.current_char + 1, 1);
         REQUIRE(m.buf.at(m.current_line) == "lie two");
 
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -333,7 +338,8 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.at(m.current_line) == "ine two");
 
         m.undo_stack.push_back(Change(ActionType::Newline, m.current_line, m.current_char));
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
+
         m.current_line--;
         REQUIRE(m.buf.at(m.current_line) == "line two");
         REQUIRE(m.buf.size() == 6);
@@ -346,7 +352,7 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.get_current_char() == 'I');
 
         m.undo_stack.push_back(Change(ActionType::ToggleCase, m.current_line, m.current_char));
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
         REQUIRE(m.get_current_char() == 'i');
     };
 
@@ -357,7 +363,7 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.at(m.current_line) == "l?ine two");
 
         m.undo_stack.push_back(Change(ActionType::InsertChar, m.current_line, m.current_char));
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -371,7 +377,7 @@ TEST_CASE("undo", "[model]") {
         m.replace_char('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ne two");
 
-        REQUIRE(m.undo(24));
+        REQUIRE(m.undo(&v));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 }

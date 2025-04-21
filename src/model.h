@@ -14,6 +14,9 @@
 // Forward declare from controller.h
 enum class Redraw;
 
+// Forward declare from view.h
+struct View;
+
 struct Model {
     std::vector<std::string> buf;
     std::string filename;
@@ -42,7 +45,7 @@ struct Model {
     void toggle_case();
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
     [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
-    [[nodiscard]] bool undo(const int);
+    [[nodiscard]] bool undo(View*);
     [[nodiscard]] char get_current_char() const;
 };
 

@@ -267,7 +267,7 @@ template <typename T, typename U>
                     logger->info("Action called: TriggerUndo");
                 }
 
-                return v->get_active_model()->undo(v->view_size.horizontal);
+                return v->get_active_model()->undo(v);
             }
 
             return {};
@@ -363,10 +363,10 @@ template <typename T, typename U>
                     logger->info("Action called: ReplaceChar");
                 }
 
-                v->get_active_model()->replace_char(action.payload);
                 v->get_active_model()->undo_stack.push_back(Change(
                     ActionType::ReplaceChar, action.payload, v->get_active_model()->current_line,
                     v->get_active_model()->current_char));
+                v->get_active_model()->replace_char(action.payload);
             }
         } break;
 
