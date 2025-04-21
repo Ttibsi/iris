@@ -235,23 +235,43 @@ void Model::toggle_case() {
     undo_stack.pop_back();
     redo_stack.push(undo_change);
 
+    rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
+    current_line = undo_change.line_pos.value();
+    current_char = undo_change.char_pos.value();
+
     switch (undo_change.action) {
         case ActionType::Backspace: {
+            insert(undo_change.payload.value());
         } break;
+
         case ActionType::DelCurrentChar: {
+            current_char++;
+            insert(undo_change.payload.value());
         } break;
+
         case ActionType::Newline: {
+            current_char = 0;
+            std::ignore = backspace();
         } break;
+
         case ActionType::ToggleCase: {
+            toggle_case();
         } break;
+
         case ActionType::InsertChar: {
+            std::ignore = backspace();
         } break;
+
         case ActionType::ReplaceChar: {
+            replace_char(undo_change.payload.value());
         } break;
-        default: {
-        } break;
+
+        default:
+            break;
     };
 
+    current_line = uint32_t(cur_pos.vertical);
+    current_char = uint32_t(cur_pos.horizontal);
     if ((view_offset <= undo_change.line_pos.value()) ||
         (undo_change.line_pos.value() <= view_offset + uint32_t(height))) {
         return true;

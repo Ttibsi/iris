@@ -301,11 +301,12 @@ TEST_CASE("undo", "[model]") {
     SECTION("Backspace") {
         m.current_line = 1;
         m.current_char = 1;
+        m.undo_stack.push_back(
+            Change(ActionType::Backspace, m.get_current_char(), m.current_line, m.current_char));
+
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lne two");
 
-        m.undo_stack.push_back(
-            Change(ActionType::Backspace, m.get_current_char(), m.current_line, m.current_char));
         REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
@@ -313,11 +314,13 @@ TEST_CASE("undo", "[model]") {
     SECTION("DelCurrentChar") {
         m.current_line = 1;
         m.current_char = 1;
+
+        char next_char = m.buf.at(m.current_line).at(m.current_char + 1);
+        m.undo_stack.push_back(
+            Change(ActionType::DelCurrentChar, next_char, m.current_line, m.current_char));
         m.buf.at(m.current_line).erase(m.current_char + 1, 1);
         REQUIRE(m.buf.at(m.current_line) == "lie two");
 
-        m.undo_stack.push_back(Change(
-            ActionType::DelCurrentChar, m.get_current_char(), m.current_line, m.current_char));
         REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
@@ -326,11 +329,12 @@ TEST_CASE("undo", "[model]") {
         m.current_line = 1;
         m.current_char = 1;
         std::ignore = m.newline();
-        REQUIRE(m.buf.at(m.current_line) == "l");
-        REQUIRE(m.buf.at(m.current_line + 1) == "ine two");
+        REQUIRE(m.buf.at(m.current_line - 1) == "l");
+        REQUIRE(m.buf.at(m.current_line) == "ine two");
 
         m.undo_stack.push_back(Change(ActionType::Newline, m.current_line, m.current_char));
         REQUIRE(m.undo(24));
+        m.current_line--;
         REQUIRE(m.buf.at(m.current_line) == "line two");
         REQUIRE(m.buf.size() == 6);
     };
@@ -350,7 +354,7 @@ TEST_CASE("undo", "[model]") {
         m.current_line = 1;
         m.current_char = 1;
         m.insert('?');
-        REQUIRE(m.buf.at(m.current_line) == "li?ne two");
+        REQUIRE(m.buf.at(m.current_line) == "l?ine two");
 
         m.undo_stack.push_back(Change(ActionType::InsertChar, m.current_line, m.current_char));
         REQUIRE(m.undo(24));

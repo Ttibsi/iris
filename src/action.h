@@ -66,6 +66,10 @@ template <typename T, typename U>
                                         .size();
                 }
 
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::Backspace, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
+
                 Redraw ret = v->get_active_model()->backspace();
                 if (ret == Redraw::Screen) {
                     v->cur.move_up();
@@ -74,9 +78,6 @@ template <typename T, typename U>
                     v->cur.move_left();
                 }
 
-                v->get_active_model()->undo_stack.push_back(Change(
-                    ActionType::Backspace, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char));
                 return ret;
             }
         } break;
@@ -92,13 +93,17 @@ template <typename T, typename U>
                     logger->info("Action called: DelCurrentChar");
                 }
 
+                char next_char = v->get_active_model()
+                                     ->buf.at(v->get_active_model()->current_line)
+                                     .at(v->get_active_model()->current_char + 1);
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::DelCurrentChar, next_char, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
+
                 v->cursor_right();
                 Redraw ret = v->get_active_model()->backspace();
                 v->cur.move_left();
 
-                v->get_active_model()->undo_stack.push_back(Change(
-                    ActionType::DelCurrentChar, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char));
                 return ret;
             }
         } break;
