@@ -66,9 +66,12 @@ template <typename T, typename U>
                                         .size();
                 }
 
+                char prev_char = v->get_active_model()
+                                     ->buf.at(v->get_active_model()->current_line)
+                                     .at(v->get_active_model()->current_char - 1);
                 v->get_active_model()->undo_stack.push_back(Change(
-                    ActionType::Backspace, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char));
+                    ActionType::Backspace, prev_char, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char - 1));
 
                 Redraw ret = v->get_active_model()->backspace();
                 if (ret == Redraw::Screen) {
@@ -93,12 +96,9 @@ template <typename T, typename U>
                     logger->info("Action called: DelCurrentChar");
                 }
 
-                char next_char = v->get_active_model()
-                                     ->buf.at(v->get_active_model()->current_line)
-                                     .at(v->get_active_model()->current_char + 1);
                 v->get_active_model()->undo_stack.push_back(Change(
-                    ActionType::DelCurrentChar, next_char, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char));
+                    ActionType::DelCurrentChar, v->get_active_model()->get_current_char(),
+                    v->get_active_model()->current_line, v->get_active_model()->current_char));
 
                 v->cursor_right();
                 Redraw ret = v->get_active_model()->backspace();
@@ -364,8 +364,8 @@ template <typename T, typename U>
                 }
 
                 v->get_active_model()->undo_stack.push_back(Change(
-                    ActionType::ReplaceChar, action.payload, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char));
+                    ActionType::ReplaceChar, v->get_active_model()->get_current_char(),
+                    v->get_active_model()->current_line, v->get_active_model()->current_char));
                 v->get_active_model()->replace_char(action.payload);
             }
         } break;

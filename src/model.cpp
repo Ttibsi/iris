@@ -231,6 +231,10 @@ void Model::toggle_case() {
 }
 
 [[nodiscard]] bool Model::undo(View* view_ptr) {
+    if (!undo_stack.size()) {
+        return false;
+    }
+
     const Change undo_change = undo_stack.at(undo_stack.size() - 1);
     undo_stack.pop_back();
     redo_stack.push(undo_change);
@@ -239,22 +243,21 @@ void Model::toggle_case() {
     current_line = undo_change.line_pos.value();
     current_char = undo_change.char_pos.value();
 
+    // NOTE: Currently we are not moving the cursor alongside an undo update
+    // as we're restoring the model position after the undo. While these are
+    // separate values, keeping them in sync is currently easier this way.
+    // I want to see how using it feels and if I need to update the cursor or
+    // not during usage
     switch (undo_change.action) {
-        case ActionType::Backspace: {
-            insert(undo_change.payload.value());
-            view_ptr->cursor_right();
-        } break;
-
+        case ActionType::Backspace:
+            [[fallthrough]];
         case ActionType::DelCurrentChar: {
-            current_char++;
             insert(undo_change.payload.value());
-            view_ptr->cursor_right();
         } break;
 
         case ActionType::Newline: {
             current_char = 0;
             std::ignore = backspace();
-            view_ptr->cursor_up();
         } break;
 
         case ActionType::ToggleCase: {
@@ -263,7 +266,6 @@ void Model::toggle_case() {
 
         case ActionType::InsertChar: {
             std::ignore = backspace();
-            view_ptr->cursor_left();
         } break;
 
         case ActionType::ReplaceChar: {
