@@ -57,6 +57,10 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
 
     buf.at(current_line) = first;
     current_line++;
+
+    if (!second.size()) {
+        second.push_back(' ');
+    }
     buf.insert(buf.begin() + current_line, second);
 
     current_char = 0;

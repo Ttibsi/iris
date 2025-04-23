@@ -69,7 +69,7 @@ TEST_CASE("newline", "[model]") {
         REQUIRE(prev_line_len == v.at(0).size());
         REQUIRE(m.buf.size() == 4);
         REQUIRE(m.buf.at(0).size() == 3);
-        REQUIRE(m.buf.at(1).size() == 0);
+        REQUIRE(m.buf.at(1).size() == 1);
     }
 
     SECTION("At mid of line") {

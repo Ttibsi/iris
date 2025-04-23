@@ -66,9 +66,13 @@ template <typename T, typename U>
                                         .size();
                 }
 
-                char prev_char = v->get_active_model()
-                                     ->buf.at(v->get_active_model()->current_line)
-                                     .at(v->get_active_model()->current_char - 1);
+                char prev_char = '\n';
+                if (v->get_active_model()->current_char > 0) {
+                    prev_char = v->get_active_model()
+                                    ->buf.at(v->get_active_model()->current_line)
+                                    .at(v->get_active_model()->current_char - 1);
+                }
+
                 v->get_active_model()->undo_stack.push_back(Change(
                     ActionType::Backspace, prev_char, v->get_active_model()->current_line,
                     v->get_active_model()->current_char - 1));

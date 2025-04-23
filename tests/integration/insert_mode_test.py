@@ -130,8 +130,9 @@ def test_backspace_newline(r: TmuxRunner):
     line_1_clean: str = contents[1].rstrip().replace("\t", "    ")
     line_2_clean: str = contents[2].rstrip()
     highlight_line_num: str = "\x1b[38;2;255;221;51m 2\u2502\x1b[39m"
+    full_line: str = f"{highlight_line_num}{line_1_clean}{line_2_clean}"
 
-    assert lines[1] == f"{highlight_line_num}{line_1_clean}{line_2_clean}"
+    assert lines[1] == full_line
     assert lines[len(contents) - 1] == "~"
 
     status_bar = r.statusbar_parts()
