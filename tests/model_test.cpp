@@ -318,12 +318,12 @@ TEST_CASE("undo", "[model]") {
 
     SECTION("DelCurrentChar") {
         m.current_line = 1;
-        m.current_char = 1;
+        m.current_char = 2;
 
-        char next_char = m.buf.at(m.current_line).at(m.current_char + 1);
+        char next_char = m.buf.at(m.current_line).at(m.current_char);
         m.undo_stack.push_back(
             Change(ActionType::DelCurrentChar, next_char, m.current_line, m.current_char));
-        m.buf.at(m.current_line).erase(m.current_char + 1, 1);
+        m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lie two");
 
         REQUIRE(m.undo(&v));
