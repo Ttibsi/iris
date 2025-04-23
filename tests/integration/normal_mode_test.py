@@ -270,3 +270,20 @@ def test_upper_f_key(r: TmuxRunner):
     r.type_str("Ft")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "2:29"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_u_key(r: TmuxRunner):
+    r.type_str("ihello")
+    r.press("Escape")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[2] == "[X]"
+
+    r.press("u")
+    line: str = r.lines()[0]
+    assert "hellThis" in line
+
+    r.press("u")
+    line = r.lines()[0]
+    assert "helThis" in line

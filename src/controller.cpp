@@ -252,6 +252,13 @@ void Controller::start_action_engine() {
                 }
                 view.draw_line(Draw_Line_dir::None);
 
+                // Undo
+            } else if (k.value() == rawterm::Key('u')) {
+                auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerUndo});
+                if (ret.has_value()) {
+                    redraw_all = ret.value();
+                }
+
                 // Jump to next "word"
             } else if (k.value() == rawterm::Key('w')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpNextWord});

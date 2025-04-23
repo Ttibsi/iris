@@ -2,14 +2,20 @@
 #define MODEL_H
 
 #include <optional>
+#include <stack>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include <rawterm/screen.h>
 
+#include "change.h"
+
 // Forward declare from controller.h
 enum class Redraw;
+
+// Forward declare from view.h
+struct View;
 
 struct Model {
     std::vector<std::string> buf;
@@ -21,7 +27,9 @@ struct Model {
     unsigned int view_offset = 0;
 
     bool readonly = false;
-    bool modified = false;
+
+    std::vector<Change> undo_stack = {};
+    std::stack<Change> redo_stack = {};
 
     Model(std::size_t, std::string_view);
     Model(std::vector<std::string>, std::string_view);
@@ -37,6 +45,8 @@ struct Model {
     void toggle_case();
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
     [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
+    [[nodiscard]] bool undo(View*);
+    [[nodiscard]] char get_current_char() const;
 };
 
 #endif  // MODEL_H

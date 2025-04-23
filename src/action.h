@@ -1,8 +1,10 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include <cstdint>
 #include <optional>
 
+#include "change.h"
 #include "controller.h"
 #include "spdlog/spdlog.h"
 #include "view.h"
@@ -26,6 +28,7 @@ enum class ActionType {
     Newline,
     StartOfLine,
     ToggleCase,
+    TriggerUndo,
 
     // Pass value
     ChangeMode,   // Mode
@@ -63,6 +66,17 @@ template <typename T, typename U>
                                         .size();
                 }
 
+                char prev_char = '\n';
+                if (v->get_active_model()->current_char > 0) {
+                    prev_char = v->get_active_model()
+                                    ->buf.at(v->get_active_model()->current_line)
+                                    .at(v->get_active_model()->current_char - 1);
+                }
+
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::Backspace, prev_char, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char - 1));
+
                 Redraw ret = v->get_active_model()->backspace();
                 if (ret == Redraw::Screen) {
                     v->cur.move_up();
@@ -87,6 +101,9 @@ template <typename T, typename U>
                 }
 
                 v->cursor_right();
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::DelCurrentChar, v->get_active_model()->get_current_char(),
+                    v->get_active_model()->current_line, v->get_active_model()->current_char));
                 Redraw ret = v->get_active_model()->backspace();
                 v->cur.move_left();
 
@@ -216,6 +233,9 @@ template <typename T, typename U>
                 v->cur.move_left();
             }
 
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::Newline, v->get_active_model()->current_line,
+                v->get_active_model()->current_char));
             return {};
         } break;
 
@@ -237,6 +257,23 @@ template <typename T, typename U>
 
             v->get_active_model()->toggle_case();
 
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::ToggleCase, v->get_active_model()->current_line,
+                v->get_active_model()->current_char));
+
+        } break;
+
+        case ActionType::TriggerUndo: {
+            if constexpr (std::is_same_v<U, bool>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: TriggerUndo");
+                }
+
+                return v->get_active_model()->undo(v);
+            }
+
+            return {};
         } break;
 
         case ActionType::ChangeMode: {
@@ -314,6 +351,10 @@ template <typename T, typename U>
                 v->get_active_model()->insert(action.payload);
                 v->prev_cur_hor_pos = -1;
                 v->cur.move_right();
+
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::InsertChar, action.payload, v->get_active_model()->current_line,
+                    v->get_active_model()->current_char));
             }
             return {};
         } break;
@@ -325,6 +366,9 @@ template <typename T, typename U>
                     logger->info("Action called: ReplaceChar");
                 }
 
+                v->get_active_model()->undo_stack.push_back(Change(
+                    ActionType::ReplaceChar, v->get_active_model()->get_current_char(),
+                    v->get_active_model()->current_line, v->get_active_model()->current_char));
                 v->get_active_model()->replace_char(action.payload);
             }
         } break;

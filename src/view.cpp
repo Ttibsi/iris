@@ -190,7 +190,7 @@ const std::string View::render_status_bar() const {
 
     if (get_active_model()->readonly) {
         left += " | [RO]";
-    } else if (get_active_model()->modified) {
+    } else if (get_active_model()->undo_stack.size()) {
         left += " | [X]";
     }
 

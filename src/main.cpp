@@ -2,10 +2,11 @@
 
 #include <cli11/CLI11.hpp>
 #include <rawterm/core.h>
+#include <rawterm/cursor.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include "controller.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/spdlog.h"
 #include "version.h"
 
 // TODO: A way of detecting if the file is already open in another iris
@@ -47,6 +48,7 @@ int main(int argc, char* argv[]) {
         c.start_action_engine();
     } catch (const std::exception& e) {
         rawterm::exit_alt_screen();
+        rawterm::Cursor::cursor_block();
         spdlog::get("basic_logger")->info(e.what());
         std::println("{}", e.what());
     }
