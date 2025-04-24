@@ -309,12 +309,15 @@ void Model::toggle_case() {
 
     switch (cur_change.action) {
         case ActionType::Backspace: {
+            std::ignore = backspace();
         } break;
 
         case ActionType::DelCurrentChar: {
+            std::ignore = backspace();
         } break;
 
         case ActionType::Newline: {
+            std::ignore = newline();
         } break;
 
         case ActionType::ToggleCase: {
@@ -322,6 +325,8 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::InsertChar: {
+            current_char--;
+            insert(cur_change.payload.value());
         } break;
 
         case ActionType::ReplaceChar: {
