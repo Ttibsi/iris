@@ -393,8 +393,8 @@ TEST_CASE("redo", "[model]") {
     m.current_char = 1;
 
     SECTION("Backspace") {
-        m.buf.at(m.current_line).erase(m.current_char, 1);
-        REQUIRE(m.buf.at(1) == "lne two");
+        m.insert('?');
+        REQUIRE(m.buf.at(1) == "l?ine two");
 
         m.redo_stack.push(Change(ActionType::Backspace, 'i', m.current_line, m.current_char));
 
@@ -403,8 +403,8 @@ TEST_CASE("redo", "[model]") {
     };
 
     SECTION("DelCurrentChar") {
-        m.buf.at(m.current_line).erase(m.current_char + 1, 1);
-        REQUIRE(m.buf.at(1) == "lie two");
+        m.insert('?');
+        REQUIRE(m.buf.at(1) == "l?ine two");
 
         m.redo_stack.push(Change(ActionType::DelCurrentChar, 'n', m.current_line, m.current_char));
 
@@ -416,8 +416,8 @@ TEST_CASE("redo", "[model]") {
         m.redo_stack.push(Change(ActionType::Newline, m.current_line, m.current_char));
 
         REQUIRE(m.redo(24));
-        REQUIRE(m.buf.at(m.current_line - 1) == "l");
-        REQUIRE(m.buf.at(m.current_line) == "ine two");
+        REQUIRE(m.buf.at(m.current_line) == "l");
+        REQUIRE(m.buf.at(m.current_line + 1) == "ine two");
     };
 
     SECTION("ToggleCase") {
@@ -429,7 +429,7 @@ TEST_CASE("redo", "[model]") {
     SECTION("InsertChar") {
         REQUIRE(m.buf.at(1) == "line two");
 
-        m.redo_stack.push(Change(ActionType::InsertChar, '?', m.current_line, m.current_char));
+        m.redo_stack.push(Change(ActionType::InsertChar, '?', m.current_line, m.current_char + 1));
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "l?ine two");
     };
