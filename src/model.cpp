@@ -234,7 +234,7 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] bool Model::undo(View* view_ptr) {
+[[nodiscard]] bool Model::undo(const int height) {
     if (!undo_stack.size()) {
         return false;
     }
@@ -283,7 +283,7 @@ void Model::toggle_case() {
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
     if ((view_offset <= undo_change.line_pos.value()) ||
-        (undo_change.line_pos.value() <= view_offset + uint32_t(view_ptr->view_size.horizontal))) {
+        (undo_change.line_pos.value() <= view_offset + uint32_t(height))) {
         return true;
     }
 
@@ -292,4 +292,9 @@ void Model::toggle_case() {
 
 [[nodiscard]] char Model::get_current_char() const {
     return buf.at(current_line).at(current_char);
+}
+
+[[nodiscard]] bool Model::redo(const int height) {
+    (void)height;
+    return false;
 }

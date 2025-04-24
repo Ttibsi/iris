@@ -252,6 +252,13 @@ void Controller::start_action_engine() {
                 }
                 view.draw_line(Draw_Line_dir::None);
 
+                // redo
+            } else if (k.value() == rawterm::Key('R', rawterm::Mod::Shift)) {
+                auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerRedo});
+                if (ret.has_value()) {
+                    redraw_all = ret.value();
+                }
+
                 // Undo
             } else if (k.value() == rawterm::Key('u')) {
                 auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerUndo});

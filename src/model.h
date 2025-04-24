@@ -45,8 +45,9 @@ struct Model {
     void toggle_case();
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
     [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
-    [[nodiscard]] bool undo(View*);
+    [[nodiscard]] bool undo(const int);
     [[nodiscard]] char get_current_char() const;
+    [[nodiscard]] bool redo(const int);
 };
 
 #endif  // MODEL_H
