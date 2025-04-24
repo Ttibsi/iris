@@ -358,7 +358,7 @@ TEST_CASE("undo", "[model]") {
         m.insert('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ine two");
 
-        m.undo_stack.push_back(Change(ActionType::InsertChar, m.current_line, m.current_char));
+        m.undo_stack.push_back(Change(ActionType::InsertChar, '?', m.current_line, m.current_char));
         REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
@@ -429,7 +429,6 @@ TEST_CASE("redo", "[model]") {
     SECTION("InsertChar") {
         REQUIRE(m.buf.at(1) == "line two");
 
-        // NOTE: insertchar now needs to store the char being inserted
         m.redo_stack.push(Change(ActionType::InsertChar, '?', m.current_line, m.current_char));
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "l?ine two");

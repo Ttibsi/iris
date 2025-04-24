@@ -294,15 +294,20 @@ def test_upper_r_key(r: TmuxRunner):
     r.type_str("i!")
     r.press("Escape")
 
+    line: str = r.lines()[0]
+    assert "!This" in line
     statusbar: list[str] = r.statusbar_parts()
     assert statusbar[2] == "[X]"
 
     r.press("u")
-    line: str = r.lines()[0]
-    assert "!This" in line
-
-    r.press("R")
-
+    line = r.lines()[0]
     assert "!" not in line
     statusbar_full: str = r.lines()[22]
     assert "[X]" not in statusbar_full
+
+    r.press("R")
+
+    statusbar = r.statusbar_parts()
+    assert statusbar[2] == "[X]"
+    line = r.lines()[0]
+    assert "!This" in line
