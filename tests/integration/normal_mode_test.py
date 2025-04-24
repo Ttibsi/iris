@@ -287,3 +287,22 @@ def test_u_key(r: TmuxRunner):
     r.press("u")
     line = r.lines()[0]
     assert "helThis" in line
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_r_key(r: TmuxRunner):
+    r.type_str("i!")
+    r.press("Escape")
+
+    statusbar: list[str] = r.statusbar_parts()
+    assert statusbar[2] == "[X]"
+
+    r.press("u")
+    line: str = r.lines()[0]
+    assert "!This" in line
+
+    r.press("R")
+
+    assert "!" not in line
+    statusbar_full: str = r.lines()[22]
+    assert "[X]" not in statusbar_full
