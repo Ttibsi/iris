@@ -27,6 +27,7 @@ struct Model {
     unsigned int view_offset = 0;
 
     bool readonly = false;
+    bool unsaved = false;
 
     std::vector<Change> undo_stack = {};
     std::stack<Change> redo_stack = {};

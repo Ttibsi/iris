@@ -20,7 +20,7 @@
     char insertion
 * [x] Handle undo/redo as two stacks of Actions, and a system to know how
     to perform the opposite of the action
-    * [ ] Mark the buffer as modified and update quitting logic as appropriate
+    * [x] Mark the buffer as modified and update quitting logic as appropriate
 * [ ] Handle viewing files you don't have access rights to edit as readonly
 * [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Open a second file in a split

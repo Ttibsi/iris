@@ -373,6 +373,7 @@ bool Controller::parse_command() {
         quit_flag = true;
 
     } else if (cmd == ";w") {
+        view.get_active_model()->unsaved = false;
         WriteData file_write = write_to_file(*view.get_active_model());
         if (file_write.valid) {
             std::string msg =
@@ -382,6 +383,13 @@ bool Controller::parse_command() {
 
     } else if (cmd == ";q") {
         // TODO: Check if file is modified
+        if (view.get_active_model()->unsaved) {
+            view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
+        } else {
+            quit_flag = true;
+        }
+
+    } else if (cmd == ";q!") {
         quit_flag = true;
 
         // ping cmd used for testing
