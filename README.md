@@ -69,6 +69,7 @@ following commands in alphabetical order are available:
 | Command | Description                   |
 |---------|-------------------------------|
 | `;ping` | `pong` (for testing purposes) |
-| `;q`    | Quit without saving           |
+| `;q`    | Quit                          |
+| `;q!`   | Force Quit without saving     |
 | `;wq`   | Save and quit                 |
 | `;w`    | Save file                     |
