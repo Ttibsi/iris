@@ -1,5 +1,3 @@
-import time
-
 from setup import setup
 from setup import TmuxRunner
 
@@ -16,13 +14,10 @@ def test_suspend():
 
         # Run something else
         r.press_and_enter("cat /usr/share/dict/words | less")
-        time.sleep(0.1)
         r.press("q")
-        time.sleep(0.1)
 
         r.press_and_enter('fg')
         r.press("Enter")
-        time.sleep(0.1)
         r.await_text('Hello')
 
         r.iris_cmd("q")
@@ -34,7 +29,6 @@ def test_resize(r: TmuxRunner):
     original_statusbar: list[str] = r.statusbar_parts()
 
     r.tmux.execute_command("split-window", "-hl", "5")
-    time.sleep(0.5)
 
     split_statusbar: list[str] = r.statusbar_parts()
     assert original_statusbar == split_statusbar

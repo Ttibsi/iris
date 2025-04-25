@@ -299,10 +299,6 @@ TEST_CASE("find_prev", "[model]") {
 TEST_CASE("undo", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
-    Controller c;
-    auto v = View(&c, {24, 80});
-    v.add_model(&m);
-
     SECTION("Backspace") {
         m.current_line = 1;
         m.current_char = 1;
@@ -312,7 +308,7 @@ TEST_CASE("undo", "[model]") {
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lne two");
 
-        REQUIRE(m.undo(&v));
+        REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -326,7 +322,7 @@ TEST_CASE("undo", "[model]") {
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lie two");
 
-        REQUIRE(m.undo(&v));
+        REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -338,7 +334,7 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.at(m.current_line) == "ine two");
 
         m.undo_stack.push_back(Change(ActionType::Newline, m.current_line, m.current_char));
-        REQUIRE(m.undo(&v));
+        REQUIRE(m.undo(24));
 
         m.current_line--;
         REQUIRE(m.buf.at(m.current_line) == "line two");
@@ -352,7 +348,7 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.get_current_char() == 'I');
 
         m.undo_stack.push_back(Change(ActionType::ToggleCase, m.current_line, m.current_char));
-        REQUIRE(m.undo(&v));
+        REQUIRE(m.undo(24));
         REQUIRE(m.get_current_char() == 'i');
     };
 
@@ -362,8 +358,8 @@ TEST_CASE("undo", "[model]") {
         m.insert('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ine two");
 
-        m.undo_stack.push_back(Change(ActionType::InsertChar, m.current_line, m.current_char));
-        REQUIRE(m.undo(&v));
+        m.undo_stack.push_back(Change(ActionType::InsertChar, '?', m.current_line, m.current_char));
+        REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 
@@ -377,7 +373,7 @@ TEST_CASE("undo", "[model]") {
         m.replace_char('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ne two");
 
-        REQUIRE(m.undo(&v));
+        REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
 }
@@ -389,4 +385,62 @@ TEST_CASE("get_current_char", "[model]") {
     m.current_line = 2;
     m.current_char = 4;
     REQUIRE(m.get_current_char() == ' ');
+}
+
+TEST_CASE("redo", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.current_line = 1;
+    m.current_char = 1;
+
+    SECTION("Backspace") {
+        m.insert('?');
+        REQUIRE(m.buf.at(1) == "l?ine two");
+
+        m.redo_stack.push(Change(ActionType::Backspace, 'i', m.current_line, m.current_char));
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+    };
+
+    SECTION("DelCurrentChar") {
+        m.insert('?');
+        REQUIRE(m.buf.at(1) == "l?ine two");
+
+        m.redo_stack.push(Change(ActionType::DelCurrentChar, 'n', m.current_line, m.current_char));
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+    };
+
+    SECTION("Newline") {
+        m.redo_stack.push(Change(ActionType::Newline, m.current_line, m.current_char));
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(m.current_line) == "l");
+        REQUIRE(m.buf.at(m.current_line + 1) == "ine two");
+    };
+
+    SECTION("ToggleCase") {
+        m.redo_stack.push(Change(ActionType::ToggleCase, m.current_line, m.current_char));
+        REQUIRE(m.redo(24));
+        REQUIRE(m.get_current_char() == 'I');
+    };
+
+    SECTION("InsertChar") {
+        REQUIRE(m.buf.at(1) == "line two");
+
+        m.redo_stack.push(Change(ActionType::InsertChar, '?', m.current_line, m.current_char + 1));
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == "l?ine two");
+    };
+
+    SECTION("ReplaceChar") {
+        m.replace_char('!');
+        REQUIRE(m.buf.at(1) == "l!ne two");
+
+        m.redo_stack.push(Change(ActionType::ReplaceChar, 'i', m.current_line, m.current_char));
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+    };
 }

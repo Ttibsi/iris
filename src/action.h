@@ -28,6 +28,7 @@ enum class ActionType {
     Newline,
     StartOfLine,
     ToggleCase,
+    TriggerRedo,
     TriggerUndo,
 
     // Pass value
@@ -59,6 +60,7 @@ template <typename T, typename U>
                     logger->info("Action called: Backspace");
                 }
 
+                // For cursor movement
                 std::size_t prev_line_len = 0;
                 if (v->get_active_model()->current_line > 0) {
                     prev_line_len = v->get_active_model()
@@ -66,6 +68,7 @@ template <typename T, typename U>
                                         .size();
                 }
 
+                // Log for undo
                 char prev_char = '\n';
                 if (v->get_active_model()->current_char > 0) {
                     prev_char = v->get_active_model()
@@ -77,6 +80,7 @@ template <typename T, typename U>
                     ActionType::Backspace, prev_char, v->get_active_model()->current_line,
                     v->get_active_model()->current_char - 1));
 
+                // actual backspace
                 Redraw ret = v->get_active_model()->backspace();
                 if (ret == Redraw::Screen) {
                     v->cur.move_up();
@@ -263,6 +267,19 @@ template <typename T, typename U>
 
         } break;
 
+        case ActionType::TriggerRedo: {
+            if constexpr (std::is_same_v<U, bool>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: TriggerRedo");
+                }
+
+                return v->get_active_model()->redo(v->view_size.horizontal);
+            }
+
+            return {};
+        } break;
+
         case ActionType::TriggerUndo: {
             if constexpr (std::is_same_v<U, bool>) {
                 auto logger = spdlog::get("basic_logger");
@@ -270,7 +287,7 @@ template <typename T, typename U>
                     logger->info("Action called: TriggerUndo");
                 }
 
-                return v->get_active_model()->undo(v);
+                return v->get_active_model()->undo(v->view_size.horizontal);
             }
 
             return {};

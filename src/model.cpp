@@ -234,29 +234,29 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] bool Model::undo(View* view_ptr) {
+[[nodiscard]] bool Model::undo(const int height) {
     if (!undo_stack.size()) {
         return false;
     }
 
-    const Change undo_change = undo_stack.at(undo_stack.size() - 1);
+    const Change cur_change = undo_stack.at(undo_stack.size() - 1);
     undo_stack.pop_back();
-    redo_stack.push(undo_change);
+    redo_stack.push(cur_change);
 
     rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
-    current_line = undo_change.line_pos.value();
-    current_char = undo_change.char_pos.value();
+    current_line = cur_change.line_pos.value();
+    current_char = cur_change.char_pos.value();
 
     // NOTE: Currently we are not moving the cursor alongside an undo update
     // as we're restoring the model position after the undo. While these are
     // separate values, keeping them in sync is currently easier this way.
     // I want to see how using it feels and if I need to update the cursor or
     // not during usage
-    switch (undo_change.action) {
+    switch (cur_change.action) {
         case ActionType::Backspace:
             [[fallthrough]];
         case ActionType::DelCurrentChar: {
-            insert(undo_change.payload.value());
+            insert(cur_change.payload.value());
         } break;
 
         case ActionType::Newline: {
@@ -273,7 +273,7 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::ReplaceChar: {
-            replace_char(undo_change.payload.value());
+            replace_char(cur_change.payload.value());
         } break;
 
         default:
@@ -282,8 +282,8 @@ void Model::toggle_case() {
 
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
-    if ((view_offset <= undo_change.line_pos.value()) ||
-        (undo_change.line_pos.value() <= view_offset + uint32_t(view_ptr->view_size.horizontal))) {
+    if ((view_offset <= cur_change.line_pos.value()) ||
+        (cur_change.line_pos.value() <= view_offset + uint32_t(height))) {
         return true;
     }
 
@@ -292,4 +292,57 @@ void Model::toggle_case() {
 
 [[nodiscard]] char Model::get_current_char() const {
     return buf.at(current_line).at(current_char);
+}
+
+[[nodiscard]] bool Model::redo(const int height) {
+    if (!redo_stack.size()) {
+        return false;
+    }
+
+    const Change cur_change = redo_stack.top();
+    redo_stack.pop();
+    undo_stack.push_back(cur_change);
+
+    rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
+    current_line = cur_change.line_pos.value();
+    current_char = cur_change.char_pos.value();
+
+    switch (cur_change.action) {
+        case ActionType::Backspace: {
+            std::ignore = backspace();
+        } break;
+
+        case ActionType::DelCurrentChar: {
+            std::ignore = backspace();
+        } break;
+
+        case ActionType::Newline: {
+            std::ignore = newline();
+        } break;
+
+        case ActionType::ToggleCase: {
+            toggle_case();
+        } break;
+
+        case ActionType::InsertChar: {
+            current_char--;
+            insert(cur_change.payload.value());
+        } break;
+
+        case ActionType::ReplaceChar: {
+            replace_char(cur_change.payload.value());
+        } break;
+
+        default:
+            break;
+    };
+
+    current_line = uint32_t(cur_pos.vertical);
+    current_char = uint32_t(cur_pos.horizontal);
+    if ((view_offset <= cur_change.line_pos.value()) ||
+        (cur_change.line_pos.value() <= view_offset + uint32_t(height))) {
+        return true;
+    }
+
+    return false;
 }
