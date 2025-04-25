@@ -32,11 +32,13 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
         current_line--;
         current_char = static_cast<unsigned int>(prev_line_len);
 
+        unsaved = true;
         return Redraw::Screen;
     } else {
         current_char--;
         buf.at(current_line).erase(current_char, 1);
 
+        unsaved = true;
         return Redraw::Line;
     }
 }
@@ -65,12 +67,14 @@ Model::Model(std::vector<std::string> file_chars, std::string_view filename)
 
     current_char = 0;
 
+    unsaved = true;
     return first.size();
 }
 
 void Model::insert(const char c) {
     buf.at(current_line).insert(current_char, 1, c);
     current_char++;
+    unsaved = true;
 }
 
 [[nodiscard]] bool Model::lineno_in_scope(const int idx) const {
@@ -178,6 +182,7 @@ void Model::replace_char(const char c) {
     }
 
     buf.at(current_line).at(current_char) = c;
+    unsaved = true;
 }
 
 void Model::toggle_case() {
@@ -188,6 +193,8 @@ void Model::toggle_case() {
     } else if (c >= 'a' && c <= 'z') {
         buf.at(current_line).at(current_char) = c - 32;
     }
+
+    unsaved = true;
 }
 
 [[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
@@ -280,6 +287,10 @@ void Model::toggle_case() {
             break;
     };
 
+    if (!undo_stack.size()) {
+        unsaved = false;
+    }
+
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
     if ((view_offset <= cur_change.line_pos.value()) ||
@@ -302,6 +313,9 @@ void Model::toggle_case() {
     const Change cur_change = redo_stack.top();
     redo_stack.pop();
     undo_stack.push_back(cur_change);
+    if (undo_stack.size()) {
+        unsaved = true;
+    }
 
     rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
     current_line = cur_change.line_pos.value();
