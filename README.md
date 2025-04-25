@@ -51,6 +51,8 @@ perform the following actions (alphabetically ordered):
 | <kbd>o</kbd>  | Enter newline below and go to write mode              |
 | <kbd>O</kbd>  | Move cursor right                                     |
 | <kbd>r</kbd>  | Replace char under cursor with next entered character |
+| <kbd>R</kbd>  | Redo                                                  |
+| <kbd>u</kbd>  | Undo                                                  |
 | <kbd>w</kbd>  | Move cursor forward one word                          |
 | <kbd>x</kbd>  | Delete character under the cursor                     |
 | <kbd>z</kbd>  | Center the current line in the screen                 |

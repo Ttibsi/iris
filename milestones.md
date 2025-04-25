@@ -18,7 +18,7 @@
     * [ ] If `expandtab` is false, have a way of calculating the logical
     and visual positions of the cursor separately for vertical movement and
     char insertion
-* [ ] Handle undo/redo as two stacks of Actions, and a system to know how
+* [x] Handle undo/redo as two stacks of Actions, and a system to know how
     to perform the opposite of the action
     * [ ] Mark the buffer as modified and update quitting logic as appropriate
 * [ ] Handle viewing files you don't have access rights to edit as readonly
