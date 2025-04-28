@@ -467,6 +467,15 @@ TEST_CASE("set_current_line", "[view]") {
         REQUIRE(v.prev_cur_hor_pos == -1);
     }
 
+    SECTION("Move cursor to exact center") {
+        v.set_current_line(uint32_t(v.view_size.vertical / 2));
+
+        REQUIRE(m.current_line == 11);
+        REQUIRE(m.current_char == 0);
+        REQUIRE(m.view_offset == 0);
+        REQUIRE(v.prev_cur_hor_pos == -1);
+    }
+
     SECTION("Move cursor to line off-screen") {
         v.set_current_line(77);
 

@@ -1,8 +1,12 @@
 ### main / head
 * Added ability to jump to a line number entered as a command: `;42`
 * Ensure the tab key inserts a correct number of spaces
-* Resolved bug with cursor entering incorrect text after recentering screen
 * Updated how the version string displays
+
+* Resolved bug with cursor entering incorrect text after recentering screen
+* Resolved bug with cursor entering incorrect text after recentering screen
+* Resolved bug with screen not redrawing correctly when entering the middle
+line number in the command bar
 
 ### v0.0.1
 * Initial user input handling, drawing basic UI to the screen

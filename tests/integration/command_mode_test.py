@@ -109,3 +109,15 @@ def test_lineno_command(r: TmuxRunner):
     first_line = r.lines()[0]
     prefix = " 65\u2502"
     assert first_line[0:len(prefix)] == prefix
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_lineno_command_exact_center(r: TmuxRunner):
+    r.iris_cmd("11")
+
+    statusbar_parts: list[str] = r.statusbar_parts()
+    assert statusbar_parts[-1] == "11:1"
+
+    first_line: str = r.lines()[0]
+    prefix: str = "  1\u2502"
+    assert first_line[0:len(prefix)] == prefix
