@@ -397,7 +397,7 @@ void View::set_current_line(const unsigned int lineno) {
     get_active_model()->current_line = lineno - 1;
 
     uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
-    if (lineno < half_view) {
+    if (lineno <= half_view) {
         get_active_model()->view_offset = 0;
         cur.move({static_cast<int>(lineno), line_number_offset + 2});
     } else {
