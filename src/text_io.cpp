@@ -77,3 +77,15 @@
 
     return std::find(alphabet.begin(), alphabet.end(), c) != alphabet.end();
 }
+
+[[nodiscard]] std::string check_filename(const std::string& filename) {
+    std::string err_text = "Iris currently does not support tab-delineated files";
+
+    if (filename == "Makefile" || filename == "makefile") {
+        return err_text;
+    } else if (filename.ends_with(".go")) {
+        return err_text;
+    }
+
+    return "";
+}
