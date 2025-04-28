@@ -1,6 +1,7 @@
 ### main / head
 * Added ability to jump to a line number entered as a command: `;42`
 * Resolved bug with cursor entering incorrect text after recentering screen
+* Updated how the version string displays
 
 ### v0.0.1
 * Initial user input handling, drawing basic UI to the screen
