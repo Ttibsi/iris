@@ -7,6 +7,7 @@
 #include <rawterm/cursor.h>
 
 #include "action.h"
+#include "constants.h"
 #include "spdlog/spdlog.h"
 #include "text_io.h"
 #include "view.h"
@@ -137,14 +138,11 @@ void Controller::start_action_engine() {
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
                 redraw_all = true;
 
-                // } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab))
-                // {
-                //     for (int i = 0; i < TAB_SIZE; i++) {
-                //         parse_action<char, None>(&view, Action<char>
-                //         {ActionType::InsertChar, ' '});
-                //     }
-                //     view.render_line();
-                //     view.draw_status_bar();
+            } else if (k.value() == rawterm::Key('i', rawterm::Mod::Tab)) {
+                for (int i = 0; i < TAB_SIZE; i++) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::InsertChar, ' '});
+                }
+                view.draw_line(Draw_Line_dir::None);
             } else {
                 parse_action<char, None>(
                     &view, Action<char> {ActionType::InsertChar, k.value().code});
