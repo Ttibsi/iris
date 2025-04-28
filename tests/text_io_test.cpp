@@ -49,3 +49,12 @@ TEST_CASE("is_letter", "[textio]") {
     REQUIRE_FALSE(is_letter('_'));
     REQUIRE_FALSE(is_letter(':'));
 }
+
+TEST_CASE("check_filename", "[textio]") {
+    std::string err_text = "Iris currently does not support tab-delineated files";
+
+    REQUIRE(check_filename("Makefile") == err_text);
+    REQUIRE(check_filename("makefile") == err_text);
+    REQUIRE(check_filename("t.go") == err_text);
+    REQUIRE(check_filename("t.py") == "");
+}
