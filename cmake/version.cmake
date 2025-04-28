@@ -13,7 +13,7 @@ function(version_setup)
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    set(GIT_VERSION "${GIT_TAG}-${GIT_HASH}")
+    set(GIT_VERSION "${GIT_TAG} (${GIT_HASH})")
 
     string(TIMESTAMP COMPILE_DATE "%Y/%m/%d")
     if(CMAKE_BUILD_TYPE STREQUAL "")
