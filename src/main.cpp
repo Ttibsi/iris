@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include "controller.h"
+#include "text_io.h"
 #include "version.h"
 
 // TODO: A way of detecting if the file is already open in another iris
@@ -26,17 +27,23 @@ int main(int argc, char* argv[]) {
         return app.exit(e);
     }
 
+    if (print_version) {
+        std::println("{}", version());
+        return 0;
+    }
+
+    auto filename_error = check_filename(file);
+    if (!(filename_error.empty())) {
+        std::println("{}", filename_error);
+        return 0;
+    }
+
     try {
         auto logger = spdlog::basic_logger_mt("basic_logger", "iris.log");
     } catch (const spdlog::spdlog_ex& ex) {
         std::println("Log init failed: {}", ex.what());
     }
     spdlog::set_pattern("[%H:%M:%S %z] [thread %t] [%l] %v");
-
-    if (print_version) {
-        std::println("{}", version());
-        return 0;
-    }
 
     spdlog::get("basic_logger")->info("Iris startup");
     rawterm::enter_alt_screen();
