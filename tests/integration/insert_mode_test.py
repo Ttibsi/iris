@@ -248,3 +248,14 @@ def test_newline_with_preceeding_whitespace(r: TmuxRunner):
 
     assert r.lines()[0] == " 1\u2502hello"
     assert r.lines()[1] == " 2\u2502world"
+
+
+@setup()
+def test_press_tab_for_spaces(r: TmuxRunner):
+    r.press("i")
+    r.press("Tab")
+    r.press("!")
+
+    assert r.lines()[0] == " 1\u2502    !"
+    assert r.statusbar_parts()[-1] == "1:6"
+    assert r.statusbar_parts()[2] == "[X]"

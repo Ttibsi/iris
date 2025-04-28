@@ -1,5 +1,6 @@
 ### main / head
 * Added ability to jump to a line number entered as a command: `;42`
+* Ensure the tab key inserts a correct number of spaces
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Updated how the version string displays
 
