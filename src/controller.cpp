@@ -380,7 +380,6 @@ bool Controller::parse_command() {
         }
 
     } else if (cmd == ";q") {
-        // TODO: Check if file is modified
         if (view.get_active_model()->unsaved) {
             view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
         } else {
