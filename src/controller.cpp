@@ -23,7 +23,6 @@ void Controller::set_mode(Mode m) {
             rawterm::Cursor::cursor_block();
             break;
         case Mode::Write:
-            view.prev_cur_hor_pos = -1;  // reset horizontal position
             rawterm::Cursor::cursor_pipe();
             break;
         case Mode::Command:

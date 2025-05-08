@@ -117,5 +117,5 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "9:1"
 
     r.press("j")
-    assert r.cursor_pos() == (9, 8)
-    assert r.statusbar_parts()[-1] == "10:5"
+    assert r.cursor_pos() == (9, 4)
+    assert r.statusbar_parts()[-1] == "10:1"

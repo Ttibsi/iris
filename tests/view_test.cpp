@@ -165,16 +165,12 @@ TEST_CASE("clamp_horizontal_movement", "[view]") {
     m.current_line = 7;
     m.current_char = 7;
 
-    auto ret = v.clamp_horizontal_movement(1);
-    REQUIRE(ret.has_value());
-    REQUIRE(v.prev_cur_hor_pos == 1);
-    REQUIRE(ret.value() == 0);
+    std::size_t ret = v.clamp_horizontal_movement(1);
+    REQUIRE(ret == 7);
 
     m.current_line++;
     ret = v.clamp_horizontal_movement(1);
-    REQUIRE(ret.has_value());
-    REQUIRE(ret.value() == 1);
-    REQUIRE(v.prev_cur_hor_pos == -1);
+    REQUIRE(ret == 0);
 }
 
 TEST_CASE("cursor_left", "[view]") {
@@ -464,7 +460,6 @@ TEST_CASE("set_current_line", "[view]") {
         REQUIRE(m.current_line == 19);
         REQUIRE(m.current_char == 0);
         REQUIRE(m.view_offset == 7);
-        REQUIRE(v.prev_cur_hor_pos == -1);
     }
 
     SECTION("Move cursor to exact center") {
@@ -473,7 +468,6 @@ TEST_CASE("set_current_line", "[view]") {
         REQUIRE(m.current_line == 11);
         REQUIRE(m.current_char == 0);
         REQUIRE(m.view_offset == 0);
-        REQUIRE(v.prev_cur_hor_pos == -1);
     }
 
     SECTION("Move cursor to line off-screen") {
@@ -482,6 +476,5 @@ TEST_CASE("set_current_line", "[view]") {
         REQUIRE(m.current_line == 76);
         REQUIRE(m.current_char == 0);
         REQUIRE(m.view_offset == 64);
-        REQUIRE(v.prev_cur_hor_pos == -1);
     }
 }
