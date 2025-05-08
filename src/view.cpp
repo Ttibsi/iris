@@ -246,9 +246,10 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     cur.move(prev_pos);
 }
 
-// NOTE: This has been notably complex to implement -- see commit XXXXXX
-// for where I previously removed the "undoing clamping" to move the cursor
-// right. I've had a number of bugs with this that has caused crashes.
+// NOTE: This has been notably complex to implement -- see commit ad20b16
+// for where I previously removed functionality to restore cursor position
+// after being clamped (moving the cursor right). I was experiencing many
+// crashes that were down to the offset being wrong after editing text (I think)
 [[nodiscard]] std::size_t View::clamp_horizontal_movement(const int offset) {
     const int line_pos = static_cast<int>(get_active_model()->current_line) + offset;
     if (line_pos < 0 || line_pos > int32_t(get_active_model()->buf.size())) {
