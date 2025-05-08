@@ -7,6 +7,8 @@
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle
 line number in the command bar
+* Resolved bug where app would crash when moving the cursor vertically after
+editing text
 
 ### v0.0.1
 * Initial user input handling, drawing basic UI to the screen
