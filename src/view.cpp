@@ -246,31 +246,24 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     cur.move(prev_pos);
 }
 
-[[nodiscard]] std::optional<int> View::clamp_horizontal_movement(const int offset) {
-    // Make sure this only uses adjacent lines
-    if (!(offset == 1 || offset == -1)) {
-        return std::nullopt;
-    }
-
-    if (prev_cur_hor_pos > -1) {
-        const int tmp = prev_cur_hor_pos;
-        prev_cur_hor_pos = -1;
-        get_active_model()->current_char = static_cast<uint_t>(tmp - (line_number_offset + 2));
-        return tmp;
-    }
-
+// NOTE: This has been notably complex to implement -- see commit ad20b16
+// for where I previously removed functionality to restore cursor position
+// after being clamped (moving the cursor right). I was experiencing many
+// crashes that were down to the offset being wrong after editing text (I think)
+[[nodiscard]] std::size_t View::clamp_horizontal_movement(const int offset) {
     const int line_pos = static_cast<int>(get_active_model()->current_line) + offset;
+    if (line_pos < 0 || line_pos > int32_t(get_active_model()->buf.size())) {
+        return 0;
+    }
+
     std::string_view line_moving_to =
         get_active_model()->buf.at(static_cast<std::size_t>(line_pos));
 
-    // if (static_cast<int>(line_moving_to.size()) < (cur.horizontal - line_number_offset)) {
     if (line_moving_to.size() < get_active_model()->current_char) {
-        prev_cur_hor_pos = cur.horizontal;
-        get_active_model()->current_char = static_cast<uint_t>(line_moving_to.size());
-        return line_moving_to.size();
+        return get_active_model()->current_char - line_moving_to.size();
     }
 
-    return std::nullopt;
+    return 0;
 }
 
 void View::cursor_left() {
@@ -286,7 +279,7 @@ void View::cursor_left() {
         return false;
     }
 
-    std::optional<int> horizontal_clamp = clamp_horizontal_movement(-1);
+    std::size_t horizontal_clamp = clamp_horizontal_movement(-count);
     get_active_model()->current_line -= count;
 
     bool redraw_sentinal = false;
@@ -296,14 +289,15 @@ void View::cursor_left() {
             // Scroll view
             get_active_model()->view_offset -= 1;
             redraw_sentinal = true;
-        } else if (!(horizontal_clamp.has_value())) {
+        } else {
             // Move cursor
             cur.move_up();
-        } else {
-            cur.move(
-                {static_cast<int>(cur.vertical - 1),
-                 std::max(horizontal_clamp.value(), line_number_offset + 2)});
         }
+    }
+
+    while (horizontal_clamp) {
+        cursor_left();
+        horizontal_clamp--;
     }
 
     return redraw_sentinal;
@@ -315,7 +309,7 @@ void View::cursor_left() {
         return false;
     }
 
-    std::optional<int> horizontal_clamp = clamp_horizontal_movement(1);
+    std::size_t horizontal_clamp = clamp_horizontal_movement(count);
     get_active_model()->current_line += count;
 
     bool redraw_sentinal = false;
@@ -327,13 +321,15 @@ void View::cursor_left() {
             // scroll
             get_active_model()->view_offset += 1;
             redraw_sentinal = true;
-        } else if (!(horizontal_clamp.has_value())) {
+        } else {
             // Move cursor
             cur.move_down();
-        } else {
-            cur.move(
-                {cur.vertical + 1, std::max(horizontal_clamp.value(), line_number_offset + 2)});
         }
+    }
+
+    while (horizontal_clamp) {
+        cursor_left();
+        horizontal_clamp--;
     }
 
     return redraw_sentinal;
@@ -392,7 +388,6 @@ void View::set_current_line(const unsigned int lineno) {
         return;
     }
 
-    prev_cur_hor_pos = -1;
     get_active_model()->current_char = 0;
     get_active_model()->current_line = lineno - 1;
 
