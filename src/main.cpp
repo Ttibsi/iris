@@ -16,9 +16,11 @@ int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 
     std::string file = "";
+    unsigned int lineno = 0;
     bool print_version = false;
 
     app.add_option("file", file, "File to open");
+    app.add_option("-l,--line", lineno, "Set line number to start on");
     app.add_flag("-v,--version", print_version, "Print version");
 
     try {
@@ -51,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     try {
         Controller c;
-        c.create_view(file);
+        c.create_view(file, lineno);
         c.start_action_engine();
     } catch (const std::exception& e) {
         rawterm::exit_alt_screen();
