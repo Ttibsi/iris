@@ -29,7 +29,7 @@ TEST_CASE("get_mode", "[controller]") {
 TEST_CASE("create_view", "[controller]") {
     SECTION("View with file") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt");
+        c.create_view("tests/fixture/test_file_1.txt", 0);
 
         REQUIRE(c.models.size() == 1);
         REQUIRE(*c.models.at(0).buf.at(0).begin() == 'T');
@@ -37,10 +37,18 @@ TEST_CASE("create_view", "[controller]") {
 
     SECTION("Empty view") {
         Controller c;
-        c.create_view("");
+        c.create_view("", 0);
 
         REQUIRE(c.models.size() == 1);
         REQUIRE(c.models.at(0).buf.size() == 1);
+    }
+
+    SECTION("View with scroll offset") {
+        Controller c;
+        c.create_view("tests/fixture/lorem_ipsum.txt", 20);
+
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(*c.models.at(0).buf.at(0).begin() == 'L');
     }
 }
 
