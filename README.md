@@ -30,6 +30,7 @@ $ ./run.py --release
 ```
 
 # How to use
+### Normal mode
 `iris` is a vim-inspired modal text editor. As with vim, any you'll need to
 switch to `write` mode to insert any characters. In `read` mode, you can
 perform the following actions (alphabetically ordered):
@@ -63,6 +64,7 @@ perform the following actions (alphabetically ordered):
 | <kbd>_</Kbd>  | Go to beginning of line                               |
 | <kbd>$</Kbd>  | Go to end of line                                     |
 
+### Command mode
 Likewise, you can switch to `command` mode with the semicolon `;` key. The
 following commands in alphabetical order are available:
 
@@ -73,3 +75,10 @@ following commands in alphabetical order are available:
 | `;q!`   | Force Quit without saving     |
 | `;wq`   | Save and quit                 |
 | `;w`    | Save file                     |
+
+### CLI
+The following flags are available in the CLI as well:
+
+| Flag      | Description                                  |
+|-----------|----------------------------------------------|
+| `-l<int>` | Open the named file on the given line number |

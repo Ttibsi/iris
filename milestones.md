@@ -9,6 +9,10 @@
 * [x] Handle linux backgrounding (CTRL+Z)
 * [x] Handle SIGWINCH
 * [x] Handle displaying tab characters with specific widths
+* [x] Handle undo/redo as two stacks of Actions, and a system to know how
+    to perform the opposite of the action
+    * [x] Mark the buffer as modified and update quitting logic as appropriate
+* [x] Open a file with the cursor on a specified line using `-l` on the CLI
 * [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [ ] Open a second file in a separate buffer and switch between views
 * [ ] Open a second file in a tab and switch tabs
@@ -18,9 +22,6 @@
     * [ ] If `expandtab` is false, have a way of calculating the logical
     and visual positions of the cursor separately for vertical movement and
     char insertion
-* [x] Handle undo/redo as two stacks of Actions, and a system to know how
-    to perform the opposite of the action
-    * [x] Mark the buffer as modified and update quitting logic as appropriate
 * [ ] Handle viewing files you don't have access rights to edit as readonly
 * [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Open a second file in a split
@@ -28,7 +29,6 @@
 * [ ] Syntax highlighting via lexical analysis and regex
 * [ ] Use the command pallete to run a shell command - investigate forking
 * [ ] Find and replace in the current buffer using the command pallete
-* [ ] Open a file with the cursor on a specified line using `-l` on the CLI
 * [ ] Some form of simple file manager like vim's netrw
 * [ ] Open multiple tabs (delineated at the bottom of the screen) using a new
     PaneManager class for each tab
