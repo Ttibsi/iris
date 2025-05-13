@@ -3,6 +3,7 @@
 * Ensure the tab key inserts a correct number of spaces
 * Updated how the version string displays
 * Added warning when opening files that rely on tab chars (Makefiles, go files)
+* Added new `-l` flag to cli to specify what line number to open a file at
 
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle

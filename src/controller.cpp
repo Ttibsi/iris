@@ -44,9 +44,10 @@ void Controller::set_mode(Mode m) {
     }
 }
 
-void Controller::create_view(const std::string& file_name) {
+void Controller::create_view(const std::string& file_name, const unsigned long lineno) {
     if (file_name.empty()) {
         models.emplace_back(term_size.vertical - 2, "");
+        view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) {
@@ -57,12 +58,17 @@ void Controller::create_view(const std::string& file_name) {
 
         if (file_chars.has_value()) {
             models.emplace_back(file_chars.value(), file_name);
+            view.add_model(&models.at(models.size() - 1));
+
+            if (lineno) {
+                view.cursor_down(uint32_t(std::min(lineno - 1, file_chars.value().size())));
+                view.center_current_line();
+            }
         } else {
             models.emplace_back(term_size.vertical - 2, (file_name.empty() ? "" : file_name));
+            view.add_model(&models.at(models.size() - 1));
         }
     }
-
-    view.add_model(&models.at(models.size() - 1));
 }
 
 void Controller::start_action_engine() {

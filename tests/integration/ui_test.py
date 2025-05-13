@@ -119,3 +119,15 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
     r.press("j")
     assert r.cursor_pos() == (9, 4)
     assert r.statusbar_parts()[-1] == "10:1"
+
+
+def test_open_at_specific_line():
+    file_name: str = "tests/fixture/lorem_ipsum.txt"
+    with TmuxRunner("build/src/iris", file_name, "-l22") as r:
+        status_bar: list[str] = r.statusbar_parts()
+        assert status_bar[-1] == "22:1"
+
+        assert r.cursor_pos() == (12, 4)
+
+        line_start: str = " 10\u2502Fusce accumsan quis dolor sed tempus"
+        assert line_start in r.lines()[0]
