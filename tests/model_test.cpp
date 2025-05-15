@@ -336,11 +336,10 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.at(m.current_line - 1) == "l");
         REQUIRE(m.buf.at(m.current_line) == "ine two");
 
-        m.undo_stack.push_back(Change(ActionType::Newline, m.current_line, m.current_char));
-        REQUIRE(m.undo(24));
+        m.undo_stack.push_back(Change(ActionType::Newline, 1, 1));
 
-        m.current_line--;
-        REQUIRE(m.buf.at(m.current_line) == "line two");
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(m.current_line - 1) == "line two");
         REQUIRE(m.buf.size() == 6);
     };
 
@@ -406,13 +405,10 @@ TEST_CASE("redo", "[model]") {
     };
 
     SECTION("DelCurrentChar") {
-        m.insert('?');
-        REQUIRE(m.buf.at(1) == "l?ine two");
-
-        m.redo_stack.push(Change(ActionType::DelCurrentChar, 'n', m.current_line, m.current_char));
+        m.redo_stack.push(Change(ActionType::DelCurrentChar, '?', m.current_line, m.current_char));
 
         REQUIRE(m.redo(24));
-        REQUIRE(m.buf.at(1) == "line two");
+        REQUIRE(m.buf.at(1) == "lne two");
     };
 
     SECTION("Newline") {
