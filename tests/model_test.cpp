@@ -299,11 +299,14 @@ TEST_CASE("find_prev", "[model]") {
 TEST_CASE("undo", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
+    // NOTE: In the actual execution, wemove the cursor back one then perform
+    // the same change as DelCurrentChar -- note that the current_char is one
+    // less here. It _should_ be the `i` char that's deleted here.
     SECTION("Backspace") {
         m.current_line = 1;
         m.current_char = 1;
-        m.undo_stack.push_back(
-            Change(ActionType::Backspace, m.get_current_char(), m.current_line, m.current_char));
+        m.undo_stack.push_back(Change(
+            ActionType::Backspace, m.get_current_char(), m.current_line, m.current_char + 1));
 
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lne two");

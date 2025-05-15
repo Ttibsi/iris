@@ -78,7 +78,7 @@ template <typename T, typename U>
 
                 v->get_active_model()->undo_stack.push_back(Change(
                     ActionType::Backspace, prev_char, v->get_active_model()->current_line,
-                    v->get_active_model()->current_char - 1));
+                    v->get_active_model()->current_char));
 
                 // actual backspace
                 Redraw ret = v->get_active_model()->backspace();
@@ -104,10 +104,10 @@ template <typename T, typename U>
                     logger->info("Action called: DelCurrentChar");
                 }
 
-                v->cursor_right();
                 v->get_active_model()->undo_stack.push_back(Change(
                     ActionType::DelCurrentChar, v->get_active_model()->get_current_char(),
                     v->get_active_model()->current_line, v->get_active_model()->current_char));
+                v->cursor_right();
                 Redraw ret = v->get_active_model()->backspace();
                 v->cur.move_left();
 

@@ -261,6 +261,7 @@ void Model::toggle_case() {
     // not during usage
     switch (cur_change.action) {
         case ActionType::Backspace:
+            current_char--;
             [[fallthrough]];
         case ActionType::DelCurrentChar: {
             insert(cur_change.payload.value());
@@ -293,8 +294,11 @@ void Model::toggle_case() {
 
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
-    if ((view_offset <= cur_change.line_pos.value()) ||
-        (cur_change.line_pos.value() <= view_offset + uint32_t(height))) {
+
+    if (view_offset <= cur_change.line_pos.value()) {
+        return true;
+    }
+    if (cur_change.line_pos.value() <= view_offset + uint32_t(height)) {
         return true;
     }
 

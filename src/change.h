@@ -6,6 +6,7 @@
 // Forward declare to prevent circular header includes
 enum class ActionType;
 
+// TODO: Remove optional from payload?
 struct Change {
     const ActionType action;
     const std::optional<char> payload;
