@@ -261,13 +261,15 @@ void Model::toggle_case() {
     // not during usage
     switch (cur_change.action) {
         case ActionType::Backspace:
+            current_char--;
             [[fallthrough]];
         case ActionType::DelCurrentChar: {
-            insert(cur_change.payload.value());
+            insert(cur_change.payload);
         } break;
 
         case ActionType::Newline: {
             current_char = 0;
+            current_line++;
             std::ignore = backspace();
         } break;
 
@@ -280,7 +282,9 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::ReplaceChar: {
-            replace_char(cur_change.payload.value());
+            const char cur_char = cur_change.payload;
+            redo_stack.top().payload = get_current_char();
+            replace_char(cur_char);
         } break;
 
         default:
@@ -293,8 +297,11 @@ void Model::toggle_case() {
 
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
-    if ((view_offset <= cur_change.line_pos.value()) ||
-        (cur_change.line_pos.value() <= view_offset + uint32_t(height))) {
+
+    if (view_offset <= cur_change.line_pos.value()) {
+        return true;
+    }
+    if (cur_change.line_pos.value() <= view_offset + uint32_t(height)) {
         return true;
     }
 
@@ -327,6 +334,7 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::DelCurrentChar: {
+            current_char++;
             std::ignore = backspace();
         } break;
 
@@ -340,11 +348,11 @@ void Model::toggle_case() {
 
         case ActionType::InsertChar: {
             current_char--;
-            insert(cur_change.payload.value());
+            insert(cur_change.payload);
         } break;
 
         case ActionType::ReplaceChar: {
-            replace_char(cur_change.payload.value());
+            replace_char(cur_change.payload);
         } break;
 
         default:
