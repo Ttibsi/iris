@@ -226,6 +226,10 @@ template <typename T, typename U>
                 logger->info("Action called: Newline");
             }
 
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::Newline, v->get_active_model()->current_line,
+                v->get_active_model()->current_char));
+
             const std::size_t count = v->get_active_model()->newline();
             if (!(v->cur.vertical == v->view_size.vertical - 2)) {
                 v->cur.move_down();
@@ -237,9 +241,6 @@ template <typename T, typename U>
                 v->cur.move_left();
             }
 
-            v->get_active_model()->undo_stack.push_back(Change(
-                ActionType::Newline, v->get_active_model()->current_line,
-                v->get_active_model()->current_char));
             return {};
         } break;
 

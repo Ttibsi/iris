@@ -279,13 +279,13 @@ def test_undo_redo_backspace(r: TmuxRunner):
     r.press("BSpace")
     r.press("Escape")
 
-    assert "is" not in r.lines()[0]
+    assert " is " not in r.lines()[0]
 
     r.press("u")
-    assert r.lines()[0] == " 1\2502This is some text"
+    assert r.lines()[0] == " 1\u2502This is some text"
 
     r.press("R")
-    assert r.lines()[0] == " 1\2502This s some text"
+    assert r.lines()[0] == " 1\u2502This s some text"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -293,13 +293,13 @@ def test_undo_redo_del_current_char(r: TmuxRunner):
     r.type_str("l" * 6)
     r.press("x")
 
-    assert "is" not in r.lines()[0]
+    assert " is " not in r.lines()[0]
 
     r.press("u")
-    assert r.lines()[0] == " 1\2502This is some text"
+    assert r.lines()[0] == " 1\u2502This is some text"
 
     r.press("R")
-    assert r.lines()[0] == " 1\2502This i some text"
+    assert r.lines()[0] == " 1\u2502This i some text"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -311,20 +311,20 @@ def test_undo_redo_newline(r: TmuxRunner):
 
     assert r.statusbar_parts()[-1] == "2:1"
     lines: list[str] = r.lines()
-    assert lines[0] == " 1\2502This is"
-    assert lines[1] == " 2\2502some text"
+    assert lines[0] == " 1\u2502This is"
+    assert lines[1] == " 2\u2502some text"
 
     r.press("u")
     assert r.statusbar_parts()[-1] == "2:1"
     lines = r.lines()
-    assert lines[0] == " 1\2502This is some text"
-    assert lines[1] == " 2\2502    here is a newline and a tab"
+    assert lines[0] == " 1\u2502This issome text"
+    assert lines[1] == " 2\u2502    here is a newline and a tab"
 
     r.press("R")
     assert r.statusbar_parts()[-1] == "2:1"
     lines = r.lines()
-    assert lines[0] == " 1\2502This is"
-    assert lines[1] == " 2\2502some text"
+    assert lines[0] == " 1\u2502This is"
+    assert lines[1] == " 2\u2502some text"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -347,23 +347,24 @@ def test_undo_redo_toggle_case(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt")
 def test_undo_redo_insert_char(r: TmuxRunner):
     r.type_str("ihello")
+    r.press("Escape")
 
     line: str = r.lines()[0]
-    assert line.startswith(" 1\2502hello")
+    assert line.startswith(" 1\u2502hello")
 
     r.press("u")
     line = r.lines()[0]
-    assert line.startswith(" 1\2502hellT")
+    assert line.startswith(" 1\u2502hellT")
 
     r.press("R")
     line = r.lines()[0]
-    assert line.startswith(" 1\2502hello")
+    assert line.startswith(" 1\u2502hello")
 
 
 @setup("tests/fixture/test_file_1.txt")
 def test_undo_redo_replace_char(r: TmuxRunner):
     r.type_str("l" * 6)
-    r.type_str("x!")
+    r.type_str("r!")
 
     line: str = r.lines()[0]
     assert " i! " in line
