@@ -273,41 +273,105 @@ def test_upper_f_key(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
-def test_u_key(r: TmuxRunner):
-    r.type_str("ihello")
+def test_undo_redo_backspace(r: TmuxRunner):
+    r.type_str("l" * 6)
+    r.press("i")
+    r.press("BSpace")
     r.press("Escape")
 
-    statusbar: list[str] = r.statusbar_parts()
-    assert statusbar[2] == "[X]"
+    assert "is" not in r.lines()[0]
 
     r.press("u")
-    line: str = r.lines()[0]
-    assert "hellThis" in line
+    assert r.lines()[0] == " 1\2502This is some text"
 
-    r.press("u")
-    line = r.lines()[0]
-    assert "helThis" in line
+    r.press("R")
+    assert r.lines()[0] == " 1\2502This s some text"
 
 
 @setup("tests/fixture/test_file_1.txt")
-def test_upper_r_key(r: TmuxRunner):
-    r.type_str("i!")
+def test_undo_redo_del_current_char(r: TmuxRunner):
+    r.type_str("l" * 6)
+    r.press("x")
+
+    assert "is" not in r.lines()[0]
+
+    r.press("u")
+    assert r.lines()[0] == " 1\2502This is some text"
+
+    r.press("R")
+    assert r.lines()[0] == " 1\2502This i some text"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_newline(r: TmuxRunner):
+    r.type_str("l" * 7)
+    r.press("i")
+    r.press("Enter")
     r.press("Escape")
 
+    assert r.statusbar_parts()[-1] == "2:1"
+    lines: list[str] = r.lines()
+    assert lines[0] == " 1\2502This is"
+    assert lines[1] == " 2\2502some text"
+
+    r.press("u")
+    assert r.statusbar_parts()[-1] == "2:1"
+    lines = r.lines()
+    assert lines[0] == " 1\2502This is some text"
+    assert lines[1] == " 2\2502    here is a newline and a tab"
+
+    r.press("R")
+    assert r.statusbar_parts()[-1] == "2:1"
+    lines = r.lines()
+    assert lines[0] == " 1\2502This is"
+    assert lines[1] == " 2\2502some text"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_toggle_case(r: TmuxRunner):
+    r.press("l")
+    r.press("~")
+
     line: str = r.lines()[0]
-    assert "!This" in line
-    statusbar: list[str] = r.statusbar_parts()
-    assert statusbar[2] == "[X]"
+    assert "H" in line
 
     r.press("u")
     line = r.lines()[0]
-    assert "!" not in line
-    statusbar_full: str = r.lines()[22]
-    assert "[X]" not in statusbar_full
+    assert "H" not in line
 
     r.press("R")
-
-    statusbar = r.statusbar_parts()
-    assert statusbar[2] == "[X]"
     line = r.lines()[0]
-    assert "!This" in line
+    assert "H" in line
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_insert_char(r: TmuxRunner):
+    r.type_str("ihello")
+
+    line: str = r.lines()[0]
+    assert line.startswith(" 1\2502hello")
+
+    r.press("u")
+    line = r.lines()[0]
+    assert line.startswith(" 1\2502hellT")
+
+    r.press("R")
+    line = r.lines()[0]
+    assert line.startswith(" 1\2502hello")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_replace_char(r: TmuxRunner):
+    r.type_str("l" * 6)
+    r.type_str("x!")
+
+    line: str = r.lines()[0]
+    assert " i! " in line
+
+    r.press("u")
+    line = r.lines()[0]
+    assert " is " in line
+
+    r.press("R")
+    line = r.lines()[0]
+    assert " i! " in line
