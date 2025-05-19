@@ -376,3 +376,18 @@ def test_undo_redo_replace_char(r: TmuxRunner):
     r.press("R")
     line = r.lines()[0]
     assert " i! " in line
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_j_key(r: TmuxRunner):
+    r.press("J")
+    assert "here is a newline and a tab" in r.lines()[0]
+    assert "This is some text" in r.lines()[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_k_key(r: TmuxRunner):
+    r.press("G")
+    r.press("K")
+    assert "and another newline" in r.lines()[1]
+    assert "here is a newline and a tab" in r.lines()[2]

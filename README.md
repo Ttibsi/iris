@@ -47,7 +47,9 @@ perform the following actions (alphabetically ordered):
 | <kbd>h</kbd>  | Move cursor left                                      |
 | <kbd>i</kbd>  | Go to write mode left of the current character        |
 | <kbd>j</kbd>  | Move cursor down                                      |
+| <kbd>J</kbd>  | Move current line down one                            |
 | <kbd>k</kbd>  | Move cursor up                                        |
+| <kbd>K</kbd>  | Move current line up one                              |
 | <kbd>l</kbd>  | Move cursor right                                     |
 | <kbd>o</kbd>  | Enter newline below and go to write mode              |
 | <kbd>O</kbd>  | Move cursor right                                     |

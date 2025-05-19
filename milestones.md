@@ -63,3 +63,5 @@
 * [ ] `d`
     * [ ] `l` (delete line)
     * [ ] `w` (delete word)
+* [x] `J`
+* [x] `K`

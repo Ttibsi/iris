@@ -49,6 +49,8 @@ struct Model {
     [[nodiscard]] bool undo(const int);
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] bool redo(const int);
+    void move_line_down();
+    void move_line_up();
 };
 
 #endif  // MODEL_H
