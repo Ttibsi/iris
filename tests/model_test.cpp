@@ -443,3 +443,11 @@ TEST_CASE("redo", "[model]") {
         REQUIRE(m.buf.at(1) == "line two");
     };
 }
+
+TEST_CASE("move_line_down", "[model]") {
+    SKIP("Not written yet");
+}
+
+TEST_CASE("move_line_up", "[model]") {
+    SKIP("Not written yet");
+}

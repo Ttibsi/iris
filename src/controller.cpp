@@ -214,6 +214,11 @@ void Controller::start_action_engine() {
                 } else {
                     view.draw_line(Draw_Line_dir::Prev);
                 }
+
+            } else if (k.value() == rawterm::Key('J', rawterm::Mod::Shift)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveLineDown});
+                redraw_all = true;
+
             } else if (k.value() == rawterm::Key('k')) {
                 auto redraw =
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorUp});
@@ -222,6 +227,11 @@ void Controller::start_action_engine() {
                 } else {
                     view.draw_line(Draw_Line_dir::Next);
                 }
+
+            } else if (k.value() == rawterm::Key('K', rawterm::Mod::Shift)) {
+                parse_action<void, None>(&view, Action<void> {ActionType::MoveLineUp});
+                redraw_all = true;
+
             } else if (k.value() == rawterm::Key('l')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
 

@@ -25,6 +25,8 @@ enum class ActionType {
     MoveCursorUp,
     MoveCursorDown,
     MoveCursorRight,
+    MoveLineDown,
+    MoveLineUp,
     Newline,
     StartOfLine,
     ToggleCase,
@@ -217,6 +219,26 @@ template <typename T, typename U>
             }
 
             v->cursor_right();
+            return {};
+        } break;
+
+        case ActionType::MoveLineDown: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: MoveLineDown");
+            }
+
+            v->get_active_model()->move_line_down();
+            return {};
+        } break;
+
+        case ActionType::MoveLineUp: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: MoveLineUp");
+            }
+
+            v->get_active_model()->move_line_up();
             return {};
         } break;
 

@@ -368,3 +368,7 @@ void Model::toggle_case() {
 
     return false;
 }
+
+void Model::move_line_down() {}
+
+void Model::move_line_up() {}
