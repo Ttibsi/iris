@@ -79,8 +79,9 @@ following commands in alphabetical order are available:
 | `;w`    | Save file                     |
 
 ### CLI
-The following flags are available in the CLI as well:
+The below flags are available in the CLI as well. See `--help` for more info.
 
-| Flag      | Description                                  |
-|-----------|----------------------------------------------|
-| `-l<int>` | Open the named file on the given line number |
+| Flag        | Description                                  |
+|-------------|----------------------------------------------|
+| `-l<int>`   | Open the named file on the given line number |
+| `--version` | Print the current version and exit.          |
