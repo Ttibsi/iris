@@ -5,6 +5,7 @@
 * Added warning when opening files that rely on tab chars (Makefiles, go files)
 * Added new `-l` flag to cli to specify what line number to open a file at
 * Added new undo and redo commands
+* Added `J` and `K` to move current line up or down
 
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle
