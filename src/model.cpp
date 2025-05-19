@@ -369,6 +369,10 @@ void Model::toggle_case() {
     return false;
 }
 
-void Model::move_line_down() {}
+void Model::move_line_down() {
+    std::iter_swap(buf.begin() + current_line, buf.begin() + current_line + 1);
+}
 
-void Model::move_line_up() {}
+void Model::move_line_up() {
+    std::iter_swap(buf.begin() + current_line, buf.begin() + current_line - 1);
+}

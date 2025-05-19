@@ -229,6 +229,7 @@ template <typename T, typename U>
             }
 
             v->get_active_model()->move_line_down();
+            v->cursor_down();
             return {};
         } break;
 
@@ -239,6 +240,7 @@ template <typename T, typename U>
             }
 
             v->get_active_model()->move_line_up();
+            v->cursor_up();
             return {};
         } break;
 
