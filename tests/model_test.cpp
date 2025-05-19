@@ -445,9 +445,30 @@ TEST_CASE("redo", "[model]") {
 }
 
 TEST_CASE("move_line_down", "[model]") {
-    SKIP("Not written yet");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    m.move_line_down();
+    REQUIRE(m.buf.at(0) == "line two");
+    REQUIRE(m.buf.at(1) == "line one");
+
+    m.current_line++;
+
+    m.move_line_down();
+    REQUIRE(m.buf.at(1) == "line three");
+    REQUIRE(m.buf.at(2) == "line one");
 }
 
 TEST_CASE("move_line_up", "[model]") {
-    SKIP("Not written yet");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.current_line = 5;
+
+    m.move_line_up();
+    REQUIRE(m.buf.at(4) == "line five");
+    REQUIRE(m.buf.at(5) == "line four");
+
+    m.current_line--;
+
+    m.move_line_up();
+    REQUIRE(m.buf.at(3) == "line five");
+    REQUIRE(m.buf.at(4) == "");
 }
