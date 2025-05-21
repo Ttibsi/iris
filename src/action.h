@@ -62,6 +62,12 @@ template <typename T, typename U>
                     logger->info("Action called: Backspace");
                 }
 
+                // Skip if cur at 0,0
+                if (v->get_active_model()->current_line == 0 &&
+                    v->get_active_model()->current_char == 0) {
+                    return Redraw::None;
+                }
+
                 // For cursor movement
                 std::size_t prev_line_len = 0;
                 if (v->get_active_model()->current_line > 0) {
