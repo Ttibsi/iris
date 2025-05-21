@@ -12,6 +12,7 @@
 line number in the command bar
 * Resolved bug where app would crash when moving the cursor vertically after
 editing text
+* Resolved issue with backspace at 0th char moving backwards over line numbers
 
 ### v0.0.1
 * Initial user input handling, drawing basic UI to the screen
