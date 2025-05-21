@@ -28,5 +28,6 @@ struct WriteData {
 [[nodiscard]] bool is_letter(const char&);
 [[nodiscard]] std::string check_filename(const std::string&);
 [[nodiscard]] bool file_exists(std::string_view);
+[[nodiscard]] std::string shell_exec(const std::vector<std::string>&);
 
 #endif  // TEXT_IO_H

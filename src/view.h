@@ -29,6 +29,7 @@ struct View {
     rawterm::Cursor cur;
     int line_number_offset = 0;
     std::string command_text = ";";
+    std::string git_branch = "";
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
@@ -52,6 +53,7 @@ struct View {
     void cursor_start_of_line();
     void center_current_line();
     void set_current_line(const unsigned int);
+    void get_git_branch();
 };
 
 #endif  // VIEW_H

@@ -1,11 +1,13 @@
 #include "text_io.h"
 
 #include <array>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 
 #include <rawterm/text.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "constants.h"
 
@@ -95,4 +97,40 @@
 [[nodiscard]] bool file_exists(std::string_view name) {
     struct stat buffer;
     return (stat(name.data(), &buffer) == 0);
+
+// https://www.rozmichelle.com/pipes-forks-dups/
+// https://markbailey34.medium.com/fork-exec-and-pipe-ls-in-c-16dde5dc179a
+[[nodiscard]] std::string shell_exec(const std::vector<std::string>& cmd) {
+    std::vector<char*> cstrs;
+    cstrs.push_back(const_cast<char*>("sh"));
+    cstrs.push_back(const_cast<char*>("-c"));
+    for (auto& arg : cmd) {
+        cstrs.push_back(const_cast<char*>(arg.c_str()));
+    }
+    cstrs.push_back(nullptr);
+
+    int fds[2];
+    pipe(fds);
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        // child process
+        close(fds[0]);    // close read
+        dup2(fds[1], 1);  // set stdout to write
+        close(fds[1]);    // we are done modifying it so close it
+        execv("sh", cstrs.data());
+        return "";
+    } else if (pid < 0) {
+        // error
+        return "";
+    } else {
+        // parent process
+        std::string out = "";
+
+        // So, I think this hacky line will just perform the same thing
+        // until it's done
+        while (read(fds[0], out.data(), 1024)) {}
+
+        return out;
+    }
 }
