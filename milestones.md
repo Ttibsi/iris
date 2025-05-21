@@ -13,6 +13,8 @@
     to perform the opposite of the action
     * [x] Mark the buffer as modified and update quitting logic as appropriate
 * [x] Open a file with the cursor on a specified line using `-l` on the CLI
+* [ ] Handle viewing files you don't have access rights to edit as readonly
+* [ ] Show the current git branch on the statusbar
 * [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [ ] Open a second file in a separate buffer and switch between views
 * [ ] Open a second file in a tab and switch tabs
@@ -22,7 +24,6 @@
     * [ ] If `expandtab` is false, have a way of calculating the logical
     and visual positions of the cursor separately for vertical movement and
     char insertion
-* [ ] Handle viewing files you don't have access rights to edit as readonly
 * [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Open a second file in a split
 * [ ] Open a command pallete at the bottom third of the screen
