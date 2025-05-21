@@ -259,3 +259,14 @@ def test_press_tab_for_spaces(r: TmuxRunner):
     assert r.lines()[0] == " 1\u2502    !"
     assert r.statusbar_parts()[-1] == "1:6"
     assert r.statusbar_parts()[2] == "[X]"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_backspace_does_nothing_at_first_char(r: TmuxRunner):
+    r.press("i")
+    initial: tuple[int, ...] = r.cursor_pos()
+
+    r.press("BSpace")
+    assert r.statusbar_parts()[-1] == "1:1"
+
+    assert r.cursor_pos() == initial
