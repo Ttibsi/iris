@@ -58,3 +58,8 @@ TEST_CASE("check_filename", "[textio]") {
     REQUIRE(check_filename("t.go") == err_text);
     REQUIRE(check_filename("t.py") == "");
 }
+
+
+TEST_CASE("shell_exec", "[textio]") {
+    REQUIRE(shell_exec({"echo", "'hello'"}) == "hello");
+}

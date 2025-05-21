@@ -15,6 +15,7 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "text_io.h"
 
 View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
@@ -170,6 +171,8 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
 
 // TODO: Break this up so it's easier to update specific elements in statusbar
 void View::draw_status_bar() {
+    get_git_branch();
+
     rawterm::Pos starting_cur_pos = cur;
     cur.move({view_size.vertical - 1, 1});
     rawterm::clear_line();
@@ -184,8 +187,8 @@ const std::string View::render_status_bar() const {
     // center = file name
     // right = language | cursor position
     std::string left = " " + ctrlr_ptr->get_mode();
-    if (!(ctrlr_ptr->git_branch.empty())) {
-        left += std::string(" | ") + ctrlr_ptr->git_branch;
+    if (!(git_branch.empty())) {
+        left += std::string(" | ") + git_branch;
     }
 
     if (get_active_model()->readonly) {
@@ -399,4 +402,8 @@ void View::set_current_line(const unsigned int lineno) {
         get_active_model()->view_offset = lineno - half_view - 1;
         cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
     }
+}
+
+void View::get_git_branch() {
+    git_branch = shell_exec({"git", "rev-parse", "--abbrev-ref"});
 }
