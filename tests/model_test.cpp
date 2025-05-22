@@ -472,3 +472,13 @@ TEST_CASE("move_line_up", "[model]") {
     REQUIRE(m.buf.at(3) == "line five");
     REQUIRE(m.buf.at(4) == "");
 }
+
+TEST_CASE("set_read_only", "[model]") {
+    auto m = Model(24, "");
+
+    m.set_read_only("tests/fixture/read_only.txt");
+    REQUIRE(m.readonly);
+
+    m.set_read_only("tests/fixture/lorem_ipsum.txt");
+    REQUIRE(!m.readonly);
+}

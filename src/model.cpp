@@ -381,6 +381,5 @@ void Model::move_line_up() {
 }
 
 void Model::set_read_only(std::string_view file) {
-    int ret = access(file.data(), W_OK);
-    readonly = (ret == -1);
+    readonly = (access(file.data(), W_OK) == -1);
 }

@@ -52,6 +52,19 @@ def clean() -> None:
             os.remove(file)
 
 
+def create_read_only_file() -> None:
+    file_name: str = "tests/fixture/read_only.txt"
+    if os.path.exists(file_name):
+        return
+
+    with open(file_name, "w") as f:
+        f.write("This is a read-only file\n")
+        f.write("We have some more text here")
+
+    os.chmod(file_name, stat.S_IREAD)
+    return
+
+
 def integration_tests(test_name: str = "") -> int:
     def create_venv() -> int:
         if os.path.isdir("venv"):
@@ -60,14 +73,6 @@ def integration_tests(test_name: str = "") -> int:
 
         hecate_repo = "git+https://github.com/ttibsi/hecate.git@upgrades"
         return run_shell_cmd(f"venv/bin/pip install pytest {hecate_repo}")
-
-    def create_read_only_file() -> None:
-        with open("tests/fixture/read_only.txt", "w") as f:
-            f.write("This is a read-only file\n")
-            f.write("We have some more text here")
-
-        os.chmod("tests/fixture/read_only.txt", stat.S_IREAD)
-        return
 
     ret: int = build()
     if ret:
@@ -105,6 +110,7 @@ def test(testname: str | None, asan: bool) -> int:
     if ret:
         return ret
 
+    create_read_only_file()
     testname = testname if testname is not None else ""
     test_flags: str = "-sr compact --order rand"
     shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"
