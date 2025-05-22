@@ -20,24 +20,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install llvm-18
-      # - run: chmod -w tests/fixture/readonly_file.txt
-      - uses: threeal/cmake-action@v1.3.0
-        with:
-          run-build: true
-          build-dir: build
-          options: RUN_TESTS=true
-          generator: Ninja
-      - run: ./build/tests/test_exe
+      # - uses: threeal/cmake-action@v1.3.0
+      #   with:
+      #     run-build: true
+      #     build-dir: build
+      #     options: RUN_TESTS=true
+      #     generator: Ninja
+      - run: ./run.py test
   integration_tests:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install llvm-18
       # - uses: actions/setup-python@v5
-      - uses: threeal/cmake-action@v1.3.0
-        with:
-          run-build: true
-          generator: Ninja
+      # - uses: threeal/cmake-action@v1.3.0
+      #   with:
+      #     run-build: true
+      #     generator: Ninja
       - run: ./run.py test -I
         env:
           PYTEST_ADDOPTS: "--color=yes"
