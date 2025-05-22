@@ -2,6 +2,7 @@
 import argparse
 import os
 import shutil
+import stat
 import subprocess
 import timeit
 import venv
@@ -40,6 +41,7 @@ def clean() -> None:
     files = [
         "src/version.h",
         "iris.log",
+        "tests/fixture/read_only.txt",
         "tests/fixture/temp_file.txt",
         "tests/fixture/does_not_exist.txt",
     ]
@@ -59,6 +61,14 @@ def integration_tests(test_name: str = "") -> int:
         hecate_repo = "git+https://github.com/ttibsi/hecate.git@upgrades"
         return run_shell_cmd(f"venv/bin/pip install pytest {hecate_repo}")
 
+    def create_read_only_file() -> None:
+        with open("tests/fixture/read_only.txt", "w") as f:
+            f.write("This is a read-only file\n")
+            f.write("We have some more text here")
+
+        os.chmod("tests/fixture/read_only.txt", stat.S_IREAD)
+        return
+
     ret: int = build()
     if ret:
         return ret
@@ -67,6 +77,7 @@ def integration_tests(test_name: str = "") -> int:
     if ret:
         return ret
 
+    create_read_only_file()
     test_folder_subpath: str = os.path.join(os.getcwd(), "tests/integration")
     test_paths: list[str] = [
         os.path.join(test_folder_subpath, file_path)
