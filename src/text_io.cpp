@@ -100,15 +100,18 @@
 
 // https://www.rozmichelle.com/pipes-forks-dups/
 // https://markbailey34.medium.com/fork-exec-and-pipe-ls-in-c-16dde5dc179a
-[[nodiscard]] std::string shell_exec(const std::vector<std::string>& cmd) {
+[[nodiscard]] std::string shell_exec(std::string cmd) {
+    // Need to wrap the cmd in quotes
+    // std::string quoted_cmd = "\"" + cmd + "\"";
+
+    // Convert to a C interface (`char* array`)
     std::vector<char*> cstrs;
     cstrs.push_back(const_cast<char*>("sh"));
     cstrs.push_back(const_cast<char*>("-c"));
-    for (auto& arg : cmd) {
-        cstrs.push_back(const_cast<char*>(arg.c_str()));
-    }
+    cstrs.push_back(const_cast<char*>(cmd.c_str()));
     cstrs.push_back(nullptr);
 
+    // Setup file descriptors and fork
     int fds[2];
     pipe(fds);
     pid_t pid = fork();
@@ -118,19 +121,30 @@
         close(fds[0]);    // close read
         dup2(fds[1], 1);  // set stdout to write
         close(fds[1]);    // we are done modifying it so close it
-        execv("sh", cstrs.data());
+        execv("/bin/sh", cstrs.data());
         _exit(1);  // Kill the child process if it fails
+
     } else if (pid < 0) {
         // error
+        close(fds[0]);
+        close(fds[1]);
         return "";
+
     } else {
         // parent process
-        std::string out = "";
+        close(fds[1]);
+
         char buf[1024];
-        if (read(fds[0], buf, 1024)) {
-            out.append(buf);
+        long bytes_read = 0;
+        std::string out = "";
+
+        while ((bytes_read = read(fds[0], buf, sizeof(buf))) > 0) {
+            out.append(buf, std::size_t(bytes_read));
         }
 
+        if (out.at(out.size() - 1) == '\n') {
+            out = out.substr(0, out.size() - 1);
+        }
         return out;
     }
 }

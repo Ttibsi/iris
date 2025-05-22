@@ -64,5 +64,5 @@ TEST_CASE("file_exists", "[textio]") {
     REQUIRE(!(file_exists("tests/something_else.cpp")));
 
 TEST_CASE("shell_exec", "[textio]") {
-    REQUIRE(shell_exec({"echo", "'hello'"}) == "hello");
+    REQUIRE(shell_exec("echo \"hello\"") == "hello");
 }
