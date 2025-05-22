@@ -51,6 +51,7 @@ struct Model {
     [[nodiscard]] bool redo(const int);
     void move_line_down();
     void move_line_up();
+    void set_read_only(std::string_view);
 };
 
 #endif  // MODEL_H
