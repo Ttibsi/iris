@@ -12,7 +12,6 @@ Model::Model(const std::size_t view_height, std::string_view file_name)
     set_read_only(file_name);
 }
 
-// TODO: readonly
 // NOTE: Intentional copy of file_chars
 Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     : buf(file_chars), filename(file_name) {
