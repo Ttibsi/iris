@@ -119,17 +119,17 @@
         dup2(fds[1], 1);  // set stdout to write
         close(fds[1]);    // we are done modifying it so close it
         execv("sh", cstrs.data());
-        return "";
+        _exit(1);  // Kill the child process if it fails
     } else if (pid < 0) {
         // error
         return "";
     } else {
         // parent process
         std::string out = "";
-
-        // So, I think this hacky line will just perform the same thing
-        // until it's done
-        while (read(fds[0], out.data(), 1024)) {}
+        char buf[1024];
+        if (read(fds[0], buf, 1024)) {
+            out.append(buf);
+        }
 
         return out;
     }
