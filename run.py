@@ -57,6 +57,7 @@ def create_read_only_file() -> None:
     if os.path.exists(file_name):
         return
 
+    print("Creating readonly file...")
     with open(file_name, "w") as f:
         f.write("This is a read-only file\n")
         f.write("We have some more text here")
