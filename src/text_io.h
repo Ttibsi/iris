@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "model.h"
@@ -26,5 +27,6 @@ struct WriteData {
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
 [[nodiscard]] std::string check_filename(const std::string&);
+[[nodiscard]] bool file_exists(std::string_view);
 
 #endif  // TEXT_IO_H

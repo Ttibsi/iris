@@ -1,3 +1,5 @@
+import time
+
 from setup import setup
 from setup import TmuxRunner
 
@@ -10,6 +12,7 @@ def test_suspend():
         r.press("Escape")
 
         r.press("^z")
+        time.sleep(0.1)
         r.assert_text_missing("Hello")
 
         # Run something else
