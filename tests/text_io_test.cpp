@@ -61,5 +61,5 @@ TEST_CASE("check_filename", "[textio]") {
 
 
 TEST_CASE("shell_exec", "[textio]") {
-    REQUIRE(shell_exec({"echo", "'hello'"}) == "hello");
+    REQUIRE(shell_exec("echo \"hello\"") == "hello");
 }
