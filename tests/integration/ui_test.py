@@ -1,3 +1,5 @@
+import time
+
 from setup import setup
 from setup import temp_named_file
 from setup import TmuxRunner
@@ -29,10 +31,9 @@ def test_open_with_file(r: TmuxRunner):
 
     assert lines[len(content) + 3] == "~"
 
-    status_bar = lines[22].split(" ")
-    status_bar = [x for x in status_bar if x != ""]
-    assert len(status_bar) == 4
-    assert status_bar[1] == "tests/fixture/test_file_1.txt"
+    status_bar = r.statusbar_parts()
+    assert len(status_bar) == 6
+    assert status_bar[3] == "tests/fixture/test_file_1.txt"
 
 
 @setup("tests/fixture/very_long_line.txt")
@@ -47,26 +48,27 @@ def test_render_truncated_filename_in_statusbar():
 
     with temp_named_file(file_name):
         with TmuxRunner("build/src/iris", file_name) as r:
+            time.sleep(0.1)
             status_bar: list[str] = r.statusbar_parts()
-            assert status_bar[1] == "...ly_really_long_file_name.txt"
+            assert status_bar[3] == "...ly_really_long_file_name.txt"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_move_cursor_vertically(r: TmuxRunner):
     status_bar = r.statusbar_parts()
-    assert status_bar[3] == "1:1"
+    assert status_bar[-1] == "1:1"
 
     for _ in range(5):
         r.press("j")
 
     status_bar = r.statusbar_parts()
-    assert status_bar[3] == "6:1"
+    assert status_bar[-1] == "6:1"
 
     r.press("k")
     r.press("k")
 
     status_bar = r.statusbar_parts()
-    assert status_bar[3] == "4:1"
+    assert status_bar[-1] == "4:1"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -90,14 +92,14 @@ def test_scroll_view_vertically(r: TmuxRunner):
 
     lines = r.lines()
     status_bar = r.statusbar_parts()
-    assert status_bar[3] == "22:1"
+    assert status_bar[-1] == "22:1"
     assert lines[21][4:15] == "consectetur"
 
     r.press("j")
 
     lines = r.lines()
     status_bar = r.statusbar_parts()
-    assert status_bar[3] == "23:1"
+    assert status_bar[-1] == "23:1"
     assert lines[21][4:9] == "Morbi"
 
 
@@ -117,6 +119,7 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "9:1"
 
     r.press("j")
+    time.sleep(0.1)
     assert r.cursor_pos() == (9, 4)
     assert r.statusbar_parts()[-1] == "10:1"
 
@@ -124,6 +127,7 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
 def test_open_at_specific_line():
     file_name: str = "tests/fixture/lorem_ipsum.txt"
     with TmuxRunner("build/src/iris", file_name, "-l22") as r:
+        time.sleep(0.1)
         status_bar: list[str] = r.statusbar_parts()
         assert status_bar[-1] == "22:1"
 

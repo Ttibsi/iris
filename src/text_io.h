@@ -26,5 +26,6 @@ struct WriteData {
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
 [[nodiscard]] std::string check_filename(const std::string&);
+[[nodiscard]] std::string shell_exec(std::string);
 
 #endif  // TEXT_IO_H

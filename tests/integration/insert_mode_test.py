@@ -51,7 +51,7 @@ def test_inserting_char_in_middle_of_line(r: TmuxRunner):
     assert lines[0] == f" 1\u2502{expected_text}"
 
     status_bar: list[str] = r.statusbar_parts()
-    assert status_bar[5][2:] == "7"
+    assert status_bar[-1][2:] == "7"
 
 
 # TODO: GDB to see if move-right works correctly.
@@ -72,7 +72,7 @@ def test_inserting_char_end_of_line(r: TmuxRunner):
     assert lines[0] == f" 1\u2502{expected_text}"
 
     status_bar: list[str] = r.statusbar_parts()
-    assert status_bar[5][2:] == "19"
+    assert status_bar[-1][2:] == "19"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -113,7 +113,7 @@ def test_backspace_char(r: TmuxRunner):
     assert lines[0] == f" 1\u2502{expected_text}"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[5][2] == "5"
+    assert status_bar[-1][2] == "5"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -136,10 +136,10 @@ def test_backspace_newline(r: TmuxRunner):
     assert lines[len(contents) - 1] == "~"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[5][0] == "2"
+    assert status_bar[-1][0] == "2"
 
     # +1 because cursor should be on first char of "second" line
-    assert status_bar[5][2:] == f"{len(line_1_clean) + 1}"
+    assert status_bar[-1][2:] == f"{len(line_1_clean) + 1}"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -167,8 +167,8 @@ def test_insert_newline(r: TmuxRunner):
     assert lines[4] == "~"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[5][0] == "4"
-    assert status_bar[5][2:] == "6"
+    assert status_bar[-1][0] == "4"
+    assert status_bar[-1][2:] == "6"
 
 
 @setup()
@@ -182,7 +182,7 @@ def test_line_truncates_when_inserting_char(r: TmuxRunner):
     assert lines[0][-1] == "6"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[4] == "1:78"
+    assert status_bar[-1] == "1:78"
 
     r.press("_")
 
@@ -191,7 +191,7 @@ def test_line_truncates_when_inserting_char(r: TmuxRunner):
     assert lines[0][-1] == "\u00BB"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[4] == "1:79"
+    assert status_bar[-1] == "1:79"
 
 
 @setup("tests/fixture/very_long_line.txt")
@@ -221,7 +221,7 @@ def test_inserting_newline_into_truncated_line(r: TmuxRunner):
     assert lines[1][0:13] == " 2\u25020123456789"
 
     status_bar = r.statusbar_parts()
-    assert status_bar[5] == "2:1"
+    assert status_bar[-1] == "2:1"
 
 
 @setup()
@@ -258,7 +258,7 @@ def test_press_tab_for_spaces(r: TmuxRunner):
 
     assert r.lines()[0] == " 1\u2502    !"
     assert r.statusbar_parts()[-1] == "1:6"
-    assert r.statusbar_parts()[2] == "[X]"
+    assert r.statusbar_parts()[4] == "[X]"
 
 
 @setup("tests/fixture/test_file_1.txt")
