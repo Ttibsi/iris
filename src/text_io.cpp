@@ -142,6 +142,8 @@
             out.append(buf, std::size_t(bytes_read));
         }
 
+        // TODO: DO we want to log the exact command run? Is this a potential
+        // security issue?
         if (out.at(out.size() - 1) == '\n') {
             out = out.substr(0, out.size() - 1);
         }
