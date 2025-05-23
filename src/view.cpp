@@ -25,6 +25,7 @@ View::View(Controller* controller, const rawterm::Pos dims)
 void View::add_model(Model* m) {
     view_models.push_back(m);
     active_model = view_models.size() - 1;
+    get_git_branch();
 
     // Set visual offset
     if (LINE_NUMBERS) {
@@ -171,8 +172,6 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
 
 // TODO: Break this up so it's easier to update specific elements in statusbar
 void View::draw_status_bar() {
-    get_git_branch();
-
     rawterm::Pos starting_cur_pos = cur;
     cur.move({view_size.vertical - 1, 1});
     rawterm::clear_line();
