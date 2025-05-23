@@ -127,6 +127,7 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
 def test_open_at_specific_line():
     file_name: str = "tests/fixture/lorem_ipsum.txt"
     with TmuxRunner("build/src/iris", file_name, "-l22") as r:
+        time.sleep(0.1)
         status_bar: list[str] = r.statusbar_parts()
         assert status_bar[-1] == "22:1"
 
