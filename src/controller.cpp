@@ -17,6 +17,10 @@ Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, 
 }
 
 void Controller::set_mode(Mode m) {
+    if (view.view_models.size() && view.get_active_model()->readonly && m == Mode::Write) {
+        return;
+    }
+
     mode = m;
     switch (m) {
         case Mode::Read:

@@ -11,6 +11,7 @@ venv/
 # test temp files
 tests/fixture/temp_file.txt
 tests/fixture/does_not_exist.txt
+tests/fixture/read_only.txt
 
 # other
 compile_commands.json

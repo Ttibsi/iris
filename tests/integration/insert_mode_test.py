@@ -3,6 +3,20 @@ from setup import TmuxRunner
 
 
 @setup()
+def test_enter_write_mode(r: TmuxRunner):
+    assert r.statusbar_parts()[0] == "READ"
+    r.press("i")
+    assert r.statusbar_parts()[0] == "WRITE"
+
+
+@setup("tests/fixture/read_only.txt")
+def test_reject_enter_write_mode(r: TmuxRunner):
+    assert r.statusbar_parts()[0] == "READ"
+    r.press("i")
+    assert r.statusbar_parts()[0] == "READ"
+
+
+@setup()
 def test_inserting_char_at_start_of_empty_file(r: TmuxRunner):
     r.press("i")
     r.await_text("WRITE")

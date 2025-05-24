@@ -2,6 +2,7 @@
 import argparse
 import os
 import shutil
+import stat
 import subprocess
 import timeit
 import venv
@@ -40,6 +41,7 @@ def clean() -> None:
     files = [
         "src/version.h",
         "iris.log",
+        "tests/fixture/read_only.txt",
         "tests/fixture/temp_file.txt",
         "tests/fixture/does_not_exist.txt",
     ]
@@ -48,6 +50,20 @@ def clean() -> None:
         if os.path.isfile(file):
             print(f"Removing {file}")
             os.remove(file)
+
+
+def create_read_only_file() -> None:
+    file_name: str = "tests/fixture/read_only.txt"
+    if os.path.exists(file_name):
+        return
+
+    print("Creating readonly file...")
+    with open(file_name, "w") as f:
+        f.write("This is a read-only file\n")
+        f.write("We have some more text here")
+
+    os.chmod(file_name, stat.S_IREAD)
+    return
 
 
 def integration_tests(test_name: str = "") -> int:
@@ -67,6 +83,7 @@ def integration_tests(test_name: str = "") -> int:
     if ret:
         return ret
 
+    create_read_only_file()
     test_folder_subpath: str = os.path.join(os.getcwd(), "tests/integration")
     test_paths: list[str] = [
         os.path.join(test_folder_subpath, file_path)
@@ -94,6 +111,7 @@ def test(testname: str | None, asan: bool) -> int:
     if ret:
         return ret
 
+    create_read_only_file()
     testname = testname if testname is not None else ""
     test_flags: str = "-sr compact --order rand"
     shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"

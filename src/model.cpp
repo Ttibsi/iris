@@ -9,12 +9,14 @@
 Model::Model(const std::size_t view_height, std::string_view file_name)
     : buf({""}), filename(file_name) {
     buf.reserve(view_height);
+    set_read_only(file_name);
 }
 
-// TODO: readonly
 // NOTE: Intentional copy of file_chars
-Model::Model(std::vector<std::string> file_chars, std::string_view filename)
-    : buf(file_chars), filename(filename) {}
+Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
+    : buf(file_chars), filename(file_name) {
+    set_read_only(file_name);
+}
 
 [[nodiscard]] Redraw Model::backspace() {
     if (current_char == 0) {
@@ -375,4 +377,12 @@ void Model::move_line_down() {
 
 void Model::move_line_up() {
     std::iter_swap(buf.begin() + current_line, buf.begin() + current_line - 1);
+}
+
+void Model::set_read_only(std::string_view file) {
+    if (file == "" || !(file_exists(file))) {
+        return;
+    }
+
+    readonly = (access(file.data(), W_OK) == -1);
 }

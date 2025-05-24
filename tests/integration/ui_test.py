@@ -131,3 +131,8 @@ def test_open_at_specific_line():
 
         line_start: str = " 10\u2502Fusce accumsan quis dolor sed tempus"
         assert line_start in r.lines()[0]
+
+
+@setup("tests/fixture/read_only.txt")
+def test_open_readonly_file(r: TmuxRunner):
+    assert "[RO]" in r.statusbar_parts()

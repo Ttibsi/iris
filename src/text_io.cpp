@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <rawterm/text.h>
+#include <sys/stat.h>
 
 #include "constants.h"
 
@@ -88,4 +89,10 @@
     }
 
     return "";
+}
+
+// https://stackoverflow.com/a/12774387
+[[nodiscard]] bool file_exists(std::string_view name) {
+    struct stat buffer;
+    return (stat(name.data(), &buffer) == 0);
 }
