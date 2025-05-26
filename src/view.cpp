@@ -15,6 +15,7 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "text_io.h"
 
 View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
@@ -24,6 +25,7 @@ View::View(Controller* controller, const rawterm::Pos dims)
 void View::add_model(Model* m) {
     view_models.push_back(m);
     active_model = view_models.size() - 1;
+    get_git_branch();
 
     // Set visual offset
     if (LINE_NUMBERS) {
@@ -184,8 +186,8 @@ const std::string View::render_status_bar() const {
     // center = file name
     // right = language | cursor position
     std::string left = " " + ctrlr_ptr->get_mode();
-    if (!(ctrlr_ptr->git_branch.empty())) {
-        left += std::string(" | ") + ctrlr_ptr->git_branch;
+    if (!(git_branch.empty())) {
+        left += std::string(" | ") + git_branch;
     }
 
     if (get_active_model()->readonly) {
@@ -399,4 +401,8 @@ void View::set_current_line(const unsigned int lineno) {
         get_active_model()->view_offset = lineno - half_view - 1;
         cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
     }
+}
+
+void View::get_git_branch() {
+    git_branch = shell_exec("git rev-parse --abbrev-ref HEAD");
 }

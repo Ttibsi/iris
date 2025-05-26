@@ -14,7 +14,6 @@ struct Controller {
     std::vector<Model> models = {};
     View view;
     Mode mode = Mode::Read;
-    std::string git_branch = "";
     bool quit_flag = false;
 
     Controller();
