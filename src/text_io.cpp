@@ -97,6 +97,7 @@
 [[nodiscard]] bool file_exists(std::string_view name) {
     struct stat buffer;
     return (stat(name.data(), &buffer) == 0);
+}
 
 // https://www.rozmichelle.com/pipes-forks-dups/
 // https://markbailey34.medium.com/fork-exec-and-pipe-ls-in-c-16dde5dc179a
