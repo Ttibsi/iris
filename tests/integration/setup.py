@@ -64,7 +64,10 @@ class TmuxRunner(Runner):
                 raise AssertionError(f"Text: '{text}' found")
 
 
-def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
+def setup(
+        open_with: str = "",
+        *, width: int = 80,
+) -> Callable[[T], Callable[[], None]]:
     temp_file: str = "tests/fixture/temp_file.txt"
 
     def decorator(func: T) -> Callable[[], None]:
@@ -75,7 +78,7 @@ def setup(open_with: str = "") -> Callable[[T], Callable[[], None]]:
             with open(temp_file, "w") as f:
                 f.write("Hello world")
 
-            dims = {"width": 80, "height": 24}
+            dims = {"width": width, "height": 24}
             with TmuxRunner("build/src/iris", open_with, **dims) as r:
                 r.await_text("READ", timeout=2)
                 func(r)

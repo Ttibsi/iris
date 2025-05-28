@@ -140,7 +140,7 @@ TEST_CASE("render_line", "[view]") {
 
 TEST_CASE("render_status_bar", "[view]") {
     Controller c;
-    auto v = View(&c, rawterm::Pos(24, 80));
+    auto v = View(&c, rawterm::Pos(24, 100));
 
     auto m =
         Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
@@ -151,7 +151,7 @@ TEST_CASE("render_status_bar", "[view]") {
     REQUIRE(ret.find("READ") != std::string::npos);
     REQUIRE(ret.find("test_file_1.txt") != std::string::npos);
     REQUIRE(ret.find("1:1") != std::string::npos);
-    REQUIRE(rawterm::raw_size(ret) == 80);
+    REQUIRE(rawterm::raw_size(ret) == 100);
 }
 
 TEST_CASE("clamp_horizontal_movement", "[view]") {

@@ -18,7 +18,7 @@ def test_clean_startup(r: TmuxRunner):
     assert "1:1" in lines[22]
 
 
-@setup("tests/fixture/test_file_1.txt")
+@setup("tests/fixture/test_file_1.txt", width=160)
 def test_open_with_file(r: TmuxRunner):
     lines = r.lines()
 
@@ -32,8 +32,8 @@ def test_open_with_file(r: TmuxRunner):
     assert lines[len(content) + 3] == "~"
 
     status_bar = r.statusbar_parts()
-    assert len(status_bar) == 6
-    assert status_bar[3] == "tests/fixture/test_file_1.txt"
+    assert len(status_bar) == 7
+    assert status_bar[4] == "tests/fixture/test_file_1.txt"
 
 
 @setup("tests/fixture/very_long_line.txt")
@@ -47,10 +47,11 @@ def test_render_truncated_filename_in_statusbar():
     file_name = f"This_is_a_{'really_' * 8}long_file_name.txt"
 
     with temp_named_file(file_name):
-        with TmuxRunner("build/src/iris", file_name) as r:
+        dims = {"width": 100, "height": 24}
+        with TmuxRunner("build/src/iris", file_name, **dims) as r:
             time.sleep(0.1)
             status_bar: list[str] = r.statusbar_parts()
-            assert status_bar[3] == "...ly_really_long_file_name.txt"
+            assert status_bar[4] == "..._really_really_long_file_name.txt"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")

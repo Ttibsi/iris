@@ -180,15 +180,15 @@ void View::draw_status_bar() {
 }
 
 const std::string View::render_status_bar() const {
+    const int thirds = view_size.horizontal / 3;
     std::string filename = view_models.at(active_model)->filename;
 
-    // left = mode | git branch | status (read_only/modified)
+    // left = mode | (git branch) | status
     // center = file name
     // right = language | cursor position
+
+    // LHS
     std::string left = " " + ctrlr_ptr->get_mode();
-    if (!(git_branch.empty())) {
-        left += std::string(" | ") + git_branch;
-    }
 
     if (get_active_model()->readonly) {
         left += " | [RO]";
@@ -196,31 +196,31 @@ const std::string View::render_status_bar() const {
         left += " | [X]";
     }
 
+    if (!(git_branch.empty()) && left.size() + git_branch.size() < thirds - 2) {
+        left += std::string(" | ") + git_branch;
+    }
+
+    left += " |";
+
+    // RHS
     // TODO: file language after highlighting engine
     const std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
                               std::to_string(get_active_model()->current_char + 1) + " ";
 
-    // TODO: handle overflows
-
-    std::string viewable_filename = filename;
-    const std::size_t two_thirds = static_cast<uint_t>((view_size.horizontal * 2) / 3);
-    if (filename.size() > two_thirds) {
-        viewable_filename = "..." + filename.substr(two_thirds + 3);
+    // Center
+    std::string visible_filename = filename;
+    if (filename.size() >= thirds) {
+        visible_filename = "..." + filename.substr(filename.size() - thirds, filename.size());
     }
 
-    const std::size_t filename_start = static_cast<std::size_t>(std::floor(
-        (view_size.horizontal / 2) - (static_cast<int>(viewable_filename.size()) / 2) -
-        static_cast<int>(left.size())));
+    const int lhs_padding =
+        (view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size();
+    const int rhs_padding =
+        view_size.horizontal - (right.size() + left.size() + lhs_padding + visible_filename.size());
+    std::string ret = left + std::string(lhs_padding, ' ');
+    ret += visible_filename + std::string(rhs_padding, ' ') + right;
 
-    const std::size_t filename_end = static_cast<std::size_t>(std::floor(
-        (view_size.horizontal / 2) - (static_cast<int>(viewable_filename.size()) / 2) -
-        static_cast<int>(right.size())));
-
-    const std::string ret =
-        left + std::string(filename_start, ' ') + viewable_filename +
-        std::string(filename_end - (viewable_filename.size() % 2 ? 1 : 0), ' ') + right;
-
-    // assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
+    assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
