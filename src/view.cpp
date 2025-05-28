@@ -5,9 +5,11 @@
 #include <cctype>
 #include <cmath>
 #include <format>
+#include <functional>
 #include <print>
 #include <ranges>
 #include <string>
+#include <thread>
 
 #include <rawterm/color.h>
 #include <rawterm/core.h>
@@ -25,7 +27,6 @@ View::View(Controller* controller, const rawterm::Pos dims)
 void View::add_model(Model* m) {
     view_models.push_back(m);
     active_model = view_models.size() - 1;
-    get_git_branch();
 
     // Set visual offset
     if (LINE_NUMBERS) {
@@ -38,12 +39,16 @@ Model* View::get_active_model() const {
 }
 
 void View::draw_screen() {
+    std::jthread jth(std::bind_front(&View::get_git_branch, this));
     rawterm::Pos starting_cur_pos = cur;
 
     // Draw to screen
     rawterm::clear_screen();
     cur.move({1, 1});
     std::print("{}", render_screen());
+
+    // Wait for the thread to finish
+    jth.join();
     draw_status_bar();
     std::print("\n");  // Notification bar
 
