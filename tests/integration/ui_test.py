@@ -120,7 +120,6 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "9:1"
 
     r.press("j")
-    time.sleep(0.1)
     assert r.cursor_pos() == (9, 4)
     assert r.statusbar_parts()[-1] == "10:1"
 
@@ -128,7 +127,7 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
 def test_open_at_specific_line():
     file_name: str = "tests/fixture/lorem_ipsum.txt"
     with TmuxRunner("build/src/iris", file_name, "-l22") as r:
-        time.sleep(0.1)
+        time.sleep(0.1)  # TODO: Speed up rendering to remove this
         status_bar: list[str] = r.statusbar_parts()
         assert status_bar[-1] == "22:1"
 

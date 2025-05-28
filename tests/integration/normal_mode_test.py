@@ -1,5 +1,3 @@
-import time
-
 from setup import setup
 from setup import TmuxRunner
 
@@ -184,7 +182,6 @@ def test_close_squacket_key(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt")
 def test_r_key(r: TmuxRunner):
     r.press("r")
-    time.sleep(0.1)
     r.press("#")
 
     assert r.lines()[0] == " 1\u2502#his is some text"
