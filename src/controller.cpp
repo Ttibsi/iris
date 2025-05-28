@@ -48,7 +48,7 @@ void Controller::set_mode(Mode m) {
     }
 }
 
-void Controller::create_view(const std::string& file_name, const unsigned long lineno) {
+void Controller::create_view(const std::string& file_name, unsigned long lineno) {
     if (file_name.empty()) {
         models.emplace_back(term_size.vertical - 2, "");
         view.add_model(&models.at(models.size() - 1));
@@ -65,6 +65,7 @@ void Controller::create_view(const std::string& file_name, const unsigned long l
             view.add_model(&models.at(models.size() - 1));
 
             if (lineno) {
+                lineno = std::min(lineno, models.at(models.size() - 1).buf.size());
                 view.cursor_down(uint32_t(std::min(lineno - 1, file_chars.value().size())));
                 view.center_current_line();
             }
