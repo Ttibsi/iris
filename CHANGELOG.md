@@ -7,6 +7,7 @@
     * Ensured this line number doesn't overflow the file length
 * Added new undo and redo commands
 * Added `J` and `K` to move current line up or down
+* Added querying for the current git branch in a thread for the statusbar
 
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle
