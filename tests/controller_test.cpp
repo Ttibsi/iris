@@ -55,3 +55,11 @@ TEST_CASE("create_view", "[controller]") {
 TEST_CASE("start_action_engine", "[controller]") {
     SKIP("TODO");
 }
+
+TEST_CASE("is_readonly_model", "[controller]") {
+    Controller c;
+    c.create_view("tests/fixture/test_file_1.txt", 0);
+    REQUIRE(!c.is_readonly_model());
+    c.view.get_active_model()->readonly = true;
+    REQUIRE(c.is_readonly_model());
+}

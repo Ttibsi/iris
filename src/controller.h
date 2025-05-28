@@ -23,6 +23,7 @@ struct Controller {
     void start_action_engine();
     bool enter_command_mode();
     bool parse_command();
+    [[nodiscard]] bool is_readonly_model();
 };
 
 #endif  // CONTROLLER_H
