@@ -213,10 +213,12 @@ const std::string View::render_status_bar() const {
         visible_filename = "..." + filename.substr(filename.size() - thirds, filename.size());
     }
 
-    const int lhs_padding =
-        (view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size();
+    const int lhs_padding = std::clamp(
+        static_cast<int>((view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size()),
+        0, thirds);
     const int rhs_padding =
         view_size.horizontal - (right.size() + left.size() + lhs_padding + visible_filename.size());
+
     std::string ret = left + std::string(lhs_padding, ' ');
     ret += visible_filename + std::string(rhs_padding, ' ') + right;
 
