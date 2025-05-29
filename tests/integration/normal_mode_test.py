@@ -1,3 +1,5 @@
+import time
+
 from setup import setup
 from setup import TmuxRunner
 
@@ -170,11 +172,11 @@ def test_close_squacket_key(r: TmuxRunner):
     assert statusbar[-1] == "80:1"
 
     # Go to end of file
-    r.type_str("]")
+    r.press("G")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "88:1"
 
-    r.type_str("]")
+    r.press("]")
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "88:1"
 
@@ -198,6 +200,7 @@ def test_r_key(r: TmuxRunner):
 def test_z_key(r: TmuxRunner):
     r.type_str("]" * 5)
     r.press("z")
+    time.sleep(0.05)
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "48:1"
     assert r.cursor_pos() == (12, 4)
@@ -218,6 +221,7 @@ def test_g_key(r: TmuxRunner):
     r.type_str("]]]]]")
 
     statusbar: list[str] = r.statusbar_parts()
+    time.sleep(0.05)
     assert statusbar[-1] == "48:1"
     assert r.cursor_pos() == (18, 4)
 
