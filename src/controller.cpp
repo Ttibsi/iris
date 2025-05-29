@@ -162,11 +162,19 @@ void Controller::start_action_engine() {
         } else if (mode == Mode::Read) {
             // Move right, then enter insert mode
             if (k.value() == rawterm::Key('a')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
                 // Move cur to end of line and enter insert mode
             } else if (k.value() == rawterm::Key('A', rawterm::Mod::Shift)) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
@@ -210,6 +218,10 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('h')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
             } else if (k.value() == rawterm::Key('i')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
             } else if (k.value() == rawterm::Key('j')) {
                 auto redraw =
@@ -221,6 +233,10 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('J', rawterm::Mod::Shift)) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveLineDown});
                 redraw_all = true;
 
@@ -234,6 +250,10 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('K', rawterm::Mod::Shift)) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveLineUp});
                 redraw_all = true;
 
@@ -242,6 +262,10 @@ void Controller::start_action_engine() {
 
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
                 redraw_all = true;
@@ -249,6 +273,10 @@ void Controller::start_action_engine() {
 
                 // add new line and go to insert mode (above)
             } else if (k.value() == rawterm::Key('O', rawterm::Mod::Shift)) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 uint32_t horizontal_cursor_pos = view.get_active_model()->current_char;
                 while (horizontal_cursor_pos) {
                     parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
@@ -263,6 +291,10 @@ void Controller::start_action_engine() {
 
                 // Replace current char
             } else if (k.value() == rawterm::Key('r')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) {
                     parse_action<char, None>(
@@ -272,6 +304,10 @@ void Controller::start_action_engine() {
 
                 // redo
             } else if (k.value() == rawterm::Key('R', rawterm::Mod::Shift)) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerRedo});
                 if (ret.has_value()) {
                     redraw_all = ret.value();
@@ -279,6 +315,10 @@ void Controller::start_action_engine() {
 
                 // Undo
             } else if (k.value() == rawterm::Key('u')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerUndo});
                 if (ret.has_value()) {
                     redraw_all = ret.value();
@@ -290,6 +330,10 @@ void Controller::start_action_engine() {
 
                 // Delete char under key
             } else if (k.value() == rawterm::Key('x')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 auto draw =
                     parse_action<void, Redraw>(&view, Action<void> {ActionType::DelCurrentChar});
                 if (draw == Redraw::Line) {
@@ -325,6 +369,10 @@ void Controller::start_action_engine() {
 
                 // toggle case of char
             } else if (k.value() == rawterm::Key('~')) {
+                if (is_readonly_model()) {
+                    continue;
+                }
+
                 parse_action<void, None>(&view, Action<void> {ActionType::ToggleCase});
                 view.draw_line(Draw_Line_dir::None);
             }
@@ -419,4 +467,8 @@ bool Controller::parse_command() {
     }
 
     return false;
+}
+
+[[nodiscard]] bool Controller::is_readonly_model() {
+    return view.get_active_model()->readonly;
 }

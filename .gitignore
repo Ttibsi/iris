@@ -12,6 +12,7 @@ venv/
 tests/fixture/temp_file.txt
 tests/fixture/does_not_exist.txt
 tests/fixture/read_only.txt
+This_is_a_really_really_really_really_really_really_really_really_long_file_name.txt
 
 # other
 compile_commands.json

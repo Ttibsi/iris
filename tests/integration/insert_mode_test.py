@@ -272,7 +272,7 @@ def test_press_tab_for_spaces(r: TmuxRunner):
 
     assert r.lines()[0] == " 1\u2502    !"
     assert r.statusbar_parts()[-1] == "1:6"
-    assert r.statusbar_parts()[4] == "[X]"
+    assert r.statusbar_parts()[2] == "[X]"
 
 
 @setup("tests/fixture/test_file_1.txt")
