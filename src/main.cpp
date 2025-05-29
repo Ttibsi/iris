@@ -13,8 +13,6 @@
 // TODO: Disable normal-mode actions if in READONLY
 // TODO: A way of detecting if the file is already open in another iris
 // instance
-// TODO: Move `shell_exec()` or `get_git_branch()` to a jthread so I can
-// remove the sleep calls in the hecate tests
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 

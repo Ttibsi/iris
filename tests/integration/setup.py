@@ -26,7 +26,11 @@ class TmuxRunner(Runner):
         return self.tmux.execute_command('capture-pane', '-ept0').split("\n")
 
     def statusbar_parts(self, index: int = 22) -> list[str]:
-        return [part for part in self.lines()[index].split(" ") if part != ""]
+        return [
+            part.strip()
+            for part in self.lines()[index].split("|")
+            if part != ""
+        ]
 
     def type_str(self, msg: str) -> None:
         for c in msg:

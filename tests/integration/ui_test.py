@@ -32,8 +32,8 @@ def test_open_with_file(r: TmuxRunner):
     assert lines[len(content) + 3] == "~"
 
     status_bar = r.statusbar_parts()
-    assert len(status_bar) == 7
-    assert status_bar[4] == "tests/fixture/test_file_1.txt"
+    assert len(status_bar) == 4
+    assert status_bar[2] == "tests/fixture/test_file_1.txt"
 
 
 @setup("tests/fixture/very_long_line.txt")
@@ -49,9 +49,9 @@ def test_render_truncated_filename_in_statusbar():
     with temp_named_file(file_name):
         dims = {"width": 100, "height": 24}
         with TmuxRunner("build/src/iris", file_name, **dims) as r:
-            time.sleep(0.1)
+            time.sleep(0.05)
             status_bar: list[str] = r.statusbar_parts()
-            assert status_bar[4] == "..._really_really_long_file_name.txt"
+            assert status_bar[2] == "..._really_really_long_file_name.txt"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -120,7 +120,6 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "9:1"
 
     r.press("j")
-    time.sleep(0.1)
     assert r.cursor_pos() == (9, 4)
     assert r.statusbar_parts()[-1] == "10:1"
 
@@ -128,7 +127,7 @@ def test_cursor_clamping_when_moved(r: TmuxRunner):
 def test_open_at_specific_line():
     file_name: str = "tests/fixture/lorem_ipsum.txt"
     with TmuxRunner("build/src/iris", file_name, "-l22") as r:
-        time.sleep(0.1)
+        time.sleep(0.1)  # TODO: Speed up rendering to remove this
         status_bar: list[str] = r.statusbar_parts()
         assert status_bar[-1] == "22:1"
 
