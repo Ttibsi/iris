@@ -13,7 +13,7 @@
     to perform the opposite of the action
     * [x] Mark the buffer as modified and update quitting logic as appropriate
 * [x] Open a file with the cursor on a specified line using `-l` on the CLI
-* [ ] Handle viewing files you don't have access rights to edit as readonly
+* [x] Handle viewing files you don't have access rights to edit as readonly
 * [x] Show the current git branch on the statusbar
 * [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [ ] Open a second file in a separate buffer and switch between views
