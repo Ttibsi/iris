@@ -4,6 +4,7 @@
 * Updated how the version string displays
 * Added warning when opening files that rely on tab chars (Makefiles, go files)
 * Added new `-l` flag to cli to specify what line number to open a file at
+    * Ensured this line number doesn't overflow the file length
 * Added new undo and redo commands
 * Added `J` and `K` to move current line up or down
 
