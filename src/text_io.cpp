@@ -102,9 +102,6 @@
 // https://www.rozmichelle.com/pipes-forks-dups/
 // https://markbailey34.medium.com/fork-exec-and-pipe-ls-in-c-16dde5dc179a
 [[nodiscard]] std::string shell_exec(std::string cmd) {
-    // Need to wrap the cmd in quotes
-    // std::string quoted_cmd = "\"" + cmd + "\"";
-
     // Convert to a C interface (`char* array`)
     std::vector<char*> cstrs;
     cstrs.push_back(const_cast<char*>("sh"));
