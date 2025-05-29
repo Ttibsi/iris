@@ -137,6 +137,19 @@ def test_open_at_specific_line():
         assert line_start in r.lines()[0]
 
 
+def test_cli_line_overflowing():
+    file_name: str = "tests/fixture/lorem_ipsum.txt"
+    with TmuxRunner("build/src/iris", file_name, "-l1000") as r:
+        time.sleep(0.1)
+        status_bar: list[str] = r.statusbar_parts()
+        assert status_bar[-1] == "88:1"
+
+        assert r.cursor_pos() == (12, 4)
+
+        line_start: str = " 76\u2502vulputate posuere sagittis"
+        assert line_start in r.lines()[0]
+
+
 @setup("tests/fixture/read_only.txt")
 def test_open_readonly_file(r: TmuxRunner):
     assert "[RO]" in r.statusbar_parts()
