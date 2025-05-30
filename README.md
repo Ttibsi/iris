@@ -5,6 +5,8 @@ This only currently is designed to work in macOS and Linux.
 
 All PRs are welcome
 
+[![asciicast](https://asciinema.org/a/twEuFoNwp6hMrbffdX9BpEVBt.svg)](https://asciinema.org/a/twEuFoNwp6hMrbffdX9BpEVBt)
+
 #### Why "Iris"?
 * it's an easy combination of letters to type on an ascii keyboard without being
 uncomfortable on the fingers

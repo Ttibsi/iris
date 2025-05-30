@@ -1,4 +1,5 @@
 #include <print>
+#include <string> 
 
 #include <cli11/CLI11.hpp>
 #include <rawterm/core.h>
@@ -53,6 +54,7 @@ int main(int argc, char* argv[]) {
     rawterm::enable_raw_mode();
 
     try {
+        std::println("Setup..."); 
         Controller c;
         c.create_view(file, lineno);
         c.start_action_engine();
