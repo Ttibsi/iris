@@ -135,14 +135,23 @@ def build(release: bool = False) -> int:
         cmd += " -DRELEASE=true"
 
     ret = run_shell_cmd(cmd)
+    if ret:
+        return ret
 
-    if ret == 0:
-        ret = run_shell_cmd("cmake --build build/")
+    ret = run_shell_cmd("cmake --build build/")
+    if ret:
+        return ret
 
-    if release and ret == 0:
+    if release:
         ret = run_shell_cmd("strip build/src/iris")
+        if ret:
+            return ret
 
-    return ret
+        if not os.path.exists(os.getcwd() + "release"):
+            os.makedirs(os.getcwd() + "release")
+            shutil.copyfile("build/src/iris", "release/iris")
+
+    return 0
 
 
 def main(argv: Sequence[str] | None = None) -> int:

@@ -22,12 +22,17 @@ struct WriteData {
     }
 };
 
+struct Response {
+    std::string out = "";
+    std::string err = "";
+};
+
 [[nodiscard]] opt_lines_t open_file(const std::string&);
 [[nodiscard]] WriteData write_to_file(const Model&);
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
 [[nodiscard]] std::string check_filename(const std::string&);
 [[nodiscard]] bool file_exists(std::string_view);
-[[nodiscard]] std::string shell_exec(std::string);
+[[nodiscard]] std::optional<Response> shell_exec(std::string);
 
 #endif  // TEXT_IO_H

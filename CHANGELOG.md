@@ -1,4 +1,6 @@
 ### main / head
+
+### v0.0.2
 * Added ability to jump to a line number entered as a command: `;42`
 * Ensure the tab key inserts a correct number of spaces
 * Updated how the version string displays
@@ -8,6 +10,8 @@
 * Added new undo and redo commands
 * Added `J` and `K` to move current line up or down
 * Added querying for the current git branch in a thread for the statusbar
+* Added handling opening files in READONLY mode if the current user doesn't
+have correct access rights
 
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle

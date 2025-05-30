@@ -65,5 +65,16 @@ TEST_CASE("file_exists", "[textio]") {
 }
 
 TEST_CASE("shell_exec", "[textio]") {
-    REQUIRE(shell_exec("echo \"hello\"") == "hello");
+    SECTION("Successful command (stdout)") {
+        REQUIRE(shell_exec("echo \"hello\"").has_value());
+        REQUIRE(shell_exec("echo \"hello\"").value().out == "hello");
+        REQUIRE(shell_exec("echo \"hello\"").value().err == "");
+    }
+
+    SECTION("Failing command (stderr)") {
+        std::string err_msg = "cat: does_not_exist: No such file or directory\n";
+        REQUIRE(shell_exec("cat does_not_exist").has_value());
+        REQUIRE(shell_exec("cat does_not_exist").value().out == "");
+        REQUIRE(shell_exec("cat does_not_exist").value().err == err_msg);
+    }
 }

@@ -185,7 +185,7 @@ void View::draw_status_bar() {
 }
 
 const std::string View::render_status_bar() const {
-    const int thirds = view_size.horizontal / 3;
+    const std::size_t thirds = std::size_t(view_size.horizontal / 3);
     std::string filename = view_models.at(active_model)->filename;
 
     // left = mode | (git branch) | status
@@ -218,14 +218,15 @@ const std::string View::render_status_bar() const {
         visible_filename = "..." + filename.substr(filename.size() - thirds, filename.size());
     }
 
-    const int lhs_padding = std::clamp(
-        static_cast<int>((view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size()),
-        0, thirds);
-    const int rhs_padding =
-        view_size.horizontal - (right.size() + left.size() + lhs_padding + visible_filename.size());
+    const std::size_t lhs_padding = std::clamp(
+        std::size_t(view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size(), 0ul,
+        thirds);
+    const int rhs_padding = int32_t(
+        std::size_t(view_size.horizontal) -
+        (right.size() + left.size() + lhs_padding + visible_filename.size()));
 
-    std::string ret = left + std::string(lhs_padding, ' ');
-    ret += visible_filename + std::string(rhs_padding, ' ') + right;
+    std::string ret = left + std::string(std::size_t(lhs_padding), ' ');
+    ret += visible_filename + std::string(std::size_t(rhs_padding), ' ') + right;
 
     assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
@@ -241,7 +242,6 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
-// TODO: investigate moving string in instead of copy
 void View::display_message(std::string msg, std::optional<rawterm::Color> color) {
     rawterm::Pos prev_pos = cur;
     cur.move({view_size.vertical, 1});
@@ -288,7 +288,7 @@ void View::cursor_left() {
         return false;
     }
 
-    std::size_t horizontal_clamp = clamp_horizontal_movement(-count);
+    std::size_t horizontal_clamp = clamp_horizontal_movement(int32_t(-count));
     get_active_model()->current_line -= count;
 
     bool redraw_sentinal = false;
@@ -318,7 +318,7 @@ void View::cursor_left() {
         return false;
     }
 
-    std::size_t horizontal_clamp = clamp_horizontal_movement(count);
+    std::size_t horizontal_clamp = clamp_horizontal_movement(int32_t(count));
     get_active_model()->current_line += count;
 
     bool redraw_sentinal = false;
@@ -411,5 +411,8 @@ void View::set_current_line(const unsigned int lineno) {
 }
 
 void View::get_git_branch() {
-    git_branch = shell_exec("git rev-parse --abbrev-ref HEAD");
+    auto resp = shell_exec("git rev-parse --abbrev-ref HEAD");
+    if (resp.has_value()) {
+        git_branch = resp.value().out;
+    }
 }
