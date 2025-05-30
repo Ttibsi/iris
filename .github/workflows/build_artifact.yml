@@ -1,0 +1,28 @@
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+      slug:
+        required: true
+        type: string
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - run: sudo apt-get install llvm-18 libstdc++-14-dev
+      - run: ./run.py --release
+      - run: mv release iris-${{ github.ref_name }}-${{ inputs.slug }}
+      - run: tar czf iris-${{ github.ref_name }}-${{ inputs.slug }}.tar iris-${{ github.ref_name }}-${{ inputs.slug }}
+      - name: Upload Release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: iris-${{ github.ref_name }}-${{ inputs.slug }}.tar
+          asset_name: iris-${{ github.ref_name }}-${{ inputs.slug }}.tar
