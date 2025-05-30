@@ -40,6 +40,7 @@ def clean() -> None:
     shutil.rmtree("tests/integration/.pytest_cache", ignore_errors=True)
     shutil.rmtree("tests/integration/__pycache__", ignore_errors=True)
     shutil.rmtree(".pytest_cache", ignore_errors=True)
+    shutil.rmtree("release", ignore_errors=True)
 
     files = [
         "src/version.h",
@@ -147,9 +148,9 @@ def build(release: bool = False) -> int:
         if ret:
             return ret
 
-        if not os.path.exists(os.getcwd() + "release"):
-            os.makedirs(os.getcwd() + "release")
-            shutil.copyfile("build/src/iris", "release/iris")
+        os.mkdir(os.getcwd() + "/release")
+        shutil.copyfile("build/src/iris", "release/iris")
+        os.chmod("release/iris", 0o755)
 
     return 0
 

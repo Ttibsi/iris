@@ -7,6 +7,7 @@ tests/integration/__pycache__/
 # build files
 build/
 venv/
+release/
 
 # test temp files
 tests/fixture/temp_file.txt
@@ -19,3 +20,4 @@ compile_commands.json
 src/version.h
 iris.log
 .gdb_history
+tmux-client*
