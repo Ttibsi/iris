@@ -411,5 +411,8 @@ void View::set_current_line(const unsigned int lineno) {
 }
 
 void View::get_git_branch() {
-    git_branch = shell_exec("git rev-parse --abbrev-ref HEAD");
+    auto resp = shell_exec("git rev-parse --abbrev-ref HEAD");
+    if (resp.has_value()) {
+        git_branch = resp.value().out;
+    }
 }
