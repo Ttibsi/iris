@@ -284,3 +284,9 @@ def test_backspace_does_nothing_at_first_char(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "1:1"
 
     assert r.cursor_pos() == initial
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_multi_file_cur_file_only_modified(r: TmuxRunner):
+    # TODO: Also check the cursor is in the right place
+    assert False

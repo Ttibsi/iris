@@ -71,6 +71,7 @@ class TmuxRunner(Runner):
 def setup(
         open_with: str = "",
         *, width: int = 80,
+        multi_file: bool = False,
 ) -> Callable[[T], Callable[[], None]]:
     temp_file: str = "tests/fixture/temp_file.txt"
 
@@ -85,6 +86,9 @@ def setup(
             dims = {"width": width, "height": 24}
             with TmuxRunner("build/src/iris", open_with, **dims) as r:
                 r.await_text("READ", timeout=2)
+                if multi_file:
+                    r.iris_cmd(f"e {temp_file}")
+
                 func(r)
 
         return wrapper

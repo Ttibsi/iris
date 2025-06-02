@@ -206,6 +206,11 @@ def test_z_key(r: TmuxRunner):
     assert r.cursor_pos() == (12, 4)
 
 
+@setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
+def test_multi_file_z_key(r: TmuxRunner):
+    assert False
+
+
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_upper_g_key(r: TmuxRunner):
     r.press("G")
