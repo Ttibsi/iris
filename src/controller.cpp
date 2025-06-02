@@ -405,9 +405,11 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             ret = parse_command();
             break;
+        } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
-        } else if (in.isCharInput()) {
+            // } else if (in.isCharInput()) {
+        } else {
             view.command_text.push_back(in.code);
         }
     }
@@ -431,6 +433,14 @@ bool Controller::parse_command() {
     if (std::isdigit(cmd.at(1))) {
         const unsigned int offset = uint32_t(std::stoi(cmd.substr(1, cmd.size())));
         view.set_current_line(offset);
+        return true;
+
+    } else if (cmd.substr(0, 2) == ";e") {
+        std::string path = cmd.substr(3, cmd.size());
+        // TODO: strip whitespace?
+        create_view(path, 0);
+        view.cur.move({2, 1});
+
         return true;
 
     } else if (cmd == ";wq") {

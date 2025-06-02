@@ -129,7 +129,7 @@ const std::string View::render_tab_bar() const {
         ret += " | ";
     }
 
-    ret += "\n";
+    ret += "\r\n";
     return ret;
 }
 
@@ -190,7 +190,7 @@ const std::string View::render_status_bar() const {
 
     // left = mode | (git branch) | status
     // center = file name
-    // right = language | cursor position
+    // right = language | open buffer count | cursor position
 
     // LHS
     std::string left = " " + ctrlr_ptr->get_mode();
@@ -209,8 +209,15 @@ const std::string View::render_status_bar() const {
 
     // RHS
     // TODO: file language after highlighting engine
-    const std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
-                              std::to_string(get_active_model()->current_char + 1) + " ";
+    std::string right = "";
+
+    if (ctrlr_ptr->models.size() > 1) {
+        right += "| [" + std::to_string(ctrlr_ptr->models.size()) + "] ";
+    }
+
+    const std::string cursor_pos = "| " + std::to_string(get_active_model()->current_line + 1) +
+                                   ":" + std::to_string(get_active_model()->current_char + 1) + " ";
+    right += cursor_pos;
 
     // Center
     std::string visible_filename = filename;
