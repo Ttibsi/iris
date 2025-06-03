@@ -415,6 +415,10 @@ void View::set_current_line(const unsigned int lineno) {
         get_active_model()->view_offset = lineno - half_view - 1;
         cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
     }
+
+    if (view_models.size() > 1) {
+        cur.move_down();
+    }
 }
 
 void View::get_git_branch() {
