@@ -14,6 +14,7 @@ T = TypeVar("T", bound=Callable[[Runner], None])
 
 class TmuxRunner(Runner):
     CMD_KEY: Final[str] = "\\;"
+    SELECTED_LINE_ANSI: Final[str] = "\x1b[38;2;255;221;51m"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -46,6 +47,7 @@ class TmuxRunner(Runner):
         super().await_text("COMMAND", timeout=2)
         self.press_and_enter(cmd)
 
+    # NOTE: zero-indexed
     def cursor_pos(self) -> tuple[int, ...]:
         return tuple(
             map(
@@ -84,10 +86,11 @@ def setup(
                 f.write("Hello world")
 
             dims = {"width": width, "height": 24}
-            with TmuxRunner("build/src/iris", open_with, **dims) as r:
+            file: str = open_with if not multi_file else temp_file
+            with TmuxRunner("build/src/iris", file, **dims) as r:
                 r.await_text("READ", timeout=2)
                 if multi_file:
-                    r.iris_cmd(f"e {temp_file}")
+                    r.iris_cmd(f"e {open_with}")
 
                 func(r)
 

@@ -19,7 +19,9 @@ def test_quit_command(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_multi_file_quit_only_active(r: TmuxRunner):
-    assert False
+    r.iris_cmd("q")
+    assert "tests/fixture/temp_file.txt" in r.statusbar_parts()
+    assert r.statusbar_parts()[-1] == "11:1"
 
 
 @setup("tests/fixture/temp_file.txt")
@@ -56,11 +58,6 @@ def test_write_command(r: TmuxRunner):
     with open("tests/fixture/temp_file.txt") as f:
         text = f.read()
     assert text.split()[0] == "foo"
-
-
-@setup("tests/fixture/temp_file.txt", multi_file=True)
-def test_multi_file_write_on_current_file_only(r: TmuxRunner):
-    assert False
 
 
 @setup("tests/fixture/does_not_exist.txt")
