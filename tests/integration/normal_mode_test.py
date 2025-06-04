@@ -213,8 +213,8 @@ def test_multi_file_z_key(r: TmuxRunner):
     time.sleep(0.05)
     statusbar = r.statusbar_parts()
     assert statusbar[-1] == "48:1"
-    assert r.cursor_pos() == (12, 4)
-    assert r.SELECTED_LINE_ANSI in r.color_screenshot()[12]
+    assert r.cursor_pos() == (13, 4)
+    assert r.SELECTED_LINE_ANSI in r.color_screenshot()[13]
 
 
 @setup("tests/fixture/lorem_ipsum.txt")

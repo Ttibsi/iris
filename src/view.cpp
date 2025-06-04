@@ -185,6 +185,8 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
+// TODO: when truncating, if we cut off less than 3 letters (len of ellipsis)
+// then we just carry on with the filename instead
 const std::string View::render_status_bar() const {
     const std::size_t thirds = std::size_t(view_size.horizontal / 3);
     std::string filename = view_models.at(active_model)->filename;

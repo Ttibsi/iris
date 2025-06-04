@@ -435,7 +435,7 @@ bool Controller::parse_command() {
         view.set_current_line(offset);
         return true;
 
-    } else if (cmd.substr(0, 2) == ";e") {
+    } else if (cmd.substr(0, 2) == ";e" && cmd.at(2) == ' ') {
         create_view(cmd.substr(3, cmd.size()), 0);
         view.cur.move({2, 1});
 

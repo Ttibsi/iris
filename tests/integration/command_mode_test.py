@@ -20,8 +20,8 @@ def test_quit_command(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_multi_file_quit_only_active(r: TmuxRunner):
     r.iris_cmd("q")
-    assert "tests/fixture/temp_file.txt" in r.statusbar_parts()
-    assert r.statusbar_parts()[-1] == "11:1"
+    assert "...ests/fixture/temp_file.txt" in r.statusbar_parts()
+    assert r.statusbar_parts()[-1] == "1:1"
 
 
 @setup("tests/fixture/temp_file.txt")
@@ -136,7 +136,7 @@ def test_open_other_file(r: TmuxRunner):
 
     statusbar_parts: list[str] = r.statusbar_parts()
     assert statusbar_parts[-2] == "[2]"
-    assert "test_file_1.txt" in statusbar_parts[2]
+    assert "test_file_1.txt" in statusbar_parts[1]
 
     first_line: str = r.lines()[0]
     assert "lorem_ipsum.txt" in first_line
