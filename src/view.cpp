@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cctype>
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <functional>
 #include <print>
@@ -280,6 +281,23 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     }
 
     return 0;
+}
+
+[[nodiscard]] bool View::close_cur_tab() {
+    // TODO: return an enum?
+    // return if we need to redraw (true) or just quit app (false)
+
+    if (view_models.size() == 1) {
+        return false;
+    }
+
+    view_models.erase(view_models.begin() + std::ptrdiff_t(active_model));
+    active_model--;
+    cur.move(
+        int32_t(get_active_model()->current_line),
+        int32_t(get_active_model()->current_char + uint32_t(line_number_offset)));
+
+    return view_models.size() >= 1;
 }
 
 void View::cursor_left() {

@@ -436,9 +436,7 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd.substr(0, 2) == ";e") {
-        std::string path = cmd.substr(3, cmd.size());
-        // TODO: strip whitespace?
-        create_view(path, 0);
+        create_view(cmd.substr(3, cmd.size()), 0);
         view.cur.move({2, 1});
 
         return true;
@@ -446,7 +444,11 @@ bool Controller::parse_command() {
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
         std::ignore = write_to_file(*view.get_active_model());
-        quit_flag = true;
+        if (view.close_cur_tab()) {
+            return true;
+        } else {
+            quit_flag = true;
+        }
 
     } else if (cmd == ";w") {
         view.get_active_model()->unsaved = false;
@@ -461,11 +463,15 @@ bool Controller::parse_command() {
         if (view.get_active_model()->unsaved) {
             view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
         } else {
-            quit_flag = true;
+            if (view.close_cur_tab()) {
+                return true;
+            } else {
+                quit_flag = true;
+            }
         }
 
     } else if (cmd == ";q!") {
-        quit_flag = true;
+        quit_flag = view.close_cur_tab();
 
         // ping cmd used for testing
     } else if (cmd == ";ping") {
