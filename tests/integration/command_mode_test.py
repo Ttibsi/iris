@@ -136,7 +136,8 @@ def test_open_other_file(r: TmuxRunner):
 
     statusbar_parts: list[str] = r.statusbar_parts()
     assert statusbar_parts[-2] == "[2]"
-    assert "test_file_1.txt" in statusbar_parts[1]
+    # can't check specific index as git branch is only sometimes here
+    assert "...ts/fixture/test_file_1.txt" in statusbar_parts
 
     first_line: str = r.lines()[0]
     assert "lorem_ipsum.txt" in first_line
