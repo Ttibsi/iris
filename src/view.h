@@ -44,6 +44,7 @@ struct View {
     [[maybe_unused]] const rawterm::Pos draw_command_bar();
     void display_message(std::string, std::optional<rawterm::Color>);
     [[nodiscard]] std::size_t clamp_horizontal_movement(const int);
+    [[nodiscard]] bool close_cur_tab();
 
     void cursor_left();
     [[maybe_unused]] bool cursor_up(unsigned int count = 1);

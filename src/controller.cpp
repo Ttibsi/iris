@@ -405,9 +405,11 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             ret = parse_command();
             break;
+        } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
-        } else if (in.isCharInput()) {
+            // } else if (in.isCharInput()) {
+        } else {
             view.command_text.push_back(in.code);
         }
     }
@@ -433,10 +435,20 @@ bool Controller::parse_command() {
         view.set_current_line(offset);
         return true;
 
+    } else if (cmd.substr(0, 2) == ";e" && cmd.at(2) == ' ') {
+        create_view(cmd.substr(3, cmd.size()), 0);
+        view.cur.move({2, 1});
+
+        return true;
+
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
         std::ignore = write_to_file(*view.get_active_model());
-        quit_flag = true;
+        if (view.close_cur_tab()) {
+            return true;
+        } else {
+            quit_flag = true;
+        }
 
     } else if (cmd == ";w") {
         view.get_active_model()->unsaved = false;
@@ -451,11 +463,15 @@ bool Controller::parse_command() {
         if (view.get_active_model()->unsaved) {
             view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
         } else {
-            quit_flag = true;
+            if (view.close_cur_tab()) {
+                return true;
+            } else {
+                quit_flag = true;
+            }
         }
 
     } else if (cmd == ";q!") {
-        quit_flag = true;
+        quit_flag = view.close_cur_tab();
 
         // ping cmd used for testing
     } else if (cmd == ";ping") {

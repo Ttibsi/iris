@@ -90,7 +90,7 @@ TEST_CASE("generate_tab_bar", "[view]") {
     v.add_model(&m2);
 
     std::string ret = v.render_tab_bar();
-    std::string expected = "| test_file.txt | \x1B[7mtests/fixture/test_file_1.txt\x1B[27m | \n";
+    std::string expected = "| test_file.txt | \033[7mtests/fixture/test_file_1.txt\033[27m | \r\n";
 
     REQUIRE(v.view_models.size() == 2);
     REQUIRE(v.active_model == 1);
@@ -171,6 +171,10 @@ TEST_CASE("clamp_horizontal_movement", "[view]") {
     m.current_line++;
     ret = v.clamp_horizontal_movement(1);
     REQUIRE(ret == 0);
+}
+
+TEST_CASE("close_cur_tab", "[view]") {
+    SKIP("TODO");
 }
 
 TEST_CASE("cursor_left", "[view]") {

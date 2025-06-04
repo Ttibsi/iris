@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cctype>
 #include <cmath>
+#include <cstddef>
 #include <format>
 #include <functional>
 #include <print>
@@ -129,7 +130,7 @@ const std::string View::render_tab_bar() const {
         ret += " | ";
     }
 
-    ret += "\n";
+    ret += "\r\n";
     return ret;
 }
 
@@ -184,13 +185,15 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
+// TODO: when truncating, if we cut off less than 3 letters (len of ellipsis)
+// then we just carry on with the filename instead
 const std::string View::render_status_bar() const {
     const std::size_t thirds = std::size_t(view_size.horizontal / 3);
     std::string filename = view_models.at(active_model)->filename;
 
     // left = mode | (git branch) | status
     // center = file name
-    // right = language | cursor position
+    // right = language | open buffer count | cursor position
 
     // LHS
     std::string left = " " + ctrlr_ptr->get_mode();
@@ -209,8 +212,15 @@ const std::string View::render_status_bar() const {
 
     // RHS
     // TODO: file language after highlighting engine
-    const std::string right = "| " + std::to_string(get_active_model()->current_line + 1) + ":" +
-                              std::to_string(get_active_model()->current_char + 1) + " ";
+    std::string right = "";
+
+    if (ctrlr_ptr->models.size() > 1) {
+        right += "| [" + std::to_string(ctrlr_ptr->models.size()) + "] ";
+    }
+
+    const std::string cursor_pos = "| " + std::to_string(get_active_model()->current_line + 1) +
+                                   ":" + std::to_string(get_active_model()->current_char + 1) + " ";
+    right += cursor_pos;
 
     // Center
     std::string visible_filename = filename;
@@ -273,6 +283,23 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     }
 
     return 0;
+}
+
+[[nodiscard]] bool View::close_cur_tab() {
+    // TODO: return an enum?
+    // return if we need to redraw (true) or just quit app (false)
+
+    if (view_models.size() == 1) {
+        return false;
+    }
+
+    view_models.erase(view_models.begin() + std::ptrdiff_t(active_model));
+    active_model--;
+    cur.move(
+        int32_t(get_active_model()->current_line),
+        int32_t(get_active_model()->current_char + uint32_t(line_number_offset)));
+
+    return view_models.size() >= 1;
 }
 
 void View::cursor_left() {
@@ -407,6 +434,10 @@ void View::set_current_line(const unsigned int lineno) {
     } else {
         get_active_model()->view_offset = lineno - half_view - 1;
         cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
+    }
+
+    if (view_models.size() > 1) {
+        cur.move_down();
     }
 }
 

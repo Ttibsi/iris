@@ -17,6 +17,13 @@ def test_quit_command(r: TmuxRunner):
     r.await_exit()
 
 
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_multi_file_quit_only_active(r: TmuxRunner):
+    r.iris_cmd("q")
+    assert "...ests/fixture/temp_file.txt" in r.statusbar_parts()
+    assert r.statusbar_parts()[-1] == "1:1"
+
+
 @setup("tests/fixture/temp_file.txt")
 def test_write_command(r: TmuxRunner):
     r.press("i")
@@ -121,3 +128,19 @@ def test_lineno_command_exact_center(r: TmuxRunner):
     first_line: str = r.lines()[0]
     prefix: str = "  1\u2502"
     assert first_line[0:len(prefix)] == prefix
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_open_other_file(r: TmuxRunner):
+    r.iris_cmd("e tests/fixture/test_file_1.txt")
+
+    statusbar_parts: list[str] = r.statusbar_parts()
+    assert statusbar_parts[-2] == "[2]"
+    # can't check specific index as git branch is only sometimes here
+    assert "...ts/fixture/test_file_1.txt" in statusbar_parts
+
+    first_line: str = r.lines()[0]
+    assert "lorem_ipsum.txt" in first_line
+    assert "test_file_1.txt" in first_line
+
+    assert r.cursor_pos() == (1, 3)

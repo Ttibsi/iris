@@ -143,7 +143,7 @@ def test_backspace_newline(r: TmuxRunner):
 
     line_1_clean: str = contents[1].rstrip().replace("\t", "    ")
     line_2_clean: str = contents[2].rstrip()
-    highlight_line_num: str = "\x1b[38;2;255;221;51m 2\u2502\x1b[39m"
+    highlight_line_num: str = f"{r.SELECTED_LINE_ANSI} 2\u2502\x1b[39m"
     full_line: str = f"{highlight_line_num}{line_1_clean}{line_2_clean}"
 
     assert lines[1] == full_line
@@ -284,3 +284,13 @@ def test_backspace_does_nothing_at_first_char(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "1:1"
 
     assert r.cursor_pos() == initial
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_multi_file_cur_file_only_modified(r: TmuxRunner):
+    r.press("i")
+    r.press("!")
+
+    assert r.statusbar_parts()[1] == "[X]"
+    assert r.statusbar_parts()[-1] == "1:2"
+    assert r.cursor_pos() == (1, 4)

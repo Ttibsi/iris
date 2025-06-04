@@ -72,6 +72,12 @@ def test_move_cursor_vertically(r: TmuxRunner):
     assert status_bar[-1] == "4:1"
 
 
+@setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
+def test_multi_file_move_cursor_vertically(r: TmuxRunner):
+    # TODO
+    ...
+
+
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_active_line_number_highlighted(r: TmuxRunner):
     def get_lineno(line_num: int) -> str:
@@ -102,6 +108,12 @@ def test_scroll_view_vertically(r: TmuxRunner):
     status_bar = r.statusbar_parts()
     assert status_bar[-1] == "23:1"
     assert lines[21][4:9] == "Morbi"
+
+
+@setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
+def test_multi_file_scroll_cursor_vertically(r: TmuxRunner):
+    # TODO
+    ...
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -153,3 +165,9 @@ def test_cli_line_overflowing():
 @setup("tests/fixture/read_only.txt")
 def test_open_readonly_file(r: TmuxRunner):
     assert "[RO]" in r.statusbar_parts()
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_multi_file_cursor_on_active_line(r: TmuxRunner):
+    # TODO
+    ...
