@@ -24,14 +24,20 @@ class TmuxRunner(Runner):
 
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:
-        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")
+        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")[:-1]
 
-    def statusbar_parts(self, index: int = 22) -> list[str]:
-        return [
-            part.strip()
-            for part in self.lines()[index].split("|")
-            if part != ""
-        ]
+    def await_statusbar_parts(self, index: int = 22) -> list[str]:
+        for _ in self.poll_until_timeout():
+            if "|" not in self.lines()[index]:
+                continue
+
+            return [
+                part.strip()
+                for part in self.lines()[index].split("|")
+                if part != ""
+            ]
+
+        raise AssertionError("Timeout while waiting for statusbar")
 
     def type_str(self, msg: str) -> None:
         for c in msg:
@@ -88,7 +94,7 @@ def setup(
             dims = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
             with TmuxRunner("build/src/iris", file, **dims) as r:
-                r.await_text("READ", timeout=2)
+                r.await_text("READ")
                 if multi_file:
                     r.iris_cmd(f"e {open_with}")
 
