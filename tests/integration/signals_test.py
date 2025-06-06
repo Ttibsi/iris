@@ -1,5 +1,3 @@
-import time
-
 from setup import setup
 from setup import TmuxRunner
 
@@ -7,8 +5,8 @@ from setup import TmuxRunner
 def test_suspend():
     with TmuxRunner("bash", "--norc") as r:
         r.press_and_enter("./build/src/iris t.txt")
+        r.await_text("READ")
         r.press("i")
-        time.sleep(0.05)
         r.type_str("hello world")
         r.press("Escape")
 
@@ -28,10 +26,10 @@ def test_suspend():
 @setup("tests/fixture/very_long_line.txt", width=100)
 def test_resize(r: TmuxRunner):
     # Capture original statusbar content
-    original_statusbar: list[str] = r.statusbar_parts()
+    original_statusbar: list[str] = r.await_statusbar_parts()
 
     r.tmux.execute_command("split-window", "-hdl", "5")
 
-    split_statusbar: list[str] = r.statusbar_parts()
+    split_statusbar: list[str] = r.await_statusbar_parts()
     assert original_statusbar[0] == split_statusbar[0]
     assert original_statusbar[-1] == split_statusbar[-1]

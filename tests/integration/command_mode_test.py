@@ -20,8 +20,8 @@ def test_quit_command(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_multi_file_quit_only_active(r: TmuxRunner):
     r.iris_cmd("q")
-    assert "...ests/fixture/temp_file.txt" in r.statusbar_parts()
-    assert r.statusbar_parts()[-1] == "1:1"
+    assert "...ests/fixture/temp_file.txt" in r.await_statusbar_parts()
+    assert r.await_statusbar_parts()[-1] == "1:1"
 
 
 @setup("tests/fixture/temp_file.txt")
@@ -42,11 +42,11 @@ def test_write_command(r: TmuxRunner):
     lines = r.lines()
     assert lines[-1] == ";w"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[0] == "COMMAND"
 
     r.press("Enter")
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[0] == "READ"
 
     # Check highlighting colour
@@ -100,7 +100,7 @@ def test_lineno_command(r: TmuxRunner):
     # Don't scroll
     r.iris_cmd("7")
 
-    statusbar_parts: list[str] = r.statusbar_parts()
+    statusbar_parts: list[str] = r.await_statusbar_parts()
     assert statusbar_parts[-1] == "7:1"
 
     first_line: str = r.lines()[0]
@@ -110,7 +110,7 @@ def test_lineno_command(r: TmuxRunner):
     # scroll view
     r.iris_cmd("77")
 
-    statusbar_parts = r.statusbar_parts()
+    statusbar_parts = r.await_statusbar_parts()
     assert statusbar_parts[-1] == "77:1"
 
     first_line = r.lines()[0]
@@ -122,7 +122,7 @@ def test_lineno_command(r: TmuxRunner):
 def test_lineno_command_exact_center(r: TmuxRunner):
     r.iris_cmd("11")
 
-    statusbar_parts: list[str] = r.statusbar_parts()
+    statusbar_parts: list[str] = r.await_statusbar_parts()
     assert statusbar_parts[-1] == "11:1"
 
     first_line: str = r.lines()[0]
@@ -134,7 +134,7 @@ def test_lineno_command_exact_center(r: TmuxRunner):
 def test_open_other_file(r: TmuxRunner):
     r.iris_cmd("e tests/fixture/test_file_1.txt")
 
-    statusbar_parts: list[str] = r.statusbar_parts()
+    statusbar_parts: list[str] = r.await_statusbar_parts()
     assert statusbar_parts[-2] == "[2]"
     # can't check specific index as git branch is only sometimes here
     assert "...ts/fixture/test_file_1.txt" in statusbar_parts

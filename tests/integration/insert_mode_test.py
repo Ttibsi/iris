@@ -4,16 +4,16 @@ from setup import TmuxRunner
 
 @setup()
 def test_enter_write_mode(r: TmuxRunner):
-    assert r.statusbar_parts()[0] == "READ"
+    assert r.await_statusbar_parts()[0] == "READ"
     r.press("i")
-    assert r.statusbar_parts()[0] == "WRITE"
+    assert r.await_statusbar_parts()[0] == "WRITE"
 
 
 @setup("tests/fixture/read_only.txt")
 def test_reject_enter_write_mode(r: TmuxRunner):
-    assert r.statusbar_parts()[0] == "READ"
+    assert r.await_statusbar_parts()[0] == "READ"
     r.press("i")
-    assert r.statusbar_parts()[0] == "READ"
+    assert r.await_statusbar_parts()[0] == "READ"
 
 
 @setup()
@@ -30,7 +30,7 @@ def test_inserting_char_at_start_of_empty_file(r: TmuxRunner):
     lines = r.lines()
     assert lines[0] == " 1\u2502hello"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "1:6"
 
 
@@ -48,7 +48,7 @@ def test_inserting_char_at_start_of_line(r: TmuxRunner):
     expected_text = "helloThis is some text"
     assert lines[0] == f" 1\u2502{expected_text}"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "1:6"
 
 
@@ -64,7 +64,7 @@ def test_inserting_char_in_middle_of_line(r: TmuxRunner):
     expected_text = "This vis some text"
     assert lines[0] == f" 1\u2502{expected_text}"
 
-    status_bar: list[str] = r.statusbar_parts()
+    status_bar: list[str] = r.await_statusbar_parts()
     assert status_bar[-1][2:] == "7"
 
 
@@ -85,7 +85,7 @@ def test_inserting_char_end_of_line(r: TmuxRunner):
     expected_text = "This is some textv"
     assert lines[0] == f" 1\u2502{expected_text}"
 
-    status_bar: list[str] = r.statusbar_parts()
+    status_bar: list[str] = r.await_statusbar_parts()
     assert status_bar[-1][2:] == "19"
 
 
@@ -109,7 +109,7 @@ def test_inserting_char_end_of_file(r: TmuxRunner):
     assert lines[last_line][-1] == "v"
     assert "and another newlinev" in lines[last_line]
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == f"{len(contents)}:{len(contents[-1]) + 1}"
 
 
@@ -126,7 +126,7 @@ def test_backspace_char(r: TmuxRunner):
     expected_text = "Thisis some text"
     assert lines[0] == f" 1\u2502{expected_text}"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1][2] == "5"
 
 
@@ -149,7 +149,7 @@ def test_backspace_newline(r: TmuxRunner):
     assert lines[1] == full_line
     assert lines[len(contents) - 1] == "~"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1][0] == "2"
 
     # +1 because cursor should be on first char of "second" line
@@ -180,7 +180,7 @@ def test_insert_newline(r: TmuxRunner):
     assert lines[3] == " 4\u2502hello"
     assert lines[4] == "~"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1][0] == "4"
     assert status_bar[-1][2:] == "6"
 
@@ -195,7 +195,7 @@ def test_line_truncates_when_inserting_char(r: TmuxRunner):
     assert len(lines[0]) == 80
     assert lines[0][-1] == "6"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "1:78"
 
     r.press("_")
@@ -204,7 +204,7 @@ def test_line_truncates_when_inserting_char(r: TmuxRunner):
     assert len(lines[0]) == 80
     assert lines[0][-1] == "\u00BB"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "1:79"
 
 
@@ -234,7 +234,7 @@ def test_inserting_newline_into_truncated_line(r: TmuxRunner):
     assert lines[0] == " 1\u25020123456789"
     assert lines[1][0:13] == " 2\u25020123456789"
 
-    status_bar = r.statusbar_parts()
+    status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "2:1"
 
 
@@ -255,7 +255,7 @@ def test_newline_with_preceeding_whitespace(r: TmuxRunner):
     r.press("h")
 
     # Cursor should now be before the space
-    assert r.statusbar_parts()[-1] == "1:6"
+    assert r.await_statusbar_parts()[-1] == "1:6"
 
     r.press("i")
     r.press("Enter")
@@ -271,8 +271,8 @@ def test_press_tab_for_spaces(r: TmuxRunner):
     r.press("!")
 
     assert r.lines()[0] == " 1\u2502    !"
-    assert r.statusbar_parts()[-1] == "1:6"
-    assert "[X]" in r.statusbar_parts()
+    assert r.await_statusbar_parts()[-1] == "1:6"
+    assert "[X]" in r.await_statusbar_parts()
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -281,7 +281,7 @@ def test_backspace_does_nothing_at_first_char(r: TmuxRunner):
     initial: tuple[int, ...] = r.cursor_pos()
 
     r.press("BSpace")
-    assert r.statusbar_parts()[-1] == "1:1"
+    assert r.await_statusbar_parts()[-1] == "1:1"
 
     assert r.cursor_pos() == initial
 
@@ -291,6 +291,6 @@ def test_multi_file_cur_file_only_modified(r: TmuxRunner):
     r.press("i")
     r.press("!")
 
-    assert r.statusbar_parts()[1] == "[X]"
-    assert r.statusbar_parts()[-1] == "1:2"
+    assert r.await_statusbar_parts()[1] == "[X]"
+    assert r.await_statusbar_parts()[-1] == "1:2"
     assert r.cursor_pos() == (1, 4)
