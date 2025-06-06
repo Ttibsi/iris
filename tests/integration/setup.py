@@ -24,20 +24,23 @@ class TmuxRunner(Runner):
 
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:
-        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")[:-1]
+        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")
 
     def await_statusbar_parts(self, index: int = 22) -> list[str]:
         for _ in self.poll_until_timeout():
             if "|" not in self.lines()[index]:
                 continue
 
-            return [
-                part.strip()
-                for part in self.lines()[index].split("|")
-                if part != ""
-            ]
+            return self.statusbar_parts()
 
         raise AssertionError("Timeout while waiting for statusbar")
+
+    def statusbar_parts(self, index: int = 22) -> list[str]:
+        return [
+            part.strip()
+            for part in self.lines()[index].split("|")
+            if part != ""
+        ]
 
     def type_str(self, msg: str) -> None:
         for c in msg:
@@ -56,17 +59,28 @@ class TmuxRunner(Runner):
     # NOTE: zero-indexed
     def cursor_pos(self) -> tuple[int, ...]:
         return tuple(
-            map(
-                int,
-                self.tmux.execute_command(
-                    "display-message",
-                    "-p",
-                    "'#{cursor_y},#{cursor_x}'",
-                ).rstrip()
-                .replace("'", "")
-                .split(","),
-            ),
+                map(
+                    int,
+                    self.tmux.execute_command(
+                        "display-message",
+                        "-p",
+                        "'#{cursor_y},#{cursor_x}'",
+                    ).rstrip()
+                    .replace("'", "")
+                    .split(","),
+                ),
         )
+
+    def await_cursor_pos(self, x: int, y: int) -> None:
+        for _ in self.poll_until_timeout(timeout=10):
+            pos = self.cursor_pos()
+            if pos == (x, y):
+                return
+        else:
+            raise AssertionError(
+                    f"Timeout searching for cursor pos: ({x}, {y})"
+                    f" - Found: {pos}",
+            )
 
     def assert_text_missing(self, text: str, wait: float = 0.1) -> None:
         time.sleep(wait)
@@ -74,6 +88,18 @@ class TmuxRunner(Runner):
         for line in self.lines():
             if text in line:
                 raise AssertionError(f"Text: '{text}' found")
+
+    def assert_internal_cur_pos(self, x: int, y: int) -> None:
+        pos = ""
+        for _ in range(5):
+            pos = self.await_statusbar_parts()[-1]
+            if pos == f"{x}:{y}":
+                return
+        else:
+            raise AssertionError(
+                    f"Timeout searching for cursor pos: ({x}, {y})"
+                    f" - Found: {pos}",
+            )
 
 
 def setup(

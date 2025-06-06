@@ -164,22 +164,18 @@ def test_close_squacket_key(r: TmuxRunner):
     r.type_str("j" * 14)
     r.press("]")
 
-    statusbar: list[str] = r.await_statusbar_parts()
-    assert statusbar[-1] == "19:1"
+    r.assert_internal_cur_pos(19, 1)
 
     for _ in range(7):
         r.press("]")
-    statusbar = r.await_statusbar_parts()
-    assert statusbar[-1] == "80:1"
+    r.assert_internal_cur_pos(80, 1)
 
     # Go to end of file
     r.press("G")
-    statusbar = r.await_statusbar_parts()
-    assert statusbar[-1] == "88:1"
+    r.assert_internal_cur_pos(88, 1)
 
     r.press("]")
-    statusbar = r.await_statusbar_parts()
-    assert statusbar[-1] == "88:1"
+    r.assert_internal_cur_pos(88, 1)
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -201,20 +197,17 @@ def test_r_key(r: TmuxRunner):
 def test_z_key(r: TmuxRunner):
     r.type_str("]" * 5)
     r.press("z")
-    time.sleep(0.05)
     statusbar = r.await_statusbar_parts()
     assert statusbar[-1] == "48:1"
-    assert r.cursor_pos() == (12, 4)
+    r.await_cursor_pos(12, 4)
 
 
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_z_key(r: TmuxRunner):
     r.type_str("]" * 5)
     r.press("z")
-    time.sleep(0.05)
-    statusbar = r.await_statusbar_parts()
-    assert statusbar[-1] == "48:1"
-    assert r.cursor_pos() == (13, 4)
+    r.assert_internal_cur_pos(48, 1)
+    r.await_cursor_pos(13, 4)
     assert r.SELECTED_LINE_ANSI in r.color_screenshot()[13]
 
 
