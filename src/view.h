@@ -55,6 +55,13 @@ struct View {
     void center_current_line();
     void set_current_line(const unsigned int);
     void get_git_branch();
+
+    void tab_new();
+    void tab_next();
+    void tab_prev();
+    [[nodiscard]] uint_t visible_tab_bar() const;
+    void set_lineno_offset(Model*);
+    void update_cursor_on_model_change();
 };
 
 #endif  // VIEW_H

@@ -313,6 +313,20 @@ void Controller::start_action_engine() {
                     redraw_all = ret.value();
                 }
 
+                // tabs
+            } else if (k.value() == rawterm::Key('t')) {
+                auto k2 = rawterm::wait_for_input();
+
+                if (k2 == rawterm::Key('t')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabNew});
+                } else if (k2 == rawterm::Key('n')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabNext});
+                } else if (k2 == rawterm::Key('p')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabPrev});
+                }
+
+                redraw_all = true;
+
                 // Undo
             } else if (k.value() == rawterm::Key('u')) {
                 if (is_readonly_model()) {

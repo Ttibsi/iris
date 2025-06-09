@@ -29,6 +29,9 @@ enum class ActionType {
     MoveLineUp,
     Newline,
     StartOfLine,
+    TabNew,
+    TabNext,
+    TabPrev,
     ToggleCase,
     TriggerRedo,
     TriggerUndo,
@@ -282,6 +285,32 @@ template <typename T, typename U>
 
             v->cursor_start_of_line();
 
+        } break;
+
+        case ActionType::TabNew: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: TabNew");
+            }
+
+            v->tab_new();
+
+        } break;
+        case ActionType::TabNext: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: TabNext");
+            }
+
+            v->tab_next();
+        } break;
+        case ActionType::TabPrev: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: TabPrev");
+            }
+
+            v->tab_prev();
         } break;
 
         case ActionType::ToggleCase: {

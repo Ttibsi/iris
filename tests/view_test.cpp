@@ -482,3 +482,62 @@ TEST_CASE("set_current_line", "[view]") {
         REQUIRE(m.view_offset == 64);
     }
 }
+
+TEST_CASE("tab_new", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    v.tab_new();
+
+    REQUIRE(v.view_models.size() == 2);
+    REQUIRE(v.active_model == 1);
+
+    Model* active_model = v.get_active_model();
+    REQUIRE(active_model->filename == "NO NAME");
+    REQUIRE(active_model->buf.size() == 1);
+}
+
+TEST_CASE("tab_next", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    v.tab_new();
+    v.tab_next();
+
+    REQUIRE(v.view_models.size() == 2);
+    REQUIRE(v.active_model == 0);
+
+    v.tab_next();
+    REQUIRE(v.active_model == 1);
+}
+
+TEST_CASE("tab_prev", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    v.tab_new();
+    v.tab_prev();
+
+    REQUIRE(v.view_models.size() == 2);
+    REQUIRE(v.active_model == 0);
+
+    v.tab_prev();
+    REQUIRE(v.active_model == 1);
+}
+
+TEST_CASE("visible_tab_bar", "[view]") {
+    REQUIRE(false);
+}
+
+TEST_CASE("set_lineno_offset", "[view]") {
+    REQUIRE(false);
+}

@@ -28,11 +28,9 @@ View::View(Controller* controller, const rawterm::Pos dims)
 void View::add_model(Model* m) {
     view_models.push_back(m);
     active_model = view_models.size() - 1;
+    set_lineno_offset(m);
 
     // Set visual offset
-    if (LINE_NUMBERS) {
-        line_number_offset = static_cast<int>(std::to_string(m->buf.size()).size() + 1);
-    }
 }
 
 Model* View::get_active_model() const {
@@ -59,6 +57,10 @@ void View::draw_screen() {
         while (cur.horizontal < line_number_offset + 2) {
             cur.move_right();
         }
+    }
+
+    if (visible_tab_bar() && cur.vertical == 1) {
+        cur.move_down();
     }
 }
 
@@ -109,7 +111,8 @@ void View::draw_screen() {
     }
 
     // Any empty lines populate with tildes
-    while (end < view_size.vertical - 2) {
+    const int empty_space = view_size.vertical - 2 - visible_tab_bar();
+    while (end < empty_space) {
         screen += "~\r\n";
         end++;
     }
@@ -430,10 +433,10 @@ void View::set_current_line(const unsigned int lineno) {
     uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
     if (lineno <= half_view) {
         get_active_model()->view_offset = 0;
-        cur.move({static_cast<int>(lineno), line_number_offset + 2});
+        cur.move({static_cast<int>(lineno + visible_tab_bar()), line_number_offset + 2});
     } else {
         get_active_model()->view_offset = lineno - half_view - 1;
-        cur.move({static_cast<int>(half_view + 1), line_number_offset + 2});
+        cur.move({static_cast<int>(half_view + 1 + visible_tab_bar()), line_number_offset + 2});
     }
 
     if (view_models.size() > 1) {
@@ -446,4 +449,51 @@ void View::get_git_branch() {
     if (resp.has_value()) {
         git_branch = resp.value().out;
     }
+}
+
+void View::tab_new() {
+    ctrlr_ptr->models.emplace_back(view_size.vertical, "NO NAME");
+    add_model(&ctrlr_ptr->models.at(ctrlr_ptr->models.size() - 1));
+    cur.move(2, line_number_offset + 2);
+}
+
+void View::tab_next() {
+    if (active_model == view_models.size() - 1) {
+        active_model = 0;
+    } else {
+        active_model++;
+    }
+
+    set_lineno_offset(get_active_model());
+    update_cursor_on_model_change();
+}
+
+void View::tab_prev() {
+    if (active_model == 0) {
+        active_model = view_models.size() - 1;
+    } else {
+        active_model--;
+    }
+
+    set_lineno_offset(get_active_model());
+    update_cursor_on_model_change();
+}
+
+[[nodiscard]] uint_t View::visible_tab_bar() const {
+    return view_models.size() > 1 ? 1 : 0;
+}
+
+void View::set_lineno_offset(Model* m) {
+    if (LINE_NUMBERS) {
+        line_number_offset = static_cast<int>(std::to_string(m->buf.size()).size() + 1);
+    }
+}
+
+// TODO: Rename function
+void View::update_cursor_on_model_change() {
+    uint_t vertical =
+        get_active_model()->current_line - get_active_model()->view_offset - visible_tab_bar();
+    uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset);
+
+    cur.move(int(vertical), int(horizontal));
 }
