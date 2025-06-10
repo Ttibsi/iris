@@ -60,8 +60,9 @@ struct View {
     void tab_next();
     void tab_prev();
     [[nodiscard]] uint_t visible_tab_bar() const;
-    void set_lineno_offset(Model*);
+    [[maybe_unused]] int set_lineno_offset(Model*);
     void update_cursor_on_model_change();
+    void change_model_cursor();
 };
 
 #endif  // VIEW_H

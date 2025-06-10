@@ -465,7 +465,7 @@ void View::tab_next() {
     }
 
     set_lineno_offset(get_active_model());
-    update_cursor_on_model_change();
+    change_model_cursor();
 }
 
 void View::tab_prev() {
@@ -476,21 +476,23 @@ void View::tab_prev() {
     }
 
     set_lineno_offset(get_active_model());
-    update_cursor_on_model_change();
+    change_model_cursor();
 }
 
 [[nodiscard]] uint_t View::visible_tab_bar() const {
     return view_models.size() > 1 ? 1 : 0;
 }
 
-void View::set_lineno_offset(Model* m) {
+[[maybe_unused]] int View::set_lineno_offset(Model* m) {
     if (LINE_NUMBERS) {
         line_number_offset = static_cast<int>(std::to_string(m->buf.size()).size() + 1);
+        return line_number_offset;
     }
+
+    return 0;
 }
 
-// TODO: Rename function
-void View::update_cursor_on_model_change() {
+void View::change_model_cursor() {
     uint_t vertical =
         get_active_model()->current_line - get_active_model()->view_offset - visible_tab_bar();
     uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset);

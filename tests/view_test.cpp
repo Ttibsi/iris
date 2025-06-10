@@ -535,9 +535,51 @@ TEST_CASE("tab_prev", "[view]") {
 }
 
 TEST_CASE("visible_tab_bar", "[view]") {
-    REQUIRE(false);
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    REQUIRE(v.visible_tab_bar() == 0);
+    v.tab_new();
+    REQUIRE(v.visible_tab_bar() == 1);
+    v.tab_new();
+    REQUIRE(v.visible_tab_bar() == 1);
 }
 
 TEST_CASE("set_lineno_offset", "[view]") {
-    REQUIRE(false);
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+    int ret = v.set_lineno_offset(&m);
+
+    REQUIRE(ret == 3);
+
+    v.tab_new();
+    ret = v.set_lineno_offset(v.get_active_model());
+    REQUIRE(ret == 2);
+}
+
+// NOTE: This function is called as part of tab_next() and tab_prev
+TEST_CASE("change_model_cursor", "[view]") {
+    Controller c;
+    auto v = View(&c, rawterm::Pos(24, 80));
+    auto m =
+        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    v.add_model(&m);
+
+    for (int i = 0; i < 5; i++) {
+        v.cursor_right();
+    }
+
+    REQUIRE(v.cur == rawterm::Pos(1, 6));
+
+    v.tab_new();
+    REQUIRE(v.cur == rawterm::Pos(2, 4));
+
+    v.tab_prev();
+    REQUIRE(v.cur == rawterm::Pos(1, 6));
 }

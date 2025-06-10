@@ -15,6 +15,7 @@ T = TypeVar("T", bound=Callable[[Runner], None])
 class TmuxRunner(Runner):
     CMD_KEY: Final[str] = "\\;"
     SELECTED_LINE_ANSI: Final[str] = "\x1b[38;2;255;221;51m"
+    filename: str
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -100,6 +101,26 @@ class TmuxRunner(Runner):
                     f"Timeout searching for cursor pos: ({x}, {y})"
                     f" - Found: {pos}",
             )
+
+    def await_tab_bar_parts(self) -> list[str]:
+        for _ in self.poll_until_timeout():
+            parts = self.color_screenshot()[0]
+            if "|" not in parts:
+                continue
+
+            return [p.strip() for p in parts.split("|") if p.strip()]
+
+        raise AssertionError("Timeout while waiting for tab bar")
+
+    def assert_inverted_text(self, inverted: str, text: str) -> None:
+        expected = f"\x1B[7m{text}\x1B[0m"
+        if inverted != expected:
+            raise AssertionError(f"{inverted} does not equal {expected}")
+
+    # As the filename in statusbar gets truncated
+    def assert_filename_in_statusbar(self, filename: str) -> None:
+        if not any(filename in string for string in self.statusbar_parts()):
+            raise AssertionError(f"{filename} not found in Statusbar")
 
 
 def setup(
