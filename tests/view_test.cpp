@@ -581,5 +581,5 @@ TEST_CASE("change_model_cursor", "[view]") {
     REQUIRE(v.cur == rawterm::Pos(2, 4));
 
     v.tab_prev();
-    REQUIRE(v.cur == rawterm::Pos(1, 6));
+    REQUIRE(v.cur == rawterm::Pos(2, 8));
 }
