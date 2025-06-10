@@ -50,7 +50,7 @@ void Controller::set_mode(Mode m) {
 
 void Controller::create_view(const std::string& file_name, unsigned long lineno) {
     if (file_name.empty()) {
-        models.emplace_back(term_size.vertical - 2, "");
+        models.emplace_back(term_size.vertical - 2, "NO NAME");
         view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
