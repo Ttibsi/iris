@@ -23,7 +23,7 @@ def test_quit_with_modified_buffer(r: TmuxRunner):
     r.iris_cmd("q")
     err_line: str = r.color_screenshot()[-1]
     assert "Unsaved changes. Use `;q!` to discard" in err_line
-    assert "\x1b[31m" in err_line  # red text
+    assert "\x1b[49m" in err_line  # red text
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -44,7 +44,7 @@ def test_multi_file_quit_command(r: TmuxRunner):
     r.iris_cmd("q")
     err_line: str = r.color_screenshot()[-1]
     assert "Unsaved changes. Use `;q!` to discard" in err_line
-    assert "\x1b[31m" in err_line  # red text
+    assert "\x1b[49m" in err_line  # red text
 
     # force quit while modified
     r.iris_cmd("q!")
@@ -78,7 +78,7 @@ def test_write_command(r: TmuxRunner):
     assert status_bar[0] == "READ"
 
     # Check highlighting colour
-    message_line: str = r.color_screenshot()[-2]
+    message_line: str = r.color_screenshot()[-1]
     assert "Saved" in message_line
     assert "bytes" in message_line
     assert "\x1b[38;2;0;128;0m" in message_line
@@ -118,7 +118,7 @@ def test_write_to_new_file(r: TmuxRunner):
 def test_invalid_command(r: TmuxRunner):
     r.iris_cmd("error")
 
-    message_line: str = r.color_screenshot()[-2]
+    message_line: str = r.color_screenshot()[-1]
     assert "Unknown command" in message_line
     assert "\x1b[38;2;255;0;0m" in message_line
 

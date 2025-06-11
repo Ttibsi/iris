@@ -25,7 +25,19 @@ class TmuxRunner(Runner):
 
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:
-        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")
+        return self.tmux.execute_command(
+                'capture-pane',
+                '-ept0',
+        ).split("\n")[:-1]
+
+    def await_statusbar_parts(self, index: int = 22) -> list[str]:
+        for _ in self.poll_until_timeout():
+            if "|" not in self.lines()[index]:
+                continue
+
+            return self.statusbar_parts()
+
+        raise AssertionError("Timeout while waiting for statusbar")
 
     def await_statusbar_parts(self, index: int = 22) -> list[str]:
         for _ in self.poll_until_timeout():
@@ -56,6 +68,17 @@ class TmuxRunner(Runner):
         super().press(self.CMD_KEY)
         super().await_text("COMMAND", timeout=2)
         self.press_and_enter(cmd)
+
+        for _ in self.poll_until_timeout(5):
+            pos = self.cursor_pos()
+            if pos == (x, y):
+                return
+
+        else:
+            raise AssertionError(
+                f"Timeout searching for cursor pos: ({x}, {y})"
+                f" - Found: {pos}",
+            )
 
     # NOTE: zero-indexed
     def cursor_pos(self) -> tuple[int, ...]:
@@ -98,8 +121,8 @@ class TmuxRunner(Runner):
                 return
         else:
             raise AssertionError(
-                    f"Timeout searching for cursor pos: ({x}, {y})"
-                    f" - Found: {pos}",
+                f"Timeout searching for cursor pos: ({x}, {y})"
+                f" - Found: {pos}",
             )
 
     def await_tab_bar_parts(self) -> list[str]:

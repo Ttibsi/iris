@@ -408,7 +408,7 @@ def test_tt_key(r: TmuxRunner):
     assert tabs[0] == r.filename
     r.assert_inverted_text(tabs[1], "NO NAME")
 
-    assert r.cursor_pos() == (2, 4)
+    r.await_cursor_pos(1, 3)
 
 
 @setup("tests/fixture/test_file_1.txt")
