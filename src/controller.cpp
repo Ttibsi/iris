@@ -458,11 +458,7 @@ bool Controller::parse_command() {
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
         std::ignore = write_to_file(*view.get_active_model());
-        if (view.close_cur_tab()) {
-            return true;
-        } else {
-            quit_flag = true;
-        }
+        return quit_app(false);
 
     } else if (cmd == ";w") {
         view.get_active_model()->unsaved = false;
@@ -474,18 +470,10 @@ bool Controller::parse_command() {
         }
 
     } else if (cmd == ";q") {
-        if (view.get_active_model()->unsaved) {
-            view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
-        } else {
-            if (view.close_cur_tab()) {
-                return true;
-            } else {
-                quit_flag = true;
-            }
-        }
+        return quit_app(false);
 
     } else if (cmd == ";q!") {
-        quit_flag = view.close_cur_tab();
+        return quit_app(true);
 
         // ping cmd used for testing
     } else if (cmd == ";ping") {
@@ -501,4 +489,36 @@ bool Controller::parse_command() {
 
 [[nodiscard]] bool Controller::is_readonly_model() {
     return view.get_active_model()->readonly;
+}
+
+[[nodiscard]] bool Controller::quit_app(bool skip_check) {
+    if (view.visible_tab_bar()) {
+        if (check_for_saved_file(skip_check)) {
+            view.view_models.erase(view.view_models.begin() + view.active_model);
+
+            if (view.active_model > 0) {
+                view.active_model--;
+            } else {
+                view.active_model = view.view_models.size() - 1;
+            }
+
+            view.change_model_cursor();
+
+            return true;
+        }
+    } else {
+        // Only one tab open
+        quit_flag = check_for_saved_file(skip_check);
+    }
+
+    return false;
+}
+
+[[nodiscard]] bool Controller::check_for_saved_file(bool skip) {
+    if (!skip && view.get_active_model()->unsaved) {
+        view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
+        return false;
+    }
+
+    return true;
 }

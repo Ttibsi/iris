@@ -63,3 +63,72 @@ TEST_CASE("is_readonly_model", "[controller]") {
     c.view.get_active_model()->readonly = true;
     REQUIRE(c.is_readonly_model());
 }
+
+TEST_CASE("quit_app", "[controller]") {
+    SECTION("Only one tab open") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+
+        REQUIRE(!c.quit_app(false));
+        REQUIRE(c.quit_flag);
+    }
+
+    SECTION("Only one tab and modified buffer") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.models.at(0).insert('!');
+
+        REQUIRE(!c.quit_app(false));
+        REQUIRE(!c.quit_flag);
+    }
+
+    SECTION("Multiple tabs open") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.view.tab_new();
+
+        REQUIRE(c.quit_app(false));
+        REQUIRE(!c.quit_flag);
+    }
+
+    SECTION("Two tab and this buffer is modified") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.view.tab_new();
+        c.models.at(1).insert('!');
+
+        REQUIRE(!c.quit_app(false));
+        REQUIRE(!c.quit_flag);
+    }
+
+    SECTION("Two tab and other buffer is modified") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.view.tab_new();
+        c.models.at(0).insert('!');
+
+        REQUIRE(c.quit_app(false));
+        REQUIRE(!c.quit_flag);
+    }
+}
+
+TEST_CASE("check_for_saved_file", "[controller]") {
+    SECTION("Unsaved") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.models.at(0).insert('!');
+        REQUIRE(!c.check_for_saved_file(false));
+    }
+
+    SECTION("Saved") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+
+        REQUIRE(c.check_for_saved_file(false));
+    }
+
+    SECTION("Skip check") {
+        Controller c;
+        REQUIRE(c.check_for_saved_file(true));
+    }
+}

@@ -17,11 +17,39 @@ def test_quit_command(r: TmuxRunner):
     r.await_exit()
 
 
-@setup("tests/fixture/test_file_1.txt", multi_file=True)
-def test_multi_file_quit_only_active(r: TmuxRunner):
+@setup("tests/fixture/test_file_1.txt")
+def test_quit_with_modified_buffer(r: TmuxRunner):
+    r.press("x")
     r.iris_cmd("q")
-    assert "...ests/fixture/temp_file.txt" in r.await_statusbar_parts()
-    assert r.await_statusbar_parts()[-1] == "1:1"
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;q!` to discard" in err_line
+    assert "\x1b[31m" in err_line  # red text
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_force_quit_with_modified_buffer(r: TmuxRunner):
+    r.press("x")
+    r.iris_cmd("q!")
+    r.await_exit()
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_multi_file_quit_command(r: TmuxRunner):
+    r.type_str("tt")
+    r.type_str("tn")
+    r.assert_filename_in_statusbar("test_file_1.txt")
+
+    # quit while modified
+    r.press("x")
+    r.iris_cmd("q")
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;q!` to discard" in err_line
+    assert "\x1b[31m" in err_line  # red text
+
+    # force quit while modified
+    r.iris_cmd("q!")
+    r.assert_filename_in_statusbar("NO NAME")
+    assert "|" not in r.lines()  # no tab bar
 
 
 @setup("tests/fixture/temp_file.txt")

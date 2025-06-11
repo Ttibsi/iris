@@ -24,6 +24,8 @@ struct Controller {
     bool enter_command_mode();
     bool parse_command();
     [[nodiscard]] bool is_readonly_model();
+    [[nodiscard]] bool quit_app(bool);
+    [[nodiscard]] bool check_for_saved_file(bool);
 };
 
 #endif  // CONTROLLER_H
