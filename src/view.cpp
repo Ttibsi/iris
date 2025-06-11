@@ -216,13 +216,13 @@ const std::string View::render_status_bar() const {
     // RHS
     // TODO: file language after highlighting engine
     std::string right = "";
-
     if (ctrlr_ptr->models.size() > 1) {
         right += "| [" + std::to_string(ctrlr_ptr->models.size()) + "] ";
     }
 
     const std::string cursor_pos = "| " + std::to_string(get_active_model()->current_line + 1) +
                                    ":" + std::to_string(get_active_model()->current_char + 1) + " ";
+
     right += cursor_pos;
 
     // Center

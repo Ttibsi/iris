@@ -11,13 +11,6 @@
 #include "text_io.h"
 #include "version.h"
 
-// TODO: handle quitting a tab
-// close the tab if it's not the only one open.
-// decide how to handle "check if file is unsaved"
-// TODO: Write hecate tests
-// TODO: Add ;e to swap the current viewed model for a different file
-// This doesn't add a new buffer
-
 // TODO: A way of detecting if the file is already open in another iris
 // instance
 int main(int argc, char* argv[]) {

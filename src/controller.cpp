@@ -1,7 +1,6 @@
 #include "controller.h"
 
 #include <format>
-#include <string>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -422,7 +421,6 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
-            // } else if (in.isCharInput()) {
         } else {
             view.command_text.push_back(in.code);
         }
@@ -449,10 +447,9 @@ bool Controller::parse_command() {
         view.set_current_line(offset);
         return true;
 
+        // edit a new file
     } else if (cmd.substr(0, 2) == ";e" && cmd.at(2) == ' ') {
-        create_view(cmd.substr(3, cmd.size()), 0);
-        view.cur.move({2, 1});
-
+        add_model(cmd.substr(3, cmd.size()));
         return true;
 
     } else if (cmd == ";wq") {
@@ -494,7 +491,7 @@ bool Controller::parse_command() {
 [[nodiscard]] bool Controller::quit_app(bool skip_check) {
     if (view.visible_tab_bar()) {
         if (check_for_saved_file(skip_check)) {
-            view.view_models.erase(view.view_models.begin() + view.active_model);
+            view.view_models.erase(view.view_models.begin() + std::ptrdiff_t(view.active_model));
 
             if (view.active_model > 0) {
                 view.active_model--;
@@ -521,4 +518,11 @@ bool Controller::parse_command() {
     }
 
     return true;
+}
+
+void Controller::add_model(const std::string& filename) {
+    models.emplace_back(open_file(filename).value(), filename);
+    view.cur.move(
+        int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
+    view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }
