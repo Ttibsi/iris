@@ -11,6 +11,8 @@
 #include "text_io.h"
 #include "version.h"
 
+// TODO: ;wa and ;qa
+
 // TODO: A way of detecting if the file is already open in another iris
 // instance
 int main(int argc, char* argv[]) {
