@@ -27,10 +27,11 @@ TEST_CASE("open_file", "[textio]") {
 TEST_CASE("write_to_file", "[textio]") {
     lines_t expected_buf = {"foo", "bar", "baz"};
     auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
-    const WriteData data = write_to_file(m);
+    const WriteData data = write_to_file(&m);
     REQUIRE(data.valid == true);
     REQUIRE(data.bytes == 12);
     REQUIRE(data.lines == 3);
+    REQUIRE(m.unsaved == false);
 }
 
 TEST_CASE("lines", "[textio]") {

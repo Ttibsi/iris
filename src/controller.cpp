@@ -454,12 +454,11 @@ bool Controller::parse_command() {
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
-        std::ignore = write_to_file(*view.get_active_model());
+        std::ignore = write_to_file(view.get_active_model());
         return quit_app(false);
 
     } else if (cmd == ";w") {
-        view.get_active_model()->unsaved = false;
-        WriteData file_write = write_to_file(*view.get_active_model());
+        WriteData file_write = write_to_file(view.get_active_model());
         if (file_write.valid) {
             std::string msg =
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
