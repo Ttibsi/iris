@@ -58,6 +58,7 @@ class TmuxRunner(Runner):
     def type_str(self, msg: str) -> None:
         for c in msg:
             self.press(c)
+            time.sleep(0.1)
 
     def press_and_enter(self, s: str) -> None:
         self.type_str(s)
@@ -164,8 +165,11 @@ def setup(
             dims = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
             with TmuxRunner("build/src/iris", file, **dims) as r:
-                r.await_text("READ")
+                r.filename = open_with
+                r.await_text("READ", timeout=2)
+
                 if multi_file:
+                    r.type_str("tt")
                     r.iris_cmd(f"e {open_with}")
 
                 func(r)

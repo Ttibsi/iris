@@ -495,7 +495,7 @@ void View::tab_prev() {
 void View::change_model_cursor() {
     uint_t vertical =
         get_active_model()->current_line - get_active_model()->view_offset + visible_tab_bar() + 1;
-    uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset);
+    uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset) + 2;
 
     cur.move(int(vertical), int(horizontal));
 }

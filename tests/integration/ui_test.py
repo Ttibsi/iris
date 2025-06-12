@@ -72,8 +72,7 @@ def test_move_cursor_vertically(r: TmuxRunner):
 
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_move_cursor_vertically(r: TmuxRunner):
-    # TODO
-    ...
+    assert False
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -110,8 +109,7 @@ def test_scroll_view_vertically(r: TmuxRunner):
 
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_scroll_cursor_vertically(r: TmuxRunner):
-    # TODO
-    ...
+    assert False
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -167,5 +165,4 @@ def test_open_readonly_file(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_multi_file_cursor_on_active_line(r: TmuxRunner):
-    # TODO
-    ...
+    assert False
