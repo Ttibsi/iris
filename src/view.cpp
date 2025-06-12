@@ -120,6 +120,7 @@ void View::draw_screen() {
     return screen;
 }
 
+// TODO: shorten file names and truncate
 const std::string View::render_tab_bar() const {
     std::string ret = "| ";
 

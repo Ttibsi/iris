@@ -158,17 +158,16 @@ def test_lineno_command_exact_center(r: TmuxRunner):
     assert first_line[0:len(prefix)] == prefix
 
 
-@setup("tests/fixture/lorem_ipsum.txt")
-def test_open_other_file(r: TmuxRunner):
-    r.iris_cmd("e tests/fixture/test_file_1.txt")
+@setup("tests/fixture/test_file_1.txt")
+def test_open_new_file(r: TmuxRunner):
+    # Move the cursor first
+    r.type_str("l" * 5)
+    assert r.await_statusbar_parts()[-1] == "1:6"
+    r.await_cursor_pos(0, 8)
 
-    statusbar_parts: list[str] = r.await_statusbar_parts()
-    assert statusbar_parts[-2] == "[2]"
-    # can't check specific index as git branch is only sometimes here
-    assert "...ts/fixture/test_file_1.txt" in statusbar_parts
+    r.iris_cmd("e tests/fixture/temp_file.txt")
 
-    first_line: str = r.lines()[0]
-    assert "lorem_ipsum.txt" in first_line
-    assert "test_file_1.txt" in first_line
-
-    assert r.cursor_pos() == (1, 3)
+    r.assert_filename_in_statusbar("temp_file.txt")
+    assert r.await_statusbar_parts()[-1] == "1:1"
+    assert r.await_statusbar_parts()[-2] == "[2]"
+    r.await_cursor_pos(0, 3)

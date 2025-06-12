@@ -146,6 +146,10 @@ class TmuxRunner(Runner):
         if not any(filename in string for string in self.statusbar_parts()):
             raise AssertionError(f"{filename} not found in Statusbar")
 
+    def get_lineno(self, line_num: int) -> str:
+        line = self.color_screenshot()[line_num]
+        return line.split("\u2502")[0]
+
 
 def setup(
         open_with: str = "",
