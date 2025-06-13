@@ -39,15 +39,6 @@ class TmuxRunner(Runner):
 
         raise AssertionError("Timeout while waiting for statusbar")
 
-    def await_statusbar_parts(self, index: int = 22) -> list[str]:
-        for _ in self.poll_until_timeout():
-            if "|" not in self.lines()[index]:
-                continue
-
-            return self.statusbar_parts()
-
-        raise AssertionError("Timeout while waiting for statusbar")
-
     def statusbar_parts(self, index: int = 22) -> list[str]:
         return [
             part.strip()
@@ -70,6 +61,7 @@ class TmuxRunner(Runner):
         super().await_text("COMMAND", timeout=2)
         self.press_and_enter(cmd)
 
+    def await_cursor_pos(self, x: int, y: int) -> None:
         for _ in self.poll_until_timeout(5):
             pos = self.cursor_pos()
             if pos == (x, y):
@@ -95,17 +87,6 @@ class TmuxRunner(Runner):
                     .split(","),
                 ),
         )
-
-    def await_cursor_pos(self, x: int, y: int) -> None:
-        for _ in self.poll_until_timeout(timeout=10):
-            pos = self.cursor_pos()
-            if pos == (x, y):
-                return
-        else:
-            raise AssertionError(
-                    f"Timeout searching for cursor pos: ({x}, {y})"
-                    f" - Found: {pos}",
-            )
 
     def assert_text_missing(self, text: str, wait: float = 0.1) -> None:
         time.sleep(wait)

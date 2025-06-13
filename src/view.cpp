@@ -289,23 +289,6 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     return 0;
 }
 
-[[nodiscard]] bool View::close_cur_tab() {
-    // TODO: return an enum?
-    // return if we need to redraw (true) or just quit app (false)
-
-    if (view_models.size() == 1) {
-        return false;
-    }
-
-    view_models.erase(view_models.begin() + std::ptrdiff_t(active_model));
-    active_model--;
-    cur.move(
-        int32_t(get_active_model()->current_line),
-        int32_t(get_active_model()->current_char + uint32_t(line_number_offset)));
-
-    return view_models.size() >= 1;
-}
-
 void View::cursor_left() {
     if (get_active_model()->current_char) {
         get_active_model()->current_char--;
@@ -440,9 +423,9 @@ void View::set_current_line(const unsigned int lineno) {
         cur.move({static_cast<int>(half_view + 1 + visible_tab_bar()), line_number_offset + 2});
     }
 
-    if (view_models.size() > 1) {
-        cur.move_down();
-    }
+    // if (view_models.size() > 1) {
+    //     cur.move_down();
+    // }
 }
 
 void View::get_git_branch() {
