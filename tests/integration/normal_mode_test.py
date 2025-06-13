@@ -397,3 +397,67 @@ def test_upper_k_key(r: TmuxRunner):
     r.press("K")
     assert "and another newline" in r.lines()[1]
     assert "here is a newline and a tab" in r.lines()[2]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_tt_key(r: TmuxRunner):
+    r.type_str("tt")
+
+    tabs: list[str] = r.await_tab_bar_parts()
+    assert len(tabs) == 2
+    assert tabs[0] == r.filename
+    r.assert_inverted_text(tabs[1], "NO NAME")
+
+    r.await_cursor_pos(1, 3)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_tn_key(r: TmuxRunner):
+    r.type_str("tt")
+
+    tabs: list[str] = r.await_tab_bar_parts()
+    assert len(tabs) == 2
+    assert tabs[0] == r.filename
+    r.assert_inverted_text(tabs[1], "NO NAME")
+
+    # wrap round
+    r.type_str("tn")
+    tabs = r.await_tab_bar_parts()
+    r.assert_inverted_text(tabs[0], r.filename)
+    assert tabs[1] == "NO NAME"
+
+    r.assert_filename_in_statusbar("test_file_1.txt")
+
+    # move right
+    r.type_str("tn")
+    tabs = r.await_tab_bar_parts()
+    assert tabs[0] == r.filename
+    r.assert_inverted_text(tabs[1], "NO NAME")
+
+    r.assert_filename_in_statusbar("NO NAME")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_tp_key(r: TmuxRunner):
+    r.type_str("tt")
+
+    tabs: list[str] = r.await_tab_bar_parts()
+    assert len(tabs) == 2
+    assert tabs[0] == r.filename
+    r.assert_inverted_text(tabs[1], "NO NAME")
+
+    # move left
+    r.type_str("tp")
+    tabs = r.await_tab_bar_parts()
+    r.assert_inverted_text(tabs[0], r.filename)
+    assert tabs[1] == "NO NAME"
+
+    r.assert_filename_in_statusbar("test_file_1.txt")
+
+    # wrap around
+    r.type_str("tp")
+    tabs = r.await_tab_bar_parts()
+    assert tabs[0] == r.filename
+    r.assert_inverted_text(tabs[1], "NO NAME")
+
+    r.assert_filename_in_statusbar("NO NAME")

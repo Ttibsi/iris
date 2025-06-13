@@ -1,7 +1,6 @@
 #include "controller.h"
 
 #include <format>
-#include <string>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -50,7 +49,7 @@ void Controller::set_mode(Mode m) {
 
 void Controller::create_view(const std::string& file_name, unsigned long lineno) {
     if (file_name.empty()) {
-        models.emplace_back(term_size.vertical - 2, "");
+        models.emplace_back(term_size.vertical - 2, "NO NAME");
         view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
@@ -313,6 +312,20 @@ void Controller::start_action_engine() {
                     redraw_all = ret.value();
                 }
 
+                // tabs
+            } else if (k.value() == rawterm::Key('t')) {
+                auto k2 = rawterm::wait_for_input();
+
+                if (k2 == rawterm::Key('t')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabNew});
+                } else if (k2 == rawterm::Key('n')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabNext});
+                } else if (k2 == rawterm::Key('p')) {
+                    parse_action<void, None>(&view, Action<void> {ActionType::TabPrev});
+                }
+
+                redraw_all = true;
+
                 // Undo
             } else if (k.value() == rawterm::Key('u')) {
                 if (is_readonly_model()) {
@@ -408,7 +421,6 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
-            // } else if (in.isCharInput()) {
         } else {
             view.command_text.push_back(in.code);
         }
@@ -435,24 +447,18 @@ bool Controller::parse_command() {
         view.set_current_line(offset);
         return true;
 
+        // edit a new file
     } else if (cmd.substr(0, 2) == ";e" && cmd.at(2) == ' ') {
-        create_view(cmd.substr(3, cmd.size()), 0);
-        view.cur.move({2, 1});
-
+        add_model(cmd.substr(3, cmd.size()));
         return true;
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
-        std::ignore = write_to_file(*view.get_active_model());
-        if (view.close_cur_tab()) {
-            return true;
-        } else {
-            quit_flag = true;
-        }
+        std::ignore = write_to_file(view.get_active_model());
+        return quit_app(false);
 
     } else if (cmd == ";w") {
-        view.get_active_model()->unsaved = false;
-        WriteData file_write = write_to_file(*view.get_active_model());
+        WriteData file_write = write_to_file(view.get_active_model());
         if (file_write.valid) {
             std::string msg =
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
@@ -460,18 +466,10 @@ bool Controller::parse_command() {
         }
 
     } else if (cmd == ";q") {
-        if (view.get_active_model()->unsaved) {
-            view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
-        } else {
-            if (view.close_cur_tab()) {
-                return true;
-            } else {
-                quit_flag = true;
-            }
-        }
+        return quit_app(false);
 
     } else if (cmd == ";q!") {
-        quit_flag = view.close_cur_tab();
+        return quit_app(true);
 
         // ping cmd used for testing
     } else if (cmd == ";ping") {
@@ -487,4 +485,43 @@ bool Controller::parse_command() {
 
 [[nodiscard]] bool Controller::is_readonly_model() {
     return view.get_active_model()->readonly;
+}
+
+[[nodiscard]] bool Controller::quit_app(bool skip_check) {
+    if (view.visible_tab_bar()) {
+        if (check_for_saved_file(skip_check)) {
+            view.view_models.erase(view.view_models.begin() + std::ptrdiff_t(view.active_model));
+
+            if (view.active_model > 0) {
+                view.active_model--;
+            } else {
+                view.active_model = view.view_models.size() - 1;
+            }
+
+            view.change_model_cursor();
+
+            return true;
+        }
+    } else {
+        // Only one tab open
+        quit_flag = check_for_saved_file(skip_check);
+    }
+
+    return false;
+}
+
+[[nodiscard]] bool Controller::check_for_saved_file(bool skip) {
+    if (!skip && view.get_active_model()->unsaved) {
+        view.display_message("Unsaved changes. Use `;q!` to discard", rawterm::Colors::red);
+        return false;
+    }
+
+    return true;
+}
+
+void Controller::add_model(const std::string& filename) {
+    models.emplace_back(open_file(filename).value(), filename);
+    view.cur.move(
+        int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
+    view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }

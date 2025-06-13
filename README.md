@@ -37,8 +37,8 @@ $ ./run.py --release
 switch to `write` mode to insert any characters. In `read` mode, you can
 perform the following actions (alphabetically ordered):
 
-| Key | Description                                                     |
-|-----|-----------------------------------------------------------------|
+| Key           | Description                                           |
+|---------------|-------------------------------------------------------|
 | <kbd>a</kbd>  | Go to write mode right of the current character       |
 | <kbd>A</kbd>  | Go to write mode at the end of the current line       |
 | <kbd>b</kbd>  | Move cursor back one word                             |
@@ -57,6 +57,9 @@ perform the following actions (alphabetically ordered):
 | <kbd>O</kbd>  | Move cursor right                                     |
 | <kbd>r</kbd>  | Replace char under cursor with next entered character |
 | <kbd>R</kbd>  | Redo                                                  |
+| <kbd>tn</kbd> | Go to next tab                                        |
+| <kbd>tp</kbd> | Go to previous tab                                    |
+| <kbd>tt</kbd> | Open new tab                                          |
 | <kbd>u</kbd>  | Undo                                                  |
 | <kbd>w</kbd>  | Move cursor forward one word                          |
 | <kbd>x</kbd>  | Delete character under the cursor                     |
@@ -72,13 +75,14 @@ perform the following actions (alphabetically ordered):
 Likewise, you can switch to `command` mode with the semicolon `;` key. The
 following commands in alphabetical order are available:
 
-| Command | Description                   |
-|---------|-------------------------------|
-| `;ping` | `pong` (for testing purposes) |
-| `;q`    | Quit                          |
-| `;q!`   | Force Quit without saving     |
-| `;wq`   | Save and quit                 |
-| `;w`    | Save file                     |
+| Command | Description                                                     |
+|---------|-----------------------------------------------------------------|
+| `;ping` | `pong` (for testing purposes)                                   |
+| `;e`    | Open a new buffer - specify a filename to open an existing file |
+| `;q`    | Quit                                                            |
+| `;q!`   | Force Quit without saving                                       |
+| `;wq`   | Save and quit                                                   |
+| `;w`    | Save file                                                       |
 
 ### CLI
 The below flags are available in the CLI as well. See `--help` for more info.

@@ -44,8 +44,6 @@ struct View {
     [[maybe_unused]] const rawterm::Pos draw_command_bar();
     void display_message(std::string, std::optional<rawterm::Color>);
     [[nodiscard]] std::size_t clamp_horizontal_movement(const int);
-    [[nodiscard]] bool close_cur_tab();
-
     void cursor_left();
     [[maybe_unused]] bool cursor_up(unsigned int count = 1);
     [[maybe_unused]] bool cursor_down(unsigned int count = 1);
@@ -55,6 +53,13 @@ struct View {
     void center_current_line();
     void set_current_line(const unsigned int);
     void get_git_branch();
+    void tab_new();
+    void tab_next();
+    void tab_prev();
+    [[nodiscard]] uint_t visible_tab_bar() const;
+    [[maybe_unused]] int set_lineno_offset(Model*);
+    void update_cursor_on_model_change();
+    void change_model_cursor();
 };
 
 #endif  // VIEW_H

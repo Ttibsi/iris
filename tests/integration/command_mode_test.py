@@ -17,11 +17,39 @@ def test_quit_command(r: TmuxRunner):
     r.await_exit()
 
 
-@setup("tests/fixture/test_file_1.txt", multi_file=True)
-def test_multi_file_quit_only_active(r: TmuxRunner):
+@setup("tests/fixture/test_file_1.txt")
+def test_quit_with_modified_buffer(r: TmuxRunner):
+    r.press("x")
     r.iris_cmd("q")
-    assert "...ests/fixture/temp_file.txt" in r.await_statusbar_parts()
-    assert r.await_statusbar_parts()[-1] == "1:1"
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;q!` to discard" in err_line
+    assert "\x1b[49m" in err_line  # red text
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_force_quit_with_modified_buffer(r: TmuxRunner):
+    r.press("x")
+    r.iris_cmd("q!")
+    r.await_exit()
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_multi_file_quit_command(r: TmuxRunner):
+    r.type_str("tt")
+    r.type_str("tn")
+    r.assert_filename_in_statusbar("test_file_1.txt")
+
+    # quit while modified
+    r.press("x")
+    r.iris_cmd("q")
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;q!` to discard" in err_line
+    assert "\x1b[49m" in err_line  # red text
+
+    # force quit while modified
+    r.iris_cmd("q!")
+    r.assert_filename_in_statusbar("NO NAME")
+    assert "|" not in r.lines()  # no tab bar
 
 
 @setup("tests/fixture/temp_file.txt")
@@ -50,7 +78,7 @@ def test_write_command(r: TmuxRunner):
     assert status_bar[0] == "READ"
 
     # Check highlighting colour
-    message_line: str = r.color_screenshot()[-2]
+    message_line: str = r.color_screenshot()[-1]
     assert "Saved" in message_line
     assert "bytes" in message_line
     assert "\x1b[38;2;0;128;0m" in message_line
@@ -90,7 +118,7 @@ def test_write_to_new_file(r: TmuxRunner):
 def test_invalid_command(r: TmuxRunner):
     r.iris_cmd("error")
 
-    message_line: str = r.color_screenshot()[-2]
+    message_line: str = r.color_screenshot()[-1]
     assert "Unknown command" in message_line
     assert "\x1b[38;2;255;0;0m" in message_line
 
@@ -130,17 +158,16 @@ def test_lineno_command_exact_center(r: TmuxRunner):
     assert first_line[0:len(prefix)] == prefix
 
 
-@setup("tests/fixture/lorem_ipsum.txt")
-def test_open_other_file(r: TmuxRunner):
-    r.iris_cmd("e tests/fixture/test_file_1.txt")
+@setup("tests/fixture/test_file_1.txt")
+def test_open_new_file(r: TmuxRunner):
+    # Move the cursor first
+    r.type_str("l" * 5)
+    assert r.await_statusbar_parts()[-1] == "1:6"
+    r.await_cursor_pos(0, 8)
 
-    statusbar_parts: list[str] = r.await_statusbar_parts()
-    assert statusbar_parts[-2] == "[2]"
-    # can't check specific index as git branch is only sometimes here
-    assert "...ts/fixture/test_file_1.txt" in statusbar_parts
+    r.iris_cmd("e tests/fixture/temp_file.txt")
 
-    first_line: str = r.lines()[0]
-    assert "lorem_ipsum.txt" in first_line
-    assert "test_file_1.txt" in first_line
-
-    assert r.cursor_pos() == (1, 3)
+    r.assert_filename_in_statusbar("temp_file.txt")
+    assert r.await_statusbar_parts()[-1] == "1:1"
+    assert r.await_statusbar_parts()[-2] == "[2]"
+    r.await_cursor_pos(0, 3)

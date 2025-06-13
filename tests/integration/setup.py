@@ -15,6 +15,7 @@ T = TypeVar("T", bound=Callable[[Runner], None])
 class TmuxRunner(Runner):
     CMD_KEY: Final[str] = "\\;"
     SELECTED_LINE_ANSI: Final[str] = "\x1b[38;2;255;221;51m"
+    filename: str
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -24,7 +25,10 @@ class TmuxRunner(Runner):
 
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:
-        return self.tmux.execute_command('capture-pane', '-ept0').split("\n")
+        return self.tmux.execute_command(
+                'capture-pane',
+                '-ept0',
+        ).split("\n")[:-1]
 
     def await_statusbar_parts(self, index: int = 22) -> list[str]:
         for _ in self.poll_until_timeout():
@@ -45,6 +49,7 @@ class TmuxRunner(Runner):
     def type_str(self, msg: str) -> None:
         for c in msg:
             self.press(c)
+            time.sleep(0.1)
 
     def press_and_enter(self, s: str) -> None:
         self.type_str(s)
@@ -55,6 +60,18 @@ class TmuxRunner(Runner):
         super().press(self.CMD_KEY)
         super().await_text("COMMAND", timeout=2)
         self.press_and_enter(cmd)
+
+    def await_cursor_pos(self, x: int, y: int) -> None:
+        for _ in self.poll_until_timeout(5):
+            pos = self.cursor_pos()
+            if pos == (x, y):
+                return
+
+        else:
+            raise AssertionError(
+                f"Timeout searching for cursor pos: ({x}, {y})"
+                f" - Found: {pos}",
+            )
 
     # NOTE: zero-indexed
     def cursor_pos(self) -> tuple[int, ...]:
@@ -71,17 +88,6 @@ class TmuxRunner(Runner):
                 ),
         )
 
-    def await_cursor_pos(self, x: int, y: int) -> None:
-        for _ in self.poll_until_timeout(timeout=10):
-            pos = self.cursor_pos()
-            if pos == (x, y):
-                return
-        else:
-            raise AssertionError(
-                    f"Timeout searching for cursor pos: ({x}, {y})"
-                    f" - Found: {pos}",
-            )
-
     def assert_text_missing(self, text: str, wait: float = 0.1) -> None:
         time.sleep(wait)
 
@@ -97,9 +103,33 @@ class TmuxRunner(Runner):
                 return
         else:
             raise AssertionError(
-                    f"Timeout searching for cursor pos: ({x}, {y})"
-                    f" - Found: {pos}",
+                f"Timeout searching for cursor pos: ({x}, {y})"
+                f" - Found: {pos}",
             )
+
+    def await_tab_bar_parts(self) -> list[str]:
+        for _ in self.poll_until_timeout():
+            parts = self.color_screenshot()[0]
+            if "|" not in parts:
+                continue
+
+            return [p.strip() for p in parts.split("|") if p.strip()]
+
+        raise AssertionError("Timeout while waiting for tab bar")
+
+    def assert_inverted_text(self, inverted: str, text: str) -> None:
+        expected = f"\x1B[7m{text}\x1B[0m"
+        if inverted != expected:
+            raise AssertionError(f"{inverted} does not equal {expected}")
+
+    # As the filename in statusbar gets truncated
+    def assert_filename_in_statusbar(self, filename: str) -> None:
+        if not any(filename in string for string in self.statusbar_parts()):
+            raise AssertionError(f"{filename} not found in Statusbar")
+
+    def get_lineno(self, line_num: int) -> str:
+        line = self.color_screenshot()[line_num]
+        return line.split("\u2502")[0]
 
 
 def setup(
@@ -120,8 +150,11 @@ def setup(
             dims = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
             with TmuxRunner("build/src/iris", file, **dims) as r:
-                r.await_text("READ")
+                r.filename = open_with
+                r.await_text("READ", timeout=2)
+
                 if multi_file:
+                    r.type_str("tt")
                     r.iris_cmd(f"e {open_with}")
 
                 func(r)

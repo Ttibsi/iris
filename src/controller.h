@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <string>
+
 #include <rawterm/core.h>
 
 #include "model.h"
@@ -24,6 +26,9 @@ struct Controller {
     bool enter_command_mode();
     bool parse_command();
     [[nodiscard]] bool is_readonly_model();
+    [[nodiscard]] bool quit_app(bool);
+    [[nodiscard]] bool check_for_saved_file(bool);
+    void add_model(const std::string&);
 };
 
 #endif  // CONTROLLER_H

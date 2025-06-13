@@ -15,9 +15,9 @@
 * [x] Open a file with the cursor on a specified line using `-l` on the CLI
 * [x] Handle viewing files you don't have access rights to edit as readonly
 * [x] Show the current git branch on the statusbar
-* [ ] Switch file we're editing from inside the editor (ex vim's `:e`)
+* [x] Switch file we're editing from inside the editor (ex vim's `:e`)
+* [x] Open a second file in a tab and switch tabs
 * [ ] Open a second file in a separate buffer and switch between views
-* [ ] Open a second file in a tab and switch tabs
 * [ ] Handle tab characters in text
     * [ ] Toggle an `expandtab` config variable with a command (default true)
     * [ ] Ensure pressing <TAB> inserts the right character where needed

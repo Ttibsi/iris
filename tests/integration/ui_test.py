@@ -72,22 +72,24 @@ def test_move_cursor_vertically(r: TmuxRunner):
 
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_move_cursor_vertically(r: TmuxRunner):
-    # TODO
-    ...
+    r.await_cursor_pos(1, 4)
+    r.assert_inverted_text(r.await_tab_bar_parts()[1], r.filename)
+
+    r.await_statusbar_parts()[-1] == "1:1"
+    r.press("j")
+    r.await_statusbar_parts()[-1] == "2:1"
+    r.press("]")
+    r.await_statusbar_parts()[-1] == "9:1"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_active_line_number_highlighted(r: TmuxRunner):
-    def get_lineno(line_num: int) -> str:
-        line = r.color_screenshot()[line_num]
-        return line.split("\u2502")[0]
-
-    assert "255;221;51" in get_lineno(0)
+    assert r.SELECTED_LINE_ANSI in r.get_lineno(0)
 
     r.press("j")
 
-    assert "255;221;51" in get_lineno(1)
-    assert "128;128;128" in get_lineno(0)
+    assert r.SELECTED_LINE_ANSI in r.get_lineno(1)
+    assert "128;128;128" in r.get_lineno(0)
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -110,8 +112,16 @@ def test_scroll_view_vertically(r: TmuxRunner):
 
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_scroll_cursor_vertically(r: TmuxRunner):
-    # TODO
-    ...
+    r.await_cursor_pos(1, 4)
+    r.assert_inverted_text(r.await_tab_bar_parts()[1], r.filename)
+
+    r.type_str("]" * 3)
+    r.await_statusbar_parts()[-1] == "32:1"
+    r.await_cursor_pos(19, 4)
+
+    r.type_str("[" * 3)
+    r.await_cursor_pos(1, 4)
+    r.await_statusbar_parts()[-1] == "1:1"
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
@@ -167,5 +177,15 @@ def test_open_readonly_file(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_multi_file_cursor_on_active_line(r: TmuxRunner):
-    # TODO
-    ...
+    r.await_statusbar_parts()[-1] == "1:1"
+    lineno: str = r.get_lineno(1)
+    assert lineno[-1] == "1"
+    assert r.SELECTED_LINE_ANSI in lineno
+
+    r.press("j")
+    lineno = r.get_lineno(1)
+    assert lineno[-1] == "1"
+    assert r.SELECTED_LINE_ANSI not in lineno
+
+    assert r.get_lineno(2)[-1] == "2"
+    assert r.SELECTED_LINE_ANSI in r.get_lineno(2)
