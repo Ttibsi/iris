@@ -18,6 +18,7 @@
 * [x] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [x] Open a second file in a tab and switch tabs
 * [ ] Open a second file in a separate buffer and switch between views
+* [ ] View a list of open files and switch between them
 * [ ] Handle tab characters in text
     * [ ] Toggle an `expandtab` config variable with a command (default true)
     * [ ] Ensure pressing <TAB> inserts the right character where needed
