@@ -189,8 +189,6 @@ void View::draw_status_bar() {
     cur.move(starting_cur_pos);
 }
 
-// TODO: when truncating, if we cut off less than 3 letters (len of ellipsis)
-// then we just carry on with the filename instead
 const std::string View::render_status_bar() const {
     const std::size_t thirds = std::size_t(view_size.horizontal / 3);
     std::string filename = view_models.at(active_model)->filename;
@@ -229,12 +227,18 @@ const std::string View::render_status_bar() const {
     // Center
     std::string visible_filename = filename;
     if (filename.size() >= thirds) {
-        visible_filename = "..." + filename.substr(filename.size() - thirds, filename.size());
+        const std::size_t chars_to_remove = filename.size() - thirds + 3;  // +3 for "..."
+        if (chars_to_remove <= 3) {
+            // If we'd only remove 3 or fewer chars, keep the full filename instead
+            visible_filename = filename;
+        } else {
+            visible_filename = "..." + filename.substr(chars_to_remove, filename.size());
+        }
     }
 
+    const std::size_t available_center_space = view_size.horizontal - left.size() - right.size();
     const std::size_t lhs_padding = std::clamp(
-        std::size_t(view_size.horizontal / 2) - (visible_filename.size() / 2) - left.size(), 0ul,
-        thirds);
+        (available_center_space - visible_filename.size()) / 2, 0ul, available_center_space);
     const int rhs_padding = int32_t(
         std::size_t(view_size.horizontal) -
         (right.size() + left.size() + lhs_padding + visible_filename.size()));
