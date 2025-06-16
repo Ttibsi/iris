@@ -24,9 +24,9 @@ def loc() -> int:
 
     return run_shell_cmd(
         " ".join([
-            "cloc . ../rawterm",
-            " --exclude-dir=build,.cache,cli11,examples",
-            " --exclude-ext=md",
+            "cloc .",
+            " --exclude-dir=build,.cache,include,venv",
+            " --exclude-ext=md,log,pyc",
         ]),
     )
 
