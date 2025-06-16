@@ -19,6 +19,7 @@ def run_shell_cmd(
 
 def loc() -> int:
     if not shutil.which("cloc"):
+        print("cloc not installed...")
         return 0
 
     return run_shell_cmd(
