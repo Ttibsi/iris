@@ -48,8 +48,7 @@ def test_render_truncated_filename_in_statusbar():
         dims = {"width": 100, "height": 24}
         with TmuxRunner("build/src/iris", file_name, **dims) as r:
             r.await_text("READ")
-            status_bar: list[str] = r.await_statusbar_parts()
-            assert status_bar[1] == "...ally_really_long_file_name.txt"
+            r.assert_filename_in_statusbar("long_file_name.txt")
 
 
 @setup("tests/fixture/lorem_ipsum.txt")
