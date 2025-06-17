@@ -17,9 +17,6 @@
 // TODO: `;e this_does_not_exist.txt` crashes
 // TODO: detect if `;e` is opening an already-open file and switch to that buf instead
 //  NOTE: Maybe post a message in the command bar too
-// TODO: In tab bar, show if file is unsaved
-//  NOTE: Babi has a * next to the name
-//  NOTE: vim has a + before the name
 
 // TODO: A way of detecting if the file is already open in another iris
 // instance

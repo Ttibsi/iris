@@ -391,8 +391,9 @@ void Controller::start_action_engine() {
             }
         }
 
-        // After every input, refresh the status bar
+        // After every input, refresh the status bar and tab bar
         view.draw_status_bar();
+        view.draw_tab_bar();
     }
 
     signals_thread.join();

@@ -36,6 +36,7 @@ struct View {
     Model* get_active_model() const;
     void draw_screen();
     [[nodiscard]] const std::string render_screen() const;
+    void draw_tab_bar();
     const std::string render_tab_bar() const;
     void draw_line(Draw_Line_dir::values);
     [[nodiscard]] const std::string render_line(const uint) const;

@@ -188,3 +188,11 @@ def test_multi_file_cursor_on_active_line(r: TmuxRunner):
 
     assert r.get_lineno(2)[-1] == "2"
     assert r.SELECTED_LINE_ANSI in r.get_lineno(2)
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_modified_marker_in_tab_bar(r: TmuxRunner):
+    r.press("x")
+    tab_bar = r.await_tab_bar_parts()
+    assert tab_bar[0] == "tests/fixture/temp_file.txt"
+    r.assert_inverted_text(tab_bar[1], "tests/fixture/test_file_1.txt*")
