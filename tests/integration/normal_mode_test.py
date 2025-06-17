@@ -166,8 +166,7 @@ def test_close_squacket_key(r: TmuxRunner):
 
     r.assert_internal_cur_pos(19, 1)
 
-    for _ in range(7):
-        r.press("]")
+    r.type_str("]" * 7)
     r.assert_internal_cur_pos(80, 1)
 
     # Go to end of file

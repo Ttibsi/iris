@@ -121,6 +121,10 @@ void View::draw_screen() {
 }
 
 void View::draw_tab_bar() {
+    if (view_models.size() == 1) {
+        return;
+    }
+
     rawterm::Pos starting_cur_pos = cur;
     cur.move(1, 1);
     rawterm::clear_line();
