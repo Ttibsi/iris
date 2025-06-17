@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "constants.h"
+#include "spdlog/spdlog.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
     auto ret = std::vector<std::string>();
@@ -164,6 +165,11 @@
 
         // TODO: DO we want to log the exact command run? Is this a potential
         // security issue?
+        auto logger = spdlog::get("basic_logger");
+        if (logger != nullptr) {
+            logger->info("Shell cmd run: `" + cmd + "`");
+        }
+
         if (!resp.out.empty() && resp.out.at(resp.out.size() - 1) == '\n') {
             resp.out = resp.out.substr(0, resp.out.size() - 1);
         }
