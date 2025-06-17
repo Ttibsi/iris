@@ -90,7 +90,7 @@ TEST_CASE("generate_tab_bar", "[view]") {
     v.add_model(&m2);
 
     std::string ret = v.render_tab_bar();
-    std::string expected = "| test_file.txt | \033[7mtests/fixture/test_file_1.txt\033[27m | \r\n";
+    std::string expected = "| test_file.txt | \033[7mtest_file_1.txt\033[27m | \r\n";
 
     REQUIRE(v.view_models.size() == 2);
     REQUIRE(v.active_model == 1);
