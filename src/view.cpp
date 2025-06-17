@@ -120,15 +120,28 @@ void View::draw_screen() {
     return screen;
 }
 
+void View::draw_tab_bar() {
+    rawterm::Pos starting_cur_pos = cur;
+    cur.move(1, 1);
+    rawterm::clear_line();
+    std::print("{}", render_tab_bar());
+    cur.move(starting_cur_pos);
+}
+
 // TODO: shorten file names and truncate
 const std::string View::render_tab_bar() const {
     std::string ret = "| ";
 
     for (std::size_t i = 0; i < view_models.size(); ++i) {
+        std::string display_name = view_models.at(i)->filename;
+        if (view_models.at(i)->unsaved) {
+            display_name += "*";
+        }
+
         if (i == active_model) {
-            ret += rawterm::inverse(view_models.at(i)->filename);
+            ret += rawterm::inverse(display_name);
         } else {
-            ret += view_models.at(i)->filename;
+            ret += display_name;
         }
 
         ret += " | ";
