@@ -1,4 +1,8 @@
 ### main / head
+* Use `;e` to open a different file from within iris
+* Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs
+* Display modified marker in the tab bar
+* We now log the shell command called
 
 ### v0.0.2
 * Added ability to jump to a line number entered as a command: `;42`
@@ -12,9 +16,6 @@
 * Added querying for the current git branch in a thread for the statusbar
 * Added handling opening files in READONLY mode if the current user doesn't
 have correct access rights
-* Use `;e` to open a different file from within iris
-* Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs
-* Display modified marker in the tab bar
 
 * Resolved bug with cursor entering incorrect text after recentering screen
 * Resolved bug with screen not redrawing correctly when entering the middle
