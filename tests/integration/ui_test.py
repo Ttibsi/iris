@@ -72,7 +72,7 @@ def test_move_cursor_vertically(r: TmuxRunner):
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_move_cursor_vertically(r: TmuxRunner):
     r.await_cursor_pos(1, 4)
-    r.assert_inverted_text(r.await_tab_bar_parts()[1], r.filename)
+    r.assert_inverted_text(r.await_tab_bar_parts()[1], "lorem_ipsum.txt")
 
     r.await_statusbar_parts()[-1] == "1:1"
     r.press("j")
@@ -112,7 +112,7 @@ def test_scroll_view_vertically(r: TmuxRunner):
 @setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
 def test_multi_file_scroll_cursor_vertically(r: TmuxRunner):
     r.await_cursor_pos(1, 4)
-    r.assert_inverted_text(r.await_tab_bar_parts()[1], r.filename)
+    r.assert_inverted_text(r.await_tab_bar_parts()[1], "lorem_ipsum.txt")
 
     r.type_str("]" * 3)
     r.await_statusbar_parts()[-1] == "32:1"
@@ -194,5 +194,5 @@ def test_multi_file_cursor_on_active_line(r: TmuxRunner):
 def test_modified_marker_in_tab_bar(r: TmuxRunner):
     r.press("x")
     tab_bar = r.await_tab_bar_parts()
-    assert tab_bar[0] == "tests/fixture/temp_file.txt"
-    r.assert_inverted_text(tab_bar[1], "tests/fixture/test_file_1.txt*")
+    assert tab_bar[0] == "temp_file.txt"
+    r.assert_inverted_text(tab_bar[1], "test_file_1.txt*")

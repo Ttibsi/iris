@@ -132,26 +132,61 @@ void View::draw_tab_bar() {
     cur.move(starting_cur_pos);
 }
 
-// TODO: shorten file names and truncate
 const std::string View::render_tab_bar() const {
-    std::string ret = "| ";
+    // Extract base filenames
+    std::vector<std::string> base_filenames;
+    for (const auto& model : view_models) {
+        std::string full_path = model->filename;
+        std::size_t last_slash = full_path.find_last_of("/\\");
+        std::string filename =
+            (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
+        base_filenames.push_back(filename);
+    }
 
-    for (std::size_t i = 0; i < view_models.size(); ++i) {
-        std::string display_name = view_models.at(i)->filename;
-        if (view_models.at(i)->unsaved) {
-            display_name += "*";
+    // Find longest filename
+    std::size_t filename_max_length = 0;
+    for (const auto& name : base_filenames) {
+        filename_max_length = std::max(filename_max_length, name.size());
+    }
+
+    std::string ret;
+    while (filename_max_length > 0) {
+        ret = "| ";
+
+        for (std::size_t i = 0; i < view_models.size(); ++i) {
+            std::string display_name = base_filenames[i];
+
+            // Truncate if needed
+            if (display_name.size() > filename_max_length) {
+                display_name = display_name.substr(0, filename_max_length);
+            }
+
+            if (view_models.at(i)->unsaved) {
+                display_name += "*";
+            }
+
+            if (i == active_model) {
+                ret += rawterm::inverse(display_name);
+            } else {
+                ret += display_name;
+            }
+
+            ret += " | ";
         }
 
-        if (i == active_model) {
-            ret += rawterm::inverse(display_name);
-        } else {
-            ret += display_name;
+        // Check if it fits (excluding \r\n)
+        if (rawterm::raw_str(ret).size() <= static_cast<std::size_t>(view_size.horizontal)) {
+            break;
         }
 
-        ret += " | ";
+        // Reduce filename length by 2 and try again
+        filename_max_length = (filename_max_length >= 2) ? filename_max_length - 2 : 0;
     }
 
     ret += "\r\n";
+    assert(
+        rawterm::raw_str(ret.substr(0, ret.size() - 2)).size() <=
+        static_cast<std::size_t>(view_size.horizontal));
     return ret;
 }
 

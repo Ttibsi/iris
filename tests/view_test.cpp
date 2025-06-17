@@ -89,12 +89,24 @@ TEST_CASE("generate_tab_bar", "[view]") {
         Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
     v.add_model(&m2);
 
-    std::string ret = v.render_tab_bar();
-    std::string expected = "| test_file.txt | \033[7mtests/fixture/test_file_1.txt\033[27m | \r\n";
+    SECTION("Unmodified") {
+        std::string ret = v.render_tab_bar();
+        std::string expected = "| test_file.txt | \033[7mtest_file_1.txt\033[27m | \r\n";
 
-    REQUIRE(v.view_models.size() == 2);
-    REQUIRE(v.active_model == 1);
-    REQUIRE(expected == ret);
+        REQUIRE(v.view_models.size() == 2);
+        REQUIRE(v.active_model == 1);
+        REQUIRE(expected == ret);
+    }
+
+    SECTION("Modified") {
+        m2.unsaved = true;
+        std::string ret = v.render_tab_bar();
+        std::string expected = "| test_file.txt | \033[7mtest_file_1.txt*\033[27m | \r\n";
+
+        REQUIRE(v.view_models.size() == 2);
+        REQUIRE(v.active_model == 1);
+        REQUIRE(expected == ret);
+    }
 }
 
 TEST_CASE("render_line", "[view]") {

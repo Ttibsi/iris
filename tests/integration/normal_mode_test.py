@@ -404,7 +404,7 @@ def test_tt_key(r: TmuxRunner):
 
     tabs: list[str] = r.await_tab_bar_parts()
     assert len(tabs) == 2
-    assert tabs[0] == r.filename
+    assert tabs[0] == "test_file_1.txt"
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     r.await_cursor_pos(1, 3)
@@ -416,13 +416,13 @@ def test_tn_key(r: TmuxRunner):
 
     tabs: list[str] = r.await_tab_bar_parts()
     assert len(tabs) == 2
-    assert tabs[0] == r.filename
+    assert tabs[0] == "test_file_1.txt"
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     # wrap round
     r.type_str("tn")
     tabs = r.await_tab_bar_parts()
-    r.assert_inverted_text(tabs[0], r.filename)
+    r.assert_inverted_text(tabs[0], r.filename.split("/")[-1])
     assert tabs[1] == "NO NAME"
 
     r.assert_filename_in_statusbar("test_file_1.txt")
@@ -430,7 +430,7 @@ def test_tn_key(r: TmuxRunner):
     # move right
     r.type_str("tn")
     tabs = r.await_tab_bar_parts()
-    assert tabs[0] == r.filename
+    assert tabs[0] == r.filename.split("/")[-1]
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     r.assert_filename_in_statusbar("NO NAME")
@@ -442,13 +442,13 @@ def test_tp_key(r: TmuxRunner):
 
     tabs: list[str] = r.await_tab_bar_parts()
     assert len(tabs) == 2
-    assert tabs[0] == r.filename
+    assert tabs[0] == "test_file_1.txt"
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     # move left
     r.type_str("tp")
     tabs = r.await_tab_bar_parts()
-    r.assert_inverted_text(tabs[0], r.filename)
+    r.assert_inverted_text(tabs[0], r.filename.split("/")[-1])
     assert tabs[1] == "NO NAME"
 
     r.assert_filename_in_statusbar("test_file_1.txt")
@@ -456,7 +456,7 @@ def test_tp_key(r: TmuxRunner):
     # wrap around
     r.type_str("tp")
     tabs = r.await_tab_bar_parts()
-    assert tabs[0] == r.filename
+    assert tabs[0] == r.filename.split("/")[-1]
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     r.assert_filename_in_statusbar("NO NAME")
