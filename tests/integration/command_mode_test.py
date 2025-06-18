@@ -114,6 +114,28 @@ def test_write_to_new_file(r: TmuxRunner):
     os.remove("tests/fixture/does_not_exist.txt")
 
 
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_write_all_command(r: TmuxRunner):
+    r.press("x")
+    assert r.statusbar_parts()[1] == "[X]"
+    assert "*" in r.await_tab_bar_parts()[1]
+
+    r.iris_cmd("wa")
+    assert "[X]" not in r.statusbar_parts()
+    assert "*" not in r.await_tab_bar_parts()[1]
+
+    with open(r.filename, "r") as f:
+        first_line: str = f.readlines()[0]
+        assert first_line[0] == "h"
+
+    r.press("u")
+    r.iris_cmd("wa")
+
+    with open(r.filename, "r") as f:
+        first_line = f.readlines()[0]
+        assert first_line[0] == "T"
+
+
 @setup()
 def test_invalid_command(r: TmuxRunner):
     r.iris_cmd("error")

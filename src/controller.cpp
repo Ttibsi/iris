@@ -8,7 +8,6 @@
 #include "action.h"
 #include "constants.h"
 #include "spdlog/spdlog.h"
-#include "text_io.h"
 #include "view.h"
 
 Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {
@@ -458,6 +457,15 @@ bool Controller::parse_command() {
         std::ignore = write_to_file(view.get_active_model());
         return quit_app(false);
 
+    } else if (cmd == ";wa") {
+        WriteAllData write_data = write_all();
+        if (write_data.valid) {
+            std::string msg = std::format("Saved {} files", write_data.files);
+            view.display_message(msg, rawterm::Colors::green);
+        } else {
+            view.display_message("Error with saving files", rawterm::Colors::red);
+        }
+
     } else if (cmd == ";w") {
         WriteData file_write = write_to_file(view.get_active_model());
         if (file_write.valid) {
@@ -525,4 +533,24 @@ void Controller::add_model(const std::string& filename) {
     view.cur.move(
         int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
+}
+
+[[nodiscard]] WriteAllData Controller::write_all() {
+    WriteAllData write_all_data = {};
+
+    for (auto&& m : models) {
+        if (m.filename == "NO NAME") {
+            continue;
+        }
+
+        if (write_to_file(&m).valid) {
+            write_all_data.files++;
+        } else {
+            write_all_data.valid = false;
+            return write_all_data;
+        }
+    }
+
+    write_all_data.valid = true;
+    return write_all_data;
 }

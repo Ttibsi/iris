@@ -83,6 +83,7 @@ following commands in alphabetical order are available:
 | `;q!`   | Force Quit without saving                                       |
 | `;wq`   | Save and quit                                                   |
 | `;w`    | Save file                                                       |
+| `;wa`   | Save all files                                                  |
 
 ### CLI
 The below flags are available in the CLI as well. See `--help` for more info.

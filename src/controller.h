@@ -6,6 +6,7 @@
 #include <rawterm/core.h>
 
 #include "model.h"
+#include "text_io.h"
 #include "view.h"
 
 enum class Mode { Read, Write, Command };
@@ -29,6 +30,7 @@ struct Controller {
     [[nodiscard]] bool quit_app(bool);
     [[nodiscard]] bool check_for_saved_file(bool);
     void add_model(const std::string&);
+    [[nodiscard]] WriteAllData write_all();
 };
 
 #endif  // CONTROLLER_H
