@@ -11,7 +11,7 @@
 #include "text_io.h"
 #include "version.h"
 
-// TODO: ;wa and ;qa
+// TODO: ;qa
 // TODO: Still can't write into a empty file created with `touch` without crashing
 // TODO: Save file with given name `;w foo.txt`
 // TODO: `;e this_does_not_exist.txt` crashes
