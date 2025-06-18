@@ -132,3 +132,22 @@ TEST_CASE("check_for_saved_file", "[controller]") {
         REQUIRE(c.check_for_saved_file(true));
     }
 }
+
+TEST_CASE("write_all", "[controller]") {
+    Controller c;
+    c.create_view("tests/fixture/test_file_1.txt", 0);
+    c.view.tab_new();
+
+    c.models.at(0).insert('!');
+    REQUIRE(c.models.at(0).unsaved);
+
+    WriteAllData write_all = c.write_all();
+    REQUIRE(write_all.files == 1);
+    REQUIRE(write_all.valid);
+    REQUIRE(!c.models.at(0).unsaved);
+
+    // Undo changes to not break other tests
+    c.view.cursor_right();
+    std::ignore = c.models.at(0).backspace();
+    std::ignore = c.write_all();
+}
