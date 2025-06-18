@@ -22,6 +22,14 @@ struct WriteData {
     }
 };
 
+struct WriteAllData {
+    int files = 0;
+    bool valid = false;
+
+    WriteAllData() {}
+    WriteAllData(int file_count, bool is_valid) : files(file_count), valid(is_valid) {}
+};
+
 struct Response {
     std::string out = "";
     std::string err = "";
