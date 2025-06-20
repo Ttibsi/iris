@@ -364,6 +364,9 @@ void Controller::start_action_engine() {
                     &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
                 view.draw_status_bar();
                 redraw_all = enter_command_mode();
+                if (quit_flag) {
+                    break;
+                }
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
                 // Move to beginning/end of line
@@ -571,7 +574,7 @@ void Controller::add_model(const std::string& filename) {
 
     if (!models.size()) {
         view.view_models.clear();
-        return false;
+        return true;
     }
 
     // Clear the pointers
