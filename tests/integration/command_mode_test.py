@@ -52,6 +52,44 @@ def test_multi_file_quit_command(r: TmuxRunner):
     assert "|" not in r.lines()  # no tab bar
 
 
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_no_modified_files(r: TmuxRunner):
+    r.iris_cmd("qa")
+    r.await_exit()
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_this_modified_file(r: TmuxRunner):
+    r.press("x")  # modify current file
+    r.iris_cmd("qa")
+
+    # Should stay open and show the modified file is active
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;qa!` to discard" in err_line
+    assert "\x1b[49m" in err_line  # red text
+    assert "*" in r.await_tab_bar_parts()[1]  # modified indicator in tab
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_other_modified_file(r: TmuxRunner):
+    # Open another file and modify it
+    r.iris_cmd("e tests/fixture/test_file_2.txt")
+    r.press("x")  # modify the new file
+
+    # Go back to first tab
+    r.type_str("tt")
+    r.assert_filename_in_statusbar("test_file_1.txt")
+
+    # Try to quit all - should switch to the modified file
+    r.iris_cmd("qa")
+
+    # Should switch to the modified file and show error
+    r.assert_filename_in_statusbar("test_file_2.txt")
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unsaved changes. Use `;qa!` to discard" in err_line
+    assert "\x1b[49m" in err_line  # red text
+
+
 @setup("tests/fixture/temp_file.txt")
 def test_write_command(r: TmuxRunner):
     r.press("i")

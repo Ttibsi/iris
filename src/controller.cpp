@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include <format>
+#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -434,6 +435,7 @@ bool Controller::enter_command_mode() {
     return ret;
 }
 
+// TODO: Add cmd call to logging
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
 
@@ -473,6 +475,10 @@ bool Controller::parse_command() {
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
             view.display_message(msg, rawterm::Colors::green);
         }
+
+    } else if (cmd == ";qa") {
+        quit_flag = quit_all();
+        return true;
 
     } else if (cmd == ";q") {
         return quit_app(false);
@@ -553,4 +559,44 @@ void Controller::add_model(const std::string& filename) {
 
     write_all_data.valid = true;
     return write_all_data;
+}
+
+[[nodiscard]] bool Controller::quit_all() {
+    // remove every model that's saved
+    models.erase(
+        std::remove_if(
+            models.begin(), models.end(),
+            [](const Model& m) { return !m.unsaved || m.filename == "NO NAME"; }),
+        models.end());
+
+    if (!models.size()) {
+        view.view_models.clear();
+        return false;
+    }
+
+    // Clear the pointers
+    view.view_models.erase(
+        std::remove_if(view.view_models.begin(), view.view_models.end(), [this](const Model* m) {
+            if (m == nullptr) {
+                return true;
+            }
+
+            // Check if view_model still in models
+            for (const auto& model : models) {
+                if (&model == m) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
+
+    // If there's anything left, display to the user
+    if (view.view_models.size()) {
+        view.active_model = 0;
+    } else {
+        view.view_models.push_back(&models.at(0));
+    }
+
+    return true;
 }

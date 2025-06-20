@@ -31,6 +31,7 @@ struct Controller {
     [[nodiscard]] bool check_for_saved_file(bool);
     void add_model(const std::string&);
     [[nodiscard]] WriteAllData write_all();
+    [[nodiscard]] bool quit_all();
 };
 
 #endif  // CONTROLLER_H
