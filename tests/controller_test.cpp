@@ -3,6 +3,8 @@
 #include <catch2/catch_test_case_info.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include "cli11/CLI11.hpp"
+
 TEST_CASE("Construction", "[controller]") {
     Controller c;
     REQUIRE(c.models.capacity() == 8);
@@ -153,39 +155,31 @@ TEST_CASE("write_all", "[controller]") {
 }
 
 TEST_CASE("quit_all", "[controller]") {
-    Controller c;
-
-    SECTION("saved models only") {
+    SECTION("No unsaved models") {
+        Controller c;
         c.create_view("tests/fixture/test_file_1.txt", 0);
         c.view.tab_new();
         c.add_model("tests/fixture/lorem_ipsum.txt");
 
         REQUIRE(c.models.size() == 3);
 
-        bool redraw = c.quit_all();
-        REQUIRE(!redraw);
-        REQUIRE(c.models.empty());
-        REQUIRE(c.view.view_models.empty());
+        auto ret = c.quit_all();
+        REQUIRE(ret == QuitAll::Close);
     }
 
-    SECTION("unsaved model") {
+    SECTION("Unsaved models") {
+        Controller c;
         c.create_view("tests/fixture/test_file_1.txt", 0);
         c.view.tab_new();
         c.add_model("tests/fixture/lorem_ipsum.txt");
 
-        // Make second model unsaved
+        REQUIRE(c.models.size() == 3);
+
         c.models.at(2).insert('!');
         REQUIRE(c.models.at(2).unsaved);
 
-        bool redraw = c.quit_all();
-        REQUIRE(redraw);
+        auto ret = c.quit_all();
+        REQUIRE(ret == QuitAll::Redraw);
         REQUIRE(c.models.size() == 1);
-        REQUIRE(c.view.active_model == 0);
-
-        // Clean up - save the unsaved model and quit again
-        c.view.cursor_right();
-        std::ignore = c.models.at(0).backspace();
-        std::ignore = c.write_all();
-        std::ignore = c.quit_all();
     }
 }

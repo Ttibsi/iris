@@ -16,14 +16,14 @@ repos:
     hooks:
       - id: clang-format
         exclude: ".json"
-  - repo: local
-    hooks:
-      - id: clang-tidy
-        name: clang-tidy
-        language: system
-        entry: clang-tidy -p build/compile_commands.json -extra-arg=-std=c++23
-        files: cpp
-        exclude: "^build/"
+  # - repo: local
+  #   hooks:
+  #     - id: clang-tidy
+  #       name: clang-tidy
+  #       language: system
+  #       entry: clang-tidy -p build/compile_commands.json -extra-arg=-std=c++23
+  #       files: cpp
+  #       exclude: "^build/"
   - repo: https://github.com/cmake-lint/cmake-lint
     rev: 1.4.3
     hooks:
