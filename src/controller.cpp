@@ -395,8 +395,11 @@ void Controller::start_action_engine() {
         }
 
         // After every input, refresh the status bar and tab bar
-        view.draw_status_bar();
-        view.draw_tab_bar();
+        // If we redraw on the next loop, we'll trigger these anyway
+        if (!redraw_all) {
+            view.draw_status_bar();
+            view.draw_tab_bar();
+        }
     }
 
     signals_thread.join();
@@ -422,7 +425,6 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             ret = parse_command();
             break;
-        } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
         } else {
@@ -480,8 +482,18 @@ bool Controller::parse_command() {
         }
 
     } else if (cmd == ";qa") {
-        quit_flag = quit_all();
-        return true;
+        auto ret = quit_all();
+        switch (ret) {
+            using enum QuitAll;
+            case Close:
+                quit_flag = true;
+                return false;
+            case Redraw:
+                view.change_model_cursor();
+                return true;
+            default:
+                return false;
+        };
 
     } else if (cmd == ";q") {
         return quit_app(false);
@@ -564,7 +576,7 @@ void Controller::add_model(const std::string& filename) {
     return write_all_data;
 }
 
-[[nodiscard]] bool Controller::quit_all() {
+[[nodiscard]] QuitAll Controller::quit_all() {
     // remove every model that's saved
     models.erase(
         std::remove_if(
@@ -574,32 +586,20 @@ void Controller::add_model(const std::string& filename) {
 
     if (!models.size()) {
         view.view_models.clear();
-        return true;
+        return QuitAll::Close;
     }
 
     // Clear the pointers
-    view.view_models.erase(
-        std::remove_if(view.view_models.begin(), view.view_models.end(), [this](const Model* m) {
-            if (m == nullptr) {
-                return true;
-            }
-
-            // Check if view_model still in models
-            for (const auto& model : models) {
-                if (&model == m) {
-                    return false;
-                }
-            }
-
-            return true;
-        }));
+    view.view_models.clear();
+    for (auto& model : models) {
+        view.view_models.push_back(&model);
+    }
 
     // If there's anything left, display to the user
     if (view.view_models.size()) {
         view.active_model = 0;
-    } else {
-        view.view_models.push_back(&models.at(0));
+        return QuitAll::Redraw;
     }
 
-    return true;
+    return QuitAll::Close;
 }

@@ -11,6 +11,7 @@
 
 enum class Mode { Read, Write, Command };
 enum class Redraw { Line, Screen, None };
+enum class QuitAll { Close, Redraw };
 
 struct Controller {
     rawterm::Pos term_size;
@@ -31,7 +32,7 @@ struct Controller {
     [[nodiscard]] bool check_for_saved_file(bool);
     void add_model(const std::string&);
     [[nodiscard]] WriteAllData write_all();
-    [[nodiscard]] bool quit_all();
+    [[nodiscard]] QuitAll quit_all();
 };
 
 #endif  // CONTROLLER_H
