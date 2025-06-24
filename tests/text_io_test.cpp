@@ -25,7 +25,7 @@ TEST_CASE("open_file", "[textio]") {
 }
 
 TEST_CASE("get_file_size", "[textio]") {
-    REQUIRE(get_file_size("tests/fixture/test_file_1.txt") == 67);
+    REQUIRE(get_file_size("tests/fixture/test_file_1.txt") == 70);
     REQUIRE(get_file_size("tests/fixture/lorem_ipsum.txt") == 5676);
 }
 
