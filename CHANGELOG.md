@@ -3,6 +3,7 @@
 * Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs
 * Display modified marker in the tab bar
 * We now log the shell command called
+* `;wa` now saves all files and `;qa` quits all files
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 

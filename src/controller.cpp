@@ -363,6 +363,9 @@ void Controller::start_action_engine() {
                     &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
                 view.draw_status_bar();
                 redraw_all = enter_command_mode();
+                if (quit_flag) {
+                    break;
+                }
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
                 // Move to beginning/end of line
@@ -391,8 +394,11 @@ void Controller::start_action_engine() {
         }
 
         // After every input, refresh the status bar and tab bar
-        view.draw_status_bar();
-        view.draw_tab_bar();
+        // If we redraw on the next loop, we'll trigger these anyway
+        if (!redraw_all) {
+            view.draw_status_bar();
+            view.draw_tab_bar();
+        }
     }
 
     signals_thread.join();
@@ -418,7 +424,6 @@ bool Controller::enter_command_mode() {
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             ret = parse_command();
             break;
-        } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
         } else {
@@ -434,6 +439,7 @@ bool Controller::enter_command_mode() {
     return ret;
 }
 
+// TODO: Add cmd call to logging
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
 
@@ -473,6 +479,20 @@ bool Controller::parse_command() {
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
             view.display_message(msg, rawterm::Colors::green);
         }
+
+    } else if (cmd == ";qa") {
+        auto ret = quit_all();
+        switch (ret) {
+            using enum QuitAll;
+            case Close:
+                quit_flag = true;
+                return false;
+            case Redraw:
+                view.change_model_cursor();
+                return true;
+            default:
+                return false;
+        };
 
     } else if (cmd == ";q") {
         return quit_app(false);
@@ -553,4 +573,32 @@ void Controller::add_model(const std::string& filename) {
 
     write_all_data.valid = true;
     return write_all_data;
+}
+
+[[nodiscard]] QuitAll Controller::quit_all() {
+    // remove every model that's saved
+    models.erase(
+        std::remove_if(
+            models.begin(), models.end(),
+            [](const Model& m) { return !m.unsaved || m.filename == "NO NAME"; }),
+        models.end());
+
+    if (!models.size()) {
+        view.view_models.clear();
+        return QuitAll::Close;
+    }
+
+    // Clear the pointers
+    view.view_models.clear();
+    for (auto& model : models) {
+        view.view_models.push_back(&model);
+    }
+
+    // If there's anything left, display to the user
+    if (view.view_models.size()) {
+        view.active_model = 0;
+        return QuitAll::Redraw;
+    }
+
+    return QuitAll::Close;
 }

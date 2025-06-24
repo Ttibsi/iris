@@ -52,6 +52,49 @@ def test_multi_file_quit_command(r: TmuxRunner):
     assert "|" not in r.lines()  # no tab bar
 
 
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_no_modified_files(r: TmuxRunner):
+    r.iris_cmd("qa")
+    r.await_exit()
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_this_modified_file(r: TmuxRunner):
+    r.press("x")  # modify current file
+    current_cursor: tuple[int, ...] = r.cursor_pos()
+    r.iris_cmd("qa")
+
+    assert r.await_statusbar_parts()[-2] != "[2]"
+    assert r.await_statusbar_parts()[1] == "[X]"
+    assert " | " not in r.lines()[0]  # no tab bar
+    r.await_cursor_pos(0, current_cursor[1])
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_quit_all_other_modified_file(r: TmuxRunner):
+    # Modify the temp file
+    r.type_str("tn")
+    r.assert_filename_in_statusbar("temp_file.txt")
+    r.press("x")
+    assert "H" not in r.lines()[1]
+    assert "ello" in r.lines()[1]
+
+    # switch back to test_file_1
+    r.type_str("tn")
+    current_cursor: tuple[int, ...] = r.cursor_pos()
+
+    r.assert_filename_in_statusbar("test_file_1.txt")
+    raw_filename: str = r.filename.split("/")[-1]
+    r.assert_inverted_text(r.await_tab_bar_parts()[1], raw_filename)
+    assert r.await_tab_bar_parts()[0] == "temp_file.txt*"
+
+    r.iris_cmd("qa")
+    r.assert_filename_in_statusbar("temp_file.txt")
+    assert " | " not in r.lines()[0]  # no tab bar
+    assert r.lines()[0] == " 1\u2502ello world"
+    r.await_cursor_pos(0, current_cursor[1])
+
+
 @setup("tests/fixture/temp_file.txt")
 def test_write_command(r: TmuxRunner):
     r.press("i")

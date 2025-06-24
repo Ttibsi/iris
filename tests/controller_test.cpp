@@ -151,3 +151,33 @@ TEST_CASE("write_all", "[controller]") {
     std::ignore = c.models.at(0).backspace();
     std::ignore = c.write_all();
 }
+
+TEST_CASE("quit_all", "[controller]") {
+    SECTION("No unsaved models") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.view.tab_new();
+        c.add_model("tests/fixture/lorem_ipsum.txt");
+
+        REQUIRE(c.models.size() == 3);
+
+        auto ret = c.quit_all();
+        REQUIRE(ret == QuitAll::Close);
+    }
+
+    SECTION("Unsaved models") {
+        Controller c;
+        c.create_view("tests/fixture/test_file_1.txt", 0);
+        c.view.tab_new();
+        c.add_model("tests/fixture/lorem_ipsum.txt");
+
+        REQUIRE(c.models.size() == 3);
+
+        c.models.at(2).insert('!');
+        REQUIRE(c.models.at(2).unsaved);
+
+        auto ret = c.quit_all();
+        REQUIRE(ret == QuitAll::Redraw);
+        REQUIRE(c.models.size() == 1);
+    }
+}
