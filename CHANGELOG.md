@@ -4,6 +4,8 @@
 * Display modified marker in the tab bar
 * We now log the shell command called
 
+* Resolved issue with iris crashing after opening an existing file with 0 bytes
+
 ### v0.0.2
 * Added ability to jump to a line number entered as a command: `;42`
 * Ensure the tab key inserts a correct number of spaces
