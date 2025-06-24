@@ -163,8 +163,6 @@
             resp.err.append(err, std::size_t(bytes_read));
         }
 
-        // TODO: DO we want to log the exact command run? Is this a potential
-        // security issue?
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) {
             logger->info("Shell cmd run: `" + cmd + "`");
