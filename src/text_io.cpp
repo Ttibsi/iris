@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -11,8 +12,13 @@
 
 #include "constants.h"
 #include "spdlog/spdlog.h"
+#include "view.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
+    if (!get_file_size(file)) {
+        return {};
+    }
+
     auto ret = std::vector<std::string>();
     std::string line = "";
     char ch;
@@ -45,6 +51,17 @@
     }
 
     return ret;
+}
+
+[[nodiscard]] unsigned int get_file_size(const std::string& file) {
+    namespace fs = std::filesystem;
+    fs::path p(file);
+
+    try {
+        return uint_t(fs::file_size(p));
+    } catch (const fs::filesystem_error&) {
+        return 0;
+    }
 }
 
 [[nodiscard]] WriteData write_to_file(Model* model) {
