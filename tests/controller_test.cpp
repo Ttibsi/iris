@@ -3,8 +3,6 @@
 #include <catch2/catch_test_case_info.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-#include "cli11/CLI11.hpp"
-
 TEST_CASE("Construction", "[controller]") {
     Controller c;
     REQUIRE(c.models.capacity() == 8);

@@ -1,7 +1,6 @@
 #include "controller.h"
 
 #include <format>
-#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
