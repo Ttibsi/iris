@@ -68,15 +68,12 @@ def test_inserting_char_in_middle_of_line(r: TmuxRunner):
     assert status_bar[-1][2:] == "7"
 
 
-# TODO: GDB to see if move-right works correctly.
-# Not sure press("l") is going far enough here
 @setup("tests/fixture/test_file_1.txt")
 def test_inserting_char_end_of_line(r: TmuxRunner):
     with open("tests/fixture/test_file_1.txt") as f:
         contents = f.readlines()
 
-    for _ in range(len(contents[0])):
-        r.press("l")
+    r.type_str("l" * len(contents[0]))
 
     r.press("i")
     r.press("v")
