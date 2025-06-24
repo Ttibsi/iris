@@ -52,7 +52,7 @@
     return ret;
 }
 
-[[nodiscard]] int get_file_size(const std::string& file) {
+[[nodiscard]] unsigned int get_file_size(const std::string& file) {
     namespace fs = std::filesystem;
     fs::path p(file);
     return fs::file_size(p);
