@@ -236,3 +236,23 @@ def test_open_new_file(r: TmuxRunner):
     assert r.await_statusbar_parts()[-1] == "1:1"
     assert r.await_statusbar_parts()[-2] == "[2]"
     r.await_cursor_pos(0, 3)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_open_nonexisting_file_from_cmd(r: TmuxRunner):
+    r.iris_cmd("e does_not_exist.txt")
+    r.assert_filename_in_statusbar("does_not_exist.txt")
+    assert r.await_statusbar_parts()[-1] == "1:1"
+    assert r.await_statusbar_parts()[-2] == "[2]"
+
+    r.press("i")
+    r.type_str("hello world")
+    r.await_text("hello world")
+
+    r.press("Escape")
+    r.iris_cmd("w")
+
+    with open("does_not_exist.txt", "r") as f:
+        assert f.read() == "hello world\n"
+
+    os.remove("does_not_exist.txt")
