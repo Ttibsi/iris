@@ -439,9 +439,12 @@ bool Controller::enter_command_mode() {
     return ret;
 }
 
-// TODO: Add cmd call to logging
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
+    auto logger = spdlog::get("basic_logger");
+    if (logger != nullptr) {
+        logger->info("Iris CMD called: " + cmd);
+    }
 
     // Empty command
     if (cmd.size() < 2) {
