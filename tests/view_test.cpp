@@ -77,7 +77,7 @@ TEST_CASE("render_screen", "[view]") {
     }
 }
 
-TEST_CASE("generate_tab_bar", "[view]") {
+TEST_CASE("render_tab_bar", "[view]") {
     Controller c;
     lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
@@ -183,10 +183,6 @@ TEST_CASE("clamp_horizontal_movement", "[view]") {
     m.current_line++;
     ret = v.clamp_horizontal_movement(1);
     REQUIRE(ret == 0);
-}
-
-TEST_CASE("close_cur_tab", "[view]") {
-    SKIP("TODO");
 }
 
 TEST_CASE("cursor_left", "[view]") {
