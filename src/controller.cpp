@@ -552,7 +552,13 @@ bool Controller::parse_command() {
 }
 
 void Controller::add_model(const std::string& filename) {
-    models.emplace_back(open_file(filename).value(), filename);
+    opt_lines_t contents = open_file(filename);
+    if (contents.has_value()) {
+        models.emplace_back(contents.value(), filename);
+    } else {
+        models.emplace_back(term_size.vertical - 2, filename);
+    }
+
     view.cur.move(
         int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
