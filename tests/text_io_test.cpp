@@ -24,6 +24,11 @@ TEST_CASE("open_file", "[textio]") {
     }
 }
 
+TEST_CASE("get_file_size", "[textio]") {
+    REQUIRE(get_file_size("tests/fixture/test_file_1.txt") == 67);
+    REQUIRE(get_file_size("tests/fixture/lorem_ipsum.txt") == 5676);
+}
+
 TEST_CASE("write_to_file", "[textio]") {
     lines_t expected_buf = {"foo", "bar", "baz"};
     auto m = Model(expected_buf, "tests/fixture/temp_file.txt");

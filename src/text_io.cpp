@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -13,6 +14,10 @@
 #include "spdlog/spdlog.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
+    if (!get_file_size(file)) {
+        return {};
+    }
+
     auto ret = std::vector<std::string>();
     std::string line = "";
     char ch;
@@ -45,6 +50,12 @@
     }
 
     return ret;
+}
+
+[[nodiscard]] int get_file_size(const std::string& file) {
+    namespace fs = std::filesystem;
+    fs::path p(file);
+    return fs::file_size(p);
 }
 
 [[nodiscard]] WriteData write_to_file(Model* model) {
