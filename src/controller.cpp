@@ -507,6 +507,9 @@ bool Controller::parse_command() {
     } else if (cmd == ";ping") {
         view.display_message(std::string("pong"), rawterm::Colors::white);
 
+    } else if (cmd == ";sl") {
+        view.display_message(std::string("Did you mean: `ls`"), rawterm::Colors::red);
+    } else if (cmd == ";ls") {
     } else {
         std::string msg = "Unknown command";
         view.display_message(msg, rawterm::Colors::red);
