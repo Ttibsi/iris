@@ -624,6 +624,7 @@ void Controller::display_all_buffers() {
     meta_buffers.emplace_back(term_size.vertical - 2, "");
     Model* list = &meta_buffers.at(meta_buffers.size() - 1);
 
+    list->filename = "[BUFFERS]";
     list->readonly = true;
     list->buf.reserve(8);
 
