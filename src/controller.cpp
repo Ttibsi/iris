@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include <algorithm>
 #include <format>
 #include <ranges>
 
@@ -621,33 +622,41 @@ void Controller::add_model(const std::string& filename) {
 
 void Controller::display_all_buffers() {
     meta_buffers.emplace_back(term_size.vertical - 2, "");
-    meta_buffers.at(meta_buffers.size() - 1).readonly = true;
-    meta_buffers.at(meta_buffers.size() - 1).buf.reserve(8);
+    Model* list = &meta_buffers.at(meta_buffers.size() - 1);
 
-    int max_name_len = 0;
+    list->readonly = true;
+    list->buf.reserve(8);
+
+    int max_name_len =
+        std::max_element(models.begin(), models.end(), [](const auto& lhs, const auto& rhs) {
+            return lhs.filename.size() < rhs.filename.size();
+        })->filename.size();
+
+    std::string title = " id |  filename" + std::string(max_name_len - 8, ' ');
+    title += " |  pos";
+    list->buf.at(0) = title;
+    list->buf.push_back(std::string(title.size(), '-'));
 
     for (const auto&& [idx, m] : std::views::enumerate(models)) {
-        std::string line = " " + std::to_string(idx);
-        line += " | ";
+        std::string line = "  " + std::to_string(idx);
+        line += " |  ";
         line += m.filename;
         if (m.unsaved) {
             line.push_back('*');
+            line += std::string(max_name_len - m.filename.size() - 1, ' ');
+        } else {
+            line += std::string(max_name_len - m.filename.size(), ' ');
         }
-        line += " - ";
+
+        line += " |  ";
         line += std::to_string(m.current_line + 1);
         line.push_back(':');
         line += std::to_string(m.current_char + 1);
 
-        max_name_len = (max_name_len < m.filename.size()) ? m.filename.size() : max_name_len;
-
-        meta_buffers.at(meta_buffers.size() - 1).buf.push_back(line);
+        list->buf.push_back(line);
     }
 
-    // std::string title = " id | filename" + std::string(max_name_len - 8, ' ');
-    // title += " | cursor";
-    // meta_buffers.at(meta_buffers.size() - 1).buf.at(0) = title;
-
-    view.view_models.push_back(&meta_buffers.at(meta_buffers.size() - 1));
+    view.view_models.push_back(list);
     view.active_model++;
     view.draw_screen();
 }
