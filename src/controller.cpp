@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include <format>
+#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -12,6 +13,7 @@
 
 Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {
     models.reserve(8);
+    meta_buffers.reserve(8);
 }
 
 void Controller::set_mode(Mode m) {
@@ -510,6 +512,8 @@ bool Controller::parse_command() {
     } else if (cmd == ";sl") {
         view.display_message(std::string("Did you mean: `ls`"), rawterm::Colors::red);
     } else if (cmd == ";ls") {
+        display_all_buffers();
+
     } else {
         std::string msg = "Unknown command";
         view.display_message(msg, rawterm::Colors::red);
@@ -613,4 +617,34 @@ void Controller::add_model(const std::string& filename) {
     }
 
     return QuitAll::Close;
+}
+
+void Controller::display_all_buffers() {
+    meta_buffers.emplace_back(term_size.vertical - 2, "");
+    meta_buffers.at(meta_buffers.size() - 1).readonly = true;
+    meta_buffers.at(meta_buffers.size() - 1).buf.reserve(8);
+
+    int max_name_len = 0;
+
+    for (const auto&& [idx, m] : std::views::enumerate(models)) {
+        std::string line = " " + std::to_string(idx);
+        line += " | ";
+        line += m.filename;
+        line += " - ";
+        line += std::to_string(m.current_line + 1);
+        line.push_back(':');
+        line += std::to_string(m.current_char + 1);
+
+        max_name_len = (max_name_len < m.filename.size()) ? m.filename.size() : max_name_len;
+
+        meta_buffers.at(meta_buffers.size() - 1).buf.push_back(line);
+    }
+
+    // std::string title = " id | filename" + std::string(max_name_len - 8, ' ');
+    // title += " | cursor";
+    // meta_buffers.at(meta_buffers.size() - 1).buf.at(0) = title;
+
+    view.view_models.push_back(&meta_buffers.at(meta_buffers.size() - 1));
+    view.active_model++;
+    view.draw_screen();
 }

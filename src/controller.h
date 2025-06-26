@@ -16,6 +16,7 @@ enum class QuitAll { Close, Redraw };
 struct Controller {
     rawterm::Pos term_size;
     std::vector<Model> models = {};
+    std::vector<Model> meta_buffers = {};
     View view;
     Mode mode = Mode::Read;
     bool quit_flag = false;
@@ -33,6 +34,7 @@ struct Controller {
     void add_model(const std::string&);
     [[nodiscard]] WriteAllData write_all();
     [[nodiscard]] QuitAll quit_all();
+    void display_all_buffers();
 };
 
 #endif  // CONTROLLER_H
