@@ -630,6 +630,9 @@ void Controller::display_all_buffers() {
         std::string line = " " + std::to_string(idx);
         line += " | ";
         line += m.filename;
+        if (m.unsaved) {
+            line.push_back('*');
+        }
         line += " - ";
         line += std::to_string(m.current_line + 1);
         line.push_back(':');
