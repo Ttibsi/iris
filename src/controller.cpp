@@ -634,14 +634,29 @@ void Controller::display_all_buffers() {
             return lhs.filename.size() < rhs.filename.size();
         })->filename.size();
 
-    std::string title = " id |  filename" + std::string(max_name_len - 8, ' ');
-    title += " |  pos";
-    list->buf.at(0) = title;
-    list->buf.push_back(std::string(title.size(), '-'));
+    std::string title = "\u2551 id \u2502  filename" + std::string(max_name_len - 8, ' ');
+    title += " \u2502  pos  \u2551";
+    int title_len = title.size() - 9;
+
+    // header border
+    std::string top_border = "\u2554";
+    for (int i = 0; i < title_len - 1; i++) {
+        top_border += "\u2550";
+    }
+    top_border += "\u2557";
+    list->buf.at(0) = top_border;
+
+    // header
+    list->buf.push_back(title);
+    list->buf.push_back("\u2551");
+    for (int i = 0; i < title_len - 1; i++) {
+        list->buf.at(2) += "\u2500";
+    }
+    list->buf.at(2) += "\u2551";
 
     for (const auto&& [idx, m] : std::views::enumerate(models)) {
-        std::string line = "  " + std::to_string(idx);
-        line += " |  ";
+        std::string line = "\u2551  " + std::to_string(idx);
+        line += " \u2502  ";
         line += m.filename;
         if (m.unsaved) {
             line.push_back('*');
@@ -650,13 +665,25 @@ void Controller::display_all_buffers() {
             line += std::string(max_name_len - m.filename.size(), ' ');
         }
 
-        line += " |  ";
+        line += " \u2502  ";
         line += std::to_string(m.current_line + 1);
         line.push_back(':');
         line += std::to_string(m.current_char + 1);
 
+        int diff = title.size() - line.size() - std::string("\u2551").size();
+        line += std::string(diff, ' ');
+        line += "\u2551";
+
         list->buf.push_back(line);
     }
+
+    // bottom border
+    std::string btm_border = "\u255A";
+    for (int i = 0; i < title_len - 1; i++) {
+        btm_border += "\u2550";
+    }
+    btm_border += "\u255D";
+    list->buf.push_back(btm_border);
 
     view.view_models.push_back(list);
     view.active_model++;
