@@ -265,16 +265,16 @@ def test_list_open_buffers(r: TmuxRunner):
     assert inverted_buf_name in r.await_tab_bar_parts()
 
     lines: list[str] = r.lines()
-    assert "0" in lines[3]
-    assert "tests/fixture/temp_file.txt" in lines[3]
-    assert "1:1" in lines[3]
-
-    assert "1" in lines[4]
-    assert "NO NAME" in lines[4]
+    assert "0" in lines[4]
+    assert "tests/fixture/temp_file.txt" in lines[4]
     assert "1:1" in lines[4]
 
-    assert "2" in lines[5]
-    assert r.filename in lines[5]
+    assert "1" in lines[5]
+    assert "NO NAME" in lines[5]
     assert "1:1" in lines[5]
+
+    assert "2" in lines[6]
+    assert r.filename in lines[6]
+    assert "1:1" in lines[6]
 
     assert r.await_statusbar_parts()[1] == "[RO]"

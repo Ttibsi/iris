@@ -193,7 +193,7 @@ TEST_CASE("display_all_buffers", "[controller]") {
     REQUIRE(buf_list->filename == "[BUFFERS]");
     REQUIRE(buf_list->readonly);
 
-    REQUIRE(buf_list->buf.size() == 5);
+    REQUIRE(buf_list->buf.size() == 7);
 
     REQUIRE(c.view.get_active_model() == buf_list);
 }
