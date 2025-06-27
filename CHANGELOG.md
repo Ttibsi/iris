@@ -4,6 +4,7 @@
 * Display modified marker in the tab bar
 * We now log the shell command called or the command entered in command mode
 * `;wa` now saves all files and `;qa` quits all files
+* `;ls` now shows all open buffers
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 
