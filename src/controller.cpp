@@ -6,6 +6,7 @@
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
+#include <rawterm/text.h>
 
 #include "action.h"
 #include "constants.h"
@@ -657,9 +658,9 @@ void Controller::display_all_buffers() {
     for (const auto&& [idx, m] : std::views::enumerate(models)) {
         std::string line = "\u2551  " + std::to_string(idx);
         line += " \u2502  ";
-        line += m.filename;
+        line += rawterm::bold(m.filename);
         if (m.unsaved) {
-            line.push_back('*');
+            line += rawterm::bold("*");
             if (m.filename.size() < max_name_len) {
                 line += std::string(max_name_len - m.filename.size() - 1, ' ');
             }
@@ -672,7 +673,7 @@ void Controller::display_all_buffers() {
         line.push_back(':');
         line += std::to_string(m.current_char + 1);
 
-        int diff = title.size() - line.size() - std::string("\u2551").size();
+        int diff = title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
         line += std::string(diff, ' ');
         line += "\u2551";
 
