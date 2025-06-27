@@ -14,6 +14,7 @@
 
 #include <rawterm/color.h>
 #include <rawterm/core.h>
+#include <rawterm/cursor.h>
 #include <rawterm/text.h>
 
 #include "constants.h"
@@ -61,6 +62,12 @@ void View::draw_screen() {
 
     if (visible_tab_bar() && cur.vertical == 1) {
         cur.move_down();
+    }
+
+    if (get_active_model()->type == ModelType::META) {
+        rawterm::Cursor::cursor_hide();
+    } else {
+        rawterm::Cursor::cursor_show();
     }
 }
 
