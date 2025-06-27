@@ -634,7 +634,7 @@ void Controller::display_all_buffers() {
             return lhs.filename.size() < rhs.filename.size();
         })->filename.size();
 
-    std::string title = "\u2551 id \u2502  filename" + std::string(max_name_len - 8, ' ');
+    std::string title = "\u2551 id \u2502  filename " + std::string(max_name_len - 8, ' ');
     title += " \u2502  pos  \u2551";
     int title_len = title.size() - 9;
 
@@ -660,9 +660,11 @@ void Controller::display_all_buffers() {
         line += m.filename;
         if (m.unsaved) {
             line.push_back('*');
-            line += std::string(max_name_len - m.filename.size() - 1, ' ');
+            if (m.filename.size() < max_name_len) {
+                line += std::string(max_name_len - m.filename.size() - 1, ' ');
+            }
         } else {
-            line += std::string(max_name_len - m.filename.size(), ' ');
+            line += std::string(max_name_len - m.filename.size() + 1, ' ');
         }
 
         line += " \u2502  ";
