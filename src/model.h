@@ -17,7 +17,10 @@ enum class Redraw;
 // Forward declare from view.h
 struct View;
 
+enum class ModelType { BUF, META };
+
 struct Model {
+    ModelType type = ModelType::BUF;
     std::vector<std::string> buf;
     std::string filename;
     unsigned int current_line = 0;  // 0-indexed

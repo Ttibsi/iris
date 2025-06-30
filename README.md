@@ -77,6 +77,7 @@ following commands in alphabetical order are available:
 
 | Command | Description                                                     |
 |---------|-----------------------------------------------------------------|
+| `;ls`   | See all open buffers                                            |
 | `;ping` | `pong` (for testing purposes)                                   |
 | `;e`    | Open a new buffer - specify a filename to open an existing file |
 | `;q`    | Quit                                                            |

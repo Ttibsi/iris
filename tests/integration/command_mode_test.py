@@ -256,3 +256,25 @@ def test_open_nonexisting_file_from_cmd(r: TmuxRunner):
         assert f.read() == "hello world\n"
 
     os.remove("does_not_exist.txt")
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_list_open_buffers(r: TmuxRunner):
+    r.iris_cmd("ls")
+    inverted_buf_name = "\x1B[7m[BUFFERS]\x1B[0m"
+    assert inverted_buf_name in r.await_tab_bar_parts()
+
+    lines: list[str] = r.lines()
+    assert "0" in lines[4]
+    assert "tests/fixture/temp_file.txt" in lines[4]
+    assert "1:1" in lines[4]
+
+    assert "1" in lines[5]
+    assert "NO NAME" in lines[5]
+    assert "1:1" in lines[5]
+
+    assert "2" in lines[6]
+    assert r.filename in lines[6]
+    assert "1:1" in lines[6]
+
+    assert r.await_statusbar_parts()[1] == "[RO]"

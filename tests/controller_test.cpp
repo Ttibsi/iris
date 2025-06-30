@@ -177,3 +177,23 @@ TEST_CASE("quit_all", "[controller]") {
         REQUIRE(c.models.size() == 1);
     }
 }
+
+TEST_CASE("display_all_buffers", "[controller]") {
+    Controller c;
+    c.create_view("tests/fixture/test_file_1.txt", 0);
+    c.view.tab_new();
+    c.add_model("tests/fixture/lorem_ipsum.txt");
+
+    c.display_all_buffers();
+
+    REQUIRE(c.meta_buffers.size() == 1);
+    Model* buf_list = &c.meta_buffers.at(0);
+
+    REQUIRE(buf_list->type == ModelType::META);
+    REQUIRE(buf_list->filename == "[BUFFERS]");
+    REQUIRE(buf_list->readonly);
+
+    REQUIRE(buf_list->buf.size() == 7);
+
+    REQUIRE(c.view.get_active_model() == buf_list);
+}
