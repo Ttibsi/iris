@@ -461,7 +461,7 @@ bool Controller::parse_command() {
         return true;
 
         // edit a new file
-    } else if (cmd.substr(0, 2) == ";e" && cmd.at(2) == ' ') {
+    } else if (cmd.substr(0, 2) == ";e" && cmd.size() > 3 && cmd.at(2) == ' ') {
         add_model(cmd.substr(3, cmd.size()));
         return true;
 
