@@ -278,3 +278,12 @@ def test_list_open_buffers(r: TmuxRunner):
     assert "1:1" in lines[6]
 
     assert r.await_statusbar_parts()[1] == "[RO]"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_edit_no_file_specified(r: TmuxRunner):
+    r.iris_cmd("e")
+
+    message_line: str = r.color_screenshot()[-1]
+    assert "Unknown command" in message_line
+    assert "\x1b[38;2;255;0;0m" in message_line
