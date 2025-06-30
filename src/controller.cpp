@@ -630,18 +630,18 @@ void Controller::display_all_buffers() {
     list->readonly = true;
     list->buf.reserve(8);
 
-    int max_name_len =
+    std::size_t max_name_len =
         std::max_element(models.begin(), models.end(), [](const auto& lhs, const auto& rhs) {
             return lhs.filename.size() < rhs.filename.size();
         })->filename.size();
 
     std::string title = "\u2551 id \u2502  filename " + std::string(max_name_len - 8, ' ');
     title += " \u2502  pos  \u2551";
-    int title_len = title.size() - 9;
+    std::size_t title_len = title.size() - 9;
 
     // header border
     std::string top_border = "\u2554";
-    for (int i = 0; i < title_len - 1; i++) {
+    for (std::size_t i = 0; i < title_len - 1; i++) {
         top_border += "\u2550";
     }
     top_border += "\u2557";
@@ -650,7 +650,7 @@ void Controller::display_all_buffers() {
     // header
     list->buf.push_back(title);
     list->buf.push_back("\u2551");
-    for (int i = 0; i < title_len - 1; i++) {
+    for (std::size_t i = 0; i < title_len - 1; i++) {
         list->buf.at(2) += "\u2500";
     }
     list->buf.at(2) += "\u2551";
@@ -673,7 +673,7 @@ void Controller::display_all_buffers() {
         line.push_back(':');
         line += std::to_string(m.current_char + 1);
 
-        int diff = title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
+        std::size_t diff = title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
         line += std::string(diff, ' ');
         line += "\u2551";
 
@@ -682,7 +682,7 @@ void Controller::display_all_buffers() {
 
     // bottom border
     std::string btm_border = "\u255A";
-    for (int i = 0; i < title_len - 1; i++) {
+    for (std::size_t i = 0; i < title_len - 1; i++) {
         btm_border += "\u2550";
     }
     btm_border += "\u255D";

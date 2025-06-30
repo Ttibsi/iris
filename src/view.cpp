@@ -80,7 +80,7 @@ void View::draw_screen() {
     }
 
     // Get displayable subrange
-    int end = std::min(view_size.vertical - 2, static_cast<int>(get_active_model()->buf.size()));
+    std::size_t end = std::min(std::size_t(view_size.vertical - 2), get_active_model()->buf.size());
     auto viewable_range = get_active_model()->buf |
                           std::views::drop(get_active_model()->view_offset) | std::views::take(end);
 
@@ -118,7 +118,7 @@ void View::draw_screen() {
     }
 
     // Any empty lines populate with tildes
-    const int empty_space = view_size.vertical - 2 - visible_tab_bar();
+    const uint_t empty_space = uint_t(view_size.vertical) - 2 - visible_tab_bar();
     while (end < empty_space) {
         screen += "~\r\n";
         end++;
@@ -295,7 +295,8 @@ const std::string View::render_status_bar() const {
         }
     }
 
-    const std::size_t available_center_space = view_size.horizontal - left.size() - right.size();
+    const std::size_t available_center_space =
+        uint32_t(view_size.horizontal) - left.size() - right.size();
     const std::size_t lhs_padding = std::clamp(
         (available_center_space - visible_filename.size()) / 2, 0ul, available_center_space);
     const int rhs_padding = int32_t(
