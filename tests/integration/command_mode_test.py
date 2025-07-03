@@ -260,7 +260,7 @@ def test_open_nonexisting_file_from_cmd(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_list_open_buffers(r: TmuxRunner):
-    r.iris_cmd("ls")
+    r.iris_cmd("lb")
     inverted_buf_name = "\x1B[7m[BUFFERS]\x1B[0m"
     assert inverted_buf_name in r.await_tab_bar_parts()
 
