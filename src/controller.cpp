@@ -465,6 +465,19 @@ bool Controller::parse_command() {
         add_model(cmd.substr(3, cmd.size()));
         return true;
 
+    } else if (cmd.substr(0, 2) == ";b" && cmd.size() > 2) {
+        std::size_t bufnr = 0;
+
+        try {
+            bufnr = std::stoul(cmd.substr(2, cmd.size() - 1));
+        } catch (const std::invalid_argument& e) {
+            std::string msg = "Unknown bufnr provided";
+            view.display_message(msg, rawterm::Colors::red);
+            return false;
+        }
+
+        return view.set_buffer(bufnr, models.size());
+
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
         std::ignore = write_to_file(view.get_active_model());
@@ -621,6 +634,7 @@ void Controller::add_model(const std::string& filename) {
     return QuitAll::Close;
 }
 
+// TODO: Break this into a render function too (return list of string)
 void Controller::display_all_buffers() {
     meta_buffers.emplace_back(term_size.vertical - 2, "");
     Model* list = &meta_buffers.at(meta_buffers.size() - 1);
