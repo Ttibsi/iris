@@ -1,4 +1,5 @@
 import os
+import time
 
 from setup import setup
 from setup import TmuxRunner
@@ -287,3 +288,14 @@ def test_edit_no_file_specified(r: TmuxRunner):
     message_line: str = r.color_screenshot()[-1]
     assert "Unknown command" in message_line
     assert "\x1b[38;2;255;0;0m" in message_line
+
+
+@setup("tests/fixture/test_file_1.txt", multi_file=True)
+def test_change_buffer(r: TmuxRunner):
+    time.sleep(0.1)
+    cur_pos = r.cursor_pos()
+
+    r.iris_cmd("b0")
+
+    r.assert_filename_in_statusbar("temp_file.txt")
+    r.await_cursor_pos(*cur_pos)
