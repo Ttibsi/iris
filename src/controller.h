@@ -34,7 +34,7 @@ struct Controller {
     void add_model(const std::string&);
     [[nodiscard]] WriteAllData write_all();
     [[nodiscard]] QuitAll quit_all();
-    void display_all_buffers();
+    [[nodiscard]] bool display_all_buffers();
 };
 
 #endif  // CONTROLLER_H

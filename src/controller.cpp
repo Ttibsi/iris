@@ -533,7 +533,7 @@ bool Controller::parse_command() {
     } else if (cmd == ";ls") {
         view.display_message(std::string("Did you mean: `lb`"), rawterm::Colors::red);
     } else if (cmd == ";lb") {
-        display_all_buffers();
+        return display_all_buffers();
 
     } else {
         std::string msg = "Unknown command";
@@ -640,8 +640,7 @@ void Controller::add_model(const std::string& filename) {
     return QuitAll::Close;
 }
 
-// TODO: Break this into a render function too (return list of string)
-void Controller::display_all_buffers() {
+[[nodiscard]] bool Controller::display_all_buffers() {
     meta_buffers.emplace_back(term_size.vertical - 2, "");
     Model* list = &meta_buffers.at(meta_buffers.size() - 1);
 
@@ -710,5 +709,5 @@ void Controller::display_all_buffers() {
 
     view.view_models.push_back(list);
     view.active_model++;
-    view.draw_screen();
+    return true;
 }
