@@ -61,6 +61,7 @@ struct View {
     [[maybe_unused]] int set_lineno_offset(Model*);
     void update_cursor_on_model_change();
     void change_model_cursor();
+    bool set_buffer(const std::size_t, const std::size_t);
 };
 
 #endif  // VIEW_H

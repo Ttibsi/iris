@@ -591,3 +591,19 @@ TEST_CASE("change_model_cursor", "[view]") {
     v.tab_prev();
     REQUIRE(v.cur == rawterm::Pos(2, 10));
 }
+
+TEST_CASE("set_buffer", "[view]") {
+    Controller c;
+    c.create_view("tests/fixture/lorem_ipsum.txt", 0);
+    c.add_model("tests/fixture/test_file_1.txt");
+
+    c.view.cursor_down(5);
+
+    REQUIRE(c.view.view_models.size() == 1);
+    REQUIRE(c.models.size() == 2);
+    REQUIRE(c.view.get_active_model()->current_line == 5);
+
+    c.view.set_buffer(0, c.models.size());
+    REQUIRE(c.view.view_models.at(0)->filename == "tests/fixture/lorem_ipsum.txt");
+    REQUIRE(c.view.get_active_model()->current_line == 0);
+}

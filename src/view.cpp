@@ -547,3 +547,13 @@ void View::change_model_cursor() {
 
     cur.move(int(vertical), int(horizontal));
 }
+
+bool View::set_buffer(const std::size_t bufnr, const std::size_t model_len) {
+    if (bufnr >= model_len) {
+        return false;
+    }
+
+    view_models.at(active_model) = &ctrlr_ptr->models.at(std::size_t(bufnr));
+    change_model_cursor();
+    return true;
+}
