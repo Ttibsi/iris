@@ -465,18 +465,24 @@ bool Controller::parse_command() {
         add_model(cmd.substr(3, cmd.size()));
         return true;
 
+        // switch buffer
     } else if (cmd.substr(0, 2) == ";b" && cmd.size() > 2) {
         std::size_t bufnr = 0;
+        const std::string msg = "Unknown bufnr provided";
 
         try {
             bufnr = std::stoul(cmd.substr(2, cmd.size() - 1));
         } catch (const std::invalid_argument& e) {
-            std::string msg = "Unknown bufnr provided";
             view.display_message(msg, rawterm::Colors::red);
             return false;
         }
 
-        return view.set_buffer(bufnr, models.size());
+        if (!(view.set_buffer(bufnr, models.size()))) {
+            view.display_message(msg, rawterm::Colors::red);
+            return false;
+        }
+
+        return true;
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q

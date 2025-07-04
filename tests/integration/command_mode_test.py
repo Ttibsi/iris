@@ -299,3 +299,14 @@ def test_change_buffer(r: TmuxRunner):
 
     r.assert_filename_in_statusbar("temp_file.txt")
     r.await_cursor_pos(*cur_pos)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_change_buffer_to_invalid_id(r: TmuxRunner):
+    r.iris_cmd("b8")
+
+    err_line: str = r.color_screenshot()[-1]
+    assert "Unknown bufnr provided" in err_line
+    assert "\x1b[49m" in err_line  # red text
+
+    r.assert_filename_in_statusbar("test_file_1.txt")
