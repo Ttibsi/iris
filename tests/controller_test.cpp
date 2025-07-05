@@ -184,7 +184,7 @@ TEST_CASE("display_all_buffers", "[controller]") {
     c.view.tab_new();
     c.add_model("tests/fixture/lorem_ipsum.txt");
 
-    c.display_all_buffers();
+    REQUIRE(c.display_all_buffers());
 
     REQUIRE(c.meta_buffers.size() == 1);
     Model* buf_list = &c.meta_buffers.at(0);
