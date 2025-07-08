@@ -55,6 +55,7 @@ struct Model {
     void move_line_down();
     void move_line_up();
     void set_read_only(std::string_view);
+    void delete_current_line();
 };
 
 #endif  // MODEL_H

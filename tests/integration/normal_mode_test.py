@@ -384,6 +384,11 @@ def test_undo_redo_replace_char(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_delete_line(r: TmuxRunner):
+    assert False
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_upper_j_key(r: TmuxRunner):
     r.press("J")
     assert "here is a newline and a tab" in r.lines()[0]
@@ -460,3 +465,8 @@ def test_tp_key(r: TmuxRunner):
     r.assert_inverted_text(tabs[1], "NO NAME")
 
     r.assert_filename_in_statusbar("NO NAME")
+
+
+@setup()
+def test_dl_key(r: TmuxRunner):
+    ...
