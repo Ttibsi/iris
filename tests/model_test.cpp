@@ -380,7 +380,16 @@ TEST_CASE("undo", "[model]") {
     };
 
     SECTION("DelCurrentLine") {
-        REQUIRE(false);
+        m.current_line = 1;
+        m.undo_stack.push_back(Change(ActionType::DelCurrentLine, 1, 0, "line two"));
+
+        m.delete_current_line();
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.size() == 6);
+        REQUIRE(m.buf.at(1) == "line two");
     }
 }
 
@@ -448,7 +457,19 @@ TEST_CASE("redo", "[model]") {
     };
 
     SECTION("DelCurrentLine") {
-        REQUIRE(false);
+        m.undo_stack.push_back(Change(ActionType::DelCurrentLine, 1, 0, "line two"));
+
+        m.delete_current_line();
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.size() == 6);
+        REQUIRE(m.buf.at(1) == "line two");
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
     }
 }
 
