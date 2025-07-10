@@ -385,7 +385,12 @@ def test_undo_redo_replace_char(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt")
 def test_undo_redo_delete_line(r: TmuxRunner):
-    assert False
+    r.type_str("dl")
+    assert "here is a newline" in r.lines()[0]
+    r.press("u")
+    assert "This is some text" in r.lines()[0]
+    r.press("R")
+    assert "here is a newline" in r.lines()[0]
 
 
 @setup("tests/fixture/test_file_1.txt")
