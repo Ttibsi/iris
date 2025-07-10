@@ -472,6 +472,8 @@ def test_tp_key(r: TmuxRunner):
     r.assert_filename_in_statusbar("NO NAME")
 
 
-@setup()
+@setup("tests/fixture/test_file_1.txt")
 def test_dl_key(r: TmuxRunner):
-    ...
+    assert "This is some text" in r.lines()[0]
+    r.type_str("dl")
+    assert "here is a newline" in r.lines()[0]
