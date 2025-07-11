@@ -248,13 +248,13 @@ void Model::toggle_case() {
         return false;
     }
 
-    const Change cur_change = undo_stack.at(undo_stack.size() - 1);
+    Change cur_change = undo_stack.at(undo_stack.size() - 1);
     undo_stack.pop_back();
     redo_stack.push(cur_change);
 
     rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
-    current_line = cur_change.line_pos.value();
-    current_char = cur_change.char_pos.value();
+    current_line = cur_change.line_pos;
+    current_char = cur_change.char_pos;
 
     // NOTE: Currently we are not moving the cursor alongside an undo update
     // as we're restoring the model position after the undo. While these are
@@ -266,7 +266,7 @@ void Model::toggle_case() {
             current_char--;
             [[fallthrough]];
         case ActionType::DelCurrentChar: {
-            insert(cur_change.payload);
+            insert(cur_change.payload.value());
         } break;
 
         case ActionType::Newline: {
@@ -284,9 +284,15 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::ReplaceChar: {
-            const char cur_char = cur_change.payload;
+            const char cur_char = cur_change.payload.value();
             redo_stack.top().payload = get_current_char();
             replace_char(cur_char);
+        } break;
+
+        case ActionType::DelCurrentLine: {
+            if (cur_change.text.has_value()) {
+                buf.insert(buf.begin() + cur_change.line_pos, cur_change.text.value());
+            }
         } break;
 
         default:
@@ -300,10 +306,10 @@ void Model::toggle_case() {
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
 
-    if (view_offset <= cur_change.line_pos.value()) {
+    if (view_offset <= cur_change.line_pos) {
         return true;
     }
-    if (cur_change.line_pos.value() <= view_offset + uint32_t(height)) {
+    if (cur_change.line_pos <= view_offset + uint32_t(height)) {
         return true;
     }
 
@@ -327,8 +333,8 @@ void Model::toggle_case() {
     }
 
     rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
-    current_line = cur_change.line_pos.value();
-    current_char = cur_change.char_pos.value();
+    current_line = cur_change.line_pos;
+    current_char = cur_change.char_pos;
 
     switch (cur_change.action) {
         case ActionType::Backspace: {
@@ -350,11 +356,15 @@ void Model::toggle_case() {
 
         case ActionType::InsertChar: {
             current_char--;
-            insert(cur_change.payload);
+            insert(cur_change.payload.value());
         } break;
 
         case ActionType::ReplaceChar: {
-            replace_char(cur_change.payload);
+            replace_char(cur_change.payload.value());
+        } break;
+
+        case ActionType::DelCurrentLine: {
+            delete_current_line();
         } break;
 
         default:
@@ -363,8 +373,8 @@ void Model::toggle_case() {
 
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
-    if ((view_offset <= cur_change.line_pos.value()) ||
-        (cur_change.line_pos.value() <= view_offset + uint32_t(height))) {
+    if ((view_offset <= cur_change.line_pos) ||
+        (cur_change.line_pos <= view_offset + uint32_t(height))) {
         return true;
     }
 
@@ -385,4 +395,13 @@ void Model::set_read_only(std::string_view file) {
     }
 
     readonly = (access(file.data(), W_OK) == -1);
+}
+
+void Model::delete_current_line() {
+    buf.erase(buf.begin() + current_line);
+    if (buf.at(current_line).size() < current_char) {
+        current_char = buf.at(current_line).size();
+    }
+
+    unsaved = true;
 }

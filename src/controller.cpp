@@ -184,6 +184,19 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('b')) {
                 parse_action<void, None>(&view, Action<void> {ActionType::JumpPrevWord});
 
+                // Delete
+            } else if (k.value() == rawterm::Key('d')) {
+                auto k2 = rawterm::wait_for_input();
+                if (!(k2.isCharInput())) {
+                    continue;
+                }
+
+                switch (k2.code) {
+                    case 'l':
+                        parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentLine});
+                        continue;
+                }
+
                 // find forward
             } else if (k.value() == rawterm::Key('f')) {
                 auto k2 = rawterm::wait_for_input();

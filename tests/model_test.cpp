@@ -306,7 +306,7 @@ TEST_CASE("undo", "[model]") {
         m.current_line = 1;
         m.current_char = 1;
         m.undo_stack.push_back(Change(
-            ActionType::Backspace, m.get_current_char(), m.current_line, m.current_char + 1));
+            ActionType::Backspace, m.current_line, m.current_char + 1, m.get_current_char()));
 
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lne two");
@@ -321,7 +321,7 @@ TEST_CASE("undo", "[model]") {
 
         char next_char = m.buf.at(m.current_line).at(m.current_char);
         m.undo_stack.push_back(
-            Change(ActionType::DelCurrentChar, next_char, m.current_line, m.current_char));
+            Change(ActionType::DelCurrentChar, m.current_line, m.current_char, next_char));
         m.buf.at(m.current_line).erase(m.current_char, 1);
         REQUIRE(m.buf.at(m.current_line) == "lie two");
 
@@ -360,7 +360,7 @@ TEST_CASE("undo", "[model]") {
         m.insert('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ine two");
 
-        m.undo_stack.push_back(Change(ActionType::InsertChar, '?', m.current_line, m.current_char));
+        m.undo_stack.push_back(Change(ActionType::InsertChar, m.current_line, m.current_char, '?'));
         REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
@@ -370,7 +370,7 @@ TEST_CASE("undo", "[model]") {
         m.current_char = 1;
 
         m.undo_stack.push_back(
-            Change(ActionType::ReplaceChar, m.get_current_char(), m.current_line, m.current_char));
+            Change(ActionType::ReplaceChar, m.current_line, m.current_char, m.get_current_char()));
 
         m.replace_char('?');
         REQUIRE(m.buf.at(m.current_line) == "l?ne two");
@@ -378,6 +378,19 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.undo(24));
         REQUIRE(m.buf.at(m.current_line) == "line two");
     };
+
+    SECTION("DelCurrentLine") {
+        m.current_line = 1;
+        m.undo_stack.push_back(Change(ActionType::DelCurrentLine, 1, 0, "line two"));
+
+        m.delete_current_line();
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.size() == 6);
+        REQUIRE(m.buf.at(1) == "line two");
+    }
 }
 
 TEST_CASE("get_current_char", "[model]") {
@@ -398,14 +411,14 @@ TEST_CASE("redo", "[model]") {
         m.insert('?');
         REQUIRE(m.buf.at(1) == "l?ine two");
 
-        m.redo_stack.push(Change(ActionType::Backspace, 'i', m.current_line, m.current_char));
+        m.redo_stack.push(Change(ActionType::Backspace, m.current_line, m.current_char, 'i'));
 
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "line two");
     };
 
     SECTION("DelCurrentChar") {
-        m.redo_stack.push(Change(ActionType::DelCurrentChar, '?', m.current_line, m.current_char));
+        m.redo_stack.push(Change(ActionType::DelCurrentChar, m.current_line, m.current_char, '?'));
 
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "lne two");
@@ -428,7 +441,7 @@ TEST_CASE("redo", "[model]") {
     SECTION("InsertChar") {
         REQUIRE(m.buf.at(1) == "line two");
 
-        m.redo_stack.push(Change(ActionType::InsertChar, '?', m.current_line, m.current_char + 1));
+        m.redo_stack.push(Change(ActionType::InsertChar, m.current_line, m.current_char + 1, '?'));
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "l?ine two");
     };
@@ -437,11 +450,27 @@ TEST_CASE("redo", "[model]") {
         m.replace_char('!');
         REQUIRE(m.buf.at(1) == "l!ne two");
 
-        m.redo_stack.push(Change(ActionType::ReplaceChar, 'i', m.current_line, m.current_char));
+        m.redo_stack.push(Change(ActionType::ReplaceChar, m.current_line, m.current_char, 'i'));
 
         REQUIRE(m.redo(24));
         REQUIRE(m.buf.at(1) == "line two");
     };
+
+    SECTION("DelCurrentLine") {
+        m.undo_stack.push_back(Change(ActionType::DelCurrentLine, 1, 0, "line two"));
+
+        m.delete_current_line();
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.size() == 6);
+        REQUIRE(m.buf.at(1) == "line two");
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.size() == 5);
+        REQUIRE(m.buf.at(1) == "line three");
+    }
 }
 
 TEST_CASE("move_line_down", "[model]") {
@@ -481,4 +510,11 @@ TEST_CASE("set_read_only", "[model]") {
 
     m.set_read_only("tests/fixture/lorem_ipsum.txt");
     REQUIRE(!m.readonly);
+}
+
+TEST_CASE("delete_current_line", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.delete_current_line();
+    REQUIRE(m.buf.size() == 5);
+    REQUIRE(m.buf.at(0) == "line two");
 }
