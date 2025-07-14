@@ -17,6 +17,7 @@ enum class ActionType {
     CenterCurrentLine,
     DelCurrentChar,
     DelCurrentLine,
+    DelCurrentWord,
     EndOfLine,
     JumpNextPara,
     JumpPrevPara,
@@ -137,6 +138,9 @@ template <typename T, typename U>
             v->get_active_model()->delete_current_line();
             v->change_model_cursor();
             v->draw_screen();
+        } break;
+
+        case ActionType::DelCurrentWord: {
         } break;
 
         case ActionType::EndOfLine: {

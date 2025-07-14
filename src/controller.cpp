@@ -195,6 +195,9 @@ void Controller::start_action_engine() {
                     case 'l':
                         parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentLine});
                         continue;
+                    case 'w':
+                        parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentWord});
+                        continue;
                 }
 
                 // find forward
