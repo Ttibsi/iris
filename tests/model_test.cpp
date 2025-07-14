@@ -527,6 +527,10 @@ TEST_CASE("delete_current_line", "[model]") {
     REQUIRE(m.buf.at(0) == "line two");
 }
 
+TEST_CASE("current_word", "[model]") {
+    REQUIRE(false);
+}
+
 TEST_CASE("delete_current_word", "[model]") {
     REQUIRE(false);
 }

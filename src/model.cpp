@@ -405,3 +405,7 @@ void Model::delete_current_line() {
 
     unsaved = true;
 }
+
+[[nodiscard]] const WordPos Model::current_word() const {}
+
+void Model::delete_current_word() {}
