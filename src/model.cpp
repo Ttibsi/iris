@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include <algorithm>
+#include <functional>
 
 #include "action.h"
 #include "controller.h"
@@ -406,6 +407,27 @@ void Model::delete_current_line() {
     unsaved = true;
 }
 
-[[nodiscard]] const WordPos Model::current_word() const {}
+[[nodiscard]] const WordPos Model::current_word() const {
+    WordPos ret = {"", 0};
+    const std::string* cur_line = &buf.at(current_line);
+    int start = current_char;
 
-void Model::delete_current_word() {}
+    while (start && is_letter(cur_line->at(start))) {
+        start--;
+    }
+
+    // if we aren't at 0, we're on a whitespace, so we want to increment once
+    if (start) {
+        start++;
+    }
+
+    int len = std::distance(
+        cur_line->begin() + start,
+        std::find_if(cur_line->begin() + start, cur_line->end(), std::not_fn(is_letter)));
+
+    ret.start_pos = start;
+    ret.text = cur_line->substr(start, len);
+    return ret;
+}
+
+void Model::delete_current_word(const WordPos pos) {}

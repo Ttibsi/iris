@@ -528,7 +528,26 @@ TEST_CASE("delete_current_line", "[model]") {
 }
 
 TEST_CASE("current_word", "[model]") {
-    REQUIRE(false);
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    // SECTION("Middle of word") {
+    //     m.current_line = 1;
+    //     m.current_char = 2;
+
+    //    const WordPos ret = m.current_word();
+    //    REQUIRE(ret.text == "line");
+    //    REQUIRE(ret.start_pos == 0);
+    //}
+
+    SECTION("Search to end of line") {
+        m.current_line = 1;
+        m.current_char = 6;
+
+        const WordPos ret = m.current_word();
+        REQUIRE(m.buf.at(m.current_line).at(m.current_char) == 'w');
+        REQUIRE(ret.text == "two");
+        REQUIRE(ret.start_pos == 5);
+    }
 }
 
 TEST_CASE("delete_current_word", "[model]") {

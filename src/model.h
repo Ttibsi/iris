@@ -62,7 +62,7 @@ struct Model {
     void set_read_only(std::string_view);
     void delete_current_line();
     [[nodiscard]] const WordPos current_word() const;
-    void delete_current_word();
+    void delete_current_word(const WordPos);
 };
 
 #endif  // MODEL_H
