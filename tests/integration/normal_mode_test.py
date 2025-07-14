@@ -394,6 +394,11 @@ def test_undo_redo_delete_line(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_delete_word(r: TmuxRunner):
+    assert False
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_upper_j_key(r: TmuxRunner):
     r.press("J")
     assert "here is a newline and a tab" in r.lines()[0]
@@ -477,3 +482,8 @@ def test_dl_key(r: TmuxRunner):
     assert "This is some text" in r.lines()[0]
     r.type_str("dl")
     assert "here is a newline" in r.lines()[0]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_dw_key(r: TmuxRunner):
+    assert False

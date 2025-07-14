@@ -391,6 +391,10 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.size() == 6);
         REQUIRE(m.buf.at(1) == "line two");
     }
+
+    SECTION("DelCurrentWord") {
+        REQUIRE(false);
+    }
 }
 
 TEST_CASE("get_current_char", "[model]") {
@@ -471,6 +475,10 @@ TEST_CASE("redo", "[model]") {
         REQUIRE(m.buf.size() == 5);
         REQUIRE(m.buf.at(1) == "line three");
     }
+
+    SECTION("DelCurrentWord") {
+        REQUIRE(false);
+    }
 }
 
 TEST_CASE("move_line_down", "[model]") {
@@ -517,4 +525,8 @@ TEST_CASE("delete_current_line", "[model]") {
     m.delete_current_line();
     REQUIRE(m.buf.size() == 5);
     REQUIRE(m.buf.at(0) == "line two");
+}
+
+TEST_CASE("delete_current_word", "[model]") {
+    REQUIRE(false);
 }
