@@ -22,6 +22,7 @@ enum class ModelType { BUF, META };
 struct WordPos {
     std::string text;
     uint_t start_pos;
+    uint_t lineno;
 };
 
 struct Model {
