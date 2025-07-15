@@ -530,14 +530,14 @@ TEST_CASE("delete_current_line", "[model]") {
 TEST_CASE("current_word", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
-    // SECTION("Middle of word") {
-    //     m.current_line = 1;
-    //     m.current_char = 2;
+    SECTION("Middle of word") {
+        m.current_line = 1;
+        m.current_char = 2;
 
-    //    const WordPos ret = m.current_word();
-    //    REQUIRE(ret.text == "line");
-    //    REQUIRE(ret.start_pos == 0);
-    //}
+        const WordPos ret = m.current_word();
+        REQUIRE(ret.text == "line");
+        REQUIRE(ret.start_pos == 0);
+    }
 
     SECTION("Search to end of line") {
         m.current_line = 1;
@@ -551,5 +551,16 @@ TEST_CASE("current_word", "[model]") {
 }
 
 TEST_CASE("delete_current_word", "[model]") {
-    REQUIRE(false);
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.current_line = 1;
+    m.current_char = 2;
+
+    m.delete_current_word(m.current_word());
+    REQUIRE(m.buf.at(1) == " two");
+
+    m.current_line = 2;
+    m.current_char = 7;
+
+    m.delete_current_word(m.current_word());
+    REQUIRE(m.buf.at(2) == "line ");
 }
