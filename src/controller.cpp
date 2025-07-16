@@ -194,9 +194,11 @@ void Controller::start_action_engine() {
                 switch (k2.code) {
                     case 'l':
                         parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentLine});
+                        redraw_all = true;
                         continue;
                     case 'w':
                         parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentWord});
+                        redraw_all = true;
                         continue;
                 }
 
