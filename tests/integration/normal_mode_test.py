@@ -393,6 +393,27 @@ def test_undo_redo_delete_line(r: TmuxRunner):
     assert "here is a newline" in r.lines()[0]
 
 
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_undo_redo_delete_word(r: TmuxRunner):
+    # Position in middle of a word
+    r.press("w")
+    r.press("l")
+    r.press("l")
+
+    r.type_str("dw")  # delete word
+
+    word: str = "Lorem ipsum"
+    assert word not in r.lines()[0]
+
+    # undo
+    r.press("u")
+    assert word in r.lines()[0]
+
+    # redo
+    r.press("R")
+    assert word not in r.lines()[0]
+
+
 @setup("tests/fixture/test_file_1.txt")
 def test_upper_j_key(r: TmuxRunner):
     r.press("J")
@@ -477,3 +498,14 @@ def test_dl_key(r: TmuxRunner):
     assert "This is some text" in r.lines()[0]
     r.type_str("dl")
     assert "here is a newline" in r.lines()[0]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_dw_key(r: TmuxRunner):
+    r.press("w")
+    r.press("l")
+    r.press("l")
+
+    r.type_str("dw")  # delete word
+
+    assert "Lorem ipsum" not in r.lines()[0]

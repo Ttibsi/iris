@@ -19,6 +19,12 @@ struct View;
 
 enum class ModelType { BUF, META };
 
+struct WordPos {
+    std::string text;
+    uint_t start_pos;
+    uint_t lineno;
+};
+
 struct Model {
     ModelType type = ModelType::BUF;
     std::vector<std::string> buf;
@@ -56,6 +62,8 @@ struct Model {
     void move_line_up();
     void set_read_only(std::string_view);
     void delete_current_line();
+    [[nodiscard]] const WordPos current_word() const;
+    void delete_current_word(const WordPos);
 };
 
 #endif  // MODEL_H

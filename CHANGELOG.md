@@ -5,6 +5,7 @@
 * We now log the shell command called or the command entered in command mode
 * `;wa` now saves all files and `;qa` quits all files
 * `;lb` now shows all open buffers
+* `dl` and `dw` now delete the current line and word
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 

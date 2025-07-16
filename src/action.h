@@ -17,6 +17,7 @@ enum class ActionType {
     CenterCurrentLine,
     DelCurrentChar,
     DelCurrentLine,
+    DelCurrentWord,
     EndOfLine,
     JumpNextPara,
     JumpPrevPara,
@@ -129,6 +130,11 @@ template <typename T, typename U>
         } break;
 
         case ActionType::DelCurrentLine: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: DelCurrentLine");
+            }
+
             v->get_active_model()->undo_stack.push_back(Change(
                 ActionType::DelCurrentLine, v->get_active_model()->current_line,
                 v->get_active_model()->current_char,
@@ -137,6 +143,22 @@ template <typename T, typename U>
             v->get_active_model()->delete_current_line();
             v->change_model_cursor();
             v->draw_screen();
+        } break;
+
+        case ActionType::DelCurrentWord: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: DelCurrentWord");
+            }
+
+            const WordPos word = v->get_active_model()->current_word();
+
+            v->get_active_model()->undo_stack.push_back(Change(
+                ActionType::DelCurrentWord, v->get_active_model()->current_line, word.start_pos,
+                word.text));
+
+            v->get_active_model()->delete_current_word(word);
+
         } break;
 
         case ActionType::EndOfLine: {

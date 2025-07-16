@@ -391,6 +391,18 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.size() == 6);
         REQUIRE(m.buf.at(1) == "line two");
     }
+
+    SECTION("DelCurrentWord") {
+        m.current_line = 1;
+        m.current_char = 1;
+        m.undo_stack.push_back(Change(ActionType::DelCurrentWord, 1, 0, "line"));
+
+        m.delete_current_word(m.current_word());
+        REQUIRE(m.buf.at(1) == " two");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+    }
 }
 
 TEST_CASE("get_current_char", "[model]") {
@@ -471,6 +483,21 @@ TEST_CASE("redo", "[model]") {
         REQUIRE(m.buf.size() == 5);
         REQUIRE(m.buf.at(1) == "line three");
     }
+
+    SECTION("DelCurrentWord") {
+        m.current_line = 1;
+        m.current_char = 1;
+        m.undo_stack.push_back(Change(ActionType::DelCurrentWord, 1, 0, "line"));
+
+        m.delete_current_word(m.current_word());
+        REQUIRE(m.buf.at(1) == " two");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == " two");
+    }
 }
 
 TEST_CASE("move_line_down", "[model]") {
@@ -517,4 +544,42 @@ TEST_CASE("delete_current_line", "[model]") {
     m.delete_current_line();
     REQUIRE(m.buf.size() == 5);
     REQUIRE(m.buf.at(0) == "line two");
+}
+
+TEST_CASE("current_word", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+
+    SECTION("Middle of word") {
+        m.current_line = 1;
+        m.current_char = 2;
+
+        const WordPos ret = m.current_word();
+        REQUIRE(ret.text == "line");
+        REQUIRE(ret.start_pos == 0);
+    }
+
+    SECTION("Search to end of line") {
+        m.current_line = 1;
+        m.current_char = 6;
+
+        const WordPos ret = m.current_word();
+        REQUIRE(m.buf.at(m.current_line).at(m.current_char) == 'w');
+        REQUIRE(ret.text == "two");
+        REQUIRE(ret.start_pos == 5);
+    }
+}
+
+TEST_CASE("delete_current_word", "[model]") {
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    m.current_line = 1;
+    m.current_char = 2;
+
+    m.delete_current_word(m.current_word());
+    REQUIRE(m.buf.at(1) == " two");
+
+    m.current_line = 2;
+    m.current_char = 7;
+
+    m.delete_current_word(m.current_word());
+    REQUIRE(m.buf.at(2) == "line ");
 }
