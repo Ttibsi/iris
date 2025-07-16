@@ -296,6 +296,12 @@ void Model::toggle_case() {
             }
         } break;
 
+        case ActionType::DelCurrentWord: {
+            if (cur_change.text.has_value()) {
+                buf.at(current_line).insert(current_char, cur_change.text.value());
+            }
+        } break;
+
         default:
             break;
     };
@@ -366,6 +372,9 @@ void Model::toggle_case() {
 
         case ActionType::DelCurrentLine: {
             delete_current_line();
+        } break;
+
+        case ActionType::DelCurrentWord: {
         } break;
 
         default:

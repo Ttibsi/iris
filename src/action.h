@@ -144,7 +144,7 @@ template <typename T, typename U>
             const WordPos word = v->get_active_model()->current_word();
 
             v->get_active_model()->undo_stack.push_back(Change(
-                ActionType::DelCurrentLine, v->get_active_model()->current_line, word.start_pos,
+                ActionType::DelCurrentWord, v->get_active_model()->current_line, word.start_pos,
                 word.text));
 
             v->get_active_model()->delete_current_word(word);
