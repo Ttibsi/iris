@@ -62,8 +62,8 @@
 * [x] `G`
 * [x] `z` (vim `zz`)
 * [x] `~`
-* [ ] `d`
-    * [ ] `l` (delete line)
-    * [ ] `w` (delete word)
+* [x] `d`
+    * [x] `l` (delete line)
+    * [x] `w` (delete word)
 * [x] `J`
 * [x] `K`
