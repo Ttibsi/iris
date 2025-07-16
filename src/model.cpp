@@ -375,6 +375,7 @@ void Model::toggle_case() {
         } break;
 
         case ActionType::DelCurrentWord: {
+            delete_current_word({cur_change.text.value(), current_char, current_line});
         } break;
 
         default:

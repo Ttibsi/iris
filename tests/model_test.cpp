@@ -485,7 +485,18 @@ TEST_CASE("redo", "[model]") {
     }
 
     SECTION("DelCurrentWord") {
-        REQUIRE(false);
+        m.current_line = 1;
+        m.current_char = 1;
+        m.undo_stack.push_back(Change(ActionType::DelCurrentWord, 1, 0, "line"));
+
+        m.delete_current_word(m.current_word());
+        REQUIRE(m.buf.at(1) == " two");
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(1) == "line two");
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(1) == " two");
     }
 }
 
