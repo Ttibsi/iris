@@ -153,7 +153,11 @@ void Model::insert(const char c) {
     if (current_line == buf.size() - 1) {
         return {};
     }
-    auto pos = std::find(buf.begin() + current_line + 1, buf.end(), "");
+    auto pos = std::find_if(buf.begin() + current_line + 1, buf.end(), [](const std::string& s) {
+        return s.empty() ||
+               std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isspace(c); });
+    });
+
     unsigned int distance =
         static_cast<unsigned int>(std::distance(buf.begin() + current_line, pos));
     if (current_line + distance >= buf.size()) {
@@ -166,8 +170,13 @@ void Model::insert(const char c) {
     if (current_line == 0) {
         return {};
     }
-    auto rev_pos =
-        std::find(buf.rbegin() + static_cast<long>(buf.size() - current_line + 1), buf.rend(), "");
+
+    auto rev_pos = std::find_if(
+        buf.rbegin() + static_cast<long>(buf.size() - current_line + 1), buf.rend(),
+        [](const std::string& s) {
+            return s.empty() ||
+                   std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isspace(c); });
+        });
     rev_pos++;
     auto pos = rev_pos.base();
     unsigned int distance =
@@ -411,7 +420,7 @@ void Model::set_read_only(std::string_view file) {
 void Model::delete_current_line() {
     buf.erase(buf.begin() + current_line);
     if (buf.at(current_line).size() < current_char) {
-        current_char = buf.at(current_line).size();
+        current_char = uint_t(buf.at(current_line).size());
     }
 
     unsaved = true;
