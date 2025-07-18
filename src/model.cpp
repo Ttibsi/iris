@@ -400,7 +400,7 @@ void Model::set_read_only(std::string_view file) {
 void Model::delete_current_line() {
     buf.erase(buf.begin() + current_line);
     if (buf.at(current_line).size() < current_char) {
-        current_char = buf.at(current_line).size();
+        current_char = uint_t(buf.at(current_line).size());
     }
 
     unsaved = true;
