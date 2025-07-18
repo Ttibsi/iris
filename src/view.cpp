@@ -401,7 +401,8 @@ void View::cursor_left() {
 
     bool redraw_sentinal = false;
     const uint_t text_view_height =
-        get_active_model()->view_offset + (static_cast<uint_t>(view_size.vertical) - 2);
+        get_active_model()->view_offset +
+        (static_cast<uint_t>(view_size.vertical) - (2 + visible_tab_bar()));
 
     for (unsigned int i = 0; i < count; i++) {
         if (get_active_model()->current_line >= text_view_height) {

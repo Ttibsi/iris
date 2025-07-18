@@ -81,6 +81,13 @@ def test_multi_file_move_cursor_vertically(r: TmuxRunner):
     r.await_statusbar_parts()[-1] == "9:1"
 
 
+@setup("tests/fixture/lorem_ipsum.txt", multi_file=True)
+def test_multi_file_move_cur_down_not_on_status_bar(r: TmuxRunner):
+    r.type_str("j" * 22)
+    r.await_statusbar_parts()[-1] == "23:1"
+    assert "Morbi accumsan" in r.lines()[-3]
+
+
 @setup("tests/fixture/lorem_ipsum.txt")
 def test_active_line_number_highlighted(r: TmuxRunner):
     assert r.SELECTED_LINE_ANSI in r.get_lineno(0)
