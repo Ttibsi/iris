@@ -77,17 +77,18 @@ perform the following actions (alphabetically ordered):
 Likewise, you can switch to `command` mode with the semicolon `;` key. The
 following commands in alphabetical order are available:
 
-| Command | Description                                                     |
-|---------|-----------------------------------------------------------------|
-| `;lb`   | List all open buffers                                           |
-| `;ping` | `pong` (for testing purposes)                                   |
-| `;e`    | Open a new buffer - specify a filename to open an existing file |
-| `;q`    | Quit                                                            |
-| `;q!`   | Force Quit without saving                                       |
-| `;wq`   | Save and quit                                                   |
-| `;w`    | Save file                                                       |
-| `;wa`   | Save all files                                                  |
-| `;qa`   | Quit all                                                        |
+| Command    | Description                                                     |
+|------------|-----------------------------------------------------------------|
+| `;b <int>` | Display the buffer at the given index                           |
+| `;lb`      | List all open buffers                                           |
+| `;ping`    | `pong` (for testing purposes)                                   |
+| `;e`       | Open a new buffer - specify a filename to open an existing file |
+| `;q`       | Quit                                                            |
+| `;q!`      | Force Quit without saving                                       |
+| `;wq`      | Save and quit                                                   |
+| `;w`       | Save file                                                       |
+| `;wa`      | Save all files                                                  |
+| `;qa`      | Quit all                                                        |
 
 ### CLI
 The below flags are available in the CLI as well. See `--help` for more info.
