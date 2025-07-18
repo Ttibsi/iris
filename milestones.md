@@ -18,22 +18,21 @@
 * [x] Switch file we're editing from inside the editor (ex vim's `:e`)
 * [x] Open a second file in a tab and switch tabs
 * [x] Open a second file in a separate buffer and switch between views
-* [ ] View a list of open files and switch between them
+* [x] View a list of open files and switch between them
+* [ ] Find and replace in the current buffer using the command pallete
 * [ ] Handle tab characters in text
     * [ ] Toggle an `expandtab` config variable with a command (default true)
     * [ ] Ensure pressing <TAB> inserts the right character where needed
     * [ ] If `expandtab` is false, have a way of calculating the logical
     and visual positions of the cursor separately for vertical movement and
     char insertion
+* [ ] Handle tab complete in the command bar
 * [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Open a second file in a split
 * [ ] Open a command pallete at the bottom third of the screen
 * [ ] Syntax highlighting via lexical analysis and regex
 * [ ] Use the command pallete to run a shell command - investigate forking
-* [ ] Find and replace in the current buffer using the command pallete
 * [ ] Some form of simple file manager like vim's netrw
-* [ ] Open multiple tabs (delineated at the bottom of the screen) using a new
-    PaneManager class for each tab
 * [ ] Configuration file (potentially JSON) - global at `XDG_CONFIG_HOME/iris`
     and a repo-specific config to be found with `git grep` potentially
 * [ ] Lua plugins and custon themes extensibility
