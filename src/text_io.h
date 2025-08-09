@@ -43,5 +43,6 @@ struct Response {
 [[nodiscard]] std::string check_filename(const std::string&);
 [[nodiscard]] bool file_exists(std::string_view);
 [[nodiscard]] std::optional<Response> shell_exec(std::string);
+[[nodiscard]] std::vector<std::string> split_by(const std::string&, const char);
 
 #endif  // TEXT_IO_H

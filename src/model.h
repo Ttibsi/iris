@@ -64,6 +64,8 @@ struct Model {
     void delete_current_line();
     [[nodiscard]] const WordPos current_word() const;
     void delete_current_word(const WordPos);
+    [[nodiscard]] std::vector<std::string> search_text(const std::string&) const;
+    void search_and_replace(const std::string&);
 };
 
 #endif  // MODEL_H

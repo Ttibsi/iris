@@ -1,7 +1,10 @@
 #include "model.h"
 
 #include <algorithm>
+#include <format>
 #include <functional>
+#include <ranges>
+#include <regex>
 
 #include "action.h"
 #include "controller.h"
@@ -453,4 +456,45 @@ void Model::delete_current_line() {
 
 void Model::delete_current_word(const WordPos pos) {
     buf.at(pos.lineno).erase(pos.start_pos, pos.text.size());
+}
+
+[[nodiscard]] std::vector<std::string> Model::search_text(const std::string& input) const {
+    std::vector<std::string> parts = split_by(input, '|');
+    parts.resize(1);
+    auto re = std::regex(parts.at(0));
+
+    std::vector<std::string> ret = {};
+    ret.reserve(7);
+
+    for (const auto&& [idx, line] : std::views::enumerate(buf)) {
+        if (std::regex_search(line, re)) {
+            // TODO: Truncate line?
+            ret.push_back(std::format("|{}| {}", idx, line));
+        }
+
+        if (ret.size() == 7) {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+/// Flags: m (multiline)
+/// TODO: c (confirm) (todo once we have highlighting?)
+void Model::search_and_replace(const std::string& input) {
+    std::vector<std::string> parts = split_by(input, '|');
+    if (parts.size() < 2 || parts.size() > 3) {
+        return;
+    }
+
+    auto find = std::regex(parts.at(0));
+
+    if (parts.at(2).find('m') <= parts.at(2).size()) {
+        for (auto& line : buf) {
+            line = std::regex_replace(line, find, parts.at(1));
+        }
+    } else {
+        buf.at(current_line) = std::regex_replace(buf.at(current_line), find, parts.at(1));
+    }
 }

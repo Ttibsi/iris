@@ -6,6 +6,7 @@
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
+#include <rawterm/extras/border.h>
 #include <rawterm/text.h>
 
 #include "action.h"
@@ -440,16 +441,44 @@ bool Controller::enter_command_mode() {
 
         auto in = rawterm::wait_for_input();
 
+        // TODO: Handle arrow keys
+
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
             rawterm::clear_line();
+            view.draw_screen();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
+            if (view.command_text.substr(0, 2) == ";s") {
+                view.draw_screen();
+            }
             ret = parse_command();
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             view.command_text.pop_back();
         } else {
             view.command_text.push_back(in.code);
+
+            // Show live view for searching
+            if (view.command_text.size() >= 2 && view.command_text.substr(0, 2) == ";s" &&
+                view.command_text.find('|') <= view.command_text.size()) {
+                std::vector<std::string> found_lines = view.get_active_model()->search_text(
+                    view.command_text.substr(2, view.command_text.size()));
+
+                found_lines.resize(7);
+
+                rawterm::Pos top_left = {
+                    view.view_size.vertical - 7 - 3, view.line_number_offset + 2};
+                rawterm::Pos bottom_right = {
+                    view.view_size.vertical - 1, view.view_size.horizontal};
+                auto region = rawterm::Region(top_left, bottom_right);
+                auto border = rawterm::Border(region).set_padding(1).set_title("Search results");
+                border.draw(view.cur, &found_lines);
+
+                // compile search regex
+                // Open a bordered window
+                // Search in model
+                // display first 7? results in bordered window
+            }
         }
     }
 
@@ -501,6 +530,10 @@ bool Controller::parse_command() {
         }
 
         return true;
+
+        // search
+    } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
+        view.get_active_model()->search_and_replace(cmd.substr(2, cmd.size()));
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
