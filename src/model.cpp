@@ -490,7 +490,7 @@ void Model::search_and_replace(const std::string& input) {
 
     auto find = std::regex(parts.at(0));
 
-    if (parts.at(2).find('m') <= parts.at(2).size()) {
+    if (parts.size() == 3 && parts.at(2).find('m') <= parts.at(2).size()) {
         for (auto& line : buf) {
             line = std::regex_replace(line, find, parts.at(1));
         }

@@ -458,6 +458,10 @@ bool Controller::enter_command_mode() {
         } else {
             view.command_text.push_back(in.code);
 
+            // TODO: Move to a view method
+            // TODO: Make this method generic for drawing in different places
+            // and potentially handle it's own cursor? (at least line by line)
+            // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
             if (view.command_text.size() >= 2 && view.command_text.substr(0, 2) == ";s" &&
                 view.command_text.find('|') <= view.command_text.size()) {
@@ -473,19 +477,12 @@ bool Controller::enter_command_mode() {
                 auto region = rawterm::Region(top_left, bottom_right);
                 auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
                 border.draw(view.cur, &found_lines);
-
-                // compile search regex
-                // Open a bordered window
-                // Search in model
-                // display first 7? results in bordered window
             }
         }
     }
 
     view.command_text = ";";
-    if (!ret) {
-        view.cur = prev_cursor_pos.value();
-    }
+    view.cur = prev_cursor_pos.value();
 
     return ret;
 }
@@ -533,7 +530,8 @@ bool Controller::parse_command() {
 
         // search
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
-        view.get_active_model()->search_and_replace(cmd.substr(2, cmd.size()));
+        view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
+        return true;
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
