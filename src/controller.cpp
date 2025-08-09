@@ -471,7 +471,7 @@ bool Controller::enter_command_mode() {
                 rawterm::Pos bottom_right = {
                     view.view_size.vertical - 1, view.view_size.horizontal};
                 auto region = rawterm::Region(top_left, bottom_right);
-                auto border = rawterm::Border(region).set_padding(1).set_title("Search results");
+                auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
                 border.draw(view.cur, &found_lines);
 
                 // compile search regex
