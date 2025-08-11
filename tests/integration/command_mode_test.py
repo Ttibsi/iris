@@ -310,3 +310,13 @@ def test_change_buffer_to_invalid_id(r: TmuxRunner):
     assert "\x1b[49m" in err_line  # red text
 
     r.assert_filename_in_statusbar("test_file_1.txt")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_search_live_command(r: TmuxRunner):
+    assert False
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_search_and_replace_command(r: TmuxRunner):
+    assert False
