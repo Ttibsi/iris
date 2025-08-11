@@ -583,3 +583,9 @@ TEST_CASE("delete_current_word", "[model]") {
     m.delete_current_word(m.current_word());
     REQUIRE(m.buf.at(2) == "line ");
 }
+
+TEST_CASE("search_text", "[model]") {REQUIRE(false)}
+
+TEST_CASE("search_and_replace", "[model]") {
+    REQUIRE(false)
+}

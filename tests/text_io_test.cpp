@@ -84,3 +84,7 @@ TEST_CASE("shell_exec", "[textio]") {
         REQUIRE(shell_exec("cat does_not_exist").value().err == err_msg);
     }
 }
+
+TEST_CASE("split_by", "[model]") {
+    REQUIRE(false)
+}
