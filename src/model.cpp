@@ -480,9 +480,10 @@ void Model::delete_current_word(const WordPos pos) {
     return ret;
 }
 
-/// Flags: m (multiline)
-/// TODO: c (confirm) (todo once we have highlighting?)
+/// Input: `to|from|flags`
+/// Flag options: m (multiline)
 void Model::search_and_replace(const std::string& input) {
+    // TODO: c (confirm) (todo once we have highlighting?)
     std::vector<std::string> parts = split_by(input, '|');
     if (parts.size() < 2 || parts.size() > 3) {
         return;
