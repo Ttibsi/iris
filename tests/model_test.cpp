@@ -584,8 +584,35 @@ TEST_CASE("delete_current_word", "[model]") {
     REQUIRE(m.buf.at(2) == "line ");
 }
 
-TEST_CASE("search_text", "[model]") {REQUIRE(false)}
+TEST_CASE("search_text", "[model]") {
+    auto m = Model(
+        {"line one", "line two", "line three", "", "line four", "line five", "line six",
+         "line seven", "line eight", "line nine", "line ten"},
+        "");
+    std::vector<std::string> ret = m.search_text("one");
+    REQUIRE(ret.size() == 1);
+    REQUIRE(ret.at(0) == "|0| line one");
+
+    ret = m.search_text("line");
+    REQUIRE(ret.size() == 7);
+    REQUIRE(ret.at(0) == "|0| line one");
+    REQUIRE(ret.at(6) == "|7| line seven");
+}
 
 TEST_CASE("search_and_replace", "[model]") {
-    REQUIRE(false)
+    auto m = Model(
+        {"line one", "line two", "line three", "", "line four", "line five", "line six",
+         "line seven", "line eight", "line nine", "line ten"},
+        "");
+    m.search_and_replace("one|TEST");
+    REQUIRE(m.buf.at(0) == "line TEST");
+
+    // multiline flag
+    m.search_and_replace("line|entry|m");
+    for (std::size_t i = 0; i < m.buf.size(); i++) {
+        if (i == 3) {
+            continue;
+        }
+        REQUIRE(m.buf.at(i).substr(0, 5) == "entry");
+    }
 }
