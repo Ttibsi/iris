@@ -47,3 +47,13 @@ def test_escape_cmd_mode(r: TmuxRunner):
 
     assert r.lines()[-1] == ""
     assert r.await_statusbar_parts()[0] == "READ"
+
+
+@setup()
+def test_backspace_to_exit(r: TmuxRunner):
+    assert False
+
+
+@setup()
+def test_move_left_right_and_insert(r: TmuxRunner):
+    assert False
