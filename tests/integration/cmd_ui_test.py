@@ -51,9 +51,61 @@ def test_escape_cmd_mode(r: TmuxRunner):
 
 @setup()
 def test_backspace_to_exit(r: TmuxRunner):
-    assert False
+    r.press(r.CMD_KEY)
+    r.type_str("ping")
+
+    for _ in range(4):
+        r.press("BSpace")
+
+    assert r.await_statusbar_parts()[0] == "COMMAND"
+    r.press("BSpace")
+    assert r.await_statusbar_parts()[0] == "READ"
+    r.await_cursor_pos(0, 3)
 
 
 @setup()
-def test_move_left_right_and_insert(r: TmuxRunner):
-    assert False
+def test_move_left_right(r: TmuxRunner):
+    r.press(r.CMD_KEY)
+    r.type_str("ping")
+    r.await_cursor_pos(23, 5)
+
+    r.press("Left")
+    r.await_cursor_pos(23, 4)
+
+    r.press("Left")
+    r.await_cursor_pos(23, 3)
+
+    r.press("Left")
+    r.await_cursor_pos(23, 2)
+
+    r.press("Left")
+    r.await_cursor_pos(23, 1)
+
+    # Don't go left of the semi
+    r.press("Left")
+    r.await_cursor_pos(23, 1)
+
+    for _ in range(4):
+        r.press("Right")
+    r.await_cursor_pos(23, 5)
+
+    # Cursor should not move after being at the end of the text
+    r.press("Right")
+    r.await_cursor_pos(23, 5)
+
+
+@setup()
+def test_move_left_and_insert(r: TmuxRunner):
+    r.press(r.CMD_KEY)
+    r.type_str("ping")
+    r.await_cursor_pos(23, 5)
+
+    for _ in range(4):
+        r.press("Left")
+
+    r.await_cursor_pos(23, 1)
+    assert r.lines()[-1] == ";ping"
+
+    r.press("!")
+    r.await_cursor_pos(23, 2)
+    assert r.lines()[-1] == ";!ping"
