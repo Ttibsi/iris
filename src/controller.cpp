@@ -33,7 +33,7 @@ void Controller::set_mode(Mode m) {
             rawterm::Cursor::cursor_pipe();
             break;
         case Mode::Command:
-            rawterm::Cursor::cursor_block();
+            rawterm::Cursor::cursor_pipe();
             break;
     }
 }
@@ -432,9 +432,10 @@ void Controller::start_action_engine() {
 bool Controller::enter_command_mode() {
     std::optional<rawterm::Pos> prev_cursor_pos;
     bool ret = false;
+    unsigned int cmd_text_pos = 1;
 
     while (true) {
-        auto previous = view.draw_command_bar();
+        auto previous = view.draw_command_bar(cmd_text_pos + 1);
         if (!(prev_cursor_pos.has_value())) {
             prev_cursor_pos = previous;
         }
@@ -454,17 +455,43 @@ bool Controller::enter_command_mode() {
             ret = parse_command();
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
-            view.command_text.pop_back();
+            if (view.command_text.size() > 1) {
+                view.command_text.pop_back();
+                cmd_text_pos--;
+            } else {
+                ret = true;
+                break;
+            }
+
+        } else if (in == rawterm::Key('D', rawterm::Mod::Arrow)) {
+            // left
+            if (cmd_text_pos > 1) {
+                cmd_text_pos--;
+                view.cur.move_left();
+            }
+
+        } else if (in == rawterm::Key('C', rawterm::Mod::Arrow)) {
+            // right
+            if (cmd_text_pos < view.command_text.size()) {
+                cmd_text_pos++;
+                view.cur.move_left();
+            }
+
         } else {
-            view.command_text.push_back(in.code);
+            if (cmd_text_pos == view.command_text.size() - 1) {
+                view.command_text.push_back(in.code);
+                cmd_text_pos++;
+            } else {
+                view.command_text.insert(view.command_text.begin() + cmd_text_pos, in.code);
+                cmd_text_pos++;
+            }
 
             // TODO: Move to a view method
             // TODO: Make this method generic for drawing in different places
             // and potentially handle it's own cursor? (at least line by line)
             // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
-            if (view.command_text.size() >= 2 && view.command_text.substr(0, 2) == ";s" &&
-                view.command_text.find('|') <= view.command_text.size()) {
+            if (view.command_text.size() >= 2 && view.command_text.substr(0, 2) == ";s") {
                 std::vector<std::string> found_lines = view.get_active_model()->search_text(
                     view.command_text.substr(2, view.command_text.size()));
 

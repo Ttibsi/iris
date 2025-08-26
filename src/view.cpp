@@ -310,12 +310,12 @@ const std::string View::render_status_bar() const {
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
-[[maybe_unused]] const rawterm::Pos View::draw_command_bar() {
+[[maybe_unused]] const rawterm::Pos View::draw_command_bar(const std::size_t cmd_cur_pos) {
     rawterm::Pos prev_pos = cur;
     cur.move({view_size.vertical, 1});
     rawterm::clear_line();
     std::print("{}", command_text);
-    cur.move({view_size.vertical, static_cast<int>(command_text.size() + 1)});
+    cur.move({view_size.vertical, static_cast<int>(cmd_cur_pos)});
 
     return prev_pos;
 }
