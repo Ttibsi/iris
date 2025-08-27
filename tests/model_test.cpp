@@ -591,12 +591,12 @@ TEST_CASE("search_text", "[model]") {
         "");
     std::vector<std::string> ret = m.search_text("one");
     REQUIRE(ret.size() == 1);
-    REQUIRE(ret.at(0) == "|0| line one");
+    REQUIRE(ret.at(0) == "|1| line one");
 
     ret = m.search_text("line");
     REQUIRE(ret.size() == 7);
-    REQUIRE(ret.at(0) == "|0| line one");
-    REQUIRE(ret.at(6) == "|7| line seven");
+    REQUIRE(ret.at(0) == "|1| line one");
+    REQUIRE(ret.at(6) == "|8| line seven");
 }
 
 TEST_CASE("search_and_replace", "[model]") {
