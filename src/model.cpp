@@ -459,17 +459,14 @@ void Model::delete_current_word(const WordPos pos) {
 }
 
 [[nodiscard]] std::vector<std::string> Model::search_text(const std::string& input) const {
-    std::vector<std::string> parts = split_by(input, '|');
-    parts.resize(1);
-    auto re = std::regex(parts.at(0));
-
     std::vector<std::string> ret = {};
     ret.reserve(7);
 
+    auto re = std::regex(input);
     for (const auto&& [idx, line] : std::views::enumerate(buf)) {
         if (std::regex_search(line, re)) {
             // TODO: Truncate line?
-            ret.push_back(std::format("|{}| {}", idx, line));
+            ret.push_back(std::format("|{}| {}", idx + 1, line));
         }
 
         if (ret.size() == 7) {
@@ -489,6 +486,10 @@ void Model::search_and_replace(const std::string& input) {
         return;
     }
 
+    auto logger = spdlog::get("basic_logger");
+    if (logger != nullptr) {
+        logger->info("Find: '" + parts.at(0) + "' Replace: '" + parts.at(1) + "'");
+    }
     auto find = std::regex(parts.at(0));
 
     if (parts.size() == 3 && parts.at(2).find('m') <= parts.at(2).size()) {

@@ -491,9 +491,10 @@ bool Controller::enter_command_mode() {
             // and potentially handle it's own cursor? (at least line by line)
             // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
-            if (view.command_text.size() >= 2 && view.command_text.substr(0, 2) == ";s") {
+            if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
+                !isspace(in.code)) {
                 std::vector<std::string> found_lines = view.get_active_model()->search_text(
-                    view.command_text.substr(2, view.command_text.size()));
+                    view.command_text.substr(3, view.command_text.size()));
 
                 found_lines.resize(7);
 
