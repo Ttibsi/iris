@@ -386,6 +386,7 @@ void Controller::start_action_engine() {
                     &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
                 view.draw_status_bar();
                 redraw_all = enter_command_mode();
+                view.cur.reset();
                 if (quit_flag) {
                     break;
                 }
@@ -460,6 +461,7 @@ bool Controller::enter_command_mode() {
                 cmd_text_pos--;
             } else {
                 ret = true;
+                view.cur = prev_cursor_pos.value();
                 break;
             }
 
@@ -510,7 +512,7 @@ bool Controller::enter_command_mode() {
     }
 
     view.command_text = ";";
-    view.cur = prev_cursor_pos.value();
+    // view.cur = prev_cursor_pos.value();
 
     return ret;
 }
@@ -664,8 +666,9 @@ void Controller::add_model(const std::string& filename) {
         models.emplace_back(term_size.vertical - 2, filename);
     }
 
-    view.cur.move(
-        int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
+    const int vert = int(1 + view.visible_tab_bar());
+    const int hor = 1 + view.set_lineno_offset(&models.at(models.size() - 1));
+    view.cur.move(vert, hor);
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }
 
