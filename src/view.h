@@ -42,7 +42,7 @@ struct View {
     [[nodiscard]] const std::string render_line(const uint) const;
     void draw_status_bar();
     const std::string render_status_bar() const;
-    [[maybe_unused]] const rawterm::Pos draw_command_bar();
+    [[maybe_unused]] const rawterm::Pos draw_command_bar(const std::size_t);
     void display_message(std::string, std::optional<rawterm::Color>);
     [[nodiscard]] std::size_t clamp_horizontal_movement(const int);
     void cursor_left();

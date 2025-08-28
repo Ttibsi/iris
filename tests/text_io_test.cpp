@@ -84,3 +84,11 @@ TEST_CASE("shell_exec", "[textio]") {
         REQUIRE(shell_exec("cat does_not_exist").value().err == err_msg);
     }
 }
+
+TEST_CASE("split_by", "[model]") {
+    std::string s = "This is some text|divided by a pipe";
+    auto ret = split_by(s, '|');
+    REQUIRE(ret.size() == 2);
+    REQUIRE(ret.at(0) == "This is some text");
+    REQUIRE(ret.at(1) == "divided by a pipe");
+}

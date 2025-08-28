@@ -310,3 +310,32 @@ def test_change_buffer_to_invalid_id(r: TmuxRunner):
     assert "\x1b[49m" in err_line  # red text
 
     r.assert_filename_in_statusbar("test_file_1.txt")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_search_live_command(r: TmuxRunner):
+    r.press(r.CMD_KEY)
+    r.type_str("s is")
+
+    with open(r.filename) as f:
+        text = f.readlines()
+
+    ui_elem: list[str] = r.lines()[13:-2]
+    assert "Search results" in ui_elem[0]
+    assert f"|1| {text[0].strip()}" in ui_elem[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_search_and_replace_command(r: TmuxRunner):
+    r.iris_cmd("s  is| was")
+
+    assert "This was some text" in r.lines()[0]
+    assert "here is a newline and a tab" in r.lines()[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_search_and_replace_multiline_command(r: TmuxRunner):
+    r.iris_cmd("s  is| was|m")
+
+    assert "This was some text" in r.lines()[0]
+    assert "here was a newline and a tab" in r.lines()[1]

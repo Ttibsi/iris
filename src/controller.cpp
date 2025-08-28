@@ -6,6 +6,7 @@
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
+#include <rawterm/extras/border.h>
 #include <rawterm/text.h>
 
 #include "action.h"
@@ -32,7 +33,7 @@ void Controller::set_mode(Mode m) {
             rawterm::Cursor::cursor_pipe();
             break;
         case Mode::Command:
-            rawterm::Cursor::cursor_block();
+            rawterm::Cursor::cursor_pipe();
             break;
     }
 }
@@ -385,6 +386,7 @@ void Controller::start_action_engine() {
                     &view, Action<Mode> {ActionType::ChangeMode, Mode::Command});
                 view.draw_status_bar();
                 redraw_all = enter_command_mode();
+                view.cur.reset();
                 if (quit_flag) {
                     break;
                 }
@@ -431,32 +433,86 @@ void Controller::start_action_engine() {
 bool Controller::enter_command_mode() {
     std::optional<rawterm::Pos> prev_cursor_pos;
     bool ret = false;
+    unsigned int cmd_text_pos = 1;
 
     while (true) {
-        auto previous = view.draw_command_bar();
+        auto previous = view.draw_command_bar(cmd_text_pos + 1);
         if (!(prev_cursor_pos.has_value())) {
             prev_cursor_pos = previous;
         }
 
         auto in = rawterm::wait_for_input();
 
+        // TODO: Handle arrow keys
+
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
             rawterm::clear_line();
+            view.draw_screen();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
+            if (view.command_text.substr(0, 2) == ";s") {
+                view.draw_screen();
+            }
             ret = parse_command();
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
-            view.command_text.pop_back();
+            if (view.command_text.size() > 1) {
+                view.command_text.pop_back();
+                cmd_text_pos--;
+            } else {
+                ret = true;
+                view.cur = prev_cursor_pos.value();
+                break;
+            }
+
+        } else if (in == rawterm::Key('D', rawterm::Mod::Arrow)) {
+            // left
+            if (cmd_text_pos > 1) {
+                cmd_text_pos--;
+                view.cur.move_left();
+            }
+
+        } else if (in == rawterm::Key('C', rawterm::Mod::Arrow)) {
+            // right
+            if (cmd_text_pos < view.command_text.size()) {
+                cmd_text_pos++;
+                view.cur.move_left();
+            }
+
         } else {
-            view.command_text.push_back(in.code);
+            if (cmd_text_pos == view.command_text.size() - 1) {
+                view.command_text.push_back(in.code);
+                cmd_text_pos++;
+            } else {
+                view.command_text.insert(view.command_text.begin() + cmd_text_pos, in.code);
+                cmd_text_pos++;
+            }
+
+            // TODO: Move to a view method
+            // TODO: Make this method generic for drawing in different places
+            // and potentially handle it's own cursor? (at least line by line)
+            // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
+            // Show live view for searching
+            if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
+                !isspace(in.code)) {
+                std::vector<std::string> found_lines = view.get_active_model()->search_text(
+                    view.command_text.substr(3, view.command_text.size()));
+
+                found_lines.resize(7);
+
+                rawterm::Pos top_left = {
+                    view.view_size.vertical - 7 - 3, view.line_number_offset + 2};
+                rawterm::Pos bottom_right = {
+                    view.view_size.vertical - 1, view.view_size.horizontal};
+                auto region = rawterm::Region(top_left, bottom_right);
+                auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
+                border.draw(view.cur, &found_lines);
+            }
         }
     }
 
     view.command_text = ";";
-    if (!ret) {
-        view.cur = prev_cursor_pos.value();
-    }
+    // view.cur = prev_cursor_pos.value();
 
     return ret;
 }
@@ -500,6 +556,11 @@ bool Controller::parse_command() {
             return false;
         }
 
+        return true;
+
+        // search
+    } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
+        view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
         return true;
 
     } else if (cmd == ";wq") {
@@ -605,8 +666,9 @@ void Controller::add_model(const std::string& filename) {
         models.emplace_back(term_size.vertical - 2, filename);
     }
 
-    view.cur.move(
-        int(1 + view.visible_tab_bar()), 1 + view.set_lineno_offset(&models.at(models.size() - 1)));
+    const int vert = int(1 + view.visible_tab_bar());
+    const int hor = 1 + view.set_lineno_offset(&models.at(models.size() - 1));
+    view.cur.move(vert, hor);
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }
 

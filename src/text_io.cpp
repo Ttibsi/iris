@@ -192,3 +192,15 @@
         return resp;
     }
 }
+
+[[nodiscard]] std::vector<std::string> split_by(const std::string& text, const char delim) {
+    std::vector<std::string> result;
+    std::stringstream ss(text);
+    std::string item;
+
+    while (getline(ss, item, delim)) {
+        result.push_back(item);
+    }
+
+    return result;
+}

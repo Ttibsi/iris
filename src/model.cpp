@@ -1,7 +1,10 @@
 #include "model.h"
 
 #include <algorithm>
+#include <format>
 #include <functional>
+#include <ranges>
+#include <regex>
 
 #include "action.h"
 #include "controller.h"
@@ -453,4 +456,47 @@ void Model::delete_current_line() {
 
 void Model::delete_current_word(const WordPos pos) {
     buf.at(pos.lineno).erase(pos.start_pos, pos.text.size());
+}
+
+[[nodiscard]] std::vector<std::string> Model::search_text(const std::string& input) const {
+    std::vector<std::string> ret = {};
+    ret.reserve(7);
+
+    auto re = std::regex(input);
+    for (const auto&& [idx, line] : std::views::enumerate(buf)) {
+        if (std::regex_search(line, re)) {
+            // TODO: Truncate line?
+            ret.push_back(std::format("|{}| {}", idx + 1, line));
+        }
+
+        if (ret.size() == 7) {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+/// Input: `to|from|flags`
+/// Flag options: m (multiline)
+void Model::search_and_replace(const std::string& input) {
+    // TODO: c (confirm) (todo once we have highlighting?)
+    std::vector<std::string> parts = split_by(input, '|');
+    if (parts.size() < 2 || parts.size() > 3) {
+        return;
+    }
+
+    auto logger = spdlog::get("basic_logger");
+    if (logger != nullptr) {
+        logger->info("Find: '" + parts.at(0) + "' Replace: '" + parts.at(1) + "'");
+    }
+    auto find = std::regex(parts.at(0));
+
+    if (parts.size() == 3 && parts.at(2).find('m') <= parts.at(2).size()) {
+        for (auto& line : buf) {
+            line = std::regex_replace(line, find, parts.at(1));
+        }
+    } else {
+        buf.at(current_line) = std::regex_replace(buf.at(current_line), find, parts.at(1));
+    }
 }
