@@ -422,11 +422,11 @@ void Model::set_read_only(std::string_view file) {
 
 void Model::delete_current_line() {
     buf.erase(buf.begin() + current_line);
+    current_line = (current_line > 0) ? current_line - 1 : 0;
+    unsaved = true;
     if (buf.at(current_line).size() < current_char) {
         current_char = uint_t(buf.at(current_line).size());
     }
-
-    unsaved = true;
 }
 
 [[nodiscard]] const WordPos Model::current_word() const {
