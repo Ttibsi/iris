@@ -501,6 +501,17 @@ def test_dl_key(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_dl_end_of_file(r: TmuxRunner):
+    r.type_str("jj")
+    assert r.statusbar_parts()[-1] == "3:1"
+
+    r.type_str("dl")
+    assert r.statusbar_parts()[-1] == "2:1"
+
+    assert r.lines()[2] == "~"
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_dw_key(r: TmuxRunner):
     r.press("w")
     r.press("l")
