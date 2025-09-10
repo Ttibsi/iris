@@ -453,6 +453,7 @@ bool Controller::enter_command_mode() {
             if (view.command_text.substr(0, 2) == ";s") {
                 view.draw_screen();
             }
+            view.cur = prev_cursor_pos.value();
             ret = parse_command();
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
