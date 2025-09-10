@@ -109,3 +109,13 @@ def test_move_left_and_insert(r: TmuxRunner):
     r.press("!")
     r.await_cursor_pos(23, 2)
     assert r.lines()[-1] == ";!ping"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_cursor_goes_back_after_cmd_enter(r: TmuxRunner):
+    r.press("j")
+    old_pos = r.cursor_pos()
+
+    r.iris_cmd("ping")
+
+    assert r.cursor_pos() == old_pos
