@@ -204,3 +204,11 @@
 
     return result;
 }
+
+[[nodiscard]] int first_non_whitespace(const std::string& line) {
+    std::size_t ret = line.find_first_not_of(WHITESPACE, 0);
+    if (ret == std::string::npos) {
+        return -1;
+    }
+    return int32_t(ret);
+}

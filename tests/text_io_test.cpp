@@ -85,10 +85,14 @@ TEST_CASE("shell_exec", "[textio]") {
     }
 }
 
-TEST_CASE("split_by", "[model]") {
+TEST_CASE("split_by", "[textio]") {
     std::string s = "This is some text|divided by a pipe";
     auto ret = split_by(s, '|');
     REQUIRE(ret.size() == 2);
     REQUIRE(ret.at(0) == "This is some text");
     REQUIRE(ret.at(1) == "divided by a pipe");
+}
+
+TEST_CASE("first_non_whitespace", "[textio]") {
+    REQUIRE(false);
 }

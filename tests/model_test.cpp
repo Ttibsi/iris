@@ -112,6 +112,10 @@ TEST_CASE("newline", "[model]") {
         REQUIRE(m.buf.at(1) == "long text");
         REQUIRE(m.buf.at(2) == "and another");
     }
+
+    SECTION("Insert indentation") {
+        REQUIRE(false);
+    }
 }
 
 TEST_CASE("insert", "[model]") {

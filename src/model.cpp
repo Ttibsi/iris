@@ -7,6 +7,7 @@
 #include <regex>
 
 #include "action.h"
+#include "constants.h"
 #include "controller.h"
 #include "text_io.h"
 
@@ -54,7 +55,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     std::string second = buf.at(current_line).substr(current_char);
 
     // clean up whitespace
-    std::size_t start = second.find_first_not_of(" \t\n\r\f\v");
+    std::size_t start = second.find_first_not_of(WHITESPACE);
     if (start == std::string::npos) {
         second.clear();
     } else if (start == 1) {
@@ -69,10 +70,16 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     if (!second.size()) {
         second.push_back(' ');
     }
+
+    // Add intentional indentation
+    const int preceeding_ws = first_non_whitespace(first);
+    if (preceeding_ws % TAB_SIZE == 0) {
+        second = std::format("{}{}", std::string(' ', preceeding_ws), second);
+    }
+
     buf.insert(buf.begin() + current_line, second);
 
     current_char = 0;
-
     unsaved = true;
     return first.size();
 }
