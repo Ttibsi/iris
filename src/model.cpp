@@ -74,7 +74,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     // Add intentional indentation
     const int preceeding_ws = first_non_whitespace(first);
     if (preceeding_ws % TAB_SIZE == 0) {
-        second = std::format("{}{}", std::string(' ', preceeding_ws), second);
+        second = std::format("{}{}", std::string(preceeding_ws, ' '), second);
     }
 
     buf.insert(buf.begin() + current_line, second);

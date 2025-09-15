@@ -114,7 +114,14 @@ TEST_CASE("newline", "[model]") {
     }
 
     SECTION("Insert indentation") {
-        REQUIRE(false);
+        lines_t v = {"    an indented line"};
+        auto m = Model(v, "");
+        m.current_char = 15;
+        const std::size_t line_one_len = m.newline();
+
+        REQUIRE(line_one_len == 15);
+        REQUIRE(m.buf.at(0) == "    an indented");
+        REQUIRE(m.buf.at(1) == "    line");
     }
 }
 
