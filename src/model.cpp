@@ -73,7 +73,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
 
     // Add intentional indentation
     const int preceeding_ws = first_non_whitespace(first);
-    if (preceeding_ws % TAB_SIZE == 0) {
+    if (preceeding_ws % TAB_SIZE == 0 && preceeding_ws > 0) {
         second = std::format("{}{}", std::string(std::size_t(preceeding_ws), ' '), second);
         current_char = TAB_SIZE;
     } else {
@@ -83,7 +83,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     buf.insert(buf.begin() + current_line, second);
     unsaved = true;
 
-    if (preceeding_ws % TAB_SIZE == 0) {
+    if (preceeding_ws % TAB_SIZE == 0 && preceeding_ws > 0) {
         return TAB_SIZE < first.size() ? first.size() - TAB_SIZE : 0;
     } else {
         return 0;
