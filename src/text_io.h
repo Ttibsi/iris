@@ -44,5 +44,6 @@ struct Response {
 [[nodiscard]] bool file_exists(std::string_view);
 [[nodiscard]] std::optional<Response> shell_exec(std::string);
 [[nodiscard]] std::vector<std::string> split_by(const std::string&, const char);
+[[nodiscard]] int first_non_whitespace(const std::string&);
 
 #endif  // TEXT_IO_H

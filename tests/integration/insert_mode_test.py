@@ -291,3 +291,18 @@ def test_multi_file_cur_file_only_modified(r: TmuxRunner):
     assert r.await_statusbar_parts()[1] == "[X]"
     assert r.await_statusbar_parts()[-1] == "1:2"
     assert r.cursor_pos() == (1, 4)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_newline_indent_second_line(r: TmuxRunner):
+    r.press("j")
+    r.type_str("fn")
+    r.press("i")
+    r.press("Enter")
+
+    assert r.lines()[2] == " 3\u2502    newline and a tab"
+    assert r.cursor_pos() == (2, 7)
+    assert r.await_statusbar_parts()[-1] == "3:5"
+
+    r.press("!")
+    assert r.lines()[2][7] == "!"
