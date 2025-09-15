@@ -74,14 +74,16 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     // Add intentional indentation
     const int preceeding_ws = first_non_whitespace(first);
     if (preceeding_ws % TAB_SIZE == 0) {
-        second = std::format("{}{}", std::string(preceeding_ws, ' '), second);
+        second = std::format("{}{}", std::string(std::size_t(preceeding_ws), ' '), second);
+        current_char = TAB_SIZE;
+    } else {
+        current_char = 0;
     }
 
     buf.insert(buf.begin() + current_line, second);
 
-    current_char = 0;
     unsaved = true;
-    return first.size();
+    return first.size() - (preceeding_ws % TAB_SIZE == 0 ? TAB_SIZE : 0);
 }
 
 void Model::insert(const char c) {
