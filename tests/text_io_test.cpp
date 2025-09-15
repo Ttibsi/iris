@@ -94,5 +94,6 @@ TEST_CASE("split_by", "[textio]") {
 }
 
 TEST_CASE("first_non_whitespace", "[textio]") {
-    REQUIRE(false);
+    REQUIRE(first_non_whitespace("    test") == 4);
+    REQUIRE(first_non_whitespace("test") == 0);
 }
