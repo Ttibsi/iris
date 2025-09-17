@@ -284,6 +284,7 @@ const std::string View::render_status_bar() const {
     right += cursor_pos;
 
     // Center
+    /// Calculate visible filename to 1/3 the bar
     std::string visible_filename = filename;
     if (filename.size() >= thirds) {
         const std::size_t chars_to_remove = filename.size() - thirds + 3;  // +3 for "..."
@@ -295,16 +296,17 @@ const std::string View::render_status_bar() const {
         }
     }
 
-    const std::size_t available_center_space =
-        uint32_t(view_size.horizontal) - left.size() - right.size();
-    const std::size_t lhs_padding = std::clamp(
-        (available_center_space - visible_filename.size()) / 2, 0ul, available_center_space);
-    const int rhs_padding = int32_t(
-        std::size_t(view_size.horizontal) -
-        (right.size() + left.size() + lhs_padding + visible_filename.size()));
+    /// Calculate whitespace to insert
+    /// https://excalidraw.com/#json=_ysE8iOIfRygS1qx7sdfT,8MWhqK-DAdUf__mxefZp8w
+    const int halfway_point = view_size.horizontal / 2;
+    const int filename_start = halfway_point - (visible_filename.size() / 2);
+    const int lhs_space = filename_start - left.size();
+    const int rhs_space =
+        view_size.horizontal - right.size() - (filename_start + visible_filename.size());
 
-    std::string ret = left + std::string(std::size_t(lhs_padding), ' ');
-    ret += visible_filename + std::string(std::size_t(rhs_padding), ' ') + right;
+    // Construct full bar
+    std::string ret = left + std::string(std::size_t(lhs_space), ' ');
+    ret += visible_filename + std::string(std::size_t(rhs_space), ' ') + right;
 
     assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
