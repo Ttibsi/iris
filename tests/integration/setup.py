@@ -137,7 +137,7 @@ def setup(
         *, width: int = 80,
         multi_file: bool = False,
 ) -> Callable[[T], Callable[[], None]]:
-    temp_file: str = "tests/fixture/temp_file.txt"
+    temp_file: Final[str] = "tests/fixture/temp_file.txt"
 
     def decorator(func: T) -> Callable[[], None]:
         def wrapper() -> None:
