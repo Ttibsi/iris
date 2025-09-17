@@ -19,7 +19,7 @@
 * [x] Open a second file in a tab and switch tabs
 * [x] Open a second file in a separate buffer and switch between views
 * [x] View a list of open files and switch between them
-* [ ] Find and replace in the current buffer using the command pallete
+* [x] Find and replace in the current buffer using the command pallete
 * [ ] Handle tab characters in text
     * [ ] Toggle an `expandtab` config variable with a command (default true)
     * [ ] Ensure pressing <TAB> inserts the right character where needed
