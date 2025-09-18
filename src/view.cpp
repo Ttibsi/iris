@@ -298,11 +298,11 @@ const std::string View::render_status_bar() const {
 
     /// Calculate whitespace to insert
     /// https://excalidraw.com/#json=_ysE8iOIfRygS1qx7sdfT,8MWhqK-DAdUf__mxefZp8w
-    const int halfway_point = view_size.horizontal / 2;
-    const int filename_start = halfway_point - (visible_filename.size() / 2);
-    const int lhs_space = filename_start - left.size();
-    const int rhs_space =
-        view_size.horizontal - right.size() - (filename_start + visible_filename.size());
+    const std::size_t halfway_point = std::size_t(view_size.horizontal / 2);
+    const std::size_t filename_start = halfway_point - (visible_filename.size() / 2);
+    const std::size_t lhs_space = filename_start - left.size();
+    const std::size_t rhs_space = std::size_t(view_size.horizontal) - right.size() -
+                                  (filename_start + visible_filename.size());
 
     // Construct full bar
     std::string ret = left + std::string(std::size_t(lhs_space), ' ');
