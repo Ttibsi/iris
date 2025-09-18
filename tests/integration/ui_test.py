@@ -262,6 +262,8 @@ def test_statusbar_filename_is_centered(r: TmuxRunner):
     # The filename should be centered
     # (within 1 character due to odd/even differences)
     padding_difference = abs(left_padding - right_padding)
+    print(bar)
+    print(r.report_variables())
     assert padding_difference <= 1
 
     # Verify the total adds up correctly
