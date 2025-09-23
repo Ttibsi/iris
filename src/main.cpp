@@ -70,5 +70,6 @@ int main(int argc, char* argv[]) {
     }
 
     rawterm::exit_alt_screen();
+    rawterm::Cursor::cursor_block();
     return 0;
 }
