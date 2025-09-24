@@ -8,6 +8,7 @@
 * `dl` and `dw` now delete the current line and word
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
+* Resolved issue where filename isn't centered in the status bar
 
 ### v0.0.2
 * Added ability to jump to a line number entered as a command: `;42`

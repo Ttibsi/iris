@@ -203,3 +203,80 @@ def test_modified_marker_in_tab_bar(r: TmuxRunner):
     tab_bar = r.await_tab_bar_parts()
     assert tab_bar[0] == "temp_file.txt"
     r.assert_inverted_text(tab_bar[1], "test_file_1.txt*")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_statusbar_filename_is_centered(r: TmuxRunner):
+    bar: str = r.lines()[22]
+    total_width = len(bar)
+
+    # Find the filename in the parts (should be one of the middle parts)
+    filename_part = None
+    for part in r.await_statusbar_parts():
+        if "test_file_1.txt" in part or "..." in part:
+            filename_part = part.strip()
+            break
+
+    assert filename_part is not None
+
+    # Find the actual positions of left and right sections in the full bar
+    # Left section ends with the last "|" before the filename
+    # Right section starts with the first "|" after the filename
+
+    left_end = -1
+    right_start = -1
+
+    # Find filename position in the full bar
+    filename_pos = bar.find(filename_part.strip())
+    assert filename_pos != -1
+
+    for i in range(filename_pos - 1, -1, -1):
+        if bar[i] == "|":
+            left_end = i
+            break
+
+    filename_end = filename_pos + len(filename_part.strip())
+    for i in range(filename_end, len(bar)):
+        if bar[i] == "|":
+            right_start = i
+            break
+
+    assert left_end != -1
+    assert right_start != -1
+
+    # Calculate the center section boundaries
+    center_start = left_end + 1
+    center_end = right_start
+    center_width = center_end - center_start
+    center_section = bar[center_start:center_end]
+
+    # Find where the filename actually starts/ends within the center section
+    filename_in_center = filename_part.strip()
+    filename_start_in_center = center_section.find(filename_in_center)
+    filename_end_in_center = filename_start_in_center + len(filename_in_center)
+
+    # Calculate actual padding
+    left_padding = filename_start_in_center
+    right_padding = center_width - filename_end_in_center
+
+    # The filename should be centered
+    # (within 1 character due to odd/even differences)
+    padding_difference = abs(left_padding - right_padding)
+    print(bar)
+    print(r.report_variables())
+    assert padding_difference <= 1
+
+    # Verify the total adds up correctly
+    calculated_left = (left_end + 1) + left_padding
+    calculated_right = right_padding + (total_width - right_start)
+    calc_total = calculated_left + len(filename_in_center) + calculated_right
+    assert calc_total == total_width
+
+    # Additional checks for proper centering
+    expected_center_pos = center_width // 2
+    actual_center_pos = filename_start_in_center + len(filename_in_center) // 2
+
+    # The center of the filename should be within 1 position of the center of
+    # the available space
+    center_difference = abs(expected_center_pos - actual_center_pos)
+    assert center_difference <= 1
