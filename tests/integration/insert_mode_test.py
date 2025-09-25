@@ -306,3 +306,11 @@ def test_newline_indent_second_line(r: TmuxRunner):
 
     r.press("!")
     assert r.lines()[2][7] == "!"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_cursor_pos_after_newline(r: TmuxRunner):
+    r.press("A")
+    r.press("Enter")
+
+    r.await_cursor_pos(1, 3)
