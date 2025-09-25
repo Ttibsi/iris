@@ -86,7 +86,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     if (preceeding_ws % TAB_SIZE == 0 && preceeding_ws > 0) {
         return TAB_SIZE < first.size() ? first.size() - TAB_SIZE : 0;
     } else {
-        return 0;
+        return first.size();
     }
 }
 
