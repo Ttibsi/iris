@@ -66,7 +66,7 @@ TEST_CASE("newline", "[model]") {
         m.current_char = 3;
         const std::size_t prev_line_len = m.newline();
 
-        REQUIRE(prev_line_len == 0);
+        REQUIRE(prev_line_len == 3);
         REQUIRE(m.buf.size() == 4);
         REQUIRE(m.buf.at(0).size() == 3);
         REQUIRE(m.buf.at(1).size() == 1);
@@ -79,7 +79,7 @@ TEST_CASE("newline", "[model]") {
         m.current_char = 1;
         const std::size_t prev_line_len = m.newline();
 
-        REQUIRE(prev_line_len == 0);
+        REQUIRE(prev_line_len == 1);
         REQUIRE(m.buf.size() == 4);
         REQUIRE(m.buf.at(0).size() == 1);
         REQUIRE(m.buf.at(0) == "f");
@@ -107,7 +107,7 @@ TEST_CASE("newline", "[model]") {
         m.current_char = 4;
 
         const std::size_t prev_line_len = m.newline();
-        REQUIRE(prev_line_len == 0);
+        REQUIRE(prev_line_len == 4);
         REQUIRE(m.buf.at(0) == "Some");
         REQUIRE(m.buf.at(1) == "long text");
         REQUIRE(m.buf.at(2) == "and another");
