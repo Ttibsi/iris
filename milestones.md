@@ -66,3 +66,4 @@
     * [x] `w` (delete word)
 * [x] `J`
 * [x] `K`
+* [ ] `e`
