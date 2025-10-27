@@ -3,13 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_compile_options(-g)
 
-include(FetchContent)
-fetchcontent_declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.8.0
-)
-fetchcontent_makeavailable(Catch2)
+find_package(Catch2 3.11 REQUIRED PATHS ${PROJECT_SOURCE_DIR}/include/catch2)
 
 add_executable(test_exe
     controller_test.cpp

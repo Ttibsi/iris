@@ -28,6 +28,7 @@ repos:
     rev: 1.4.3
     hooks:
       - id: cmakelint
+        exclude: "^include/"
   - repo: https://github.com/asottile/reorder-python-imports
     rev: v3.15.0
     hooks:
