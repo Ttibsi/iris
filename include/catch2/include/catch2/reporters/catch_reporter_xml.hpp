@@ -8,13 +8,15 @@
 #ifndef CATCH_REPORTER_XML_HPP_INCLUDED
 #define CATCH_REPORTER_XML_HPP_INCLUDED
 
-#include <catch2/catch_timer.hpp>
-#include <catch2/internal/catch_xmlwriter.hpp>
 #include <catch2/reporters/catch_reporter_streaming_base.hpp>
+
+#include <catch2/internal/catch_xmlwriter.hpp>
+#include <catch2/catch_timer.hpp>
+
 
 namespace Catch {
     class XmlReporter : public StreamingReporterBase {
-       public:
+    public:
         XmlReporter(ReporterConfig&& _config);
 
         ~XmlReporter() override;
@@ -25,7 +27,8 @@ namespace Catch {
 
         void writeSourceInfo(SourceLineInfo const& sourceInfo);
 
-       public:  // StreamingReporterBase
+    public: // StreamingReporterBase
+
         void testRunStarting(TestRunInfo const& testInfo) override;
 
         void testCaseStarting(TestCaseInfo const& testInfo) override;
@@ -40,22 +43,22 @@ namespace Catch {
 
         void testRunEnded(TestRunStats const& testRunStats) override;
 
-        void benchmarkPreparing(StringRef name) override;
+        void benchmarkPreparing( StringRef name ) override;
         void benchmarkStarting(BenchmarkInfo const&) override;
         void benchmarkEnded(BenchmarkStats<> const&) override;
-        void benchmarkFailed(StringRef error) override;
+        void benchmarkFailed( StringRef error ) override;
 
         void listReporters(std::vector<ReporterDescription> const& descriptions) override;
         void listListeners(std::vector<ListenerDescription> const& descriptions) override;
         void listTests(std::vector<TestCaseHandle> const& tests) override;
         void listTags(std::vector<TagInfo> const& tags) override;
 
-       private:
+    private:
         Timer m_testCaseTimer;
         XmlWriter m_xml;
         int m_sectionDepth = 0;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_XML_HPP_INCLUDED
+#endif // CATCH_REPORTER_XML_HPP_INCLUDED

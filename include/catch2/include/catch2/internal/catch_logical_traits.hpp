@@ -11,38 +11,34 @@
 #include <type_traits>
 
 namespace Catch {
-    namespace Detail {
+namespace Detail {
 
-#if defined(__cpp_lib_logical_traits) && __cpp_lib_logical_traits >= 201510
+#if defined( __cpp_lib_logical_traits ) && __cpp_lib_logical_traits >= 201510
 
-        using std::conjunction;
-        using std::disjunction;
-        using std::negation;
+    using std::conjunction;
+    using std::disjunction;
+    using std::negation;
 
 #else
 
-        template <class...>
-        struct conjunction : std::true_type {};
-        template <class B1>
-        struct conjunction<B1> : B1 {};
-        template <class B1, class... Bn>
-        struct conjunction<B1, Bn...>
-            : std::conditional_t<bool(B1::value), conjunction<Bn...>, B1> {};
+    template <class...> struct conjunction : std::true_type {};
+    template <class B1> struct conjunction<B1> : B1 {};
+    template <class B1, class... Bn>
+    struct conjunction<B1, Bn...>
+        : std::conditional_t<bool( B1::value ), conjunction<Bn...>, B1> {};
 
-        template <class...>
-        struct disjunction : std::false_type {};
-        template <class B1>
-        struct disjunction<B1> : B1 {};
-        template <class B1, class... Bn>
-        struct disjunction<B1, Bn...>
-            : std::conditional_t<bool(B1::value), B1, disjunction<Bn...>> {};
+    template <class...> struct disjunction : std::false_type {};
+    template <class B1> struct disjunction<B1> : B1 {};
+    template <class B1, class... Bn>
+    struct disjunction<B1, Bn...>
+        : std::conditional_t<bool( B1::value ), B1, disjunction<Bn...>> {};
 
-        template <class B>
-        struct negation : std::integral_constant<bool, !bool(B::value)> {};
+    template <class B>
+    struct negation : std::integral_constant<bool, !bool(B::value)> {};
 
 #endif
 
-    }  // namespace Detail
-}  // namespace Catch
+} // namespace Detail
+} // namespace Catch
 
-#endif  // CATCH_LOGICAL_TRAITS_HPP_INCLUDED
+#endif // CATCH_LOGICAL_TRAITS_HPP_INCLUDED

@@ -23,12 +23,13 @@
 // for a shortlist (so far only DJGPP) of compilers.
 
 #if defined(__DJGPP__)
-#define CATCH_INTERNAL_CONFIG_NO_WCHAR
-#endif  // __DJGPP__
+#  define CATCH_INTERNAL_CONFIG_NO_WCHAR
+#endif // __DJGPP__
 
-#if !defined(CATCH_INTERNAL_CONFIG_NO_WCHAR) && !defined(CATCH_CONFIG_NO_WCHAR) && \
-    !defined(CATCH_CONFIG_WCHAR)
-#define CATCH_CONFIG_WCHAR
+#if !defined( CATCH_INTERNAL_CONFIG_NO_WCHAR ) && \
+    !defined( CATCH_CONFIG_NO_WCHAR ) && \
+    !defined( CATCH_CONFIG_WCHAR )
+#    define CATCH_CONFIG_WCHAR
 #endif
 
-#endif  // CATCH_CONFIG_WCHAR_HPP_INCLUDED
+#endif // CATCH_CONFIG_WCHAR_HPP_INCLUDED

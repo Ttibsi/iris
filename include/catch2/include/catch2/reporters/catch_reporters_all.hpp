@@ -38,4 +38,4 @@
 #include <catch2/reporters/catch_reporter_teamcity.hpp>
 #include <catch2/reporters/catch_reporter_xml.hpp>
 
-#endif  // CATCH_REPORTERS_ALL_HPP_INCLUDED
+#endif // CATCH_REPORTERS_ALL_HPP_INCLUDED

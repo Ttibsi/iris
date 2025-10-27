@@ -19,14 +19,17 @@ namespace Catch {
     // The implementation is based on the PCG family (http://pcg-random.org)
     class SimplePcg32 {
         using state_type = std::uint64_t;
-
-       public:
+    public:
         using result_type = std::uint32_t;
-        static constexpr result_type(min)() { return 0; }
-        static constexpr result_type(max)() { return static_cast<result_type>(-1); }
+        static constexpr result_type (min)() {
+            return 0;
+        }
+        static constexpr result_type (max)() {
+            return static_cast<result_type>(-1);
+        }
 
         // Provide some default initial state for the default constructor
-        SimplePcg32() : SimplePcg32(0xed743cc4U) {}
+        SimplePcg32():SimplePcg32(0xed743cc4U) {}
 
         explicit SimplePcg32(result_type seed_);
 
@@ -35,12 +38,13 @@ namespace Catch {
 
         result_type operator()();
 
-       private:
+    private:
         friend bool operator==(SimplePcg32 const& lhs, SimplePcg32 const& rhs);
         friend bool operator!=(SimplePcg32 const& lhs, SimplePcg32 const& rhs);
 
         // In theory we also need operator<< and operator>>
         // In practice we do not use them, so we will skip them for now
+
 
         std::uint64_t m_state;
         // This part of the state determines which "stream" of the numbers
@@ -50,6 +54,6 @@ namespace Catch {
         static const std::uint64_t s_inc = (0x13ed0cc53f939476ULL << 1ULL) | 1ULL;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_RANDOM_NUMBER_GENERATOR_HPP_INCLUDED
+#endif // CATCH_RANDOM_NUMBER_GENERATOR_HPP_INCLUDED

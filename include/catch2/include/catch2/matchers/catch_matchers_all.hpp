@@ -33,4 +33,4 @@
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <catch2/matchers/internal/catch_matchers_impl.hpp>
 
-#endif  // CATCH_MATCHERS_ALL_HPP_INCLUDED
+#endif // CATCH_MATCHERS_ALL_HPP_INCLUDED

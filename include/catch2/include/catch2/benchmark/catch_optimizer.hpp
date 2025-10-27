@@ -11,12 +11,12 @@
 #define CATCH_OPTIMIZER_HPP_INCLUDED
 
 #if defined(_MSC_VER) || defined(__IAR_SYSTEMS_ICC__)
-#include <atomic>  // atomic_thread_fence
+#   include <atomic> // atomic_thread_fence
 #endif
 
-#include <type_traits>
-
 #include <catch2/internal/catch_move_and_forward.hpp>
+
+#include <type_traits>
 
 namespace Catch {
     namespace Benchmark {
@@ -30,17 +30,15 @@ namespace Catch {
         }
 
         namespace Detail {
-            inline void optimizer_barrier() {
-                keep_memory();
-            }
-        }  // namespace Detail
+            inline void optimizer_barrier() { keep_memory(); }
+        } // namespace Detail
 #elif defined(_MSC_VER) || defined(__IAR_SYSTEMS_ICC__)
 
 #if defined(_MSVC_VER)
 #pragma optimize("", off)
 #elif defined(__IAR_SYSTEMS_ICC__)
 // For IAR the pragma only affects the following function
-#pragma optimize = disable
+#pragma optimize=disable
 #endif
         template <typename T>
         inline void keep_memory(T* p) {
@@ -56,7 +54,7 @@ namespace Catch {
             inline void optimizer_barrier() {
                 std::atomic_thread_fence(std::memory_order_seq_cst);
             }
-        }  // namespace Detail
+        } // namespace Detail
 
 #endif
 
@@ -66,17 +64,15 @@ namespace Catch {
         }
 
         template <typename Fn, typename... Args>
-        inline auto invoke_deoptimized(Fn&& fn, Args&&... args)
-            -> std::enable_if_t<!std::is_same<void, decltype(fn(args...))>::value> {
-            deoptimize_value(CATCH_FORWARD(fn)(CATCH_FORWARD(args)...));
+        inline auto invoke_deoptimized(Fn&& fn, Args&&... args) -> std::enable_if_t<!std::is_same<void, decltype(fn(args...))>::value> {
+            deoptimize_value(CATCH_FORWARD(fn) (CATCH_FORWARD(args)...));
         }
 
         template <typename Fn, typename... Args>
-        inline auto invoke_deoptimized(Fn&& fn, Args&&... args)
-            -> std::enable_if_t<std::is_same<void, decltype(fn(args...))>::value> {
-            CATCH_FORWARD((fn))(CATCH_FORWARD(args)...);
+        inline auto invoke_deoptimized(Fn&& fn, Args&&... args) -> std::enable_if_t<std::is_same<void, decltype(fn(args...))>::value> {
+            CATCH_FORWARD((fn)) (CATCH_FORWARD(args)...);
         }
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_OPTIMIZER_HPP_INCLUDED
+#endif // CATCH_OPTIMIZER_HPP_INCLUDED

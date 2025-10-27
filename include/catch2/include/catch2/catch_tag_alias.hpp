@@ -8,20 +8,22 @@
 #ifndef CATCH_TAG_ALIAS_HPP_INCLUDED
 #define CATCH_TAG_ALIAS_HPP_INCLUDED
 
-#include <string>
-
 #include <catch2/internal/catch_source_line_info.hpp>
+
+#include <string>
 
 namespace Catch {
 
     struct TagAlias {
-        TagAlias(std::string const& _tag, SourceLineInfo _lineInfo)
-            : tag(_tag), lineInfo(_lineInfo) {}
+        TagAlias(std::string const& _tag, SourceLineInfo _lineInfo):
+            tag(_tag),
+            lineInfo(_lineInfo)
+        {}
 
         std::string tag;
         SourceLineInfo lineInfo;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_TAG_ALIAS_HPP_INCLUDED
+#endif // CATCH_TAG_ALIAS_HPP_INCLUDED

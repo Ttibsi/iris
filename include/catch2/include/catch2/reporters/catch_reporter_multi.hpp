@@ -28,46 +28,50 @@ namespace Catch {
 
         void updatePreferences(IEventListener const& reporterish);
 
-       public:
-        MultiReporter(IConfig const* config) : IEventListener(config) {
+    public:
+        MultiReporter( IConfig const* config ):
+            IEventListener( config ) {
             m_preferences.shouldReportAllAssertionStarts = false;
         }
 
         using IEventListener::IEventListener;
 
-        void addListener(IEventListenerPtr&& listener);
-        void addReporter(IEventListenerPtr&& reporter);
+        void addListener( IEventListenerPtr&& listener );
+        void addReporter( IEventListenerPtr&& reporter );
 
-       public:  // IEventListener
-        void noMatchingTestCases(StringRef unmatchedSpec) override;
-        void fatalErrorEncountered(StringRef error) override;
-        void reportInvalidTestSpec(StringRef arg) override;
+    public: // IEventListener
 
-        void benchmarkPreparing(StringRef name) override;
-        void benchmarkStarting(BenchmarkInfo const& benchmarkInfo) override;
-        void benchmarkEnded(BenchmarkStats<> const& benchmarkStats) override;
-        void benchmarkFailed(StringRef error) override;
+        void noMatchingTestCases( StringRef unmatchedSpec ) override;
+        void fatalErrorEncountered( StringRef error ) override;
+        void reportInvalidTestSpec( StringRef arg ) override;
 
-        void testRunStarting(TestRunInfo const& testRunInfo) override;
-        void testCaseStarting(TestCaseInfo const& testInfo) override;
+        void benchmarkPreparing( StringRef name ) override;
+        void benchmarkStarting( BenchmarkInfo const& benchmarkInfo ) override;
+        void benchmarkEnded( BenchmarkStats<> const& benchmarkStats ) override;
+        void benchmarkFailed( StringRef error ) override;
+
+        void testRunStarting( TestRunInfo const& testRunInfo ) override;
+        void testCaseStarting( TestCaseInfo const& testInfo ) override;
         void testCasePartialStarting(TestCaseInfo const& testInfo, uint64_t partNumber) override;
-        void sectionStarting(SectionInfo const& sectionInfo) override;
-        void assertionStarting(AssertionInfo const& assertionInfo) override;
+        void sectionStarting( SectionInfo const& sectionInfo ) override;
+        void assertionStarting( AssertionInfo const& assertionInfo ) override;
 
-        void assertionEnded(AssertionStats const& assertionStats) override;
-        void sectionEnded(SectionStats const& sectionStats) override;
+        void assertionEnded( AssertionStats const& assertionStats ) override;
+        void sectionEnded( SectionStats const& sectionStats ) override;
         void testCasePartialEnded(TestCaseStats const& testStats, uint64_t partNumber) override;
-        void testCaseEnded(TestCaseStats const& testCaseStats) override;
-        void testRunEnded(TestRunStats const& testRunStats) override;
+        void testCaseEnded( TestCaseStats const& testCaseStats ) override;
+        void testRunEnded( TestRunStats const& testRunStats ) override;
 
-        void skipTest(TestCaseInfo const& testInfo) override;
+        void skipTest( TestCaseInfo const& testInfo ) override;
 
         void listReporters(std::vector<ReporterDescription> const& descriptions) override;
         void listListeners(std::vector<ListenerDescription> const& descriptions) override;
         void listTests(std::vector<TestCaseHandle> const& tests) override;
         void listTags(std::vector<TagInfo> const& tags) override;
+
+
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_MULTI_HPP_INCLUDED
+#endif // CATCH_REPORTER_MULTI_HPP_INCLUDED

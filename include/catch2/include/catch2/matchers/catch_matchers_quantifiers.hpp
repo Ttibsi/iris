@@ -8,8 +8,8 @@
 #ifndef CATCH_MATCHERS_QUANTIFIERS_HPP_INCLUDED
 #define CATCH_MATCHERS_QUANTIFIERS_HPP_INCLUDED
 
-#include <catch2/internal/catch_move_and_forward.hpp>
 #include <catch2/matchers/catch_matchers_templated.hpp>
+#include <catch2/internal/catch_move_and_forward.hpp>
 
 namespace Catch {
     namespace Matchers {
@@ -17,11 +17,14 @@ namespace Catch {
         template <typename Matcher>
         class AllMatchMatcher final : public MatcherGenericBase {
             Matcher m_matcher;
+        public:
+            AllMatchMatcher(Matcher matcher):
+                m_matcher(CATCH_MOVE(matcher))
+            {}
 
-           public:
-            AllMatchMatcher(Matcher matcher) : m_matcher(CATCH_MOVE(matcher)) {}
-
-            std::string describe() const override { return "all match " + m_matcher.describe(); }
+            std::string describe() const override {
+                return "all match " + m_matcher.describe();
+            }
 
             template <typename RangeLike>
             bool match(RangeLike&& rng) const {
@@ -38,11 +41,14 @@ namespace Catch {
         template <typename Matcher>
         class NoneMatchMatcher final : public MatcherGenericBase {
             Matcher m_matcher;
+        public:
+            NoneMatchMatcher(Matcher matcher):
+                m_matcher(CATCH_MOVE(matcher))
+            {}
 
-           public:
-            NoneMatchMatcher(Matcher matcher) : m_matcher(CATCH_MOVE(matcher)) {}
-
-            std::string describe() const override { return "none match " + m_matcher.describe(); }
+            std::string describe() const override {
+                return "none match " + m_matcher.describe();
+            }
 
             template <typename RangeLike>
             bool match(RangeLike&& rng) const {
@@ -59,11 +65,14 @@ namespace Catch {
         template <typename Matcher>
         class AnyMatchMatcher final : public MatcherGenericBase {
             Matcher m_matcher;
+        public:
+            AnyMatchMatcher(Matcher matcher):
+                m_matcher(CATCH_MOVE(matcher))
+            {}
 
-           public:
-            AnyMatchMatcher(Matcher matcher) : m_matcher(CATCH_MOVE(matcher)) {}
-
-            std::string describe() const override { return "any match " + m_matcher.describe(); }
+            std::string describe() const override {
+                return "any match " + m_matcher.describe();
+            }
 
             template <typename RangeLike>
             bool match(RangeLike&& rng) const {
@@ -78,7 +87,7 @@ namespace Catch {
 
         // Matcher for checking that all elements in range are true.
         class AllTrueMatcher final : public MatcherGenericBase {
-           public:
+        public:
             std::string describe() const override;
 
             template <typename RangeLike>
@@ -94,7 +103,7 @@ namespace Catch {
 
         // Matcher for checking that no element in range is true.
         class NoneTrueMatcher final : public MatcherGenericBase {
-           public:
+        public:
             std::string describe() const override;
 
             template <typename RangeLike>
@@ -110,7 +119,7 @@ namespace Catch {
 
         // Matcher for checking that any element in range is true.
         class AnyTrueMatcher final : public MatcherGenericBase {
-           public:
+        public:
             std::string describe() const override;
 
             template <typename RangeLike>
@@ -127,19 +136,19 @@ namespace Catch {
         // Creates a matcher that checks whether all elements in a range match a matcher
         template <typename Matcher>
         AllMatchMatcher<Matcher> AllMatch(Matcher&& matcher) {
-            return {CATCH_FORWARD(matcher)};
+            return { CATCH_FORWARD(matcher) };
         }
 
         // Creates a matcher that checks whether no element in a range matches a matcher.
         template <typename Matcher>
         NoneMatchMatcher<Matcher> NoneMatch(Matcher&& matcher) {
-            return {CATCH_FORWARD(matcher)};
+            return { CATCH_FORWARD(matcher) };
         }
 
         // Creates a matcher that checks whether any element in a range matches a matcher.
         template <typename Matcher>
         AnyMatchMatcher<Matcher> AnyMatch(Matcher&& matcher) {
-            return {CATCH_FORWARD(matcher)};
+            return { CATCH_FORWARD(matcher) };
         }
 
         // Creates a matcher that checks whether all elements in a range are true
@@ -150,7 +159,7 @@ namespace Catch {
 
         // Creates a matcher that checks whether any element in a range is true
         AnyTrueMatcher AnyTrue();
-    }  // namespace Matchers
-}  // namespace Catch
+    }
+}
 
-#endif  // CATCH_MATCHERS_QUANTIFIERS_HPP_INCLUDED
+#endif // CATCH_MATCHERS_QUANTIFIERS_HPP_INCLUDED

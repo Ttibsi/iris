@@ -12,10 +12,10 @@
 #include <catch2/benchmark/catch_outlier_classification.hpp>
 // The fwd decl & default specialization needs to be seen by VS2017 before
 // BenchmarkStats itself, or VS2017 will report compilation error.
+#include <catch2/benchmark/detail/catch_benchmark_stats_fwd.hpp>
+
 #include <string>
 #include <vector>
-
-#include <catch2/benchmark/detail/catch_benchmark_stats_fwd.hpp>
 
 namespace Catch {
 
@@ -42,6 +42,7 @@ namespace Catch {
         double outlierVariance;
     };
 
-}  // end namespace Catch
 
-#endif  // CATCH_BENCHMARK_STATS_HPP_INCLUDED
+} // end namespace Catch
+
+#endif // CATCH_BENCHMARK_STATS_HPP_INCLUDED

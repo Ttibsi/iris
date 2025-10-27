@@ -12,6 +12,6 @@ namespace Catch {
 
     enum class CaseSensitive { Yes, No };
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_CASE_SENSITIVE_HPP_INCLUDED
+#endif // CATCH_CASE_SENSITIVE_HPP_INCLUDED

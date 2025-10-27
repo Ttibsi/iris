@@ -14,8 +14,7 @@ namespace Catch {
 
     class Timer {
         uint64_t m_nanoseconds = 0;
-
-       public:
+    public:
         void start();
         auto getElapsedNanoseconds() const -> uint64_t;
         auto getElapsedMicroseconds() const -> uint64_t;
@@ -23,6 +22,6 @@ namespace Catch {
         auto getElapsedSeconds() const -> double;
     };
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_TIMER_HPP_INCLUDED
+#endif // CATCH_TIMER_HPP_INCLUDED

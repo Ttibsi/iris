@@ -18,6 +18,7 @@
  * the corresponding internal subfolder, it should be added here.
  */
 
+
 #ifndef CATCH_INTERFACES_ALL_HPP_INCLUDED
 #define CATCH_INTERFACES_ALL_HPP_INCLUDED
 
@@ -33,4 +34,4 @@
 #include <catch2/interfaces/catch_interfaces_test_invoker.hpp>
 #include <catch2/interfaces/catch_interfaces_testcase.hpp>
 
-#endif  // CATCH_INTERFACES_ALL_HPP_INCLUDED
+#endif // CATCH_INTERFACES_ALL_HPP_INCLUDED

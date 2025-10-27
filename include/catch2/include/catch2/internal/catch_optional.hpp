@@ -8,61 +8,60 @@
 #ifndef CATCH_OPTIONAL_HPP_INCLUDED
 #define CATCH_OPTIONAL_HPP_INCLUDED
 
-#include <cassert>
-
 #include <catch2/internal/catch_move_and_forward.hpp>
+
+#include <cassert>
 
 namespace Catch {
 
     // An optional type
-    template <typename T>
+    template<typename T>
     class Optional {
-       public:
-        Optional() : nullableValue(nullptr) {}
+    public:
+        Optional(): nullableValue( nullptr ) {}
         ~Optional() { reset(); }
 
-        Optional(T const& _value) : nullableValue(new(storage) T(_value)) {}
-        Optional(T&& _value) : nullableValue(new(storage) T(CATCH_MOVE(_value))) {}
+        Optional( T const& _value ):
+            nullableValue( new ( storage ) T( _value ) ) {}
+        Optional( T&& _value ):
+            nullableValue( new ( storage ) T( CATCH_MOVE( _value ) ) ) {}
 
-        Optional& operator=(T const& _value) {
+        Optional& operator=( T const& _value ) {
             reset();
-            nullableValue = new (storage) T(_value);
+            nullableValue = new ( storage ) T( _value );
             return *this;
         }
-        Optional& operator=(T&& _value) {
+        Optional& operator=( T&& _value ) {
             reset();
-            nullableValue = new (storage) T(CATCH_MOVE(_value));
+            nullableValue = new ( storage ) T( CATCH_MOVE( _value ) );
             return *this;
         }
 
-        Optional(Optional const& _other)
-            : nullableValue(_other ? new(storage) T(*_other) : nullptr) {}
-        Optional(Optional&& _other)
-            : nullableValue(_other ? new(storage) T(CATCH_MOVE(*_other)) : nullptr) {}
+        Optional( Optional const& _other ):
+            nullableValue( _other ? new ( storage ) T( *_other ) : nullptr ) {}
+        Optional( Optional&& _other ):
+            nullableValue( _other ? new ( storage ) T( CATCH_MOVE( *_other ) )
+                                  : nullptr ) {}
 
-        Optional& operator=(Optional const& _other) {
-            if (&_other != this) {
+        Optional& operator=( Optional const& _other ) {
+            if ( &_other != this ) {
                 reset();
-                if (_other) {
-                    nullableValue = new (storage) T(*_other);
-                }
+                if ( _other ) { nullableValue = new ( storage ) T( *_other ); }
             }
             return *this;
         }
-        Optional& operator=(Optional&& _other) {
-            if (&_other != this) {
+        Optional& operator=( Optional&& _other ) {
+            if ( &_other != this ) {
                 reset();
-                if (_other) {
-                    nullableValue = new (storage) T(CATCH_MOVE(*_other));
+                if ( _other ) {
+                    nullableValue = new ( storage ) T( CATCH_MOVE( *_other ) );
                 }
             }
             return *this;
         }
 
         void reset() {
-            if (nullableValue) {
-                nullableValue->~T();
-            }
+            if ( nullableValue ) { nullableValue->~T(); }
             nullableValue = nullptr;
         }
 
@@ -83,15 +82,17 @@ namespace Catch {
             return nullableValue;
         }
 
-        T valueOr(T const& defaultValue) const {
+        T valueOr( T const& defaultValue ) const {
             return nullableValue ? *nullableValue : defaultValue;
         }
 
         bool some() const { return nullableValue != nullptr; }
         bool none() const { return nullableValue == nullptr; }
 
-        bool operator!() const { return nullableValue == nullptr; }
-        explicit operator bool() const { return some(); }
+        bool operator !() const { return nullableValue == nullptr; }
+        explicit operator bool() const {
+            return some();
+        }
 
         friend bool operator==(Optional const& a, Optional const& b) {
             if (a.none() && b.none()) {
@@ -102,13 +103,15 @@ namespace Catch {
                 return false;
             }
         }
-        friend bool operator!=(Optional const& a, Optional const& b) { return !(a == b); }
+        friend bool operator!=(Optional const& a, Optional const& b) {
+            return !( a == b );
+        }
 
-       private:
+    private:
         T* nullableValue;
         alignas(alignof(T)) char storage[sizeof(T)];
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_OPTIONAL_HPP_INCLUDED
+#endif // CATCH_OPTIONAL_HPP_INCLUDED

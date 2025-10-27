@@ -17,6 +17,6 @@ namespace Catch {
     std::ostream& cerr();
     std::ostream& clog();
 
-}  // namespace Catch
+} // namespace Catch
 
 #endif

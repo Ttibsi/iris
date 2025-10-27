@@ -8,11 +8,12 @@
 #ifndef CATCH_WILDCARD_PATTERN_HPP_INCLUDED
 #define CATCH_WILDCARD_PATTERN_HPP_INCLUDED
 
-#include <string>
-
 #include <catch2/catch_case_sensitive.hpp>
 
-namespace Catch {
+#include <string>
+
+namespace Catch
+{
     class WildcardPattern {
         enum WildcardPosition {
             NoWildcard = 0,
@@ -21,16 +22,17 @@ namespace Catch {
             WildcardAtBothEnds = WildcardAtStart | WildcardAtEnd
         };
 
-       public:
-        WildcardPattern(std::string const& pattern, CaseSensitive caseSensitivity);
-        bool matches(std::string const& str) const;
+    public:
 
-       private:
-        std::string normaliseString(std::string const& str) const;
+        WildcardPattern( std::string const& pattern, CaseSensitive caseSensitivity );
+        bool matches( std::string const& str ) const;
+
+    private:
+        std::string normaliseString( std::string const& str ) const;
         CaseSensitive m_caseSensitivity;
         WildcardPosition m_wildcard = NoWildcard;
         std::string m_pattern;
     };
-}  // namespace Catch
+}
 
-#endif  // CATCH_WILDCARD_PATTERN_HPP_INCLUDED
+#endif // CATCH_WILDCARD_PATTERN_HPP_INCLUDED

@@ -1,4 +1,4 @@
-prefix=../iris/include/catch2-2
+prefix=../iris/include/catch2
 exec_prefix=${prefix}
 includedir=${prefix}/include
 libdir=${prefix}/lib64

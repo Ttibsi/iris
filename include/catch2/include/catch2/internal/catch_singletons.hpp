@@ -11,31 +11,35 @@
 namespace Catch {
 
     struct ISingleton {
-        virtual ~ISingleton();  // = default
+        virtual ~ISingleton(); // = default
     };
 
-    void addSingleton(ISingleton* singleton);
+
+    void addSingleton( ISingleton* singleton );
     void cleanupSingletons();
 
-    template <
-        typename SingletonImplT,
-        typename InterfaceT = SingletonImplT,
-        typename MutableInterfaceT = InterfaceT>
+
+    template<typename SingletonImplT, typename InterfaceT = SingletonImplT, typename MutableInterfaceT = InterfaceT>
     class Singleton : SingletonImplT, public ISingleton {
+
         static auto getInternal() -> Singleton* {
             static Singleton* s_instance = nullptr;
-            if (!s_instance) {
+            if( !s_instance ) {
                 s_instance = new Singleton;
-                addSingleton(s_instance);
+                addSingleton( s_instance );
             }
             return s_instance;
         }
 
-       public:
-        static auto get() -> InterfaceT const& { return *getInternal(); }
-        static auto getMutable() -> MutableInterfaceT& { return *getInternal(); }
+    public:
+        static auto get() -> InterfaceT const& {
+            return *getInternal();
+        }
+        static auto getMutable() -> MutableInterfaceT& {
+            return *getInternal();
+        }
     };
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_SINGLETONS_HPP_INCLUDED
+#endif // CATCH_SINGLETONS_HPP_INCLUDED

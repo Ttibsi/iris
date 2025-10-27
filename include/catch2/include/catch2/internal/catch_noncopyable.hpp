@@ -13,17 +13,17 @@ namespace Catch {
 
         //! Deriving classes become noncopyable and nonmovable
         class NonCopyable {
-           public:
-            NonCopyable(NonCopyable const&) = delete;
-            NonCopyable(NonCopyable&&) = delete;
-            NonCopyable& operator=(NonCopyable const&) = delete;
-            NonCopyable& operator=(NonCopyable&&) = delete;
+        public:
+            NonCopyable( NonCopyable const& ) = delete;
+            NonCopyable( NonCopyable&& ) = delete;
+            NonCopyable& operator=( NonCopyable const& ) = delete;
+            NonCopyable& operator=( NonCopyable&& ) = delete;
 
-           protected:
+        protected:
             NonCopyable() noexcept = default;
         };
 
-    }  // namespace Detail
-}  // namespace Catch
+    } // namespace Detail
+} // namespace Catch
 
-#endif  // CATCH_NONCOPYABLE_HPP_INCLUDED
+#endif // CATCH_NONCOPYABLE_HPP_INCLUDED

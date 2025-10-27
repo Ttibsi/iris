@@ -8,18 +8,19 @@
 #ifndef CATCH_REPORTER_AUTOMAKE_HPP_INCLUDED
 #define CATCH_REPORTER_AUTOMAKE_HPP_INCLUDED
 
-#include <string>
-
-#include <catch2/internal/catch_move_and_forward.hpp>
 #include <catch2/reporters/catch_reporter_streaming_base.hpp>
+#include <catch2/internal/catch_move_and_forward.hpp>
+
+#include <string>
 
 namespace Catch {
 
     class AutomakeReporter final : public StreamingReporterBase {
-       public:
+    public:
         // GCC5 compat: we cannot use inherited constructor, because it
         //              doesn't implement backport of P0136
-        AutomakeReporter(ReporterConfig&& _config) : StreamingReporterBase(CATCH_MOVE(_config)) {
+        AutomakeReporter( ReporterConfig&& _config ):
+            StreamingReporterBase( CATCH_MOVE( _config ) ) {
             m_preferences.shouldReportAllAssertionStarts = false;
         }
 
@@ -34,6 +35,6 @@ namespace Catch {
         void skipTest(TestCaseInfo const& testInfo) override;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_AUTOMAKE_HPP_INCLUDED
+#endif // CATCH_REPORTER_AUTOMAKE_HPP_INCLUDED

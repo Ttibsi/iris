@@ -8,18 +8,18 @@
 #ifndef CATCH_CONFIG_HPP_INCLUDED
 #define CATCH_CONFIG_HPP_INCLUDED
 
+#include <catch2/catch_test_spec.hpp>
+#include <catch2/interfaces/catch_interfaces_config.hpp>
+#include <catch2/internal/catch_unique_ptr.hpp>
+#include <catch2/internal/catch_optional.hpp>
+#include <catch2/internal/catch_stringref.hpp>
+#include <catch2/internal/catch_random_seed_generation.hpp>
+#include <catch2/internal/catch_reporter_spec_parser.hpp>
+
 #include <chrono>
 #include <map>
 #include <string>
 #include <vector>
-
-#include <catch2/catch_test_spec.hpp>
-#include <catch2/interfaces/catch_interfaces_config.hpp>
-#include <catch2/internal/catch_optional.hpp>
-#include <catch2/internal/catch_random_seed_generation.hpp>
-#include <catch2/internal/catch_reporter_spec_parser.hpp>
-#include <catch2/internal/catch_stringref.hpp>
-#include <catch2/internal/catch_unique_ptr.hpp>
 
 namespace Catch {
 
@@ -35,13 +35,16 @@ namespace Catch {
         std::string outputFilename;
         ColourMode colourMode;
         std::map<std::string, std::string> customOptions;
-        friend bool operator==(ProcessedReporterSpec const& lhs, ProcessedReporterSpec const& rhs);
-        friend bool operator!=(ProcessedReporterSpec const& lhs, ProcessedReporterSpec const& rhs) {
-            return !(lhs == rhs);
+        friend bool operator==( ProcessedReporterSpec const& lhs,
+                                ProcessedReporterSpec const& rhs );
+        friend bool operator!=( ProcessedReporterSpec const& lhs,
+                                ProcessedReporterSpec const& rhs ) {
+            return !( lhs == rhs );
         }
     };
 
     struct ConfigData {
+
         bool listTests = false;
         bool listTags = false;
         bool listReporters = false;
@@ -88,11 +91,13 @@ namespace Catch {
         std::string prematureExitGuardFilePath;
     };
 
+
     class Config : public IConfig {
-       public:
+    public:
+
         Config() = default;
-        Config(ConfigData const& data);
-        ~Config() override;  // = default in the cpp file
+        Config( ConfigData const& data );
+        ~Config() override; // = default in the cpp file
 
         bool listTests() const;
         bool listTags() const;
@@ -100,7 +105,8 @@ namespace Catch {
         bool listListeners() const;
 
         std::vector<ReporterSpec> const& getReporterSpecs() const;
-        std::vector<ProcessedReporterSpec> const& getProcessedReporterSpecs() const;
+        std::vector<ProcessedReporterSpec> const&
+        getProcessedReporterSpecs() const;
 
         std::vector<std::string> const& getTestsOrTags() const override;
         std::vector<std::string> const& getSectionsToRun() const override;
@@ -137,7 +143,7 @@ namespace Catch {
         unsigned int benchmarkResamples() const override;
         std::chrono::milliseconds benchmarkWarmupTime() const override;
 
-       private:
+    private:
         // Reads Bazel env vars and applies them to the config
         void readBazelEnvVars();
 
@@ -146,6 +152,6 @@ namespace Catch {
         TestSpec m_testSpec;
         bool m_hasTestFilters = false;
     };
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_CONFIG_HPP_INCLUDED
+#endif // CATCH_CONFIG_HPP_INCLUDED

@@ -10,11 +10,11 @@
 #ifndef CATCH_SAMPLE_ANALYSIS_HPP_INCLUDED
 #define CATCH_SAMPLE_ANALYSIS_HPP_INCLUDED
 
-#include <vector>
-
-#include <catch2/benchmark/catch_clock.hpp>
 #include <catch2/benchmark/catch_estimate.hpp>
 #include <catch2/benchmark/catch_outlier_classification.hpp>
+#include <catch2/benchmark/catch_clock.hpp>
+
+#include <vector>
 
 namespace Catch {
     namespace Benchmark {
@@ -25,7 +25,7 @@ namespace Catch {
             OutlierClassification outliers;
             double outlier_variance;
         };
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_SAMPLE_ANALYSIS_HPP_INCLUDED
+#endif // CATCH_SAMPLE_ANALYSIS_HPP_INCLUDED

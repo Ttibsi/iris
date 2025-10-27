@@ -13,6 +13,6 @@
 namespace Catch {
     //! Returns Catch2's current RNG seed.
     std::uint32_t getSeed();
-}  // namespace Catch
+}
 
-#endif  // CATCH_GET_RANDOM_SEED_HPP_INCLUDED
+#endif // CATCH_GET_RANDOM_SEED_HPP_INCLUDED

@@ -8,15 +8,17 @@
 #ifndef CATCH_LIST_HPP_INCLUDED
 #define CATCH_LIST_HPP_INCLUDED
 
+#include <catch2/internal/catch_stringref.hpp>
+
 #include <set>
 #include <string>
 
-#include <catch2/internal/catch_stringref.hpp>
 
 namespace Catch {
 
     class IEventListener;
     class Config;
+
 
     struct ReporterDescription {
         std::string name, description;
@@ -34,8 +36,8 @@ namespace Catch {
         std::size_t count = 0;
     };
 
-    bool list(IEventListener& reporter, Config const& config);
+    bool list( IEventListener& reporter, Config const& config );
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_LIST_HPP_INCLUDED
+#endif // CATCH_LIST_HPP_INCLUDED

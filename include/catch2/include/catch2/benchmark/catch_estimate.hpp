@@ -19,7 +19,7 @@ namespace Catch {
             Type upper_bound;
             double confidence_interval;
         };
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_ESTIMATE_HPP_INCLUDED
+#endif // CATCH_ESTIMATE_HPP_INCLUDED

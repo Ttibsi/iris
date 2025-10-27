@@ -13,14 +13,15 @@
 #include <catch2/benchmark/catch_clock.hpp>
 #include <catch2/benchmark/catch_sample_analysis.hpp>
 
+
 namespace Catch {
     class IConfig;
 
     namespace Benchmark {
         namespace Detail {
-            SampleAnalysis analyse(const IConfig& cfg, FDuration* first, FDuration* last);
-        }  // namespace Detail
-    }  // namespace Benchmark
-}  // namespace Catch
+            SampleAnalysis analyse(const IConfig &cfg, FDuration* first, FDuration* last);
+        } // namespace Detail
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_ANALYSE_HPP_INCLUDED
+#endif // CATCH_ANALYSE_HPP_INCLUDED

@@ -23,6 +23,6 @@ namespace Catch {
         ResultDisposition::Flags resultDisposition;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_ASSERTION_INFO_HPP_INCLUDED
+#endif // CATCH_ASSERTION_INFO_HPP_INCLUDED

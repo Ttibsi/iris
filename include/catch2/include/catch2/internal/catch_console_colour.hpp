@@ -8,10 +8,10 @@
 #ifndef CATCH_CONSOLE_COLOUR_HPP_INCLUDED
 #define CATCH_CONSOLE_COLOUR_HPP_INCLUDED
 
-#include <cstdint>
-#include <iosfwd>
-
 #include <catch2/internal/catch_unique_ptr.hpp>
+
+#include <iosfwd>
+#include <cstdint>
 
 namespace Catch {
 
@@ -58,12 +58,11 @@ namespace Catch {
     };
 
     class ColourImpl {
-       protected:
+    protected:
         //! The associated stream of this ColourImpl instance
         IStream* m_stream;
-
-       public:
-        ColourImpl(IStream* stream) : m_stream(stream) {}
+    public:
+        ColourImpl( IStream* stream ): m_stream( stream ) {}
 
         //! RAII wrapper around writing specific colour of text using specific
         //! colour impl into a stream.
@@ -72,15 +71,16 @@ namespace Catch {
             Colour::Code m_code;
             bool m_engaged = false;
 
-           public:
+        public:
             //! Does **not** engage the guard/start the colour
-            ColourGuard(Colour::Code code, ColourImpl const* colour);
+            ColourGuard( Colour::Code code,
+                         ColourImpl const* colour );
 
-            ColourGuard(ColourGuard const& rhs) = delete;
-            ColourGuard& operator=(ColourGuard const& rhs) = delete;
+            ColourGuard( ColourGuard const& rhs ) = delete;
+            ColourGuard& operator=( ColourGuard const& rhs ) = delete;
 
-            ColourGuard(ColourGuard&& rhs) noexcept;
-            ColourGuard& operator=(ColourGuard&& rhs) noexcept;
+            ColourGuard( ColourGuard&& rhs ) noexcept;
+            ColourGuard& operator=( ColourGuard&& rhs ) noexcept;
 
             //! Removes colour _if_ the guard was engaged
             ~ColourGuard();
@@ -90,48 +90,52 @@ namespace Catch {
              *
              * The API based on operator<< should be preferred.
              */
-            ColourGuard& engage(std::ostream& stream) &;
+            ColourGuard& engage( std::ostream& stream ) &;
             /**
              * Explicitly engages colour for given stream.
              *
              * The API based on operator<< should be preferred.
              */
-            ColourGuard&& engage(std::ostream& stream) &&;
+            ColourGuard&& engage( std::ostream& stream ) &&;
 
-           private:
+        private:
             //! Engages the guard and starts using colour
-            friend std::ostream& operator<<(std::ostream& lhs, ColourGuard& guard) {
-                guard.engageImpl(lhs);
+            friend std::ostream& operator<<( std::ostream& lhs,
+                                             ColourGuard& guard ) {
+                guard.engageImpl( lhs );
                 return lhs;
             }
             //! Engages the guard and starts using colour
-            friend std::ostream& operator<<(std::ostream& lhs, ColourGuard&& guard) {
-                guard.engageImpl(lhs);
+            friend std::ostream& operator<<( std::ostream& lhs,
+                                            ColourGuard&& guard) {
+                guard.engageImpl( lhs );
                 return lhs;
             }
 
-            void engageImpl(std::ostream& stream);
+            void engageImpl( std::ostream& stream );
+
         };
 
-        virtual ~ColourImpl();  // = default
+        virtual ~ColourImpl(); // = default
         /**
          * Creates a guard object for given colour and this colour impl
          *
          * **Important:**
          * the guard starts disengaged, and has to be engaged explicitly.
          */
-        ColourGuard guardColour(Colour::Code colourCode);
+        ColourGuard guardColour( Colour::Code colourCode );
 
-       private:
-        virtual void use(Colour::Code colourCode) const = 0;
+    private:
+        virtual void use( Colour::Code colourCode ) const = 0;
     };
 
     //! Provides ColourImpl based on global config and target compilation platform
-    Detail::unique_ptr<ColourImpl> makeColourImpl(ColourMode colourSelection, IStream* stream);
+    Detail::unique_ptr<ColourImpl> makeColourImpl( ColourMode colourSelection,
+                                                   IStream* stream );
 
     //! Checks if specific colour impl has been compiled into the binary
-    bool isColourImplAvailable(ColourMode colourSelection);
+    bool isColourImplAvailable( ColourMode colourSelection );
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_CONSOLE_COLOUR_HPP_INCLUDED
+#endif // CATCH_CONSOLE_COLOUR_HPP_INCLUDED

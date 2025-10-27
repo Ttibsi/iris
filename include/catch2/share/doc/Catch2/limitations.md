@@ -154,3 +154,4 @@ not conformant enough, but `clang-cl` will compile the assertion above
 using MSVC STL without problem.
 
 [This change got in with MSVC v19.37](https://godbolt.org/z/KG9obzdvE).
+

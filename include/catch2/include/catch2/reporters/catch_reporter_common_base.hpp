@@ -8,10 +8,10 @@
 #ifndef CATCH_REPORTER_COMMON_BASE_HPP_INCLUDED
 #define CATCH_REPORTER_COMMON_BASE_HPP_INCLUDED
 
+#include <catch2/interfaces/catch_interfaces_reporter.hpp>
+
 #include <map>
 #include <string>
-
-#include <catch2/interfaces/catch_interfaces_reporter.hpp>
 
 namespace Catch {
     class ColourImpl;
@@ -27,7 +27,7 @@ namespace Catch {
      * providing the default implementation of the different listing events.
      */
     class ReporterBase : public IEventListener {
-       protected:
+    protected:
         //! The stream wrapper as passed to us by outside code
         Detail::unique_ptr<IStream> m_wrapped_stream;
         //! Cached output stream from `m_wrapped_stream` to reduce
@@ -38,9 +38,9 @@ namespace Catch {
         //! The custom reporter options user passed down to the reporter
         std::map<std::string, std::string> m_customOptions;
 
-       public:
-        ReporterBase(ReporterConfig&& config);
-        ~ReporterBase() override;  // = default;
+    public:
+        ReporterBase( ReporterConfig&& config );
+        ~ReporterBase() override; // = default;
 
         /**
          * Provides a simple default listing of reporters.
@@ -48,14 +48,16 @@ namespace Catch {
          * Should look roughly like the reporter listing in v2 and earlier
          * versions of Catch2.
          */
-        void listReporters(std::vector<ReporterDescription> const& descriptions) override;
+        void listReporters(
+            std::vector<ReporterDescription> const& descriptions ) override;
         /**
          * Provides a simple default listing of listeners
          *
          * Looks similarly to listing of reporters, but with listener type
          * instead of reporter name.
          */
-        void listListeners(std::vector<ListenerDescription> const& descriptions) override;
+        void listListeners(
+            std::vector<ListenerDescription> const& descriptions ) override;
         /**
          * Provides a simple default listing of tests.
          *
@@ -63,15 +65,15 @@ namespace Catch {
          * of Catch2. Especially supports low-verbosity listing that mimics the
          * old `--list-test-names-only` output.
          */
-        void listTests(std::vector<TestCaseHandle> const& tests) override;
+        void listTests( std::vector<TestCaseHandle> const& tests ) override;
         /**
          * Provides a simple default listing of tags.
          *
          * Should look roughly like the tag listing in v2 and earlier versions
          * of Catch2.
          */
-        void listTags(std::vector<TagInfo> const& tags) override;
+        void listTags( std::vector<TagInfo> const& tags ) override;
     };
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_REPORTER_COMMON_BASE_HPP_INCLUDED
+#endif // CATCH_REPORTER_COMMON_BASE_HPP_INCLUDED

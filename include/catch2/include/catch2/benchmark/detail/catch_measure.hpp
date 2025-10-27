@@ -23,10 +23,10 @@ namespace Catch {
                 auto&& r = Detail::complete_invoke(CATCH_FORWARD(fun), CATCH_FORWARD(args)...);
                 auto end = Clock::now();
                 auto delta = end - start;
-                return {delta, CATCH_FORWARD(r), 1};
+                return { delta, CATCH_FORWARD(r), 1 };
             }
-        }  // namespace Detail
-    }  // namespace Benchmark
-}  // namespace Catch
+        } // namespace Detail
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_MEASURE_HPP_INCLUDED
+#endif // CATCH_MEASURE_HPP_INCLUDED

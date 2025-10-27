@@ -14,21 +14,24 @@
 namespace Catch {
 
     struct SourceLineInfo {
-        SourceLineInfo() = delete;
-        constexpr SourceLineInfo(char const* _file, std::size_t _line) noexcept
-            : file(_file), line(_line) {}
 
-        bool operator==(SourceLineInfo const& other) const noexcept;
-        bool operator<(SourceLineInfo const& other) const noexcept;
+        SourceLineInfo() = delete;
+        constexpr SourceLineInfo( char const* _file, std::size_t _line ) noexcept:
+            file( _file ),
+            line( _line )
+        {}
+
+        bool operator == ( SourceLineInfo const& other ) const noexcept;
+        bool operator < ( SourceLineInfo const& other ) const noexcept;
 
         char const* file;
         std::size_t line;
 
-        friend std::ostream& operator<<(std::ostream& os, SourceLineInfo const& info);
+        friend std::ostream& operator << (std::ostream& os, SourceLineInfo const& info);
     };
-}  // namespace Catch
+}
 
 #define CATCH_INTERNAL_LINEINFO \
-    ::Catch::SourceLineInfo(__FILE__, static_cast<std::size_t>(__LINE__))
+    ::Catch::SourceLineInfo( __FILE__, static_cast<std::size_t>( __LINE__ ) )
 
-#endif  // CATCH_SOURCE_LINE_INFO_HPP_INCLUDED
+#endif // CATCH_SOURCE_LINE_INFO_HPP_INCLUDED

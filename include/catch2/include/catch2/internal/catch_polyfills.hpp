@@ -16,6 +16,6 @@ namespace Catch {
     float nextafter(float x, float y);
     double nextafter(double x, double y);
 
-}  // namespace Catch
+}
 
-#endif  // CATCH_POLYFILLS_HPP_INCLUDED
+#endif // CATCH_POLYFILLS_HPP_INCLUDED

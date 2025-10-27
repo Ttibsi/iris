@@ -10,6 +10,6 @@
 
 namespace Catch {
     bool uncaught_exceptions();
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_UNCAUGHT_EXCEPTIONS_HPP_INCLUDED
+#endif // CATCH_UNCAUGHT_EXCEPTIONS_HPP_INCLUDED

@@ -18,12 +18,14 @@ namespace Catch {
     class GeneratorException : public std::exception {
         const char* const m_msg = "";
 
-       public:
-        GeneratorException(const char* msg) : m_msg(msg) {}
+    public:
+        GeneratorException(const char* msg):
+            m_msg(msg)
+        {}
 
         const char* what() const noexcept final;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_GENERATOR_EXCEPTION_HPP_INCLUDED
+#endif // CATCH_GENERATOR_EXCEPTION_HPP_INCLUDED

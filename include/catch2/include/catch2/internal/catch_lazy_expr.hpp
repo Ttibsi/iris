@@ -21,17 +21,20 @@ namespace Catch {
 
         ITransientExpression const* m_transientExpression = nullptr;
         bool m_isNegated;
-
-       public:
-        constexpr LazyExpression(bool isNegated) : m_isNegated(isNegated) {}
+    public:
+        constexpr LazyExpression( bool isNegated ):
+            m_isNegated(isNegated)
+        {}
         constexpr LazyExpression(LazyExpression const& other) = default;
-        LazyExpression& operator=(LazyExpression const&) = delete;
+        LazyExpression& operator = ( LazyExpression const& ) = delete;
 
-        constexpr explicit operator bool() const { return m_transientExpression != nullptr; }
+        constexpr explicit operator bool() const {
+            return m_transientExpression != nullptr;
+        }
 
-        friend auto operator<<(std::ostream& os, LazyExpression const& lazyExpr) -> std::ostream&;
+        friend auto operator << ( std::ostream& os, LazyExpression const& lazyExpr ) -> std::ostream&;
     };
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_LAZY_EXPR_HPP_INCLUDED
+#endif // CATCH_LAZY_EXPR_HPP_INCLUDED

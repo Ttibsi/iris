@@ -8,11 +8,11 @@
 #ifndef CATCH_ASSERTION_HANDLER_HPP_INCLUDED
 #define CATCH_ASSERTION_HANDLER_HPP_INCLUDED
 
-#include <string>
-
 #include <catch2/catch_assertion_info.hpp>
-#include <catch2/interfaces/catch_interfaces_capture.hpp>
 #include <catch2/internal/catch_decomposer.hpp>
+#include <catch2/interfaces/catch_interfaces_capture.hpp>
+
+#include <string>
 
 namespace Catch {
 
@@ -28,23 +28,24 @@ namespace Catch {
         bool m_completed = false;
         IResultCapture& m_resultCapture;
 
-       public:
-        AssertionHandler(
-            StringRef macroName,
-            SourceLineInfo const& lineInfo,
-            StringRef capturedExpression,
-            ResultDisposition::Flags resultDisposition);
+    public:
+        AssertionHandler
+            (   StringRef macroName,
+                SourceLineInfo const& lineInfo,
+                StringRef capturedExpression,
+                ResultDisposition::Flags resultDisposition );
         ~AssertionHandler() {
-            if (!m_completed) {
-                m_resultCapture.handleIncomplete(m_assertionInfo);
+            if ( !m_completed ) {
+                m_resultCapture.handleIncomplete( m_assertionInfo );
             }
         }
 
-        template <typename T>
-        constexpr void handleExpr(ExprLhs<T> const& expr) {
-            handleExpr(expr.makeUnaryExpr());
+
+        template<typename T>
+        constexpr void handleExpr( ExprLhs<T> const& expr ) {
+            handleExpr( expr.makeUnaryExpr() );
         }
-        void handleExpr(ITransientExpression const& expr);
+        void handleExpr( ITransientExpression const& expr );
 
         void handleMessage(ResultWas::OfType resultType, std::string&& message);
 
@@ -60,8 +61,8 @@ namespace Catch {
         auto allowThrows() const -> bool;
     };
 
-    void handleExceptionMatchExpr(AssertionHandler& handler, std::string const& str);
+    void handleExceptionMatchExpr( AssertionHandler& handler, std::string const& str );
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_ASSERTION_HANDLER_HPP_INCLUDED
+#endif // CATCH_ASSERTION_HANDLER_HPP_INCLUDED

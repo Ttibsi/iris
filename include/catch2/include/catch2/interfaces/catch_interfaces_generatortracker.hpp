@@ -8,10 +8,10 @@
 #ifndef CATCH_INTERFACES_GENERATORTRACKER_HPP_INCLUDED
 #define CATCH_INTERFACES_GENERATORTRACKER_HPP_INCLUDED
 
-#include <string>
-
-#include <catch2/internal/catch_stringref.hpp>
 #include <catch2/internal/catch_unique_ptr.hpp>
+#include <catch2/internal/catch_stringref.hpp>
+
+#include <string>
 
 namespace Catch {
 
@@ -35,14 +35,14 @@ namespace Catch {
             //! Customization point for `currentElementAsString`
             virtual std::string stringifyImpl() const = 0;
 
-           public:
+        public:
             GeneratorUntypedBase() = default;
             // Generation of copy ops is deprecated (and Clang will complain)
             // if there is a user destructor defined
             GeneratorUntypedBase(GeneratorUntypedBase const&) = default;
             GeneratorUntypedBase& operator=(GeneratorUntypedBase const&) = default;
 
-            virtual ~GeneratorUntypedBase();  // = default;
+            virtual ~GeneratorUntypedBase(); // = default;
 
             /**
              * Attempts to move the generator to the next element
@@ -75,16 +75,16 @@ namespace Catch {
         };
         using GeneratorBasePtr = Catch::Detail::unique_ptr<GeneratorUntypedBase>;
 
-    }  // namespace Generators
+    } // namespace Generators
 
     class IGeneratorTracker {
-       public:
-        virtual ~IGeneratorTracker();  // = default;
+    public:
+        virtual ~IGeneratorTracker(); // = default;
         virtual auto hasGenerator() const -> bool = 0;
         virtual auto getGenerator() const -> Generators::GeneratorBasePtr const& = 0;
-        virtual void setGenerator(Generators::GeneratorBasePtr&& generator) = 0;
+        virtual void setGenerator( Generators::GeneratorBasePtr&& generator ) = 0;
     };
 
-}  // namespace Catch
+} // namespace Catch
 
-#endif  // CATCH_INTERFACES_GENERATORTRACKER_HPP_INCLUDED
+#endif // CATCH_INTERFACES_GENERATORTRACKER_HPP_INCLUDED

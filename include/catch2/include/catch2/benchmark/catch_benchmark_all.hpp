@@ -43,4 +43,4 @@
 #include <catch2/benchmark/detail/catch_stats.hpp>
 #include <catch2/benchmark/detail/catch_timing.hpp>
 
-#endif  // CATCH_BENCHMARK_ALL_HPP_INCLUDED
+#endif // CATCH_BENCHMARK_ALL_HPP_INCLUDED

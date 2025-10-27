@@ -8,20 +8,19 @@
 #ifndef CATCH_REUSABLE_STRING_STREAM_HPP_INCLUDED
 #define CATCH_REUSABLE_STRING_STREAM_HPP_INCLUDED
 
-#include <cstddef>
+#include <catch2/internal/catch_noncopyable.hpp>
+
 #include <iosfwd>
+#include <cstddef>
 #include <ostream>
 #include <string>
-
-#include <catch2/internal/catch_noncopyable.hpp>
 
 namespace Catch {
 
     class ReusableStringStream : Detail::NonCopyable {
         std::size_t m_index;
         std::ostream* m_oss;
-
-       public:
+    public:
         ReusableStringStream();
         ~ReusableStringStream();
 
@@ -42,8 +41,8 @@ namespace Catch {
 #pragma GCC diagnostic ignored "-Wnonnull-compare"
 #endif
 
-        template <typename T>
-        auto operator<<(T const& value) -> ReusableStringStream& {
+        template<typename T>
+        auto operator << ( T const& value ) -> ReusableStringStream& {
             *m_oss << value;
             return *this;
         }
@@ -53,6 +52,6 @@ namespace Catch {
 #endif
         auto get() -> std::ostream& { return *m_oss; }
     };
-}  // namespace Catch
+}
 
-#endif  // CATCH_REUSABLE_STRING_STREAM_HPP_INCLUDED
+#endif // CATCH_REUSABLE_STRING_STREAM_HPP_INCLUDED

@@ -8,12 +8,12 @@
 #ifndef CATCH_REPORTER_REGISTRY_HPP_INCLUDED
 #define CATCH_REPORTER_REGISTRY_HPP_INCLUDED
 
+#include <catch2/internal/catch_case_insensitive_comparisons.hpp>
+#include <catch2/internal/catch_unique_ptr.hpp>
+
 #include <map>
 #include <string>
 #include <vector>
-
-#include <catch2/internal/catch_case_insensitive_comparisons.hpp>
-#include <catch2/internal/catch_unique_ptr.hpp>
 
 namespace Catch {
 
@@ -28,22 +28,28 @@ namespace Catch {
         struct ReporterRegistryImpl;
         Detail::unique_ptr<ReporterRegistryImpl> m_impl;
 
-       public:
+    public:
         ReporterRegistry();
-        ~ReporterRegistry();  // = default;
+        ~ReporterRegistry(); // = default;
 
-        IEventListenerPtr create(std::string const& name, ReporterConfig&& config) const;
+        IEventListenerPtr create( std::string const& name,
+                                  ReporterConfig&& config ) const;
 
-        void registerReporter(std::string const& name, IReporterFactoryPtr factory);
+        void registerReporter( std::string const& name,
+                               IReporterFactoryPtr factory );
 
-        void registerListener(Detail::unique_ptr<EventListenerFactory> factory);
+        void
+        registerListener( Detail::unique_ptr<EventListenerFactory> factory );
 
-        std::map<std::string, IReporterFactoryPtr, Detail::CaseInsensitiveLess> const&
+        std::map<std::string,
+                 IReporterFactoryPtr,
+                 Detail::CaseInsensitiveLess> const&
         getFactories() const;
 
-        std::vector<Detail::unique_ptr<EventListenerFactory>> const& getListeners() const;
+        std::vector<Detail::unique_ptr<EventListenerFactory>> const&
+        getListeners() const;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_REGISTRY_HPP_INCLUDED
+#endif // CATCH_REPORTER_REGISTRY_HPP_INCLUDED

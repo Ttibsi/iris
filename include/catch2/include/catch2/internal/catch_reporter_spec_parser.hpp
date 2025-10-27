@@ -8,13 +8,13 @@
 #ifndef CATCH_REPORTER_SPEC_PARSER_HPP_INCLUDED
 #define CATCH_REPORTER_SPEC_PARSER_HPP_INCLUDED
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include <catch2/interfaces/catch_interfaces_config.hpp>
 #include <catch2/internal/catch_optional.hpp>
 #include <catch2/internal/catch_stringref.hpp>
+
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Catch {
 
@@ -22,10 +22,10 @@ namespace Catch {
 
     namespace Detail {
         //! Splits the reporter spec into reporter name and kv-pair options
-        std::vector<std::string> splitReporterSpec(StringRef reporterSpec);
+        std::vector<std::string> splitReporterSpec( StringRef reporterSpec );
 
-        Optional<ColourMode> stringToColourMode(StringRef colourMode);
-    }  // namespace Detail
+        Optional<ColourMode> stringToColourMode( StringRef colourMode );
+    }
 
     /**
      * Structured reporter spec that a reporter can be created from
@@ -41,25 +41,31 @@ namespace Catch {
         Optional<ColourMode> m_colourMode;
         std::map<std::string, std::string> m_customOptions;
 
-        friend bool operator==(ReporterSpec const& lhs, ReporterSpec const& rhs);
-        friend bool operator!=(ReporterSpec const& lhs, ReporterSpec const& rhs) {
-            return !(lhs == rhs);
+        friend bool operator==( ReporterSpec const& lhs,
+                                ReporterSpec const& rhs );
+        friend bool operator!=( ReporterSpec const& lhs,
+                                ReporterSpec const& rhs ) {
+            return !( lhs == rhs );
         }
 
-       public:
+    public:
         ReporterSpec(
             std::string name,
             Optional<std::string> outputFileName,
             Optional<ColourMode> colourMode,
-            std::map<std::string, std::string> customOptions);
+            std::map<std::string, std::string> customOptions );
 
         std::string const& name() const { return m_name; }
 
-        Optional<std::string> const& outputFile() const { return m_outputFileName; }
+        Optional<std::string> const& outputFile() const {
+            return m_outputFileName;
+        }
 
         Optional<ColourMode> const& colourMode() const { return m_colourMode; }
 
-        std::map<std::string, std::string> const& customOptions() const { return m_customOptions; }
+        std::map<std::string, std::string> const& customOptions() const {
+            return m_customOptions;
+        }
     };
 
     /**
@@ -72,8 +78,8 @@ namespace Catch {
      *  * empty key/value in an custom kv pair
      *  * ...
      */
-    Optional<ReporterSpec> parseReporterSpec(StringRef reporterSpec);
+    Optional<ReporterSpec> parseReporterSpec( StringRef reporterSpec );
 
-}  // namespace Catch
+}
 
-#endif  // CATCH_REPORTER_SPEC_PARSER_HPP_INCLUDED
+#endif // CATCH_REPORTER_SPEC_PARSER_HPP_INCLUDED

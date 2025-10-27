@@ -23,13 +23,15 @@ namespace Catch {
         friend Context& getCurrentMutableContext();
         friend Context const& getCurrentContext();
 
-       public:
-        constexpr IResultCapture* getResultCapture() const { return m_resultCapture; }
+    public:
+        constexpr IResultCapture* getResultCapture() const {
+            return m_resultCapture;
+        }
         constexpr IConfig const* getConfig() const { return m_config; }
-        constexpr void setResultCapture(IResultCapture* resultCapture) {
+        constexpr void setResultCapture( IResultCapture* resultCapture ) {
             m_resultCapture = resultCapture;
         }
-        constexpr void setConfig(IConfig const* config) { m_config = config; }
+        constexpr void setConfig( IConfig const* config ) { m_config = config; }
     };
 
     Context& getCurrentMutableContext();
@@ -40,6 +42,6 @@ namespace Catch {
 
     class SimplePcg32;
     SimplePcg32& sharedRng();
-}  // namespace Catch
+}
 
-#endif  // CATCH_CONTEXT_HPP_INCLUDED
+#endif // CATCH_CONTEXT_HPP_INCLUDED

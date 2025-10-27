@@ -13,17 +13,17 @@
 #pragma clang diagnostic ignored "-Wpadded"
 #endif
 
-#include <string>
-#include <vector>
-
 #include <catch2/catch_test_spec.hpp>
+
+#include <vector>
+#include <string>
 
 namespace Catch {
 
     class ITagAliasRegistry;
 
     class TestSpecParser {
-        enum Mode { None, Name, QuotedName, Tag, EscapedName };
+        enum Mode{ None, Name, QuotedName, Tag, EscapedName };
         Mode m_mode = None;
         Mode lastMode = None;
         bool m_exclusion = false;
@@ -37,21 +37,21 @@ namespace Catch {
         TestSpec m_testSpec;
         ITagAliasRegistry const* m_tagAliases = nullptr;
 
-       public:
-        TestSpecParser(ITagAliasRegistry const& tagAliases);
+    public:
+        TestSpecParser( ITagAliasRegistry const& tagAliases );
 
-        TestSpecParser& parse(std::string const& arg);
+        TestSpecParser& parse( std::string const& arg );
         TestSpec testSpec();
 
-       private:
-        bool visitChar(char c);
-        void startNewMode(Mode mode);
-        bool processNoneChar(char c);
-        void processNameChar(char c);
-        bool processOtherChar(char c);
+    private:
+        bool visitChar( char c );
+        void startNewMode( Mode mode );
+        bool processNoneChar( char c );
+        void processNameChar( char c );
+        bool processOtherChar( char c );
         void endMode();
         void escape();
-        bool isControlChar(char c) const;
+        bool isControlChar( char c ) const;
         void saveLastMode();
         void revertBackToLastMode();
         void addFilter();
@@ -69,12 +69,13 @@ namespace Catch {
             m_patternName += c;
             m_realPatternPos++;
         }
+
     };
 
-}  // namespace Catch
+} // namespace Catch
 
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
 
-#endif  // CATCH_TEST_SPEC_PARSER_HPP_INCLUDED
+#endif // CATCH_TEST_SPEC_PARSER_HPP_INCLUDED

@@ -18,6 +18,6 @@ namespace Catch {
     template <typename Duration = Benchmark::FDuration>
     struct BenchmarkStats;
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_BENCHMARK_STATS_FWD_HPP_INCLUDED
+#endif // CATCH_BENCHMARK_STATS_FWD_HPP_INCLUDED

@@ -10,15 +10,15 @@
 #ifndef CATCH_RUN_FOR_AT_LEAST_HPP_INCLUDED
 #define CATCH_RUN_FOR_AT_LEAST_HPP_INCLUDED
 
-#include <type_traits>
-
-#include <catch2/benchmark/catch_chronometer.hpp>
 #include <catch2/benchmark/catch_clock.hpp>
-#include <catch2/benchmark/detail/catch_complete_invoke.hpp>
+#include <catch2/benchmark/catch_chronometer.hpp>
 #include <catch2/benchmark/detail/catch_measure.hpp>
+#include <catch2/benchmark/detail/catch_complete_invoke.hpp>
 #include <catch2/benchmark/detail/catch_timing.hpp>
 #include <catch2/internal/catch_meta.hpp>
 #include <catch2/internal/catch_move_and_forward.hpp>
+
+#include <type_traits>
 
 namespace Catch {
     namespace Benchmark {
@@ -32,32 +32,34 @@ namespace Catch {
                 Detail::ChronometerModel<Clock> meter;
                 auto&& result = Detail::complete_invoke(fun, Chronometer(meter, iters));
 
-                return {meter.elapsed(), CATCH_MOVE(result), iters};
+                return { meter.elapsed(), CATCH_MOVE(result), iters };
             }
 
             template <typename Clock, typename Fun>
-            using run_for_at_least_argument_t =
-                std::conditional_t<is_callable<Fun(Chronometer)>::value, Chronometer, int>;
+            using run_for_at_least_argument_t = std::conditional_t<is_callable<Fun(Chronometer)>::value, Chronometer, int>;
+
 
             [[noreturn]]
             void throw_optimized_away_error();
 
             template <typename Clock, typename Fun>
             TimingOf<Fun, run_for_at_least_argument_t<Clock, Fun>>
-            run_for_at_least(IDuration how_long, const int initial_iterations, Fun&& fun) {
+                run_for_at_least(IDuration how_long,
+                                 const int initial_iterations,
+                                 Fun&& fun) {
                 auto iters = initial_iterations;
                 while (iters < (1 << 30)) {
                     auto&& Timing = measure_one<Clock>(fun, iters, is_callable<Fun(Chronometer)>());
 
                     if (Timing.elapsed >= how_long) {
-                        return {Timing.elapsed, CATCH_MOVE(Timing.result), iters};
+                        return { Timing.elapsed, CATCH_MOVE(Timing.result), iters };
                     }
                     iters *= 2;
                 }
                 throw_optimized_away_error();
             }
-        }  // namespace Detail
-    }  // namespace Benchmark
-}  // namespace Catch
+        } // namespace Detail
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_RUN_FOR_AT_LEAST_HPP_INCLUDED
+#endif // CATCH_RUN_FOR_AT_LEAST_HPP_INCLUDED

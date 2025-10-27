@@ -27,4 +27,4 @@
 #include <catch2/generators/catch_generators_random.hpp>
 #include <catch2/generators/catch_generators_range.hpp>
 
-#endif  // CATCH_GENERATORS_ALL_HPP_INCLUDED
+#endif // CATCH_GENERATORS_ALL_HPP_INCLUDED

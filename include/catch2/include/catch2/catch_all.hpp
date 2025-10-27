@@ -135,4 +135,4 @@
 #include <catch2/matchers/catch_matchers_all.hpp>
 #include <catch2/reporters/catch_reporters_all.hpp>
 
-#endif  // CATCH_ALL_HPP_INCLUDED
+#endif // CATCH_ALL_HPP_INCLUDED

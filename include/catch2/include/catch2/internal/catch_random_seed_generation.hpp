@@ -21,6 +21,6 @@ namespace Catch {
 
     std::uint32_t generateRandomSeed(GenerateFrom from);
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_RANDOM_SEED_GENERATION_HPP_INCLUDED
+#endif // CATCH_RANDOM_SEED_GENERATION_HPP_INCLUDED

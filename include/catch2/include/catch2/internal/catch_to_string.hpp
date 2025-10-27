@@ -24,6 +24,6 @@ namespace Catch {
         return rss.str();
 #endif
     }
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_TO_STRING_HPP_INCLUDED
+#endif // CATCH_TO_STRING_HPP_INCLUDED

@@ -17,6 +17,6 @@ namespace Catch {
         StringRef name;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_TEST_RUN_INFO_HPP_INCLUDED
+#endif // CATCH_TEST_RUN_INFO_HPP_INCLUDED

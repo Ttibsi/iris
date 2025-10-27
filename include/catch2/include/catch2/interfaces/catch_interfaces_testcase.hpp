@@ -17,16 +17,14 @@ namespace Catch {
     class IConfig;
 
     class ITestCaseRegistry {
-       public:
-        virtual ~ITestCaseRegistry();  // = default
-        // TODO: this exists only for adding filenames to test cases -- let's expose this in a saner
-        // way later
-        virtual std::vector<TestCaseInfo*> const& getAllInfos() const = 0;
+    public:
+        virtual ~ITestCaseRegistry(); // = default
+        // TODO: this exists only for adding filenames to test cases -- let's expose this in a saner way later
+        virtual std::vector<TestCaseInfo* > const& getAllInfos() const = 0;
         virtual std::vector<TestCaseHandle> const& getAllTests() const = 0;
-        virtual std::vector<TestCaseHandle> const& getAllTestsSorted(
-            IConfig const& config) const = 0;
+        virtual std::vector<TestCaseHandle> const& getAllTestsSorted( IConfig const& config ) const = 0;
     };
 
-}  // namespace Catch
+}
 
-#endif  // CATCH_INTERFACES_TESTCASE_HPP_INCLUDED
+#endif // CATCH_INTERFACES_TESTCASE_HPP_INCLUDED

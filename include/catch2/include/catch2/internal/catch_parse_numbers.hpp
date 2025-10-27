@@ -8,9 +8,9 @@
 #ifndef CATCH_PARSE_NUMBERS_HPP_INCLUDED
 #define CATCH_PARSE_NUMBERS_HPP_INCLUDED
 
-#include <string>
-
 #include <catch2/internal/catch_optional.hpp>
+
+#include <string>
 
 namespace Catch {
 
@@ -21,6 +21,6 @@ namespace Catch {
      * e.g. "-1" is rejected, instead of being parsed as UINT_MAX.
      */
     Optional<unsigned int> parseUInt(std::string const& input, int base = 10);
-}  // namespace Catch
+}
 
-#endif  // CATCH_PARSE_NUMBERS_HPP_INCLUDED
+#endif // CATCH_PARSE_NUMBERS_HPP_INCLUDED

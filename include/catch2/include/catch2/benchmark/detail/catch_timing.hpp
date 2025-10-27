@@ -23,7 +23,7 @@ namespace Catch {
         };
         template <typename Func, typename... Args>
         using TimingOf = Timing<Detail::CompleteType_t<FunctionReturnType<Func, Args...>>>;
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_TIMING_HPP_INCLUDED
+#endif // CATCH_TIMING_HPP_INCLUDED

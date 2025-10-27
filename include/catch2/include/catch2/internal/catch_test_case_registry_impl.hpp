@@ -8,11 +8,11 @@
 #ifndef CATCH_TEST_CASE_REGISTRY_IMPL_HPP_INCLUDED
 #define CATCH_TEST_CASE_REGISTRY_IMPL_HPP_INCLUDED
 
-#include <vector>
-
-#include <catch2/interfaces/catch_interfaces_config.hpp>
 #include <catch2/interfaces/catch_interfaces_testcase.hpp>
+#include <catch2/interfaces/catch_interfaces_config.hpp>
 #include <catch2/internal/catch_unique_ptr.hpp>
+
+#include <vector>
 
 namespace Catch {
 
@@ -21,31 +21,24 @@ namespace Catch {
     class TestCaseHandle;
     class TestSpec;
 
-    std::vector<TestCaseHandle> sortTests(
-        IConfig const& config,
-        std::vector<TestCaseHandle> const& unsortedTestCases);
+    std::vector<TestCaseHandle> sortTests( IConfig const& config, std::vector<TestCaseHandle> const& unsortedTestCases );
 
-    bool isThrowSafe(TestCaseHandle const& testCase, IConfig const& config);
+    bool isThrowSafe( TestCaseHandle const& testCase, IConfig const& config );
 
-    std::vector<TestCaseHandle> filterTests(
-        std::vector<TestCaseHandle> const& testCases,
-        TestSpec const& testSpec,
-        IConfig const& config);
-    std::vector<TestCaseHandle> const& getAllTestCasesSorted(IConfig const& config);
+    std::vector<TestCaseHandle> filterTests( std::vector<TestCaseHandle> const& testCases, TestSpec const& testSpec, IConfig const& config );
+    std::vector<TestCaseHandle> const& getAllTestCasesSorted( IConfig const& config );
 
     class TestRegistry : public ITestCaseRegistry {
-       public:
-        void registerTest(
-            Detail::unique_ptr<TestCaseInfo> testInfo,
-            Detail::unique_ptr<ITestInvoker> testInvoker);
+    public:
+        void registerTest( Detail::unique_ptr<TestCaseInfo> testInfo, Detail::unique_ptr<ITestInvoker> testInvoker );
 
         std::vector<TestCaseInfo*> const& getAllInfos() const override;
         std::vector<TestCaseHandle> const& getAllTests() const override;
-        std::vector<TestCaseHandle> const& getAllTestsSorted(IConfig const& config) const override;
+        std::vector<TestCaseHandle> const& getAllTestsSorted( IConfig const& config ) const override;
 
-        ~TestRegistry() override;  // = default
+        ~TestRegistry() override; // = default
 
-       private:
+    private:
         std::vector<Detail::unique_ptr<TestCaseInfo>> m_owned_test_infos;
         // Keeps a materialized vector for `getAllInfos`.
         // We should get rid of that eventually (see interface note)
@@ -59,6 +52,8 @@ namespace Catch {
 
     ///////////////////////////////////////////////////////////////////////////
 
-}  // end namespace Catch
 
-#endif  // CATCH_TEST_CASE_REGISTRY_IMPL_HPP_INCLUDED
+} // end namespace Catch
+
+
+#endif // CATCH_TEST_CASE_REGISTRY_IMPL_HPP_INCLUDED

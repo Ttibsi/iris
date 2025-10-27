@@ -21,7 +21,7 @@ namespace Catch {
         using TimePoint = typename Clock::time_point;
 
         using default_clock = std::chrono::steady_clock;
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_CLOCK_HPP_INCLUDED
+#endif // CATCH_CLOCK_HPP_INCLUDED

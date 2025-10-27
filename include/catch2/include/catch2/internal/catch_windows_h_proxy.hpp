@@ -15,14 +15,14 @@
 // We might end up with the define made globally through the compiler,
 // and we don't want to trigger warnings for this
 #if !defined(NOMINMAX)
-#define NOMINMAX
+#  define NOMINMAX
 #endif
 #if !defined(WIN32_LEAN_AND_MEAN)
-#define WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
 #endif
 
 #include <windows.h>
 
-#endif  // defined(CATCH_PLATFORM_WINDOWS)
+#endif // defined(CATCH_PLATFORM_WINDOWS)
 
-#endif  // CATCH_WINDOWS_H_PROXY_HPP_INCLUDED
+#endif // CATCH_WINDOWS_H_PROXY_HPP_INCLUDED

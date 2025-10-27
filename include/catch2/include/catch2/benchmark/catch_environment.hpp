@@ -23,7 +23,7 @@ namespace Catch {
             EnvironmentEstimate clock_resolution;
             EnvironmentEstimate clock_cost;
         };
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_ENVIRONMENT_HPP_INCLUDED
+#endif // CATCH_ENVIRONMENT_HPP_INCLUDED

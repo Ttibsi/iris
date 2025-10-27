@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import platform
 import shutil
 import stat
 import subprocess
@@ -31,7 +32,7 @@ def loc() -> int:
     )
 
 
-def clean() -> None:
+def clean() -> int:
     print("Removing build directory")
     shutil.rmtree("build", ignore_errors=True)
 
@@ -42,6 +43,7 @@ def clean() -> None:
     shutil.rmtree("tests/integration/__pycache__", ignore_errors=True)
     shutil.rmtree(".pytest_cache", ignore_errors=True)
     shutil.rmtree("release", ignore_errors=True)
+    shutil.rmtree("include/catch2/lib64", ignore_errors=True) 
 
     files = [
         "src/version.h",
@@ -55,6 +57,8 @@ def clean() -> None:
         if os.path.isfile(file):
             print(f"Removing {file}")
             os.remove(file)
+
+    return 0
 
 
 def create_read_only_file() -> None:
@@ -102,7 +106,30 @@ def integration_tests(test_name: str = "") -> int:
         return run_shell_cmd(f"venv/bin/pytest -v {' '.join(test_paths)}")
 
 
+def create_symlink() -> None:
+    location = "include/catch2/lib64"
+    if os.path.exists(location):
+        return
+
+    src: str = "lib64"
+
+    if platform.machine() == "x86_64":
+        src += "_x86_64"
+        print("Creating symlink (x86_64)...")
+    elif platform.machine() == "aarch64":
+        src += "_aarch64"
+        print("Creating symlink (aarch64)...")
+    else:
+        raise OSError("Architecture not found")
+
+    shutil.copytree(f"include/catch2/{src}", location) 
+
+
 def test(testname: str | None, asan: bool) -> int:
+    create_symlink()
+    if not os.path.exists("include/catch2/lib64/libCatch2.a"):
+        raise AssertionError("The symlink doesn't exist?") 
+         
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
@@ -176,21 +203,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(args)
 
     start = timeit.default_timer()
+    ret = 0
     if args.cmd == "clean":
-        clean()
+        ret = clean()
     elif args.cmd == "loc":
-        return loc()
+        ret = loc()
     elif args.cmd == "test":
         if args.integration:
-            return integration_tests(args.testname)
+            ret = integration_tests(args.testname)
         else:
-            return test(args.testname, args.asan)
+            ret = test(args.testname, args.asan)
     else:
-        return build(args.release)
+        ret = build(args.release)
 
     print(f"Elapsed time: {round(timeit.default_timer() - start, 2)} Seconds")
 
-    return 0
+    return ret
 
 
 if __name__ == '__main__':

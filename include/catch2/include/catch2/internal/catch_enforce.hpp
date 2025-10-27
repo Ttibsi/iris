@@ -8,11 +8,11 @@
 #ifndef CATCH_ENFORCE_HPP_INCLUDED
 #define CATCH_ENFORCE_HPP_INCLUDED
 
-#include <exception>  // for `std::exception` in no-exception configuration
-
+#include <catch2/internal/catch_source_line_info.hpp>
 #include <catch2/internal/catch_compiler_capabilities.hpp>
 #include <catch2/internal/catch_reusable_string_stream.hpp>
-#include <catch2/internal/catch_source_line_info.hpp>
+
+#include <exception> // for `std::exception` in no-exception configuration
 
 namespace Catch {
 #if !defined(CATCH_CONFIG_DISABLE_EXCEPTIONS)
@@ -21,7 +21,7 @@ namespace Catch {
     void throw_exception(Ex const& e) {
         throw e;
     }
-#else  // ^^ Exceptions are enabled //  Exceptions are disabled vv
+#else // ^^ Exceptions are enabled //  Exceptions are disabled vv
     [[noreturn]]
     void throw_exception(std::exception const& e);
 #endif
@@ -33,21 +33,22 @@ namespace Catch {
     [[noreturn]]
     void throw_runtime_error(std::string const& msg);
 
-}  // namespace Catch
+} // namespace Catch;
 
-#define CATCH_MAKE_MSG(...) (Catch::ReusableStringStream() << __VA_ARGS__).str()
+#define CATCH_MAKE_MSG(...) \
+    (Catch::ReusableStringStream() << __VA_ARGS__).str()
 
 #define CATCH_INTERNAL_ERROR(...) \
-    Catch::throw_logic_error(     \
-        CATCH_MAKE_MSG(CATCH_INTERNAL_LINEINFO << ": Internal Catch2 error: " << __VA_ARGS__))
+    Catch::throw_logic_error(CATCH_MAKE_MSG( CATCH_INTERNAL_LINEINFO << ": Internal Catch2 error: " << __VA_ARGS__))
 
-#define CATCH_ERROR(...) Catch::throw_domain_error(CATCH_MAKE_MSG(__VA_ARGS__))
+#define CATCH_ERROR(...) \
+    Catch::throw_domain_error(CATCH_MAKE_MSG( __VA_ARGS__ ))
 
-#define CATCH_RUNTIME_ERROR(...) Catch::throw_runtime_error(CATCH_MAKE_MSG(__VA_ARGS__))
+#define CATCH_RUNTIME_ERROR(...) \
+    Catch::throw_runtime_error(CATCH_MAKE_MSG( __VA_ARGS__ ))
 
-#define CATCH_ENFORCE(condition, ...)               \
-    do {                                            \
-        if (!(condition)) CATCH_ERROR(__VA_ARGS__); \
-    } while (false)
+#define CATCH_ENFORCE( condition, ... ) \
+    do{ if( !(condition) ) CATCH_ERROR( __VA_ARGS__ ); } while(false)
 
-#endif  // CATCH_ENFORCE_HPP_INCLUDED
+
+#endif // CATCH_ENFORCE_HPP_INCLUDED

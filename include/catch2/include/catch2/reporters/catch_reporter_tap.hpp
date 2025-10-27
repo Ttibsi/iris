@@ -8,14 +8,15 @@
 #ifndef CATCH_REPORTER_TAP_HPP_INCLUDED
 #define CATCH_REPORTER_TAP_HPP_INCLUDED
 
-#include <catch2/internal/catch_move_and_forward.hpp>
 #include <catch2/reporters/catch_reporter_streaming_base.hpp>
+#include <catch2/internal/catch_move_and_forward.hpp>
 
 namespace Catch {
 
     class TAPReporter final : public StreamingReporterBase {
-       public:
-        TAPReporter(ReporterConfig&& config) : StreamingReporterBase(CATCH_MOVE(config)) {
+    public:
+        TAPReporter( ReporterConfig&& config ):
+            StreamingReporterBase( CATCH_MOVE(config) ) {
             m_preferences.shouldReportAllAssertions = true;
             m_preferences.shouldReportAllAssertionStarts = false;
         }
@@ -25,18 +26,18 @@ namespace Catch {
             return "Reports test results in TAP format, suitable for test harnesses"s;
         }
 
-        void testRunStarting(TestRunInfo const& testInfo) override;
+        void testRunStarting( TestRunInfo const& testInfo ) override;
 
-        void noMatchingTestCases(StringRef unmatchedSpec) override;
+        void noMatchingTestCases( StringRef unmatchedSpec ) override;
 
         void assertionEnded(AssertionStats const& _assertionStats) override;
 
         void testRunEnded(TestRunStats const& _testRunStats) override;
 
-       private:
+    private:
         std::size_t counter = 0;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_TAP_HPP_INCLUDED
+#endif // CATCH_REPORTER_TAP_HPP_INCLUDED

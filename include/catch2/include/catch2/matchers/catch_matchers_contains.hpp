@@ -8,11 +8,11 @@
 #ifndef CATCH_MATCHERS_CONTAINS_HPP_INCLUDED
 #define CATCH_MATCHERS_CONTAINS_HPP_INCLUDED
 
+#include <catch2/matchers/catch_matchers_templated.hpp>
+#include <catch2/internal/catch_move_and_forward.hpp>
+
 #include <functional>
 #include <type_traits>
-
-#include <catch2/internal/catch_move_and_forward.hpp>
-#include <catch2/matchers/catch_matchers_templated.hpp>
 
 namespace Catch {
     namespace Matchers {
@@ -21,22 +21,21 @@ namespace Catch {
         class ContainsElementMatcher final : public MatcherGenericBase {
             T m_desired;
             Equality m_eq;
-
-           public:
+        public:
             template <typename T2, typename Equality2>
-            ContainsElementMatcher(T2&& target, Equality2&& predicate)
-                : m_desired(CATCH_FORWARD(target)), m_eq(CATCH_FORWARD(predicate)) {}
+            ContainsElementMatcher(T2&& target, Equality2&& predicate):
+                m_desired(CATCH_FORWARD(target)),
+                m_eq(CATCH_FORWARD(predicate))
+            {}
 
             std::string describe() const override {
                 return "contains element " + Catch::Detail::stringify(m_desired);
             }
 
             template <typename RangeLike>
-            bool match(RangeLike&& rng) const {
-                for (auto&& elem : rng) {
-                    if (m_eq(elem, m_desired)) {
-                        return true;
-                    }
+            bool match( RangeLike&& rng ) const {
+                for ( auto&& elem : rng ) {
+                    if ( m_eq( elem, m_desired ) ) { return true; }
                 }
                 return false;
             }
@@ -46,12 +45,13 @@ namespace Catch {
         template <typename Matcher>
         class ContainsMatcherMatcher final : public MatcherGenericBase {
             Matcher m_matcher;
-
-           public:
+        public:
             // Note that we do a copy+move to avoid having to SFINAE this
             // constructor (and also avoid some perfect forwarding failure
             // cases)
-            ContainsMatcherMatcher(Matcher matcher) : m_matcher(CATCH_MOVE(matcher)) {}
+            ContainsMatcherMatcher(Matcher matcher):
+                m_matcher(CATCH_MOVE(matcher))
+            {}
 
             template <typename RangeLike>
             bool match(RangeLike&& rng) const {
@@ -74,16 +74,16 @@ namespace Catch {
          * Uses `std::equal_to` to do the comparison
          */
         template <typename T>
-        std::enable_if_t<!Detail::is_matcher_v<T>, ContainsElementMatcher<T, std::equal_to<>>>
-        Contains(T&& elem) {
-            return {CATCH_FORWARD(elem), std::equal_to<> {}};
+        std::enable_if_t<!Detail::is_matcher_v<T>,
+        ContainsElementMatcher<T, std::equal_to<>>> Contains(T&& elem) {
+            return { CATCH_FORWARD(elem), std::equal_to<>{} };
         }
 
         //! Creates a matcher that checks whether a range contains element matching a matcher
         template <typename Matcher>
-        std::enable_if_t<Detail::is_matcher_v<Matcher>, ContainsMatcherMatcher<Matcher>> Contains(
-            Matcher&& matcher) {
-            return {CATCH_FORWARD(matcher)};
+        std::enable_if_t<Detail::is_matcher_v<Matcher>,
+        ContainsMatcherMatcher<Matcher>> Contains(Matcher&& matcher) {
+            return { CATCH_FORWARD(matcher) };
         }
 
         /**
@@ -93,10 +93,10 @@ namespace Catch {
          */
         template <typename T, typename Equality>
         ContainsElementMatcher<T, Equality> Contains(T&& elem, Equality&& eq) {
-            return {CATCH_FORWARD(elem), CATCH_FORWARD(eq)};
+            return { CATCH_FORWARD(elem), CATCH_FORWARD(eq) };
         }
 
-    }  // namespace Matchers
-}  // namespace Catch
+    }
+}
 
-#endif  // CATCH_MATCHERS_CONTAINS_HPP_INCLUDED
+#endif // CATCH_MATCHERS_CONTAINS_HPP_INCLUDED

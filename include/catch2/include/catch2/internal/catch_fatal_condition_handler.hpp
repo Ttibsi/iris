@@ -30,8 +30,7 @@ namespace Catch {
         // engage-disengage 1:1 pairing.
         void engage_platform();
         void disengage_platform() noexcept;
-
-       public:
+    public:
         // Should also have platform-specific implementations as needed
         FatalConditionHandler();
         ~FatalConditionHandler();
@@ -52,14 +51,16 @@ namespace Catch {
     //! Simple RAII guard for (dis)engaging the FatalConditionHandler
     class FatalConditionHandlerGuard {
         FatalConditionHandler* m_handler;
-
-       public:
-        FatalConditionHandlerGuard(FatalConditionHandler* handler) : m_handler(handler) {
+    public:
+        FatalConditionHandlerGuard(FatalConditionHandler* handler):
+            m_handler(handler) {
             m_handler->engage();
         }
-        ~FatalConditionHandlerGuard() { m_handler->disengage(); }
+        ~FatalConditionHandlerGuard() {
+            m_handler->disengage();
+        }
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_FATAL_CONDITION_HANDLER_HPP_INCLUDED
+#endif // CATCH_FATAL_CONDITION_HANDLER_HPP_INCLUDED

@@ -1,4 +1,4 @@
-prefix=../iris/include/catch2-2
+prefix=../iris/include/catch2
 libdir=${prefix}/lib64
 pkg_version=3.11.0
 

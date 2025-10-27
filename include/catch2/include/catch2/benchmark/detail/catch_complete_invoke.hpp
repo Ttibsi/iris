@@ -17,13 +17,9 @@ namespace Catch {
     namespace Benchmark {
         namespace Detail {
             template <typename T>
-            struct CompleteType {
-                using type = T;
-            };
+            struct CompleteType { using type = T; };
             template <>
-            struct CompleteType<void> {
-                struct type {};
-            };
+            struct CompleteType<void> { struct type {}; };
 
             template <typename T>
             using CompleteType_t = typename CompleteType<T>::type;
@@ -46,20 +42,17 @@ namespace Catch {
 
             // invoke and not return void :(
             template <typename Fun, typename... Args>
-            CompleteType_t<FunctionReturnType<Fun, Args...>> complete_invoke(
-                Fun&& fun,
-                Args&&... args) {
-                return CompleteInvoker<FunctionReturnType<Fun, Args...>>::invoke(
-                    CATCH_FORWARD(fun), CATCH_FORWARD(args)...);
+            CompleteType_t<FunctionReturnType<Fun, Args...>> complete_invoke(Fun&& fun, Args&&... args) {
+                return CompleteInvoker<FunctionReturnType<Fun, Args...>>::invoke(CATCH_FORWARD(fun), CATCH_FORWARD(args)...);
             }
 
-        }  // namespace Detail
+        } // namespace Detail
 
         template <typename Fun>
         Detail::CompleteType_t<FunctionReturnType<Fun>> user_code(Fun&& fun) {
             return Detail::complete_invoke(CATCH_FORWARD(fun));
         }
-    }  // namespace Benchmark
-}  // namespace Catch
+    } // namespace Benchmark
+} // namespace Catch
 
-#endif  // CATCH_COMPLETE_INVOKE_HPP_INCLUDED
+#endif // CATCH_COMPLETE_INVOKE_HPP_INCLUDED

@@ -8,28 +8,26 @@
 #ifndef CATCH_REPORTER_CUMULATIVE_BASE_HPP_INCLUDED
 #define CATCH_REPORTER_CUMULATIVE_BASE_HPP_INCLUDED
 
+#include <catch2/reporters/catch_reporter_common_base.hpp>
+#include <catch2/internal/catch_move_and_forward.hpp>
+#include <catch2/internal/catch_unique_ptr.hpp>
+#include <catch2/internal/catch_optional.hpp>
+
 #include <string>
 #include <vector>
-
-#include <catch2/internal/catch_move_and_forward.hpp>
-#include <catch2/internal/catch_optional.hpp>
-#include <catch2/internal/catch_unique_ptr.hpp>
-#include <catch2/reporters/catch_reporter_common_base.hpp>
 
 namespace Catch {
 
     namespace Detail {
 
-        //! Represents either an assertion or a benchmark result to be handled by cumulative
-        //! reporter later
+        //! Represents either an assertion or a benchmark result to be handled by cumulative reporter later
         class AssertionOrBenchmarkResult {
             // This should really be a variant, but this is much faster
             // to write and the data layout here is already terrible
             // enough that we do not have to care about the object size.
             Optional<AssertionStats> m_assertion;
             Optional<BenchmarkStats<>> m_benchmark;
-
-           public:
+        public:
             AssertionOrBenchmarkResult(AssertionStats const& assertion);
             AssertionOrBenchmarkResult(BenchmarkStats<> const& benchmark);
 
@@ -39,7 +37,7 @@ namespace Catch {
             AssertionStats const& asAssertion() const;
             BenchmarkStats<> const& asBenchmark() const;
         };
-    }  // namespace Detail
+    }
 
     /**
      * Utility base for reporters that need to handle all results at once
@@ -62,10 +60,10 @@ namespace Catch {
      * UB.**
      */
     class CumulativeReporterBase : public ReporterBase {
-       public:
-        template <typename T, typename ChildNodeT>
+    public:
+        template<typename T, typename ChildNodeT>
         struct Node {
-            explicit Node(T const& _value) : value(_value) {}
+            explicit Node( T const& _value ) : value( _value ) {}
 
             using ChildNodes = std::vector<Detail::unique_ptr<ChildNodeT>>;
             T value;
@@ -74,7 +72,7 @@ namespace Catch {
         struct SectionNode {
             explicit SectionNode(SectionStats const& _stats) : stats(_stats) {}
 
-            bool operator==(SectionNode const& other) const {
+            bool operator == (SectionNode const& other) const {
                 return stats.sectionInfo.lineInfo == other.stats.sectionInfo.lineInfo;
             }
 
@@ -87,42 +85,45 @@ namespace Catch {
             std::string stdErr;
         };
 
+
         using TestCaseNode = Node<TestCaseStats, SectionNode>;
         using TestRunNode = Node<TestRunStats, TestCaseNode>;
 
         // GCC5 compat: we cannot use inherited constructor, because it
         //              doesn't implement backport of P0136
-        CumulativeReporterBase(ReporterConfig&& _config) : ReporterBase(CATCH_MOVE(_config)) {}
+        CumulativeReporterBase(ReporterConfig&& _config):
+            ReporterBase(CATCH_MOVE(_config))
+        {}
         ~CumulativeReporterBase() override;
 
-        void benchmarkPreparing(StringRef) override {}
-        void benchmarkStarting(BenchmarkInfo const&) override {}
-        void benchmarkEnded(BenchmarkStats<> const& benchmarkStats) override;
-        void benchmarkFailed(StringRef) override {}
+        void benchmarkPreparing( StringRef ) override {}
+        void benchmarkStarting( BenchmarkInfo const& ) override {}
+        void benchmarkEnded( BenchmarkStats<> const& benchmarkStats ) override;
+        void benchmarkFailed( StringRef ) override {}
 
-        void noMatchingTestCases(StringRef) override {}
-        void reportInvalidTestSpec(StringRef) override {}
-        void fatalErrorEncountered(StringRef /*error*/) override {}
+        void noMatchingTestCases( StringRef ) override {}
+        void reportInvalidTestSpec( StringRef ) override {}
+        void fatalErrorEncountered( StringRef /*error*/ ) override {}
 
-        void testRunStarting(TestRunInfo const&) override {}
+        void testRunStarting( TestRunInfo const& ) override {}
 
-        void testCaseStarting(TestCaseInfo const&) override {}
-        void testCasePartialStarting(TestCaseInfo const&, uint64_t) override {}
-        void sectionStarting(SectionInfo const& sectionInfo) override;
+        void testCaseStarting( TestCaseInfo const& ) override {}
+        void testCasePartialStarting( TestCaseInfo const&, uint64_t ) override {}
+        void sectionStarting( SectionInfo const& sectionInfo ) override;
 
-        void assertionStarting(AssertionInfo const&) override {}
+        void assertionStarting( AssertionInfo const& ) override {}
 
-        void assertionEnded(AssertionStats const& assertionStats) override;
-        void sectionEnded(SectionStats const& sectionStats) override;
-        void testCasePartialEnded(TestCaseStats const&, uint64_t) override {}
-        void testCaseEnded(TestCaseStats const& testCaseStats) override;
-        void testRunEnded(TestRunStats const& testRunStats) override;
+        void assertionEnded( AssertionStats const& assertionStats ) override;
+        void sectionEnded( SectionStats const& sectionStats ) override;
+        void testCasePartialEnded( TestCaseStats const&, uint64_t ) override {}
+        void testCaseEnded( TestCaseStats const& testCaseStats ) override;
+        void testRunEnded( TestRunStats const& testRunStats ) override;
         //! Customization point: called after last test finishes (testRunEnded has been handled)
         virtual void testRunEndedCumulative() = 0;
 
         void skipTest(TestCaseInfo const&) override {}
 
-       protected:
+    protected:
         //! Should the cumulative base store the assertion expansion for successful assertions?
         bool m_shouldStoreSuccesfulAssertions = true;
         //! Should the cumulative base store the assertion expansion for failed assertions?
@@ -133,7 +134,7 @@ namespace Catch {
         //! The root node of the test run tree.
         Detail::unique_ptr<TestRunNode> m_testRun;
 
-       private:
+    private:
         // Note: We rely on pointer identity being stable, which is why
         //       we store pointers to the nodes rather than the values.
         std::vector<Detail::unique_ptr<TestCaseNode>> m_testCases;
@@ -145,6 +146,6 @@ namespace Catch {
         std::vector<SectionNode*> m_sectionStack;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_REPORTER_CUMULATIVE_BASE_HPP_INCLUDED
+#endif // CATCH_REPORTER_CUMULATIVE_BASE_HPP_INCLUDED

@@ -11,7 +11,7 @@
 #include <string>
 
 namespace Catch {
-    void writeToDebugConsole(std::string const& text);
+    void writeToDebugConsole( std::string const& text );
 }
 
-#endif  // CATCH_DEBUG_CONSOLE_HPP_INCLUDED
+#endif // CATCH_DEBUG_CONSOLE_HPP_INCLUDED

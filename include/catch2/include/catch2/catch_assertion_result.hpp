@@ -8,20 +8,21 @@
 #ifndef CATCH_ASSERTION_RESULT_HPP_INCLUDED
 #define CATCH_ASSERTION_RESULT_HPP_INCLUDED
 
-#include <string>
-
 #include <catch2/catch_assertion_info.hpp>
-#include <catch2/internal/catch_lazy_expr.hpp>
 #include <catch2/internal/catch_result_type.hpp>
 #include <catch2/internal/catch_source_line_info.hpp>
 #include <catch2/internal/catch_stringref.hpp>
+#include <catch2/internal/catch_lazy_expr.hpp>
+
+#include <string>
 
 namespace Catch {
 
-    struct AssertionResultData {
+    struct AssertionResultData
+    {
         AssertionResultData() = delete;
 
-        AssertionResultData(ResultWas::OfType _resultType, LazyExpression const& _lazyExpression);
+        AssertionResultData( ResultWas::OfType _resultType, LazyExpression const& _lazyExpression );
 
         std::string message;
         mutable std::string reconstructedExpression;
@@ -32,9 +33,9 @@ namespace Catch {
     };
 
     class AssertionResult {
-       public:
+    public:
         AssertionResult() = delete;
-        AssertionResult(AssertionInfo const& info, AssertionResultData&& data);
+        AssertionResult( AssertionInfo const& info, AssertionResultData&& data );
 
         bool isOk() const;
         bool succeeded() const;
@@ -49,11 +50,11 @@ namespace Catch {
         SourceLineInfo getSourceInfo() const;
         StringRef getTestMacroName() const;
 
-        // protected:
+    //protected:
         AssertionInfo m_info;
         AssertionResultData m_resultData;
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_ASSERTION_RESULT_HPP_INCLUDED
+#endif // CATCH_ASSERTION_RESULT_HPP_INCLUDED

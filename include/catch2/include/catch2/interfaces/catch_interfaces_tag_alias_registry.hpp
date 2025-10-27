@@ -15,15 +15,15 @@ namespace Catch {
     struct TagAlias;
 
     class ITagAliasRegistry {
-       public:
-        virtual ~ITagAliasRegistry();  // = default
+    public:
+        virtual ~ITagAliasRegistry(); // = default
         // Nullptr if not present
-        virtual TagAlias const* find(std::string const& alias) const = 0;
-        virtual std::string expandAliases(std::string const& unexpandedTestSpec) const = 0;
+        virtual TagAlias const* find( std::string const& alias ) const = 0;
+        virtual std::string expandAliases( std::string const& unexpandedTestSpec ) const = 0;
 
         static ITagAliasRegistry const& get();
     };
 
-}  // end namespace Catch
+} // end namespace Catch
 
-#endif  // CATCH_INTERFACES_TAG_ALIAS_REGISTRY_HPP_INCLUDED
+#endif // CATCH_INTERFACES_TAG_ALIAS_REGISTRY_HPP_INCLUDED

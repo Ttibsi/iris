@@ -8,17 +8,17 @@
 #ifndef CATCH_ISTREAM_HPP_INCLUDED
 #define CATCH_ISTREAM_HPP_INCLUDED
 
-#include <iosfwd>
-#include <string>
-
 #include <catch2/internal/catch_noncopyable.hpp>
 #include <catch2/internal/catch_unique_ptr.hpp>
+
+#include <iosfwd>
+#include <string>
 
 namespace Catch {
 
     class IStream {
-       public:
-        virtual ~IStream();  // = default
+    public:
+        virtual ~IStream(); // = default
         virtual std::ostream& stream() = 0;
         /**
          * Best guess on whether the instance is writing to a console (e.g. via stdout/stderr)
@@ -45,8 +45,8 @@ namespace Catch {
      *
      * \throws if passed an unrecognized %-prefixed stream
      */
-    auto makeStream(std::string const& filename) -> Detail::unique_ptr<IStream>;
+    auto makeStream( std::string const& filename ) -> Detail::unique_ptr<IStream>;
 
-}  // namespace Catch
+}
 
-#endif  // CATCH_STREAM_HPP_INCLUDED
+#endif // CATCH_STREAM_HPP_INCLUDED

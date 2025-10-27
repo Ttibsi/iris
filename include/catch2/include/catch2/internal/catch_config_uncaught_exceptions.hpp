@@ -20,24 +20,27 @@
 #include <catch2/catch_user_config.hpp>
 
 #if defined(_MSC_VER)
-#if _MSC_VER >= 1900  // Visual Studio 2015 or newer
-#define CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
+#  if _MSC_VER >= 1900 // Visual Studio 2015 or newer
+#    define CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
+#  endif
 #endif
-#endif
+
 
 #include <exception>
 
-#if defined(__cpp_lib_uncaught_exceptions) && \
-    !defined(CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS)
+#if defined(__cpp_lib_uncaught_exceptions) \
+    && !defined(CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS)
 
-#define CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
-#endif  // __cpp_lib_uncaught_exceptions
+#  define CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
+#endif // __cpp_lib_uncaught_exceptions
 
-#if defined(CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS) && \
-    !defined(CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS) &&      \
-    !defined(CATCH_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS)
 
-#define CATCH_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
+#if defined(CATCH_INTERNAL_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS) \
+    && !defined(CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS) \
+    && !defined(CATCH_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS)
+
+#  define CATCH_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS
 #endif
 
-#endif  // CATCH_CONFIG_UNCAUGHT_EXCEPTIONS_HPP_INCLUDED
+
+#endif // CATCH_CONFIG_UNCAUGHT_EXCEPTIONS_HPP_INCLUDED
