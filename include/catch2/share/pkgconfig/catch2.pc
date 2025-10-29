@@ -1,0 +1,11 @@
+prefix=../iris/include/catch2
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${prefix}/lib64
+
+Name: Catch2
+Description: A modern, C++-native, test framework for C++14 and above
+URL: https://github.com/catchorg/Catch2
+Version: 3.11.0
+Cflags: -I${includedir}
+Libs: -L${libdir} -lCatch2

@@ -1,15 +1,16 @@
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/include/catch2/include)
 
 add_compile_options(-g)
 
-include(FetchContent)
-fetchcontent_declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.8.0
+find_package(
+    Catch2
+    3
+    REQUIRED
+    PATHS
+    ${PROJECT_SOURCE_DIR}/include/catch2/lib64/cmake
 )
-fetchcontent_makeavailable(Catch2)
 
 add_executable(test_exe
     controller_test.cpp

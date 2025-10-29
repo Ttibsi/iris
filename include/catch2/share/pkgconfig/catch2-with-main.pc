@@ -1,0 +1,10 @@
+prefix=../iris/include/catch2
+libdir=${prefix}/lib64
+pkg_version=3.11.0
+
+Name: Catch2 with main function
+Description: A modern, C++-native test framework for C++14 and above (links in default main)
+URL: https://github.com/catchorg/Catch2
+Version: ${pkg_version}
+Requires: catch2 = ${pkg_version}
+Libs: -L${libdir} -lCatch2Main

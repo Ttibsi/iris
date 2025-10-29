@@ -3,6 +3,7 @@ tests/integration/__pycache__/
 .cache/
 .mypy_cache/
 .pytest_cache/
+include/catch2/lib64
 
 # build files
 build/
