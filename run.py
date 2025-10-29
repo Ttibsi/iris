@@ -43,7 +43,7 @@ def clean() -> int:
     shutil.rmtree("tests/integration/__pycache__", ignore_errors=True)
     shutil.rmtree(".pytest_cache", ignore_errors=True)
     shutil.rmtree("release", ignore_errors=True)
-    shutil.rmtree("include/catch2/lib64", ignore_errors=True) 
+    shutil.rmtree("include/catch2/lib64", ignore_errors=True)
 
     files = [
         "src/version.h",
@@ -122,14 +122,14 @@ def create_symlink() -> None:
     else:
         raise OSError("Architecture not found")
 
-    shutil.copytree(f"include/catch2/{src}", location) 
+    shutil.copytree(f"include/catch2/{src}", location)
 
 
 def test(testname: str | None, asan: bool) -> int:
     create_symlink()
     if not os.path.exists("include/catch2/lib64/libCatch2.a"):
-        raise AssertionError("The symlink doesn't exist?") 
-         
+        raise AssertionError("The symlink doesn't exist?")
+
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"

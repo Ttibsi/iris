@@ -1,10 +1,16 @@
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR}/include/catch2/include) 
+include_directories(${PROJECT_SOURCE_DIR}/include/catch2/include)
 
 add_compile_options(-g)
 
-find_package(Catch2 3 REQUIRED PATHS ${PROJECT_SOURCE_DIR}/include/catch2/lib64/cmake)
+find_package(
+    Catch2
+    3
+    REQUIRED
+    PATHS
+    ${PROJECT_SOURCE_DIR}/include/catch2/lib64/cmake
+)
 
 add_executable(test_exe
     controller_test.cpp
