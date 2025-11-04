@@ -12,7 +12,8 @@
 #include "change.h"
 
 // Forward declare from controller.h
-enum class Redraw;
+struct Redraw;
+enum class RedrawType;
 
 // Forward declare from view.h
 struct View;
