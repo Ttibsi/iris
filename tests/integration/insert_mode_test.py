@@ -154,6 +154,23 @@ def test_backspace_newline(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_backspace_tab_space(r: TmuxRunner):
+    r.press("j")
+    r.press("w")
+    r.press("i")
+    r.press("BSpace")
+
+    line_text: str = r.lines()[1].split("\u2502")[1]
+    assert line_text == "here is a newline and a tab"
+    assert line_text[0] == "h"  # not a space
+
+    status_bar = r.await_statusbar_parts()
+    assert status_bar[-1] == "2:1"
+
+    assert r.cursor_pos() == (1, 3)
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_insert_newline(r: TmuxRunner):
     r.press("j")
     r.press("j")

@@ -56,6 +56,19 @@ TEST_CASE("backspace", "[model]") {
         REQUIRE(m.buf.at(1) == "ba");
         REQUIRE(m.buf.at(1).size() == 2);
     }
+
+    SECTION("backspace a tab-space") {
+        lines_t v = {"    Some tab"};
+        auto m = Model(v, "");
+        m.current_char = 4;
+
+        Redraw draw = m.backspace();
+        REQUIRE(draw.type == RedrawType::Line);
+        REQUIRE(draw.count == 4);
+
+        REQUIRE(m.buf.at(0).size() == 8);
+        REQUIRE(m.buf.at(0).at(0) == 'S');
+    }
 }
 
 TEST_CASE("newline", "[model]") {
