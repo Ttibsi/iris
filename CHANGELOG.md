@@ -7,6 +7,8 @@
 * `;lb` now shows all open buffers
 * `dl` and `dw` now delete the current line and word
 * Ensure the block cursor is restored when iris is closed
+* Pressing backspace at the end of a tab width's worth of whitespace now
+moves back that amount of space
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar
