@@ -142,14 +142,14 @@ void Controller::start_action_engine() {
 
             } else if (k.value() == rawterm::Key(' ', rawterm::Mod::Backspace)) {
                 auto draw = parse_action<void, Redraw>(&view, Action<void> {ActionType::Backspace});
-                switch (draw.value()) {
-                    case Redraw::Screen:
+                switch (draw.value().type) {
+                    case RedrawType::Screen:
                         redraw_all = true;
                         break;
-                    case Redraw::Line:
+                    case RedrawType::Line:
                         view.draw_line(Draw_Line_dir::None);
                         break;
-                    case Redraw::None:
+                    case RedrawType::None:
                         break;
                 }
 
@@ -381,8 +381,10 @@ void Controller::start_action_engine() {
 
                 auto draw =
                     parse_action<void, Redraw>(&view, Action<void> {ActionType::DelCurrentChar});
-                if (draw == Redraw::Line) {
-                    view.draw_line(Draw_Line_dir::None);
+                if (draw.has_value()) {
+                    if (draw.value().type == RedrawType::Line) {
+                        view.draw_line(Draw_Line_dir::None);
+                    }
                 }
 
                 // Center current line on view

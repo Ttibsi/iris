@@ -70,7 +70,7 @@ template <typename T, typename U>
                 // Skip if cur at 0,0
                 if (v->get_active_model()->current_line == 0 &&
                     v->get_active_model()->current_char == 0) {
-                    return Redraw::None;
+                    return Redraw(RedrawType::None);
                 }
 
                 // For cursor movement
@@ -95,11 +95,11 @@ template <typename T, typename U>
 
                 // actual backspace
                 Redraw ret = v->get_active_model()->backspace();
-                if (ret == Redraw::Screen) {
+                if (ret.type == RedrawType::Screen) {
                     v->cur.move_up();
                     v->cur.move_right(int32_t(prev_line_len));
                 } else {
-                    v->cur.move_left();
+                    v->cur.move_left(ret.count);
                 }
 
                 return ret;
