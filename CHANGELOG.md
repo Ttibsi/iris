@@ -11,6 +11,8 @@
 * Added `;f` command to find a given string further on in the buffer
 * Use `wqa` to save and close all files
 * Iris now handles horizontal scrolling when a line is longer than the screen
+* Pressing backspace at the end of a tab width's worth of whitespace now
+moves back that amount of space
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar
