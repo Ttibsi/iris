@@ -728,7 +728,7 @@ void Controller::add_model(const std::string& filename) {
     list->type = ModelType::META;
     list->filename = "[BUFFERS]";
     list->readonly = true;
-    list->buf.reserve(8);
+    list->buf.reserve(32);
 
     std::size_t max_name_len =
         std::max_element(models.begin(), models.end(), [](const auto& lhs, const auto& rhs) {
