@@ -18,6 +18,10 @@ def run_shell_cmd(
     return subprocess.run(cmd.split(), env=env).returncode
 
 
+def ci() -> bool:
+    return not not os.environ.get("CI", "")
+
+
 def loc() -> int:
     if not shutil.which("cloc"):
         print("cloc not installed...")
@@ -133,6 +137,8 @@ def test(testname: str | None, asan: bool) -> int:
     compile_cmd = "cmake -G Ninja -DRUN_TESTS=true -S . -B build"
     if asan:
         compile_cmd += " -DENABLE_ASAN=true"
+    if ci():
+        compile_cmd += " -DCMAKE_TOOLCHAIN_FILE=cmake/ci_toolchain.cmake"
 
     ret: int = 0
     ret = run_shell_cmd(compile_cmd)
@@ -162,6 +168,8 @@ def build(release: bool = False) -> int:
     cmd: str = "cmake -G Ninja -S . -B build"
     if release:
         cmd += " -DRELEASE=true"
+    if ci():
+        cmd += " -DCMAKE_TOOLCHAIN_FILE=cmake/ci_toolchain.cmake"
 
     ret = run_shell_cmd(cmd)
     if ret:
