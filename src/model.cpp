@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <format>
 #include <functional>
-#include <ranges>
 #include <regex>
 
 #include "action.h"
 #include "constants.h"
 #include "controller.h"
+#include "enumerate.h"
 #include "text_io.h"
 
 Model::Model(const std::size_t view_height, std::string_view file_name)
@@ -476,7 +476,7 @@ void Model::delete_current_word(const WordPos pos) {
     ret.reserve(7);
 
     auto re = std::regex(input);
-    for (const auto&& [idx, line] : std::views::enumerate(buf)) {
+    for (const auto&& [idx, line] : enumerate<const std::string>(buf)) {
         if (std::regex_search(line, re)) {
             // TODO: Truncate line?
             ret.push_back(std::format("|{}| {}", idx + 1, line));
