@@ -314,3 +314,21 @@ def test_cursor_pos_after_newline(r: TmuxRunner):
     r.press("Enter")
 
     r.await_cursor_pos(1, 3)
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_ctrl_bspace_does_nothing(r: TmuxRunner):
+    with open(r.filename) as f:
+        lines = f.readlines()
+
+    r.press("A")
+
+    # Same as ^bspace because the former doesn't get sent by tmux
+    # https://github.com/tmux/tmux/issues/2049
+    r.press("^H")
+    assert lines[0].strip() in r.lines()[0]
+
+    # check backspace still works
+    r.press("BSpace")
+    assert lines[0].strip() not in r.lines()[0]
+    assert r.lines()[0][-1] == "x"
