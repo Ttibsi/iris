@@ -110,6 +110,10 @@ void Controller::start_action_engine() {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
+            } else if (k.value() == rawterm::Key('h', rawterm::Mod::Control)) {
+                // NOTE: ctrl+backspace was writing `h` to the screen. Let's ignore that
+                continue;
+
             } else if (k.value() == rawterm::Key('D', rawterm::Mod::Arrow)) {
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
 
