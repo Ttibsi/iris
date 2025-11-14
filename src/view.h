@@ -64,6 +64,7 @@ struct View {
     void change_model_cursor();
     bool set_buffer(const std::size_t, const std::size_t);
     void draw_overlay(std::span<std::string>, std::string_view);
+    [[nodiscard]] std::string render_cursor_coords() const;
 };
 
 #endif  // VIEW_H
