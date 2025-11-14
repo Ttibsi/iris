@@ -607,3 +607,18 @@ TEST_CASE("set_buffer", "[view]") {
     REQUIRE(c.view.view_models.at(0)->filename == "tests/fixture/lorem_ipsum.txt");
     REQUIRE(c.view.get_active_model()->current_line == 0);
 }
+
+TEST_CASE("render_cursor_coords", "[view]") {
+    Controller c;
+    c.create_view("tests/fixture/very_long_line.txt", 0);
+    c.view.cursor_end_of_line();
+
+    const std::string statusbar = c.view.render_cursor_coords();
+
+    REQUIRE(statusbar.contains(COLOR_ALERT));
+
+    std::size_t first_bg = statusbar.find(COLOR_UI_BG.to_str());
+    REQUIRE(first_bg != std::string::npos);
+    std::size_t second_bg = statusbar.substr(first_bg, statusbar.size()).find(COLOR_UI_BG.to_str());
+    REQUIRE(second_bg != std::string::npos);
+}
