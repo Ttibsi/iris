@@ -278,8 +278,7 @@ const std::string View::render_status_bar() const {
         right += "| [" + std::to_string(ctrlr_ptr->models.size()) + "] ";
     }
 
-    const std::string cursor_pos = "| " + std::to_string(get_active_model()->current_line + 1) +
-                                   ":" + std::to_string(get_active_model()->current_char + 1) + " ";
+    const std::string cursor_pos = "|" + render_cursor_coords() + " ";
 
     right += cursor_pos;
 
@@ -299,7 +298,7 @@ const std::string View::render_status_bar() const {
     /// Calculate whitespace to insert
     /// https://excalidraw.com/#json=_ysE8iOIfRygS1qx7sdfT,8MWhqK-DAdUf__mxefZp8w
     const std::size_t available_center_space =
-        std::size_t(view_size.horizontal) - left.size() - right.size();
+        std::size_t(view_size.horizontal) - left.size() - rawterm::raw_size(right);
     const std::size_t filename_start_offset =
         (available_center_space - visible_filename.size()) / 2;
     const std::size_t filename_start = left.size() + filename_start_offset;
@@ -310,7 +309,7 @@ const std::string View::render_status_bar() const {
     std::string ret = left + std::string(std::size_t(lhs_space), ' ');
     ret += visible_filename + std::string(std::size_t(rhs_space), ' ') + right;
 
-    assert(ret.size() == static_cast<std::size_t>(view_size.horizontal));
+    assert(rawterm::raw_size(ret) == static_cast<std::size_t>(view_size.horizontal));
     return rawterm::set_background(ret, COLOR_UI_BG);
 }
 
@@ -561,4 +560,31 @@ bool View::set_buffer(const std::size_t bufnr, const std::size_t model_len) {
     view_models.at(active_model) = &ctrlr_ptr->models.at(std::size_t(bufnr));
     change_model_cursor();
     return true;
+}
+
+[[nodiscard]] std::string View::render_cursor_coords() const {
+    std::string ret = "";
+    const std::size_t curr_char = get_active_model()->current_char + 1;
+
+    if (curr_char >= LINE_BORDER) {
+        ret += COLOR_ALERT;
+    }
+
+    ret += " ";
+
+    ret += std::to_string(get_active_model()->current_line + 1);
+    ret += ":";
+    ret += std::to_string(curr_char);
+
+    if (curr_char >= LINE_BORDER) {
+        // We need to re-open the base colour for the statusbar
+
+        std::string colors = std::to_string(COLOR_UI_BG.red) + ";";
+        colors += std::to_string(COLOR_UI_BG.blue) + ";";
+        colors += std::to_string(COLOR_UI_BG.green) + "m";
+
+        ret += "\x1b[" + colors;
+    }
+
+    return ret;
 }

@@ -62,6 +62,7 @@ struct View {
     void update_cursor_on_model_change();
     void change_model_cursor();
     bool set_buffer(const std::size_t, const std::size_t);
+    [[nodiscard]] std::string render_cursor_coords() const;
 };
 
 #endif  // VIEW_H
