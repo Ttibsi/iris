@@ -421,7 +421,11 @@ void Controller::start_action_engine() {
         // If we redraw on the next loop, we'll trigger these anyway
         if (!redraw_all) {
             view.draw_status_bar();
-            view.draw_tab_bar();
+
+            if (view.get_active_model()->undo_stack.size() == 1 ||
+                view.get_active_model()->undo_stack.empty()) {
+                view.draw_tab_bar();
+            }
         }
     }
 

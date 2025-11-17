@@ -24,6 +24,7 @@
 View::View(Controller* controller, const rawterm::Pos dims)
     : ctrlr_ptr(controller), view_size(dims), cur(rawterm::Cursor()) {
     view_models.reserve(8);
+    prev_tab_bar.reserve(uint_t(dims.horizontal));
 }
 
 void View::add_model(Model* m) {
@@ -132,28 +133,33 @@ void View::draw_tab_bar() {
         return;
     }
 
+    std::string new_tab_bar = render_tab_bar();
+    if (new_tab_bar == prev_tab_bar) {
+        return;
+    }
+
     rawterm::Pos starting_cur_pos = cur;
     cur.move(1, 1);
     rawterm::clear_line();
-    std::print("{}", render_tab_bar());
+    std::print("{}", new_tab_bar);
+    prev_tab_bar = new_tab_bar;
     cur.move(starting_cur_pos);
 }
 
 const std::string View::render_tab_bar() const {
     // Extract base filenames
     std::vector<std::string> base_filenames;
+    std::size_t filename_max_length = 0;
+
     for (const auto& model : view_models) {
         std::string full_path = model->filename;
         std::size_t last_slash = full_path.find_last_of("/\\");
         std::string filename =
             (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
         base_filenames.push_back(filename);
-    }
 
-    // Find longest filename
-    std::size_t filename_max_length = 0;
-    for (const auto& name : base_filenames) {
-        filename_max_length = std::max(filename_max_length, name.size());
+        // Find longest filename
+        filename_max_length = std::max(filename_max_length, filename.size());
     }
 
     std::string ret;
