@@ -735,7 +735,13 @@ void Controller::add_model(const std::string& filename) {
             return lhs.filename.size() < rhs.filename.size();
         })->filename.size();
 
-    std::string title = "\u2551 id \u2502  filename " + std::string(max_name_len - 8, ' ');
+    // "filename"
+    if (max_name_len < 8) {
+        max_name_len = 8;
+    }
+    max_name_len += 2;
+
+    std::string title = "\u2551 id \u2502  filename" + std::string(uint_t(max_name_len - 8), ' ');
     title += " \u2502  pos  \u2551";
     std::size_t title_len = title.size() - 9;
 
@@ -759,13 +765,19 @@ void Controller::add_model(const std::string& filename) {
         std::string line = "\u2551  " + std::to_string(idx);
         line += " \u2502  ";
         line += rawterm::bold(m.filename);
+
+        int spacing = 0;
+        if (max_name_len > m.filename.size()) {
+            spacing = max_name_len - m.filename.size();
+        }
+
         if (m.unsaved) {
             line += rawterm::bold("*");
-            if (m.filename.size() < max_name_len) {
-                line += std::string(max_name_len - m.filename.size() - 1, ' ');
-            }
-        } else {
-            line += std::string(max_name_len - m.filename.size() + 1, ' ');
+            spacing--;
+        }
+
+        if (spacing > 0) {
+            line += std::string(spacing, ' ');
         }
 
         line += " \u2502  ";
@@ -773,7 +785,8 @@ void Controller::add_model(const std::string& filename) {
         line.push_back(':');
         line += std::to_string(m.current_char + 1);
 
-        std::size_t diff = title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
+        const std::size_t diff =
+            title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
         line += std::string(diff, ' ');
         line += "\u2551";
 
