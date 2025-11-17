@@ -8,18 +8,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - run: sudo apt-get install ninja-build
+      - run: sudo apt-get install ninja-build clang-19
       - run: ./run.py
+        env:
+          IRIS_CXX_COMPILER: clang++-19
       - uses: pre-commit/action@v3.0.0
   unit_tests:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - run: sudo apt-get install clang-19
       - run: ./run.py test
+        env:
+          IRIS_CXX_COMPILER: clang++-19
   integration_tests:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - run: sudo apt-get install clang-19
       - run: ./run.py test -I
         env:
           PYTEST_ADDOPTS: "--color=yes"
+          IRIS_CXX_COMPILER: clang++-19

@@ -14,6 +14,7 @@ find_package(
 
 add_executable(test_exe
     controller_test.cpp
+    enumerate_test.cpp
     model_test.cpp
     text_io_test.cpp
     view_test.cpp
