@@ -12,12 +12,10 @@
 #include "version.h"
 
 // TODO: command to toggle line numbers
-// TODO: Save file with given name `;w foo.txt`
 // TODO: detect if `;e` is opening an already-open file and switch to that buf instead
-//  NOTE: Maybe post a message in the command bar too
+// NOTE: Maybe post a message in the command bar too
+// TODO: A way of detecting if the file is already open in another iris instance
 
-// TODO: A way of detecting if the file is already open in another iris
-// instance
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
 
