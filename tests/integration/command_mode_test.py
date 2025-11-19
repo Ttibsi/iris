@@ -134,13 +134,34 @@ def test_write_command(r: TmuxRunner):
 
     # Check highlighting colour
     message_line: str = r.color_screenshot()[-1]
-    assert "Saved" in message_line
-    assert "bytes" in message_line
+    # NOTE: This should already contain "hello world" -- set setup()
+    assert "Saved 19 bytes" in message_line
     assert "\x1b[38;2;0;128;0m" in message_line
 
     with open("tests/fixture/temp_file.txt") as f:
         text = f.read()
-    assert text.split()[0] == "foo"
+    assert text == "foo barHello world\n"
+
+    file_size: int = os.path.getsize("tests/fixture/temp_file.txt")
+    assert file_size == 19
+
+
+@setup()
+def test_write_with_filename_command(r: TmuxRunner):
+    r.type_str("ifoo bar")
+    r.press('Escape')
+    r.iris_cmd("w tests/fixture/temp_file.txt")
+
+    message_line: str = r.color_screenshot()[-1]
+    assert "Saved 8 bytes" in message_line
+    assert "\x1b[38;2;0;128;0m" in message_line
+
+    with open("tests/fixture/temp_file.txt") as f:
+        text = f.read()
+    assert text == "foo bar\n"
+
+    file_size: int = os.path.getsize("tests/fixture/temp_file.txt")
+    assert file_size == 8
 
 
 @setup("tests/fixture/does_not_exist.txt")
