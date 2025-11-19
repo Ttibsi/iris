@@ -86,7 +86,7 @@ following commands in alphabetical order are available:
 | `;q`       | Quit                                                            |
 | `;q!`      | Force Quit without saving                                       |
 | `;wq`      | Save and quit                                                   |
-| `;w`       | Save file                                                       |
+| `;w <file>`| Save file (optionally specify a new filename to write to)       |
 | `;wa`      | Save all files                                                  |
 | `;qa`      | Quit all                                                        |
 
