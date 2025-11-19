@@ -32,11 +32,31 @@ TEST_CASE("get_file_size", "[textio]") {
 TEST_CASE("write_to_file", "[textio]") {
     lines_t expected_buf = {"foo", "bar", "baz"};
     auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
-    const WriteData data = write_to_file(&m);
-    REQUIRE(data.valid == true);
-    REQUIRE(data.bytes == 12);
-    REQUIRE(data.lines == 3);
-    REQUIRE(m.unsaved == false);
+
+    SECTION("Filename already set") {
+        const WriteData data = write_to_file(&m, std::nullopt);
+        REQUIRE(data.valid == true);
+        REQUIRE(data.bytes == 12);
+        REQUIRE(data.lines == 3);
+        REQUIRE(m.unsaved == false);
+    }
+
+    SECTION("Filename set in command") {
+        m.filename = "";
+        const WriteData data = write_to_file(&m, "tests/fixture/temp_file.txt");
+        REQUIRE(data.valid == true);
+        REQUIRE(data.bytes == 12);
+        REQUIRE(data.lines == 3);
+        REQUIRE(m.unsaved == false);
+    }
+
+    SECTION("No filename given") {
+        m.filename = "";
+        const WriteData data = write_to_file(&m, std::nullopt);
+        REQUIRE(data.valid == false);
+        REQUIRE(data.bytes == 0);
+        REQUIRE(data.lines == 0);
+    }
 }
 
 TEST_CASE("rtrim", "[textio]") {
