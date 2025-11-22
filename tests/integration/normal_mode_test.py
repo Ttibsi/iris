@@ -214,6 +214,7 @@ def test_multi_file_z_key(r: TmuxRunner):
 def test_upper_g_key(r: TmuxRunner):
     r.press("G")
 
+    time.sleep(0.1)
     statusbar: list[str] = r.await_statusbar_parts()
     assert statusbar[-1] == "88:1"
 
