@@ -89,6 +89,7 @@ following commands in alphabetical order are available:
 | `;w`       | Save file                                                       |
 | `;wa`      | Save all files                                                  |
 | `;qa`      | Quit all                                                        |
+| `wqa`      | Write and quit all files                                        |
 
 ### CLI
 The below flags are available in the CLI as well. See `--help` for more info.
