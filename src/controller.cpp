@@ -489,32 +489,29 @@ bool Controller::enter_command_mode() {
                 cmd_text_pos++;
             }
 
-            // TODO: Move to a view method
-            // TODO: Make this method generic for drawing in different places
-            // and potentially handle it's own cursor? (at least line by line)
-            // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
             if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
                 !isspace(in.code)) {
-                std::vector<std::string> found_lines = view.get_active_model()->search_text(
-                    view.command_text.substr(3, view.command_text.size()));
+                // If the command isn't a complete find/replace, we don't want to draw the border
+                // yet
+                const long pipes = std::count_if(
+                    view.command_text.begin(), view.command_text.end(),
+                    [](char c) { return c == '|'; });
+                if (pipes < 3) {
+                    continue;
+                }
+
+                const std::vector<std::string> parts = split_by(view.command_text, '|');
+                std::vector<std::string> found_lines =
+                    view.get_active_model()->search_text(parts.at(1));
 
                 found_lines.resize(7);
-
-                rawterm::Pos top_left = {
-                    view.view_size.vertical - 7 - 3, view.line_number_offset + 2};
-                rawterm::Pos bottom_right = {
-                    view.view_size.vertical - 1, view.view_size.horizontal};
-                auto region = rawterm::Region(top_left, bottom_right);
-                auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
-                border.draw(view.cur, &found_lines);
+                view.draw_overlay(found_lines, "Search Results");
             }
         }
     }
 
     view.command_text = ";";
-    // view.cur = prev_cursor_pos.value();
-
     return ret;
 }
 

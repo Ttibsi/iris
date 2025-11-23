@@ -479,6 +479,9 @@ void Model::delete_current_word(const WordPos pos) {
     for (const auto&& [idx, line] : std::views::enumerate(buf)) {
         if (std::regex_search(line, re)) {
             // TODO: Truncate line?
+            // TODO: Handle highlighting changes in line
+            // const std::string highlighted_line = std::regex_replace(line, re,
+            // "\x1b[7m\1\x1b[27m");
             ret.push_back(std::format("|{}| {}", idx + 1, line));
         }
 

@@ -2,7 +2,9 @@
 #define VIEW_H
 
 #include <optional>
+#include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <rawterm/color.h>
@@ -62,6 +64,7 @@ struct View {
     void update_cursor_on_model_change();
     void change_model_cursor();
     bool set_buffer(const std::size_t, const std::size_t);
+    void draw_overlay(std::span<std::string>, std::string_view);
 };
 
 #endif  // VIEW_H
