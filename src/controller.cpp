@@ -557,6 +557,18 @@ bool Controller::parse_command() {
         return true;
 
         // search
+    } else if (cmd.substr(0, 2) == ";f") {
+        auto new_pos = view.get_active_model()->find_next_str(cmd);
+        if (new_pos.has_value()) {
+            view.get_active_model()->current_line = new_pos.value().vertical;
+            view.get_active_model()->current_char = new_pos.value().horizontal;
+            view.center_current_line();
+            return true;
+        }
+
+        return false;
+
+        // find/replace (sed)
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
         view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
         return true;

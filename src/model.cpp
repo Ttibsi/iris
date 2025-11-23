@@ -514,3 +514,25 @@ void Model::search_and_replace(const std::string& input) {
         buf.at(current_line) = std::regex_replace(buf.at(current_line), find, parts.at(1));
     }
 }
+
+// NOTE: This is the "find next" used for finding from the command line
+// for finding the next char, see `find_next`
+std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
+    if (sv.size() >= 3) {
+        search_str = sv.substr(3, sv.size()).data();
+    }
+
+    // We're using a single loop here to get both the right line number and
+    // position in the line. This is faster than two complete iterations
+    // over the buffer using std::find
+    // TODO: switch to using enumerate
+    for (std::size_t i = current_line; i < buf.size(); i++) {
+        if (!buf.at(i).contains(search_str)) {
+            continue;
+        }
+        const std::size_t str_pos = buf.at(i).find(search_str);
+        return rawterm::Pos {static_cast<int>(i), static_cast<int>(str_pos)};
+    }
+
+    return std::nullopt;
+}
