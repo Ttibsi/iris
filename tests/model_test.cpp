@@ -627,3 +627,7 @@ TEST_CASE("search_and_replace", "[model]") {
         REQUIRE(m.buf.at(i).substr(0, 5) == "entry");
     }
 }
+
+TEST_CASE("find_next_str", "[model]") {
+    REQUIRE(false);
+}

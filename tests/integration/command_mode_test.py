@@ -339,3 +339,18 @@ def test_search_and_replace_multiline_command(r: TmuxRunner):
 
     assert "This was some text" in r.lines()[0]
     assert "here was a newline and a tab" in r.lines()[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_find_next_str_command(r: TmuxRunner):
+    assert False
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_find_next_str_and_scroll_command(r: TmuxRunner):
+    assert False
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_find_next_str_repeat_input_command(r: TmuxRunner):
+    assert False
