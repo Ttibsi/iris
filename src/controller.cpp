@@ -442,9 +442,6 @@ bool Controller::enter_command_mode() {
         }
 
         auto in = rawterm::wait_for_input();
-
-        // TODO: Handle arrow keys
-
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
             rawterm::clear_line();
             view.draw_screen();
