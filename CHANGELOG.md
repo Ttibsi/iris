@@ -7,6 +7,8 @@
 * `;lb` now shows all open buffers
 * `dl` and `dw` now delete the current line and word
 * Ensure the block cursor is restored when iris is closed
+* Refactored how `;s` works for find and replace
+* Added `;f` command to find a given string further on in the buffer
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar

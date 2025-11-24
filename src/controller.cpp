@@ -569,6 +569,7 @@ bool Controller::parse_command() {
         return true;
 
         // search
+        // TODO: Try and find a way to display the search_str
     } else if (cmd.substr(0, 2) == ";f") {
         auto new_pos = view.get_active_model()->find_next_str(cmd);
         if (new_pos.has_value()) {
