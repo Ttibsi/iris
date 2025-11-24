@@ -525,8 +525,9 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
     // We're using a single loop here to get both the right line number and
     // position in the line. This is faster than two complete iterations
     // over the buffer using std::find
+    // NOTE: + 1 to avoid searching the current line (cursor may go backward in current line)
     // TODO: switch to using enumerate
-    for (std::size_t i = current_line; i < buf.size(); i++) {
+    for (std::size_t i = current_line + 1; i < buf.size(); i++) {
         if (!buf.at(i).contains(search_str)) {
             continue;
         }
