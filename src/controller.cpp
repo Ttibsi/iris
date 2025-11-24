@@ -458,8 +458,20 @@ bool Controller::enter_command_mode() {
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             if (view.command_text.size() > 1) {
+                const char c = view.command_text.back();
                 view.command_text.pop_back();
                 cmd_text_pos--;
+
+                // Clear the overlay window if we have less than the required amount of pipes
+                if (view.command_text.size() >= 3 && c == '|') {
+                    const long pipes = std::count_if(
+                        view.command_text.begin(), view.command_text.end(),
+                        [](char c) { return c == '|'; });
+                    if (pipes == 2) {
+                        view.draw_screen();
+                    }
+                }
+
             } else {
                 ret = true;
                 view.cur = prev_cursor_pos.value();
