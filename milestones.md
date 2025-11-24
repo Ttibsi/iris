@@ -67,4 +67,4 @@
 * [x] `J`
 * [x] `K`
 * [ ] `e`
-* [ ] `wqa` - write and quit all named buffers
+* [x] `:wqa` - write and quit all named buffers
