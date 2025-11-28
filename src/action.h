@@ -19,6 +19,7 @@ enum class ActionType {
     DelCurrentLine,
     DelCurrentWord,
     EndOfLine,
+    JumpEndOfWord,
     JumpNextPara,
     JumpPrevPara,
     JumpNextWord,
@@ -168,6 +169,21 @@ template <typename T, typename U>
             }
 
             v->cursor_end_of_line();
+        } break;
+
+        case ActionType::JumpEndOfWord: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) {
+                logger->info("Action called: JumpEndOfWord");
+            }
+
+            std::optional<int> count = v->get_active_model()->end_of_word_pos();
+            if (count.has_value()) {
+                for (int i = 0; i < count.value(); i++) {
+                    v->cursor_right();
+                }
+            }
+
         } break;
 
         case ActionType::JumpNextPara: {

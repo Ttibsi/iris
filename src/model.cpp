@@ -216,6 +216,35 @@ void Model::insert(const char c) {
     return distance;
 }
 
+[[nodiscard]] std::optional<int> Model::end_of_word_pos() {
+    if (current_char == buf.at(current_line).size() - 1) {
+        return {};
+    } else if (buf.at(current_line).empty()) {
+        return {};
+    }
+
+    uint incrementer = 0;
+    std::string_view line_frag =
+        std::string_view(buf.at(current_line)).substr(current_char, buf.at(current_line).size());
+
+    // If the _next_ char is a space, we want to go past that
+    if (line_frag.at(1) == ' ') {
+        incrementer += 2;
+    };
+
+    // go to end of current "word"
+    while (is_letter(line_frag.at(incrementer))) {
+        incrementer++;
+
+        // At end of line, don't move
+        if (incrementer == line_frag.size() - 1) {
+            return {};
+        }
+    }
+
+    return --incrementer;
+}
+
 void Model::replace_char(const char c) {
     if (buf.at(current_line).empty()) {
         buf.at(current_line).push_back(c);
