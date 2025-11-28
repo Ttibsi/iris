@@ -203,6 +203,10 @@ void Controller::start_action_engine() {
                         continue;
                 }
 
+                // Go to end of current word
+            } else if (k.value() == rawterm::Key('e')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpEndOfWord});
+
                 // find forward
             } else if (k.value() == rawterm::Key('f')) {
                 auto k2 = rawterm::wait_for_input();
