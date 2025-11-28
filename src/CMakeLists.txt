@@ -5,7 +5,7 @@ include(FetchContent)
 fetchcontent_declare(
   rawterm
   GIT_REPOSITORY https://github.com/ttibsi/rawterm
-  GIT_TAG        border-span-input
+  GIT_TAG        main
 )
 fetchcontent_makeavailable(rawterm)
 
