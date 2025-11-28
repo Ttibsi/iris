@@ -54,6 +54,7 @@ struct Model {
     [[nodiscard]] std::optional<int> prev_word_pos();
     [[nodiscard]] std::optional<unsigned int> next_para_pos();
     [[nodiscard]] std::optional<unsigned int> prev_para_pos();
+    [[nodiscard]] std::optional<int> end_of_word_pos();
     void replace_char(const char);
     void toggle_case();
     [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
