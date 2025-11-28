@@ -113,7 +113,7 @@ void Model::insert(const char c) {
     return (idx < static_cast<int>(buf.size()) && idx >= 0);
 }
 
-// Word (noun) - a sequence of characters that match regex A-Za-z
+// Word (noun) - a sequence of characters that match regex A-Za-z0-9
 [[nodiscard]] std::optional<int> Model::next_word_pos() {
     if (current_char == buf.at(current_line).size() - 1) {
         return {};
