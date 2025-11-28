@@ -77,18 +77,24 @@ perform the following actions (alphabetically ordered):
 Likewise, you can switch to `command` mode with the semicolon `;` key. The
 following commands in alphabetical order are available:
 
-| Command    | Description                                                     |
-|------------|-----------------------------------------------------------------|
-| `;b <int>` | Display the buffer at the given index                           |
-| `;lb`      | List all open buffers                                           |
-| `;ping`    | `pong` (for testing purposes)                                   |
-| `;e`       | Open a new buffer - specify a filename to open an existing file |
-| `;q`       | Quit                                                            |
-| `;q!`      | Force Quit without saving                                       |
-| `;wq`      | Save and quit                                                   |
-| `;w`       | Save file                                                       |
-| `;wa`      | Save all files                                                  |
-| `;qa`      | Quit all                                                        |
+| Command            | Description                                                     |
+|--------------------|-----------------------------------------------------------------|
+| `;b <int>`         | Display the buffer at the given index                           |
+| `;f <str>`         | Find the next occurence of the given string in the buffer       |
+| `;f`               | Find the next occurence of the previously entered string        |
+| `;lb`              | List all open buffers                                           |
+| `;ping`            | `pong` (for testing purposes)                                   |
+| `;e`               | Open a new buffer - specify a filename to open an existing file |
+| `;q`               | Quit                                                            |
+| `;q!`              | Force Quit without saving                                       |
+| `;s|foo|bar|flags` | Replace instances of `foo` with `bar` using regex               |
+| `;wq`              | Save and quit                                                   |
+| `;w`               | Save file                                                       |
+| `;wa`              | Save all files                                                  |
+| `;qa`              | Quit all                                                        |
+
+Search flags for `;s` include:
+* `m` Multiline search
 
 ### CLI
 The below flags are available in the CLI as well. See `--help` for more info.

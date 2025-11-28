@@ -455,8 +455,20 @@ bool Controller::enter_command_mode() {
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             if (view.command_text.size() > 1) {
+                const char c = view.command_text.back();
                 view.command_text.pop_back();
                 cmd_text_pos--;
+
+                // Clear the overlay window if we have less than the required amount of pipes
+                if (view.command_text.size() >= 3 && c == '|') {
+                    const long pipes = std::count_if(
+                        view.command_text.begin(), view.command_text.end(),
+                        [](char c) { return c == '|'; });
+                    if (pipes == 2) {
+                        view.draw_screen();
+                    }
+                }
+
             } else {
                 ret = true;
                 view.cur = prev_cursor_pos.value();
@@ -486,32 +498,29 @@ bool Controller::enter_command_mode() {
                 cmd_text_pos++;
             }
 
-            // TODO: Move to a view method
-            // TODO: Make this method generic for drawing in different places
-            // and potentially handle it's own cursor? (at least line by line)
-            // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
             if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
                 !isspace(in.code)) {
-                std::vector<std::string> found_lines = view.get_active_model()->search_text(
-                    view.command_text.substr(3, view.command_text.size()));
+                // If the command isn't a complete find/replace, we don't want to draw the border
+                // yet
+                const long pipes = std::count_if(
+                    view.command_text.begin(), view.command_text.end(),
+                    [](char c) { return c == '|'; });
+                if (pipes < 3) {
+                    continue;
+                }
+
+                const std::vector<std::string> parts = split_by(view.command_text, '|');
+                std::vector<std::string> found_lines =
+                    view.get_active_model()->search_text(parts.at(1));
 
                 found_lines.resize(7);
-
-                rawterm::Pos top_left = {
-                    view.view_size.vertical - 7 - 3, view.line_number_offset + 2};
-                rawterm::Pos bottom_right = {
-                    view.view_size.vertical - 1, view.view_size.horizontal};
-                auto region = rawterm::Region(top_left, bottom_right);
-                auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
-                border.draw(view.cur, &found_lines);
+                view.draw_overlay(found_lines, "Search Results");
             }
         }
     }
 
     view.command_text = ";";
-    // view.cur = prev_cursor_pos.value();
-
     return ret;
 }
 
@@ -557,6 +566,19 @@ bool Controller::parse_command() {
         return true;
 
         // search
+        // TODO: Try and find a way to display the search_str
+    } else if (cmd.substr(0, 2) == ";f") {
+        auto new_pos = view.get_active_model()->find_next_str(cmd);
+        if (new_pos.has_value()) {
+            view.get_active_model()->current_line = new_pos.value().vertical;
+            view.get_active_model()->current_char = new_pos.value().horizontal;
+            view.center_current_line();
+            return true;
+        }
+
+        return false;
+
+        // find/replace (sed)
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
         view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
         return true;
