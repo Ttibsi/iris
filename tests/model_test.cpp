@@ -264,6 +264,14 @@ TEST_CASE("prev_para_pos", "[model]") {
     REQUIRE(opt.value() == 2);
 }
 
+TEST_CASE("end_of_word_pos", "[model]") {
+    REQUIRE(false);
+}
+
+TEST_CASE("replace_char", "[model]") {
+    REQUIRE(false);
+}
+
 TEST_CASE("toggle_case", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
