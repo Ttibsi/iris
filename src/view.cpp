@@ -8,7 +8,6 @@
 #include <format>
 #include <functional>
 #include <print>
-#include <ranges>
 #include <string>
 #include <thread>
 
@@ -19,6 +18,7 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "enumerate.h"
 #include "text_io.h"
 
 View::View(Controller* controller, const rawterm::Pos dims)
@@ -84,17 +84,15 @@ void View::draw_screen() {
     auto viewable_range = get_active_model()->buf |
                           std::views::drop(get_active_model()->view_offset) | std::views::take(end);
 
-    for (const auto [idx, line] : std::views::enumerate(viewable_range)) {
+    const std::size_t start_idx = get_active_model()->view_offset + 1;
+    for (const auto [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
-            if (get_active_model()->view_offset + idx + 1 == get_active_model()->current_line + 1) {
+            if (idx == get_active_model()->current_line + 1) {
                 c = COLOR_DARK_YELLOW;
             }
-
-            screen += rawterm::set_foreground(
-                std::format(
-                    "{:>{}}\u2502", get_active_model()->view_offset + idx + 1, line_number_offset),
-                c);
+            screen +=
+                rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
 
         // Truncate
