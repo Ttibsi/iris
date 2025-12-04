@@ -192,7 +192,7 @@ TEST_CASE("cursor_left", "[view]") {
         v.add_model(&m);
 
         REQUIRE(v.cur == rawterm::Pos(1, 1));
-        v.cursor_left();
+        v.cursor_left(1);
         REQUIRE(v.cur == rawterm::Pos(1, 1));
     }
 
@@ -203,10 +203,8 @@ TEST_CASE("cursor_left", "[view]") {
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
 
-        for (int i = 1; i < 5; i++) {
-            v.cursor_right();
-        }
-        v.cursor_left();
+        v.cursor_right(4);
+        v.cursor_left(1);
         REQUIRE(v.cur == rawterm::Pos(1, 4));
         REQUIRE(m.current_line == 0);
         REQUIRE(m.current_char == 3);
@@ -222,7 +220,7 @@ TEST_CASE("cursor_up", "[view]") {
         v.add_model(&m);
 
         REQUIRE(v.cur == rawterm::Pos(1, 1));
-        v.cursor_up();
+        v.cursor_up(1);
         REQUIRE(v.cur == rawterm::Pos(1, 1));
     }
 
@@ -262,9 +260,7 @@ TEST_CASE("cursor_up", "[view]") {
         REQUIRE(text.at(idx).find("massa.") != std::string::npos);
 
         // Move cursor to top row
-        for (int i = 1; i < 23; i++) {
-            v.cursor_up();
-        }
+        v.cursor_up(22);
 
         REQUIRE(v.cur == rawterm::Pos(1, 1));
         REQUIRE(m.current_line == 12);
@@ -360,11 +356,9 @@ TEST_CASE("cursor_right", "[view]") {
         v.add_model(&m);
         v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
-        for (int i = 1; i <= 80; i++) {
-            v.cursor_right();
-        }
+        v.cursor_right(80);
         REQUIRE(v.cur == rawterm::Pos(1, 20));
-        v.cursor_right();
+        v.cursor_right(1);
         REQUIRE(v.cur == rawterm::Pos(1, 20));
     }
 
@@ -376,10 +370,7 @@ TEST_CASE("cursor_right", "[view]") {
         v.add_model(&m);
         v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
-        for (int i = 1; i <= 100; i++) {
-            v.cursor_right();
-        }
-
+        v.cursor_right(99);
         REQUIRE(v.cur == rawterm::Pos(1, 20));
         REQUIRE(m.current_char == 17);
     }
@@ -391,7 +382,7 @@ TEST_CASE("cursor_right", "[view]") {
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
 
-        v.cursor_right();
+        v.cursor_right(1);
         REQUIRE(v.cur == rawterm::Pos(1, 2));
     }
 }
@@ -577,9 +568,7 @@ TEST_CASE("change_model_cursor", "[view]") {
         Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
     v.add_model(&m);
 
-    for (int i = 0; i < 5; i++) {
-        v.cursor_right();
-    }
+    v.cursor_right(5);
 
     REQUIRE(v.cur == rawterm::Pos(1, 6));
 
