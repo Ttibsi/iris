@@ -356,12 +356,10 @@ TEST_CASE("cursor_right", "[view]") {
         v.add_model(&m);
         v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
-        for (int i = 1; i <= 80; i++) {
-            v.cursor_right();
-        }
-        REQUIRE(v.cur == rawterm::Pos(1, 20));
-        v.cursor_right();
-        REQUIRE(v.cur == rawterm::Pos(1, 20));
+        v.cursor_right(80);
+        REQUIRE(v.cur == rawterm::Pos(1, 21));
+        v.cursor_right(1);
+        REQUIRE(v.cur == rawterm::Pos(1, 21));
     }
 
     SECTION("Already at right-most position in line") {
