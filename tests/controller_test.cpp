@@ -143,7 +143,7 @@ TEST_CASE("write_all", "[controller]") {
     REQUIRE(!c.models.at(0).unsaved);
 
     // Undo changes to not break other tests
-    c.view.cursor_right();
+    c.view.cursor_right(1);
     std::ignore = c.models.at(0).backspace();
     std::ignore = c.write_all();
 }
