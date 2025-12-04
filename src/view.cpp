@@ -366,16 +366,16 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 }
 
 // Returns: (bool) Redraw whole screen
-[[maybe_unused]] bool View::cursor_left() {
+[[maybe_unused]] bool View::cursor_left(std::size_t dist) {
     if (get_active_model()->vertical_offset &&
         uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
-        get_active_model()->current_char--;
+        get_active_model()->current_char -= dist;
         if (get_active_model()->vertical_offset == 2) { get_active_model()->vertical_offset--; }
-        get_active_model()->vertical_offset--;
+        get_active_model()->vertical_offset -= dist;
         return true;
     } else if (get_active_model()->current_char) {
-        get_active_model()->current_char--;
-        cur.move_left();
+        get_active_model()->current_char -= dist;
+        cur.move_left(int32_t(dist));
         return false;
     }
 
@@ -402,10 +402,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
         }
     }
 
-    while (horizontal_clamp) {
-        cursor_left();
-        horizontal_clamp--;
-    }
+    cursor_left(horizontal_clamp);
 
     return redraw_sentinal;
 }
@@ -433,29 +430,28 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
         }
     }
 
-    while (horizontal_clamp) {
-        cursor_left();
-        horizontal_clamp--;
-    }
-
+    cursor_left(horizontal_clamp);
     return redraw_sentinal;
 }
 
 // Return if we need to redraw after the cursor is moved
-[[maybe_unused]] bool View::cursor_right() {
+[[maybe_unused]] bool View::cursor_right(std::size_t dist) {
     // Only scroll if we're still in the line
     std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
     const std::size_t line_size = curr_line.size();
     if (get_active_model()->current_char == line_size) { return false; }
 
+    // Clamp dist to line
+    dist = std::min(dist, line_size - get_active_model()->current_char);
+    if (dist == 0) { return false; }
+    get_active_model()->current_char += dist;
+
     if (cur.horizontal < view_size.horizontal - 2) {
-        get_active_model()->current_char++;
-        cur.move_right();
+        cur.move_right(int32_t(dist));
         return false;
     } else {
-        get_active_model()->current_char++;
         if (!get_active_model()->vertical_offset) { get_active_model()->vertical_offset++; }
-        get_active_model()->vertical_offset++;
+        get_active_model()->vertical_offset += dist;
         return true;
     }
 }
@@ -463,10 +459,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 void View::cursor_end_of_line() {
     std::size_t line_len = get_active_model()->buf.at(get_active_model()->current_line).size();
     std::size_t curr_pos = get_active_model()->current_char;
-
-    for (std::size_t i = curr_pos; i < line_len; i++) {
-        cursor_right();
-    }
+    cursor_right(line_len - curr_pos);
 }
 
 void View::cursor_start_of_line() {
@@ -477,9 +470,9 @@ void View::cursor_start_of_line() {
             cur_line.begin(), cur_line.end(), [](char c) { return !(std::isspace(c)); });
 
         if (it != cur_line.end()) {
-            while (get_active_model()->current_char > std::distance(cur_line.begin(), it)) {
-                cursor_left();
-            }
+            const auto dist = std::distance(cur_line.begin(), it);
+            const long cursor_distance = get_active_model()->current_char - dist;
+            cursor_left(uint_t(cursor_distance));
         }
     }
 }
