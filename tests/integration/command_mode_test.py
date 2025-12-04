@@ -315,13 +315,13 @@ def test_change_buffer_to_invalid_id(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt")
 def test_search_live_command(r: TmuxRunner):
     r.press(r.CMD_KEY)
-    r.type_str("s is")
+    r.type_str("s|is|was|")
 
     with open(r.filename) as f:
         text = f.readlines()
 
     ui_elem: list[str] = r.lines()[13:-2]
-    assert "Search results" in ui_elem[0]
+    assert "Search Results" in ui_elem[0]
     assert f"|1| {text[0].strip()}" in ui_elem[1]
 
 
@@ -339,3 +339,28 @@ def test_search_and_replace_multiline_command(r: TmuxRunner):
 
     assert "This was some text" in r.lines()[0]
     assert "here was a newline and a tab" in r.lines()[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_find_next_str_command(r: TmuxRunner):
+    r.iris_cmd("f newline")
+    r.await_cursor_pos(1, 17)
+    assert r.await_statusbar_parts()[-1] == "2:15"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_find_next_str_and_scroll_command(r: TmuxRunner):
+    r.iris_cmd("f venenatis")
+    r.await_cursor_pos(12, 10)
+    assert r.await_statusbar_parts()[-1] == "43:7"
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_find_next_str_repeat_input_command(r: TmuxRunner):
+    r.iris_cmd("f Cras")
+    r.await_cursor_pos(4, 11)
+    assert r.await_statusbar_parts()[-1] == "5:8"
+
+    r.iris_cmd("f")
+    r.await_cursor_pos(12, 10)
+    assert r.await_statusbar_parts()[-1] == "46:7"
