@@ -48,10 +48,10 @@ struct View {
     [[maybe_unused]] const rawterm::Pos draw_command_bar(const std::size_t);
     void display_message(std::string, std::optional<rawterm::Color>);
     [[nodiscard]] std::size_t clamp_horizontal_movement(const int);
-    [[maybe_unused]] bool cursor_left();
+    [[maybe_unused]] bool cursor_left(std::size_t);
     [[maybe_unused]] bool cursor_up(unsigned int count = 1);
     [[maybe_unused]] bool cursor_down(unsigned int count = 1);
-    [[maybe_unused]] bool cursor_right();
+    [[maybe_unused]] bool cursor_right(std::size_t);
     void cursor_end_of_line();
     void cursor_start_of_line();
     void center_current_line();

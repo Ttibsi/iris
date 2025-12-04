@@ -221,6 +221,7 @@ template <typename T, typename U>
 
                 return v->cursor_left(1);
             }
+
         } break;
 
         case ActionType::MoveCursorUp: {
@@ -244,9 +245,14 @@ template <typename T, typename U>
                 auto logger = spdlog::get("basic_logger");
                 if (logger != nullptr) { logger->info("Action called: MoveCursorRight"); }
 
+<<<<<<< HEAD
                 v->cursor_right(1);
                 return {};
             }
+=======
+            v->cursor_right(1);
+            return {};
+>>>>>>> 1f063b0 (refactor cursor movement for consistency)
         } break;
 
         case ActionType::MoveLineDown: {
