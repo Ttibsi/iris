@@ -486,12 +486,12 @@ void View::set_current_line(const unsigned int lineno) {
         get_active_model()->view_offset = 0;
         cur.move(
             {static_cast<int>(lineno + visible_tab_bar()),
-             static_cast<int>(get_active_model()->current_char + line_number_offset + 2)});
+             static_cast<int>(get_active_model()->current_char) + line_number_offset + 2});
     } else {
         get_active_model()->view_offset = lineno - half_view - 1;
         cur.move(
             {static_cast<int>(half_view + 1 + visible_tab_bar()),
-             static_cast<int>(get_active_model()->current_char + line_number_offset + 2)});
+             static_cast<int>(get_active_model()->current_char) + line_number_offset + 2});
     }
 }
 

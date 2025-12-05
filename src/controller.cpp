@@ -570,8 +570,8 @@ bool Controller::parse_command() {
     } else if (cmd.substr(0, 2) == ";f") {
         auto new_pos = view.get_active_model()->find_next_str(cmd);
         if (new_pos.has_value()) {
-            view.get_active_model()->current_line = new_pos.value().vertical;
-            view.get_active_model()->current_char = new_pos.value().horizontal;
+            view.get_active_model()->current_line = uint_t(new_pos.value().vertical);
+            view.get_active_model()->current_char = uint_t(new_pos.value().horizontal);
             view.center_current_line();
             return true;
         }
