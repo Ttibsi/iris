@@ -173,6 +173,7 @@ def test_write_all_command(r: TmuxRunner):
         assert first_line[0] == "h"
 
     r.press("u")
+    time.sleep(0.1)
     r.iris_cmd("wa")
 
     with open(r.filename, "r") as f:

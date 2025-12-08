@@ -73,7 +73,7 @@ def test_inserting_char_end_of_line(r: TmuxRunner):
     with open("tests/fixture/test_file_1.txt") as f:
         contents = f.readlines()
 
-    r.type_str("l" * len(contents[0]))
+    r.type_str("l" * (len(contents[0]) - 1))
 
     r.press("i")
     r.press("v")
@@ -94,7 +94,7 @@ def test_inserting_char_end_of_file(r: TmuxRunner):
     for _ in range(len(contents)):
         r.press("j")
 
-    for _ in range(len(contents[-1])):
+    for _ in range(len(contents[-1]) - 1):
         r.press("l")
 
     r.press("i")
@@ -161,7 +161,7 @@ def test_insert_newline(r: TmuxRunner):
     with open("tests/fixture/test_file_1.txt") as f:
         contents = f.readlines()
 
-    for _ in range(len(contents[-1])):
+    for _ in range(len(contents[-1]) - 1):
         r.press("l")
 
     r.press("i")
