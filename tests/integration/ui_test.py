@@ -280,3 +280,18 @@ def test_statusbar_filename_is_centered(r: TmuxRunner):
     # the available space
     center_difference = abs(expected_center_pos - actual_center_pos)
     assert center_difference <= 1
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scrolling(r: TmuxRunner):
+    # Move cursor all the way to the right
+    r.type_str("l" * 72)
+    assert r.cursor_pos() == (0, 75)
+    assert r.statusbar_parts()[-1] == "1:73"
+    assert r.lines()[0].startswith(" 1\u2502012")
+
+    # horizontal scroll
+    r.press("l")
+    assert r.cursor_pos() == (0, 79)
+    assert r.statusbar_parts()[-1] == "1:80"
+    assert r.lines()[0].startswith(" 1\2502123")
