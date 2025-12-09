@@ -96,15 +96,22 @@ void View::draw_screen() {
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
 
+        if (line.empty()) {
+            screen += "\r\n";
+            continue;
+        }
+
         // Truncate
         const uint_t viewable_hor_len = static_cast<unsigned int>(
             view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
 
         if (line.size() > viewable_hor_len) {
-            screen += line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
+            if (vertical_offset) {
+                screen += "\u00AB";
+            }
+
+            screen += line.substr(vertical_offset, viewable_hor_len - 2);
             screen += "\u00BB\r\n";
-        } else if (line.empty()) {
-            screen += "\r\n";
         } else {
             screen += line.substr(vertical_offset, line.size()) + "\r\n";
         };
@@ -442,7 +449,7 @@ void View::cursor_left() {
         return false;
     }
 
-    if (cur.horizontal < view_size.horizontal - 1) {
+    if (cur.horizontal < view_size.horizontal - 2) {
         get_active_model()->current_char++;
         cur.move_right();
         return false;
