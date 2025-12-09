@@ -41,12 +41,14 @@ def test_submit_command(r: TmuxRunner):
 
 @setup()
 def test_escape_cmd_mode(r: TmuxRunner):
+    cur_pos = r.cursor_pos()
     r.press(r.CMD_KEY)
     r.type_str("ping")
     r.press("Escape")
 
     assert r.lines()[-1] == ""
     assert r.await_statusbar_parts()[0] == "READ"
+    assert r.cursor_pos() == cur_pos
 
 
 @setup()
