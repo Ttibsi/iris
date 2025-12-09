@@ -103,6 +103,8 @@ void View::draw_screen() {
         if (line.size() > viewable_hor_len) {
             screen += line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
             screen += "\u00BB\r\n";
+        } else if (line.empty()) {
+            screen += "\r\n";
         } else {
             screen += line.substr(vertical_offset, line.size()) + "\r\n";
         };
@@ -419,39 +421,10 @@ void View::cursor_left(std::size_t dist) {
     return redraw_sentinal;
 }
 
-<<<<<<< HEAD
-void View::cursor_right(std::size_t dist) {
-=======
 // Return if we need to redraw after the cursor is moved
 [[nodiscard]] bool View::cursor_right() {
->>>>>>> 672f5b8 (Initial setup)
-    // TODO: Handle line longer than view
-    if (cur.horizontal == view_size.horizontal) {
-        return false;
-    }
-
-    const std::size_t movement = std::min(
-        get_active_model()->current_char + dist,
-        get_active_model()->buf.at(get_active_model()->current_line).size() + 1);
-
-<<<<<<< HEAD
     cur.move_right(int32_t(movement - get_active_model()->current_char));
     get_active_model()->current_char = uint_t(movement);
-=======
-    if (LINE_NUMBERS) {
-        line_size += line_number_offset + 1;
-    }
-
-    if (cur.horizontal < line_size) {
-        get_active_model()->current_char++;
-        cur.move_right();
-        return false;
-    } else {
-        get_active_model()->current_char++;
-        vertical_offset++;
-        return true;
-    }
->>>>>>> 672f5b8 (Initial setup)
 }
 
 void View::cursor_end_of_line() {
