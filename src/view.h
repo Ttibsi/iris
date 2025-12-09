@@ -32,6 +32,7 @@ struct View {
     int line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
+    std::size_t vertical_offset = 0;
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
@@ -50,7 +51,7 @@ struct View {
     void cursor_left();
     [[maybe_unused]] bool cursor_up(unsigned int count = 1);
     [[maybe_unused]] bool cursor_down(unsigned int count = 1);
-    void cursor_right();
+    [[nodiscard]] bool cursor_right();
     void cursor_end_of_line();
     void cursor_start_of_line();
     void center_current_line();

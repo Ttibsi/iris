@@ -279,7 +279,9 @@ void Controller::start_action_engine() {
                 redraw_all = true;
 
             } else if (k.value() == rawterm::Key('l')) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
+                redraw_all = redraw.value();
 
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {

@@ -257,13 +257,14 @@ template <typename T, typename U>
         } break;
 
         case ActionType::MoveCursorRight: {
-            auto logger = spdlog::get("basic_logger");
-            if (logger != nullptr) {
-                logger->info("Action called: MoveCursorRight");
-            }
+            if constexpr (std::is_same_v<U, bool>) {
+                auto logger = spdlog::get("basic_logger");
+                if (logger != nullptr) {
+                    logger->info("Action called: MoveCursorRight");
+                }
 
-            v->cursor_right();
-            return {};
+                return v->cursor_right();
+            }
         } break;
 
         case ActionType::MoveLineDown: {

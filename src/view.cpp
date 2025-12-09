@@ -101,10 +101,10 @@ void View::draw_screen() {
             view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
 
         if (line.size() > viewable_hor_len) {
-            screen += line.substr(0, viewable_hor_len - 1);
+            screen += line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
             screen += "\u00BB\r\n";
         } else {
-            screen += line + "\r\n";
+            screen += line.substr(vertical_offset, line.size()) + "\r\n";
         };
     }
 
@@ -229,10 +229,10 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
 
     // Truncate
     if (curr_line.size() > viewable_hor_len) {
-        line += curr_line.substr(0, viewable_hor_len - 1);
+        line += curr_line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
         line += "\u00BB";
     } else {
-        line += curr_line;
+        line += curr_line.substr(vertical_offset, curr_line.size());
     }
 
     return line;
@@ -357,7 +357,10 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 }
 
 void View::cursor_left() {
-    if (get_active_model()->current_char) {
+    if (get_active_model()->current_char && vertical_offset) {
+        get_active_model()->current_char--;
+        vertical_offset--;
+    } else if (get_active_model()->current_char) {
         get_active_model()->current_char--;
         cur.move_left();
     }
@@ -426,10 +429,11 @@ void View::cursor_left() {
     return redraw_sentinal;
 }
 
-void View::cursor_right() {
+// Return if we need to redraw after the cursor is moved
+[[nodiscard]] bool View::cursor_right() {
     // TODO: Handle line longer than view
     if (cur.horizontal == view_size.horizontal) {
-        return;
+        return false;
     }
 
     // Only scroll if we're still in the line
@@ -443,6 +447,11 @@ void View::cursor_right() {
     if (cur.horizontal < line_size) {
         get_active_model()->current_char++;
         cur.move_right();
+        return false;
+    } else {
+        get_active_model()->current_char++;
+        vertical_offset++;
+        return true;
     }
 }
 
