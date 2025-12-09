@@ -103,6 +103,8 @@ void View::draw_screen() {
         if (line.size() > viewable_hor_len) {
             screen += line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
             screen += "\u00BB\r\n";
+        } else if (line.empty()) {
+            screen += "\r\n";
         } else {
             screen += line.substr(vertical_offset, line.size()) + "\r\n";
         };
@@ -432,19 +434,15 @@ void View::cursor_left() {
 // Return if we need to redraw after the cursor is moved
 [[nodiscard]] bool View::cursor_right() {
     // TODO: Handle line longer than view
-    if (cur.horizontal == view_size.horizontal) {
+
+    // Only scroll if we're still in the line
+    std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
+    const std::size_t line_size = curr_line.size();
+    if (get_active_model()->current_char == line_size) {
         return false;
     }
 
-    // Only scroll if we're still in the line
-    int line_size =
-        static_cast<int>(get_active_model()->buf.at(get_active_model()->current_line).size() + 1u);
-
-    if (LINE_NUMBERS) {
-        line_size += line_number_offset + 1;
-    }
-
-    if (cur.horizontal < line_size) {
+    if (cur.horizontal < view_size.horizontal - 1) {
         get_active_model()->current_char++;
         cur.move_right();
         return false;
