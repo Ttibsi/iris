@@ -372,14 +372,18 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     return 0;
 }
 
-void View::cursor_left() {
+[[nodiscard]] bool View::cursor_left() {
     if (get_active_model()->current_char && vertical_offset) {
         get_active_model()->current_char--;
         vertical_offset--;
+        return true;
     } else if (get_active_model()->current_char) {
         get_active_model()->current_char--;
         cur.move_left();
+        return false;
     }
+
+    return false;
 }
 
 [[maybe_unused]] bool View::cursor_up(unsigned int count) {

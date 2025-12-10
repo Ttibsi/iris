@@ -237,7 +237,9 @@ void Controller::start_action_engine() {
                 redraw_all = true;
 
             } else if (k.value() == rawterm::Key('h')) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                auto ret =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
+                redraw_all = ret.value();
             } else if (k.value() == rawterm::Key('i')) {
                 if (is_readonly_model()) {
                     continue;
