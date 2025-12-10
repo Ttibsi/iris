@@ -85,6 +85,10 @@ void View::draw_screen() {
     auto viewable_range = get_active_model()->buf |
                           std::views::drop(get_active_model()->view_offset) | std::views::take(end);
 
+    // Viewable length for truncating - moved out of loop to prevent recalculating each time
+    const uint_t viewable_hor_len = static_cast<unsigned int>(
+        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
+
     const std::size_t start_idx = get_active_model()->view_offset + 1;
     for (const auto [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
@@ -96,25 +100,28 @@ void View::draw_screen() {
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
 
-        if (line.empty()) {
+        if (line.empty() || (vertical_offset && line.size() < vertical_offset)) {
             screen += "\r\n";
             continue;
         }
-
-        // Truncate
-        const uint_t viewable_hor_len = static_cast<unsigned int>(
-            view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
 
         if (line.size() > viewable_hor_len) {
             if (vertical_offset) {
                 screen += "\u00AB";
             }
 
-            screen += line.substr(vertical_offset, viewable_hor_len - 2);
-            screen += "\u00BB\r\n";
+            std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset >= 2 ? 0 : 1);
+            screen += line.substr(vertical_offset, draw_len);
+
+            // TODO: This is off, I think
+            if (line.size() > draw_len + vertical_offset + 3) {
+                screen += "\u00BB";
+            }
         } else {
-            screen += line.substr(vertical_offset, line.size()) + "\r\n";
+            screen += line.substr(vertical_offset, line.size());
         };
+
+        screen += "\r\n";
     }
 
     // Set 1 line number if no text in the buffer
@@ -449,12 +456,15 @@ void View::cursor_left() {
         return false;
     }
 
-    if (cur.horizontal < view_size.horizontal - 2) {
+    if (cur.horizontal < view_size.horizontal - 1) {
         get_active_model()->current_char++;
         cur.move_right();
         return false;
     } else {
         get_active_model()->current_char++;
+        if (!vertical_offset) {
+            vertical_offset++;
+        }
         vertical_offset++;
         return true;
     }
