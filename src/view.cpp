@@ -110,7 +110,7 @@ void View::draw_screen() {
                 screen += "\u00AB";
             }
 
-            std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset >= 2 ? 0 : 1);
+            std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset ? 0 : 1);
             screen += line.substr(vertical_offset, draw_len);
 
             // TODO: This is off, I think
@@ -243,10 +243,24 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
             std::format("{:>{}}\u2502", idx + 1, line_number_offset), color);
     }
 
+    if (curr_line.empty() || (vertical_offset && curr_line.size() < vertical_offset)) {
+        return line;
+    }
+
     // Truncate
     if (curr_line.size() > viewable_hor_len) {
-        line += curr_line.substr(vertical_offset, vertical_offset + viewable_hor_len - 1);
-        line += "\u00BB";
+        if (vertical_offset) {
+            line += "\u00AB";
+        }
+
+        std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset >= 2 ? 0 : 1);
+        line += curr_line.substr(vertical_offset, draw_len);
+
+        // TODO: This is off, I think
+        if (curr_line.size() > draw_len + vertical_offset + 2) {
+            line += "\u00BB";
+        }
+
     } else {
         line += curr_line.substr(vertical_offset, curr_line.size());
     }
@@ -372,8 +386,9 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     return 0;
 }
 
+// Returns: (bool) Redraw whole screen
 [[nodiscard]] bool View::cursor_left() {
-    if (get_active_model()->current_char && vertical_offset) {
+    if (vertical_offset && cur.horizontal == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
         get_active_model()->current_char--;
         vertical_offset--;
         return true;
