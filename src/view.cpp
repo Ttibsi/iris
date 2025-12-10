@@ -377,6 +377,8 @@ void View::cursor_left(std::size_t dist) {
         get_active_model()->current_char -= dist;
         cur.move_left(int32_t(dist));
     }
+
+    return false;
 }
 
 [[maybe_unused]] bool View::cursor_up(unsigned int count) {
