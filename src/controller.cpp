@@ -445,6 +445,7 @@ bool Controller::enter_command_mode() {
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
             rawterm::clear_line();
             view.draw_screen();
+            view.cur = prev_cursor_pos.value();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             if (view.command_text.substr(0, 2) == ";s") {
