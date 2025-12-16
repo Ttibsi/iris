@@ -347,7 +347,7 @@ def test_horizontal_scroll_move_up_down(r: TmuxRunner):
     r.press("j")
     assert r.statusbar_parts()[-1] == "2:91"
     assert r.lines()[1].startswith("  2\u2502\u00AB890")
-    assert r.lines()[0].endswith("901\u00BB")
+    assert r.lines()[0].endswith("90\u00BB")
 
 
 @setup("tests/fixture/very_long_line.txt")
@@ -384,7 +384,7 @@ def test_horizontal_scroll_then_redraw(r: TmuxRunner):
 def test_horizontal_scroll_and_change_tab(r: TmuxRunner):
     r.type_str("l" * 90)
     assert r.statusbar_parts()[-1] == "1:91"
-    assert r.cursor_pos() == (1, 75)
+    assert r.cursor_pos() == (1, 77)
 
     # go to next tab
     r.type_str("tn")
@@ -392,5 +392,5 @@ def test_horizontal_scroll_and_change_tab(r: TmuxRunner):
 
     # Back to long file
     r.type_str("tn")
-    assert r.statusbar_parts()[-1] == "1:80"
-    assert r.cursor_pos() == (1, 79)
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (1, 77)
