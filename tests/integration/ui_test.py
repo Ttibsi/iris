@@ -354,30 +354,30 @@ def test_horizontal_scroll_move_up_down(r: TmuxRunner):
 def test_horizontal_scroll_then_modify_text(r: TmuxRunner):
     r.type_str("l" * 90)
     assert r.statusbar_parts()[-1] == "1:91"
-    assert r.cursor_pos() == (0, 75)
+    assert r.cursor_pos() == (0, 77)
 
     # Move back to middle of line
     r.type_str("h" * 5)
-    assert r.statusbar_parts()[-1] == "1:75"
-    assert r.cursor_pos() == (0, 74)
+    assert r.statusbar_parts()[-1] == "1:86"
+    assert r.cursor_pos() == (0, 72)
 
     r.type_str("i!")
     r.press("Escape")
-    assert r.statusbar_parts()[-1] == "1:76"
-    assert r.cursor_pos() == (0, 75)
-    assert "9!0" in r.lines()[0]
+    assert r.statusbar_parts()[-1] == "1:87"
+    assert r.cursor_pos() == (0, 73)
+    assert "4!5" in r.lines()[0]
 
 
 @setup("tests/fixture/very_long_line.txt")
 def test_horizontal_scroll_then_redraw(r: TmuxRunner):
     r.type_str("l" * 90)
     assert r.statusbar_parts()[-1] == "1:91"
-    assert r.cursor_pos() == (0, 75)
+    assert r.cursor_pos() == (0, 77)
 
     r.press("z")
-    assert r.statusbar_parts()[-1] == "1:1"
-    assert r.cursor_pos() == (0, 3)
-    assert r.lines()[0].startswith("  1\u25020123")
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (0, 77)
+    assert r.lines()[0].startswith("  1\u2502\u00AB890")
 
 
 @setup("tests/fixture/very_long_line.txt", multi_file=True)

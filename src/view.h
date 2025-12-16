@@ -29,7 +29,7 @@ struct View {
     std::vector<Model*> view_models = {};  // Indexes into controller.models
     std::size_t active_model = 0;          // 0-indexed
     rawterm::Cursor cur;
-    int line_number_offset = 0;
+    uint_t line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
     std::size_t vertical_offset = 0;
