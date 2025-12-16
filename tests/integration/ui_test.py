@@ -342,11 +342,12 @@ def test_horizontal_scroll_move_back_left(r: TmuxRunner):
 def test_horizontal_scroll_move_up_down(r: TmuxRunner):
     r.type_str("l" * 90)
     assert r.statusbar_parts()[-1] == "1:91"
-    assert r.cursor_pos() == (0, 75)
+    assert r.cursor_pos() == (0, 77)
 
     r.press("j")
     assert r.statusbar_parts()[-1] == "2:91"
-    assert r.lines()[1].startswith("  2\u2502\u00AB789")
+    assert r.lines()[1].startswith("  2\u2502\u00AB890")
+    assert r.lines()[0].endswith("901\u00BB")
 
 
 @setup("tests/fixture/very_long_line.txt")
