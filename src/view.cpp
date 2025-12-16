@@ -90,6 +90,7 @@ void View::draw_screen() {
         view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
 
     const std::size_t start_idx = get_active_model()->view_offset + 1;
+    const std::size_t vert_offset = get_active_model()->vertical_offset;
     for (const auto [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
@@ -100,24 +101,24 @@ void View::draw_screen() {
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
 
-        if (line.empty() || (vertical_offset && line.size() < vertical_offset)) {
+        if (line.empty() || (vert_offset && line.size() < vert_offset)) {
             screen += "\r\n";
             continue;
         }
 
-        if (vertical_offset) {
+        if (vert_offset) {
             screen += "\u00AB";
         }
 
         if (line.size() > viewable_hor_len) {
-            std::size_t draw_len = viewable_hor_len - 2 - (vertical_offset ? 1 : 0);
-            screen += line.substr(vertical_offset, draw_len);
+            const std::size_t draw_len = viewable_hor_len - 2 - (vert_offset ? 1 : 0);
+            screen += line.substr(vert_offset, draw_len);
 
-            if (line.size() > draw_len + vertical_offset + 3) {
+            if (line.size() > draw_len + vert_offset + 3) {
                 screen += "\u00BB";
             }
         } else {
-            screen += line.substr(vertical_offset, line.size());
+            screen += line.substr(vert_offset, line.size());
         };
 
         screen += "\r\n";
@@ -242,26 +243,27 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
             std::format("{:>{}}\u2502", idx + 1, line_number_offset), color);
     }
 
-    if (curr_line.empty() || (vertical_offset && curr_line.size() < vertical_offset)) {
+    const std::size_t vert_offset = get_active_model()->vertical_offset;
+    if (curr_line.empty() || (vert_offset && curr_line.size() < vert_offset)) {
         return line;
     }
 
     // Truncate
     if (curr_line.size() > viewable_hor_len) {
-        if (vertical_offset) {
+        if (vert_offset) {
             line += "\u00AB";
         }
 
-        std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset >= 2 ? 0 : 1);
-        line += curr_line.substr(vertical_offset, draw_len);
+        const std::size_t draw_len = viewable_hor_len - 2 - (vert_offset ? 1 : 0);
+        line += curr_line.substr(vert_offset, draw_len);
 
         // TODO: This is off, I think
-        if (curr_line.size() > draw_len + vertical_offset + 2) {
+        if (curr_line.size() > draw_len + vert_offset + 2) {
             line += "\u00BB";
         }
 
     } else {
-        line += curr_line.substr(vertical_offset, curr_line.size());
+        line += curr_line.substr(vert_offset, curr_line.size());
     }
 
     return line;
@@ -387,12 +389,13 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 
 // Returns: (bool) Redraw whole screen
 [[nodiscard]] bool View::cursor_left() {
-    if (vertical_offset && cur.horizontal == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
+    if (get_active_model()->vertical_offset &&
+        uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
         get_active_model()->current_char--;
-        if (vertical_offset == 2) {
-            vertical_offset--;
+        if (get_active_model()->vertical_offset == 2) {
+            get_active_model()->vertical_offset--;
         }
-        vertical_offset--;
+        get_active_model()->vertical_offset--;
         return true;
     } else if (get_active_model()->current_char) {
         get_active_model()->current_char--;
@@ -483,10 +486,10 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
         return false;
     } else {
         get_active_model()->current_char++;
-        if (!vertical_offset) {
-            vertical_offset++;
+        if (!get_active_model()->vertical_offset) {
+            get_active_model()->vertical_offset++;
         }
-        vertical_offset++;
+        get_active_model()->vertical_offset++;
         return true;
     }
 }
@@ -527,8 +530,8 @@ void View::set_current_line(const unsigned int lineno) {
     get_active_model()->current_line = lineno - 1;
     uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
     uint_t curr_char = get_active_model()->current_char + line_number_offset + 2;
-    if (vertical_offset) {
-        curr_char -= (vertical_offset - 1);
+    if (get_active_model()->vertical_offset) {
+        curr_char -= (get_active_model()->vertical_offset - 1);
     }
 
     if (lineno <= half_view) {
@@ -589,9 +592,12 @@ void View::tab_prev() {
 }
 
 void View::change_model_cursor() {
-    uint_t vertical =
+    const uint_t vertical =
         get_active_model()->current_line - get_active_model()->view_offset + visible_tab_bar() + 1;
     uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset) + 2;
+    if (get_active_model()->vertical_offset) {
+        horizontal -= get_active_model()->vertical_offset - 1;
+    }
 
     cur.move(int(vertical), int(horizontal));
 }

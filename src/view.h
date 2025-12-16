@@ -32,7 +32,6 @@ struct View {
     uint_t line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
-    std::size_t vertical_offset = 0;
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
