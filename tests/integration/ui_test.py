@@ -283,7 +283,7 @@ def test_statusbar_filename_is_centered(r: TmuxRunner):
 
 
 @setup("tests/fixture/very_long_line.txt")
-def test_horizontal_scrolling(r: TmuxRunner):
+def test_horizontal_scroll_move_right(r: TmuxRunner):
     # Move cursor all the way to the right
     r.type_str("l" * 72)
     assert r.cursor_pos() == (0, 75)
@@ -293,5 +293,88 @@ def test_horizontal_scrolling(r: TmuxRunner):
     # horizontal scroll
     r.press("l")
     assert r.cursor_pos() == (0, 79)
-    assert r.statusbar_parts()[-1] == "1:80"
+    assert r.statusbar_parts()[-1] == "1:76"
     assert r.lines()[0].startswith(" 1\2502123")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_move_back_left(r: TmuxRunner):
+    # Move cursor all the way to the right
+    r.type_str("l" * 72)
+    assert r.cursor_pos() == (0, 75)
+    assert r.statusbar_parts()[-1] == "1:73"
+    assert r.lines()[0].startswith(" 1\u2502012")
+
+    # horizontal scroll
+    r.press("l")
+    assert r.cursor_pos() == (0, 79)
+    assert r.statusbar_parts()[-1] == "1:76"
+    assert r.lines()[0].startswith(" 1\2502\u00AB123")
+
+    # Move cursor back towards the left
+    r.type_str("h" * 72)
+    assert r.cursor_pos() == (0, 3)
+    assert r.statusbar_parts()[-1] == "1:2"
+    assert r.lines()[0].startswith(" 1\u2502\u00AB123")
+
+    # Scroll leftward
+    r.press("h")
+    assert r.cursor_pos() == (0, 3)
+    assert r.statusbar_parts()[-1] == "1:1"
+    assert r.lines()[0].startswith(" 1\u2502012")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_move_up_down(r: TmuxRunner):
+    r.type_str("l" * 75)
+    assert r.statusbar_parts()[-1] == "1:76"
+
+    r.press("j")
+    assert r.statusbar_parts()[-1] == "2:76"
+    assert r.lines()[1].startswith(" 2\u2502\u00AB123")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_then_modify_text(r: TmuxRunner):
+    r.type_str("l" * 75)
+    assert r.statusbar_parts()[-1] == "1:76"
+    assert r.cursor_pos() == (0, 79)
+
+    # Move back to middle of line
+    r.type_str("h" * 5)
+    assert r.statusbar_parts()[-1] == "1:75"
+    assert r.cursor_pos() == (0, 74)
+
+    r.type_str("i!")
+    r.press("Escape")
+    assert r.statusbar_parts()[-1] == "1:76"
+    assert r.cursor_pos() == (0, 75)
+    assert "9!0" in r.lines()[0]
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_then_redraw(r: TmuxRunner):
+    r.type_str("l" * 75)
+    assert r.statusbar_parts()[-1] == "1:76"
+    assert r.cursor_pos() == (0, 79)
+
+    r.press("z")
+    assert r.statusbar_parts()[-1] == "1:1"
+    assert r.cursor_pos() == (0, 3)
+    assert r.lines()[0].startswith(" 1\u25020123")
+
+
+@setup("tests/fixture/very_long_line.txt", multi_file=True)
+def test_horizontal_scroll_and_change_tab(r: TmuxRunner):
+    r.type_str("l" * 75)
+    assert r.statusbar_parts()[-1] == "1:76"
+    assert r.cursor_pos() == (1, 79)
+
+    # go to next tab
+    r.type_str("tn")
+    assert r.cursor_pos() == (1, 3)
+
+    # Back to long file
+    r.type_str("tn")
+    assert r.statusbar_parts()[-1] == "1:80"
+    assert r.cursor_pos() == (1, 79)
