@@ -31,6 +31,11 @@ repos:
     rev: v4.0.0
     hooks:
     - id: add-trailing-comma
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.2
+    hooks:
+      - id: autopep8
+        args: [--in-place, --max-line-length=100]
   - repo: https://github.com/PyCQA/flake8
     rev: 7.3.0
     hooks:
@@ -39,11 +44,6 @@ repos:
     rev: v1.18.2
     hooks:
     - id: mypy
-  -   repo: https://github.com/hhatto/autopep8
-      rev: v2.3.2
-      hooks:
-      -   id: autopep8
-          args: [--in-place, --max-line-length=100]
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.8
     hooks:
