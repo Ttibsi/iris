@@ -105,15 +105,14 @@ void View::draw_screen() {
             continue;
         }
 
-        if (line.size() > viewable_hor_len) {
-            if (vertical_offset) {
-                screen += "\u00AB";
-            }
+        if (vertical_offset) {
+            screen += "\u00AB";
+        }
 
-            std::size_t draw_len = viewable_hor_len - 2 + (vertical_offset ? 0 : 1);
+        if (line.size() > viewable_hor_len) {
+            std::size_t draw_len = viewable_hor_len - 2 - (vertical_offset ? 1 : 0);
             screen += line.substr(vertical_offset, draw_len);
 
-            // TODO: This is off, I think
             if (line.size() > draw_len + vertical_offset + 3) {
                 screen += "\u00BB";
             }
@@ -390,6 +389,9 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 [[nodiscard]] bool View::cursor_left() {
     if (vertical_offset && cur.horizontal == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
         get_active_model()->current_char--;
+        if (vertical_offset == 2) {
+            vertical_offset--;
+        }
         vertical_offset--;
         return true;
     } else if (get_active_model()->current_char) {
@@ -475,7 +477,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
         return false;
     }
 
-    if (cur.horizontal < view_size.horizontal - 1) {
+    if (cur.horizontal < view_size.horizontal - 2) {
         get_active_model()->current_char++;
         cur.move_right();
         return false;
