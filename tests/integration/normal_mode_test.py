@@ -20,7 +20,7 @@ def test_a_key(r: TmuxRunner):
 
     statusbar: list[str] = r.await_statusbar_parts()
     assert statusbar[0] == "WRITE"
-    assert statusbar[-1] == "1:2"
+    assert statusbar[-1] == "1:1"
 
 
 @setup("tests/fixture/test_file_1.txt")

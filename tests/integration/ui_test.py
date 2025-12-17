@@ -40,7 +40,7 @@ def test_open_with_file(r: TmuxRunner):
 def test_render_truncated_line(r: TmuxRunner):
     lines = r.lines()
     assert lines[0][-1] == "\u00BB"
-    assert lines[0][-2] == "5"
+    assert lines[0][-2] == "3"
 
 
 def test_render_truncated_filename_in_statusbar():
