@@ -9,6 +9,7 @@
 * Ensure the block cursor is restored when iris is closed
 * Refactored how `;s` works for find and replace
 * Added `;f` command to find a given string further on in the buffer
+* Iris now handles horizontal scrolling when a line is longer than the screen
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar

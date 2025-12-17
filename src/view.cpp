@@ -257,7 +257,6 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
         const std::size_t draw_len = viewable_hor_len - 2 - (vert_offset ? 1 : 0);
         line += curr_line.substr(vert_offset, draw_len);
 
-        // TODO: This is off, I think
         if (curr_line.size() > draw_len + vert_offset + 2) {
             line += "\u00BB";
         }
@@ -471,8 +470,6 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 
 // Return if we need to redraw after the cursor is moved
 [[maybe_unused]] bool View::cursor_right() {
-    // TODO: Handle line longer than view
-
     // Only scroll if we're still in the line
     std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
     const std::size_t line_size = curr_line.size();
