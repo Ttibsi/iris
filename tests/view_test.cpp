@@ -73,7 +73,7 @@ TEST_CASE("render_screen", "[view]") {
 
         REQUIRE(buffer.size() == 22);
         REQUIRE(buffer.at(0).substr(buffer.at(0).size() - 2, 2) == "\u00bb");
-        REQUIRE(buffer.at(0).size() == 83);  // +3 for unicode chars
+        REQUIRE(buffer.at(0).size() == 82);  // +3 for unicode chars
     }
 }
 
@@ -146,7 +146,7 @@ TEST_CASE("render_line", "[view]") {
         const std::string line = rawterm::raw_str(v.render_line(0));
 
         REQUIRE(line.substr(line.size() - 2, 2) == "\u00BB");
-        REQUIRE(line.size() == 83);  // +3 for unicode chars
+        REQUIRE(line.size() == 82);  // +3 for unicode chars
     }
 }
 
@@ -360,14 +360,14 @@ TEST_CASE("cursor_right", "[view]") {
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
-        v.cur.move({v.cur.vertical, v.line_number_offset + 1});
+        v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
         for (int i = 1; i <= 80; i++) {
             v.cursor_right();
         }
-        REQUIRE(v.cur == rawterm::Pos(1, 21));
+        REQUIRE(v.cur == rawterm::Pos(1, 20));
         v.cursor_right();
-        REQUIRE(v.cur == rawterm::Pos(1, 21));
+        REQUIRE(v.cur == rawterm::Pos(1, 20));
     }
 
     SECTION("Already at right-most position in line") {
@@ -376,14 +376,14 @@ TEST_CASE("cursor_right", "[view]") {
         auto m = Model(
             open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
         v.add_model(&m);
-        v.cur.move({v.cur.vertical, v.line_number_offset + 1});
+        v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
         for (int i = 1; i <= 100; i++) {
             v.cursor_right();
         }
 
-        REQUIRE(v.cur == rawterm::Pos(1, 21));
-        REQUIRE(m.current_char == 18);
+        REQUIRE(v.cur == rawterm::Pos(1, 20));
+        REQUIRE(m.current_char == 17);
     }
 
     SECTION("Move right") {
