@@ -455,7 +455,7 @@ TEST_CASE("center_current_line", "[view]") {
         REQUIRE(
             v.cur == rawterm::Pos(
                          static_cast<int>(std::floor(v.view_size.vertical / 2)) + 1,
-                         v.line_number_offset + 2));
+                         static_cast<int>(v.line_number_offset + 2)));
     }
 }
 
@@ -562,7 +562,7 @@ TEST_CASE("set_lineno_offset", "[view]") {
     auto m =
         Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
     v.add_model(&m);
-    int ret = v.set_lineno_offset(&m);
+    unsigned int ret = v.set_lineno_offset(&m);
 
     REQUIRE(ret == 3);
 

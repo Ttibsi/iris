@@ -574,8 +574,8 @@ bool Controller::parse_command() {
     } else if (cmd.substr(0, 2) == ";f") {
         auto new_pos = view.get_active_model()->find_next_str(cmd);
         if (new_pos.has_value()) {
-            view.get_active_model()->current_line = new_pos.value().vertical;
-            view.get_active_model()->current_char = new_pos.value().horizontal;
+            view.get_active_model()->current_line = uint_t(new_pos.value().vertical);
+            view.get_active_model()->current_char = uint_t(new_pos.value().horizontal);
             view.center_current_line();
             return true;
         }
@@ -691,7 +691,7 @@ void Controller::add_model(const std::string& filename) {
     }
 
     const int vert = int(1 + view.visible_tab_bar());
-    const int hor = 1 + view.set_lineno_offset(&models.at(models.size() - 1));
+    const int hor = 1 + int(view.set_lineno_offset(&models.at(models.size() - 1)));
     view.cur.move(vert, hor);
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }

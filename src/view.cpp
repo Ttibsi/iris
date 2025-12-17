@@ -56,7 +56,7 @@ void View::draw_screen() {
     // Cursor positioning
     cur.move(starting_cur_pos);
     if (LINE_NUMBERS && !(rawterm::detail::is_debug())) {
-        while (cur.horizontal < line_number_offset + 2) {
+        while (cur.horizontal < int(line_number_offset) + 2) {
             cur.move_right();
         }
     }
@@ -87,7 +87,7 @@ void View::draw_screen() {
 
     // Viewable length for truncating - moved out of loop to prevent recalculating each time
     const uint_t viewable_hor_len = static_cast<unsigned int>(
-        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
+        view_size.horizontal - int(LINE_NUMBERS ? line_number_offset + 1 : 0));
 
     const std::size_t start_idx = get_active_model()->view_offset + 1;
     const std::size_t vert_offset = get_active_model()->vertical_offset;
@@ -232,7 +232,7 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     std::string line = "";
 
     const uint_t viewable_hor_len = static_cast<unsigned int>(
-        view_size.horizontal - (LINE_NUMBERS ? line_number_offset + 1 : 0));
+        view_size.horizontal - int(LINE_NUMBERS ? line_number_offset + 1 : 0));
 
     std::string_view curr_line = get_active_model()->buf.at(idx);
 
@@ -388,7 +388,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 }
 
 // Returns: (bool) Redraw whole screen
-[[nodiscard]] bool View::cursor_left() {
+[[maybe_unused]] bool View::cursor_left() {
     if (get_active_model()->vertical_offset &&
         uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
         get_active_model()->current_char--;
@@ -470,7 +470,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 }
 
 // Return if we need to redraw after the cursor is moved
-[[nodiscard]] bool View::cursor_right() {
+[[maybe_unused]] bool View::cursor_right() {
     // TODO: Handle line longer than view
 
     // Only scroll if we're still in the line
@@ -553,7 +553,7 @@ void View::get_git_branch() {
 void View::tab_new() {
     ctrlr_ptr->models.emplace_back(view_size.vertical, "NO NAME");
     add_model(&ctrlr_ptr->models.at(ctrlr_ptr->models.size() - 1));
-    cur.move(2, line_number_offset + 2);
+    cur.move(2, int(line_number_offset) + 2);
 }
 
 void View::tab_next() {
@@ -582,9 +582,9 @@ void View::tab_prev() {
     return view_models.size() > 1 ? 1 : 0;
 }
 
-[[maybe_unused]] int View::set_lineno_offset(Model* m) {
+[[maybe_unused]] uint_t View::set_lineno_offset(Model* m) {
     if (LINE_NUMBERS) {
-        line_number_offset = static_cast<int>(std::to_string(m->buf.size()).size() + 1);
+        line_number_offset = uint_t(std::to_string(m->buf.size()).size() + 1);
         return line_number_offset;
     }
 
