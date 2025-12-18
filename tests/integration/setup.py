@@ -147,7 +147,7 @@ def setup(
             with open(temp_file, "w") as f:
                 f.write("Hello world")
 
-            dims = {"width": width, "height": 24}
+            dims: dict[str, int] = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
             with TmuxRunner("build/src/iris", file, **dims) as r:
                 r.filename = open_with
