@@ -95,12 +95,14 @@ void Controller::start_action_engine() {
         auto k = rawterm::process_keypress();
 
         // Handle signals
-        rawterm::signal_handler(rawterm::Signal::SIG_CONT, [this]() { view.draw_screen(); });
-        rawterm::signal_handler(rawterm::Signal::SIG_WINCH, [this]() {
+        auto sig_resize_redraw = [this]() {
             term_size = rawterm::get_term_size();
-            view.view_size = rawterm::get_term_size();
+            view.view_size = term_size;
             view.draw_screen();
-        });
+        };
+
+        rawterm::signal_handler(rawterm::Signal::SIG_CONT, sig_resize_redraw);
+        rawterm::signal_handler(rawterm::Signal::SIG_WINCH, sig_resize_redraw);
 
         if (!(k.has_value())) {
             continue;
