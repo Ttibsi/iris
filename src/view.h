@@ -29,7 +29,7 @@ struct View {
     std::vector<Model*> view_models = {};  // Indexes into controller.models
     std::size_t active_model = 0;          // 0-indexed
     rawterm::Cursor cur;
-    int line_number_offset = 0;
+    uint_t line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
 
@@ -47,10 +47,10 @@ struct View {
     [[maybe_unused]] const rawterm::Pos draw_command_bar(const std::size_t);
     void display_message(std::string, std::optional<rawterm::Color>);
     [[nodiscard]] std::size_t clamp_horizontal_movement(const int);
-    void cursor_left();
+    [[maybe_unused]] bool cursor_left();
     [[maybe_unused]] bool cursor_up(unsigned int count = 1);
     [[maybe_unused]] bool cursor_down(unsigned int count = 1);
-    void cursor_right();
+    [[maybe_unused]] bool cursor_right();
     void cursor_end_of_line();
     void cursor_start_of_line();
     void center_current_line();
@@ -60,7 +60,7 @@ struct View {
     void tab_next();
     void tab_prev();
     [[nodiscard]] uint_t visible_tab_bar() const;
-    [[maybe_unused]] int set_lineno_offset(Model*);
+    [[maybe_unused]] uint_t set_lineno_offset(Model*);
     void change_model_cursor();
     bool set_buffer(const std::size_t, const std::size_t);
     void draw_overlay(std::span<std::string>, std::string_view);

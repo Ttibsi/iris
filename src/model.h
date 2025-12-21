@@ -32,6 +32,7 @@ struct Model {
     unsigned int current_line = 0;  // 0-indexed
     unsigned int current_char = 0;  // 0-indexed
     std::string search_str = "";
+    std::size_t vertical_offset = 0;
 
     // Num of lines offset to view
     unsigned int view_offset = 0;
