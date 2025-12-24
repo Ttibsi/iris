@@ -41,12 +41,14 @@ def test_submit_command(r: TmuxRunner):
 
 @setup()
 def test_escape_cmd_mode(r: TmuxRunner):
+    cur_pos = r.cursor_pos()
     r.press(r.CMD_KEY)
     r.type_str("ping")
     r.press("Escape")
 
     assert r.lines()[-1] == ""
     assert r.await_statusbar_parts()[0] == "READ"
+    assert r.cursor_pos() == cur_pos
 
 
 @setup()
@@ -119,3 +121,16 @@ def test_cursor_goes_back_after_cmd_enter(r: TmuxRunner):
     r.iris_cmd("ping")
 
     assert r.cursor_pos() == old_pos
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_overlay_window_clears_on_backspace(r: TmuxRunner):
+    r.press(r.CMD_KEY)
+    r.type_str("s|is|was|")
+    ui_elem: list[str] = r.lines()[13:-2]
+    assert "Search Results" in ui_elem[0]
+
+    r.press("BSpace")
+    assert r.lines()[-1] == ";s|is|was"
+    ui_elem = r.lines()[13:-2]
+    assert "~" in ui_elem[0]

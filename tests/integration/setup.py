@@ -26,8 +26,8 @@ class TmuxRunner(Runner):
     # idea stolen from asottile/babi - `testing/runner.py`
     def color_screenshot(self) -> list[str]:
         return self.tmux.execute_command(
-                'capture-pane',
-                '-ept0',
+            'capture-pane',
+            '-ept0',
         ).split("\n")[:-1]
 
     def await_statusbar_parts(self, index: int = 22) -> list[str]:
@@ -76,16 +76,16 @@ class TmuxRunner(Runner):
     # NOTE: zero-indexed
     def cursor_pos(self) -> tuple[int, ...]:
         return tuple(
-                map(
-                    int,
-                    self.tmux.execute_command(
-                        "display-message",
-                        "-p",
-                        "'#{cursor_y},#{cursor_x}'",
-                    ).rstrip()
-                    .replace("'", "")
-                    .split(","),
-                ),
+            map(
+                int,
+                self.tmux.execute_command(
+                    "display-message",
+                    "-p",
+                    "'#{cursor_y},#{cursor_x}'",
+                ).rstrip()
+                .replace("'", "")
+                .split(","),
+            ),
         )
 
     def assert_text_missing(self, text: str, wait: float = 0.1) -> None:
@@ -147,7 +147,7 @@ def setup(
             with open(temp_file, "w") as f:
                 f.write("Hello world")
 
-            dims = {"width": width, "height": 24}
+            dims: dict[str, int] = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
             with TmuxRunner("build/src/iris", file, **dims) as r:
                 r.filename = open_with
