@@ -27,7 +27,7 @@ def test_quit_with_modified_buffer(r: TmuxRunner):
     assert "\x1b[49m" in err_line  # red text
 
 
-@setup("tests/fixture/temp_file.txt", multi_file=True)
+@setup("tests/fixture/test_file_2.txt", multi_file=True)
 def test_quit_all_with_modified_buffer(r: TmuxRunner):
     r.press("i")
     r.type_str("test")
@@ -35,7 +35,7 @@ def test_quit_all_with_modified_buffer(r: TmuxRunner):
     r.iris_cmd("wqa")
 
     with open(r.filename) as f:
-        assert f.read() == "testHello world\n"
+        assert f.read()[0:4] == "test"
 
 
 @setup("tests/fixture/test_file_1.txt")

@@ -144,8 +144,8 @@ def setup(
             if os.path.isfile(temp_file):
                 os.remove(temp_file)
 
-            with open(temp_file, "w") as f:
-                f.write("Hello world")
+                with open(temp_file, "w") as f:
+                    f.write("Hello world")
 
             dims: dict[str, int] = {"width": width, "height": 24}
             file: str = open_with if not multi_file else temp_file
