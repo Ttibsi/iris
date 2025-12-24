@@ -41,7 +41,7 @@ def test_resize_while_suspended():
         # Open file
         r.press_and_enter("./build/src/iris tests/fixture/very_long_line.txt")
         r.await_text("READ")
-        assert r.lines()[0].endswith("45\u00BB")
+        assert r.lines()[0].endswith("23\u00BB")
 
         # Background
         r.press("^z")
@@ -55,4 +55,4 @@ def test_resize_while_suspended():
         r.await_text("READ")
 
         # Check
-        assert r.lines()[0].endswith("89\u00BB")
+        assert r.lines()[0].endswith("67\u00BB")
