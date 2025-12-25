@@ -92,6 +92,7 @@ following commands in alphabetical order are available:
 | `;w`               | Save file                                                       |
 | `;wa`              | Save all files                                                  |
 | `;qa`              | Quit all                                                        |
+| `wqa`              | Write and quit all files                                        |
 
 Search flags for `;s` include:
 * `m` Multiline search

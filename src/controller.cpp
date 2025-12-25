@@ -531,6 +531,7 @@ bool Controller::enter_command_mode() {
     return ret;
 }
 
+// return: redraw_all value
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
     auto logger = spdlog::get("basic_logger");
@@ -588,6 +589,15 @@ bool Controller::parse_command() {
         // find/replace (sed)
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
         view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
+        return true;
+
+    } else if (cmd == ";wqa") {
+        // This just does the same as ;w and ;q, but for every file
+        for (auto&& m : models) {
+            std::ignore = write_to_file(&m);
+        }
+
+        std::ignore = quit_app(true);
         return true;
 
     } else if (cmd == ";wq") {

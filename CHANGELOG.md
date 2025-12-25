@@ -7,6 +7,7 @@
 * `;lb` now shows all open buffers
 * `dl` and `dw` now delete the current line and word
 * Ensure the block cursor is restored when iris is closed
+* Use `wqa` to save and close all files
 * Refactored how `;s` works for find and replace
 * Added `;f` command to find a given string further on in the buffer
 * Iris now handles horizontal scrolling when a line is longer than the screen
