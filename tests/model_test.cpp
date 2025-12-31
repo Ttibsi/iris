@@ -1,6 +1,8 @@
 #include "model.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <rawterm/core.h>
+#include <rawterm/text.h>
 
 #include "action.h"
 #include "change.h"
@@ -615,12 +617,14 @@ TEST_CASE("search_text", "[model]") {
         "");
     std::vector<std::string> ret = m.search_text("one");
     REQUIRE(ret.size() == 1);
-    REQUIRE(ret.at(0) == "|1| line one");
+    REQUIRE(rawterm::raw_str(ret.at(0)) == "|1| line one");
+    REQUIRE(ret.at(0).contains("\x1b[7m"));
+    REQUIRE(ret.at(0).contains("\x1b[0m"));
 
     ret = m.search_text("line");
     REQUIRE(ret.size() == 7);
-    REQUIRE(ret.at(0) == "|1| line one");
-    REQUIRE(ret.at(6) == "|8| line seven");
+    REQUIRE(rawterm::raw_str(ret.at(0)) == "|1| line one");
+    REQUIRE(rawterm::raw_str(ret.at(6)) == "|8| line seven");
 }
 
 TEST_CASE("search_and_replace", "[model]") {
@@ -638,5 +642,30 @@ TEST_CASE("search_and_replace", "[model]") {
             continue;
         }
         REQUIRE(m.buf.at(i).substr(0, 5) == "entry");
+    }
+}
+
+TEST_CASE("find_next_str", "[model]") {
+    auto m = Model(
+        {"line one", "line two", "line three", "", "line four", "line five", "line six",
+         "line seven", "line eight", "line nine", "line ten"},
+        "");
+
+    SECTION("Text not found") {
+        REQUIRE(m.find_next_str(";f unknown") == std::nullopt);
+        REQUIRE(m.search_str == "unknown");
+    }
+
+    SECTION("Test found in buf") {
+        auto ret = m.find_next_str(";f line");
+        REQUIRE(ret.has_value());
+        REQUIRE(ret.value() == rawterm::Pos(1, 0));
+        REQUIRE(m.search_str == "line");
+
+        // Search str already set
+        ret = m.find_next_str(";f");
+        REQUIRE(ret.has_value());
+        REQUIRE(ret.value() == rawterm::Pos(1, 0));
+        REQUIRE(m.search_str == "line");
     }
 }

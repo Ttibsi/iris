@@ -1,3 +1,5 @@
+import time
+
 from setup import setup
 from setup import temp_named_file
 from setup import TmuxRunner
@@ -38,7 +40,7 @@ def test_open_with_file(r: TmuxRunner):
 def test_render_truncated_line(r: TmuxRunner):
     lines = r.lines()
     assert lines[0][-1] == "\u00BB"
-    assert lines[0][-2] == "5"
+    assert lines[0][-2] == "3"
 
 
 def test_render_truncated_filename_in_statusbar():
@@ -280,3 +282,115 @@ def test_statusbar_filename_is_centered(r: TmuxRunner):
     # the available space
     center_difference = abs(expected_center_pos - actual_center_pos)
     assert center_difference <= 1
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_move_right(r: TmuxRunner):
+    # Move cursor all the way to the right
+    r.type_str("l" * 73)
+    assert r.statusbar_parts()[-1] == "1:74"
+    assert r.cursor_pos() == (0, 77)
+    assert r.lines()[0].startswith("  1\u2502012")
+    assert r.lines()[0].endswith("23\u00BB")
+
+    # horizontal scroll
+    r.press("l")
+    time.sleep(0.1)
+    assert r.cursor_pos() == (0, 77)
+    assert r.statusbar_parts()[-1] == "1:75"
+    assert r.lines()[0].startswith("  1\u2502\u00AB23")
+    assert r.lines()[0].endswith("34\u00BB")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_move_back_left(r: TmuxRunner):
+    # Move cursor all the way to the right
+    r.type_str("l" * 73)
+    assert r.statusbar_parts()[-1] == "1:74"
+    assert r.cursor_pos() == (0, 77)
+    assert r.lines()[0].startswith("  1\u2502012")
+    assert r.lines()[0].endswith("23\u00BB")
+
+    # horizontal scroll
+    r.press("l")
+    time.sleep(0.1)
+    assert r.cursor_pos() == (0, 77)
+    assert r.statusbar_parts()[-1] == "1:75"
+    assert r.lines()[0].startswith("  1\u2502\u00AB23")
+    assert r.lines()[0].endswith("34\u00BB")
+
+    # Move cursor back towards the left
+    r.type_str("h" * 72)
+    assert r.statusbar_parts()[-1] == "1:3"
+    assert r.cursor_pos() == (0, 5)
+    assert r.lines()[0].startswith("  1\u2502\u00AB23")
+
+    # Scroll leftward
+    r.press("h")
+    time.sleep(0.1)
+    assert r.statusbar_parts()[-1] == "1:2"
+    assert r.cursor_pos() == (0, 5)
+    assert r.lines()[0].startswith("  1\u2502012")
+
+    # Insert
+    r.type_str("i!")
+    r.press("Escape")
+    assert r.lines()[0].startswith("  1\u25020!1")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_move_up_down(r: TmuxRunner):
+    r.type_str("l" * 90)
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (0, 77)
+
+    r.press("j")
+    assert r.statusbar_parts()[-1] == "2:91"
+    assert r.lines()[1].startswith("  2\u2502\u00AB890")
+    assert r.lines()[0].endswith("90\u00BB")
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_then_modify_text(r: TmuxRunner):
+    r.type_str("l" * 90)
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (0, 77)
+
+    # Move back to middle of line
+    r.type_str("h" * 5)
+    assert r.statusbar_parts()[-1] == "1:86"
+    assert r.cursor_pos() == (0, 72)
+
+    r.type_str("i!")
+    r.press("Escape")
+    assert r.statusbar_parts()[-1] == "1:87"
+    assert r.cursor_pos() == (0, 73)
+    assert "4!5" in r.lines()[0]
+
+
+@setup("tests/fixture/very_long_line.txt")
+def test_horizontal_scroll_then_redraw(r: TmuxRunner):
+    r.type_str("l" * 90)
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (0, 77)
+
+    r.press("z")
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (0, 77)
+    assert r.lines()[0].startswith("  1\u2502\u00AB890")
+
+
+@setup("tests/fixture/very_long_line.txt", multi_file=True)
+def test_horizontal_scroll_and_change_tab(r: TmuxRunner):
+    r.type_str("l" * 90)
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (1, 77)
+
+    # go to next tab
+    r.type_str("tn")
+    assert r.cursor_pos() == (1, 3)
+
+    # Back to long file
+    r.type_str("tn")
+    assert r.statusbar_parts()[-1] == "1:91"
+    assert r.cursor_pos() == (1, 77)

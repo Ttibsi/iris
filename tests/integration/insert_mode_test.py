@@ -215,7 +215,7 @@ def test_line_truncates_when_inserting_char(r: TmuxRunner):
     r.press("_")
 
     lines = r.lines()
-    assert len(lines[0]) == 80
+    assert len(lines[0]) == 79
     assert lines[0][-1] == "\u00BB"
 
     status_bar = r.await_statusbar_parts()
@@ -230,8 +230,8 @@ def test_inserting_char_into_truncated_line(r: TmuxRunner):
     lines = r.lines()
 
     # Skipping line number
-    assert lines[0][3] == "_"
-    assert lines[0][4] == "0"
+    assert lines[0][4] == "_"
+    assert lines[0][5] == "0"
     assert lines[0][-1] == "\u00BB"
 
 
@@ -245,8 +245,8 @@ def test_inserting_newline_into_truncated_line(r: TmuxRunner):
 
     lines = r.lines()
 
-    assert lines[0] == " 1\u25020123456789"
-    assert lines[1][0:13] == " 2\u25020123456789"
+    assert lines[0] == "  1\u25020123456789"
+    assert lines[1][0:13] == "  2\u2502012345678"
 
     status_bar = r.await_statusbar_parts()
     assert status_bar[-1] == "2:1"

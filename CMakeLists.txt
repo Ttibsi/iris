@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.22.0)
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-set(CMAKE_C_COMPILER "/usr/bin/clang")
-
 project(iris LANGUAGES CXX)
+
 option(RUN_TESTS "Run unit tests" OFF)
 option(ENABLE_ASAN "Compile with AddressSanitizer" OFF)
 option(RELEASE "Release build" OFF)

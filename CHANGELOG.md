@@ -9,9 +9,17 @@
 * Ensure the block cursor is restored when iris is closed
 * Pressing backspace at the end of a tab width's worth of whitespace now
 moves back that amount of space
+* Use `wqa` to save and close all files
+* Refactored how `;s` works for find and replace
+* Added `;f` command to find a given string further on in the buffer
+* Iris now handles horizontal scrolling when a line is longer than the screen
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar
+* Resolved issue where the cursor would stay in the command bar when escaping
+out of it
+* Resolved issue where iris wouldn't resize after SIGCONT if the terminal had
+been resized while backgrounded
 
 ### v0.0.2
 * Added ability to jump to a line number entered as a command: `;42`
