@@ -2,16 +2,16 @@
 
 #include <algorithm>
 #include <format>
-#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
 #include <rawterm/extras/border.h>
 #include <rawterm/text.h>
+#include <spdlog/spdlog.h>
 
 #include "action.h"
 #include "constants.h"
-#include "spdlog/spdlog.h"
+#include "enumerate.h"
 #include "view.h"
 
 Controller::Controller() : term_size(rawterm::get_term_size()), view(View(this, term_size)) {
@@ -95,12 +95,14 @@ void Controller::start_action_engine() {
         auto k = rawterm::process_keypress();
 
         // Handle signals
-        rawterm::signal_handler(rawterm::Signal::SIG_CONT, [this]() { view.draw_screen(); });
-        rawterm::signal_handler(rawterm::Signal::SIG_WINCH, [this]() {
+        auto sig_resize_redraw = [this]() {
             term_size = rawterm::get_term_size();
-            view.view_size = rawterm::get_term_size();
+            view.view_size = term_size;
             view.draw_screen();
-        });
+        };
+
+        rawterm::signal_handler(rawterm::Signal::SIG_CONT, sig_resize_redraw);
+        rawterm::signal_handler(rawterm::Signal::SIG_WINCH, sig_resize_redraw);
 
         if (!(k.has_value())) {
             continue;
@@ -241,7 +243,9 @@ void Controller::start_action_engine() {
                 redraw_all = true;
 
             } else if (k.value() == rawterm::Key('h')) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                auto ret =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
+                redraw_all = ret.value();
             } else if (k.value() == rawterm::Key('i')) {
                 if (is_readonly_model()) {
                     continue;
@@ -283,7 +287,9 @@ void Controller::start_action_engine() {
                 redraw_all = true;
 
             } else if (k.value() == rawterm::Key('l')) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                auto redraw =
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
+                redraw_all = redraw.value();
 
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {
@@ -446,12 +452,10 @@ bool Controller::enter_command_mode() {
         }
 
         auto in = rawterm::wait_for_input();
-
-        // TODO: Handle arrow keys
-
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
             rawterm::clear_line();
             view.draw_screen();
+            view.cur = prev_cursor_pos.value();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
             if (view.command_text.substr(0, 2) == ";s") {
@@ -462,8 +466,20 @@ bool Controller::enter_command_mode() {
             break;
         } else if (in == rawterm::Key(' ', rawterm::Mod::Backspace)) {
             if (view.command_text.size() > 1) {
+                const char c = view.command_text.back();
                 view.command_text.pop_back();
                 cmd_text_pos--;
+
+                // Clear the overlay window if we have less than the required amount of pipes
+                if (view.command_text.size() >= 3 && c == '|') {
+                    const long pipes = std::count_if(
+                        view.command_text.begin(), view.command_text.end(),
+                        [](char c) { return c == '|'; });
+                    if (pipes == 2) {
+                        view.draw_screen();
+                    }
+                }
+
             } else {
                 ret = true;
                 view.cur = prev_cursor_pos.value();
@@ -493,35 +509,33 @@ bool Controller::enter_command_mode() {
                 cmd_text_pos++;
             }
 
-            // TODO: Move to a view method
-            // TODO: Make this method generic for drawing in different places
-            // and potentially handle it's own cursor? (at least line by line)
-            // TODO: Ensure that partial matches also do match (ex `"to"` for `to`)
             // Show live view for searching
             if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
                 !isspace(in.code)) {
-                std::vector<std::string> found_lines = view.get_active_model()->search_text(
-                    view.command_text.substr(3, view.command_text.size()));
+                // If the command isn't a complete find/replace, we don't want to draw the border
+                // yet
+                const long pipes = std::count_if(
+                    view.command_text.begin(), view.command_text.end(),
+                    [](char c) { return c == '|'; });
+                if (pipes < 3) {
+                    continue;
+                }
+
+                const std::vector<std::string> parts = split_by(view.command_text, '|');
+                std::vector<std::string> found_lines =
+                    view.get_active_model()->search_text(parts.at(1));
 
                 found_lines.resize(7);
-
-                rawterm::Pos top_left = {
-                    view.view_size.vertical - 7 - 3, view.line_number_offset + 2};
-                rawterm::Pos bottom_right = {
-                    view.view_size.vertical - 1, view.view_size.horizontal};
-                auto region = rawterm::Region(top_left, bottom_right);
-                auto border = rawterm::Border(region).set_padding(1).set_title(" Search results ");
-                border.draw(view.cur, &found_lines);
+                view.draw_overlay(found_lines, "Search Results");
             }
         }
     }
 
     view.command_text = ";";
-    // view.cur = prev_cursor_pos.value();
-
     return ret;
 }
 
+// return: redraw_all value
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
     auto logger = spdlog::get("basic_logger");
@@ -564,8 +578,30 @@ bool Controller::parse_command() {
         return true;
 
         // search
+        // TODO: Try and find a way to display the search_str
+    } else if (cmd.substr(0, 2) == ";f") {
+        auto new_pos = view.get_active_model()->find_next_str(cmd);
+        if (new_pos.has_value()) {
+            view.get_active_model()->current_line = uint_t(new_pos.value().vertical);
+            view.get_active_model()->current_char = uint_t(new_pos.value().horizontal);
+            view.center_current_line();
+            return true;
+        }
+
+        return false;
+
+        // find/replace (sed)
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {
         view.get_active_model()->search_and_replace(cmd.substr(3, cmd.size()));
+        return true;
+
+    } else if (cmd == ";wqa") {
+        // This just does the same as ;w and ;q, but for every file
+        for (auto&& m : models) {
+            std::ignore = write_to_file(&m);
+        }
+
+        std::ignore = quit_app(true);
         return true;
 
     } else if (cmd == ";wq") {
@@ -672,7 +708,7 @@ void Controller::add_model(const std::string& filename) {
     }
 
     const int vert = int(1 + view.visible_tab_bar());
-    const int hor = 1 + view.set_lineno_offset(&models.at(models.size() - 1));
+    const int hor = 1 + int(view.set_lineno_offset(&models.at(models.size() - 1)));
     view.cur.move(vert, hor);
     view.view_models.at(view.active_model) = &models.at(models.size() - 1);
 }
@@ -732,7 +768,7 @@ void Controller::add_model(const std::string& filename) {
     list->type = ModelType::META;
     list->filename = "[BUFFERS]";
     list->readonly = true;
-    list->buf.reserve(8);
+    list->buf.reserve(32);
 
     std::size_t max_name_len =
         std::max_element(models.begin(), models.end(), [](const auto& lhs, const auto& rhs) {
@@ -759,7 +795,7 @@ void Controller::add_model(const std::string& filename) {
     }
     list->buf.at(2) += "\u2551";
 
-    for (const auto&& [idx, m] : std::views::enumerate(models)) {
+    for (const auto&& [idx, m] : enumerate<Model>(models)) {
         std::string line = "\u2551  " + std::to_string(idx);
         line += " \u2502  ";
         line += rawterm::bold(m.filename);

@@ -38,6 +38,7 @@ struct Response {
 [[nodiscard]] opt_lines_t open_file(const std::string&);
 [[nodiscard]] unsigned int get_file_size(const std::string&);
 [[nodiscard]] WriteData write_to_file(Model*);
+void rtrim(std::string& str);
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
 [[nodiscard]] std::string check_filename(const std::string&);

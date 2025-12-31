@@ -70,11 +70,17 @@
     }
     std::ofstream out(model->filename);
     for (auto&& line : model->buf) {
+        rtrim(line);
         out << line << "\n";
     }
 
     model->unsaved = false;
     return WriteData(static_cast<int>(out.tellp()), int32_t(model->buf.size()));
+}
+
+void rtrim(std::string& str) {
+    size_t idx = str.find_last_not_of(WHITESPACE);
+    str = str.substr(0, idx + 1);
 }
 
 [[nodiscard]] lines_t lines(const std::string& str) {

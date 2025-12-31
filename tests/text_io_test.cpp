@@ -39,6 +39,13 @@ TEST_CASE("write_to_file", "[textio]") {
     REQUIRE(m.unsaved == false);
 }
 
+TEST_CASE("rtrim", "[textio]") {
+    std::string s = "hello  ";
+    rtrim(s);
+    REQUIRE(s == "hello");
+    REQUIRE(s.size() == 5);
+}
+
 TEST_CASE("lines", "[textio]") {
     std::string s = "foo\nbar\r\nbaz";
     auto actual = lines(s);
