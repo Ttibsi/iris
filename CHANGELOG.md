@@ -14,6 +14,7 @@
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar
+* Resolved issue with `ctrl+bspace` inserting an `h`
 * Resolved issue where the cursor would stay in the command bar when escaping
 out of it
 * Resolved issue where iris wouldn't resize after SIGCONT if the terminal had
