@@ -7,6 +7,8 @@
 * `;lb` now shows all open buffers
 * `dl` and `dw` now delete the current line and word
 * Ensure the block cursor is restored when iris is closed
+* Pressing backspace at the end of a tab width's worth of whitespace now
+moves back that amount of space
 * Use `wqa` to save and close all files
 * Refactored how `;s` works for find and replace
 * Added `;f` command to find a given string further on in the buffer

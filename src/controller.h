@@ -10,8 +10,16 @@
 #include "view.h"
 
 enum class Mode { Read, Write, Command };
-enum class Redraw { Line, Screen, None };
+enum class RedrawType { Line, Screen, None };
 enum class QuitAll { Close, Redraw };
+
+struct Redraw {
+    RedrawType type;
+    int count;
+
+    explicit Redraw(RedrawType t, int num) : type(t), count(num) {}
+    explicit Redraw(RedrawType t) : type(t), count(0) {}
+};
 
 struct Controller {
     rawterm::Pos term_size;
