@@ -29,7 +29,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
 
         // At top of buffer
         if (current_line == 0) {
-            return Redraw::None;
+            return Redraw(RedrawType::None);
         }
 
         const std::size_t prev_line_len = buf.at(current_line - 1).size();
@@ -40,13 +40,26 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
         current_char = static_cast<unsigned int>(prev_line_len);
 
         unsaved = true;
-        return Redraw::Screen;
+        return Redraw(RedrawType::Screen);
     } else {
-        current_char--;
-        buf.at(current_line).erase(current_char, 1);
+        int cursor_move_size = 0;
+
+        // If we can move back TAB_SIZE chars, do so, but only if those chars are empty
+        if (current_char >= TAB_SIZE &&
+            first_non_whitespace(buf.at(current_line).substr(current_char - TAB_SIZE, TAB_SIZE)) ==
+                -1) {
+            buf.at(current_line).erase(current_char - TAB_SIZE, TAB_SIZE);
+            current_char -= TAB_SIZE;
+            cursor_move_size = TAB_SIZE;
+
+        } else {
+            current_char--;
+            buf.at(current_line).erase(current_char, 1);
+            cursor_move_size = 1;
+        }
 
         unsaved = true;
-        return Redraw::Line;
+        return Redraw(RedrawType::Line, cursor_move_size);
     }
 }
 
