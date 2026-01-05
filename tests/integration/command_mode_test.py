@@ -33,9 +33,11 @@ def test_quit_all_with_modified_buffer(r: TmuxRunner):
     r.type_str("test")
     r.press("Escape")
     r.iris_cmd("wqa")
+    time.sleep(0.1)
 
     with open(r.filename) as f:
-        assert f.read()[0:4] == "test"
+        text = f.read()
+        assert text[0:4] == "test"
 
 
 @setup("tests/fixture/test_file_1.txt")
