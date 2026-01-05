@@ -600,11 +600,7 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd == ";wqa") {
-        // This just does the same as ;w and ;q, but for every file
-        for (auto&& m : models) {
-            std::ignore = write_to_file(&m);
-        }
-
+        WriteAllData write_data = write_all();
         std::ignore = quit_app(true);
         return true;
 
