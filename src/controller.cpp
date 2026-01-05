@@ -51,30 +51,35 @@ void Controller::set_mode(Mode m) {
     }
 }
 
-void Controller::create_view(const std::string& file_name, unsigned long lineno) {
-    if (file_name.empty()) {
+void Controller::create_view(const Flags& flags) {
+    if (flags.file.empty()) {
         models.emplace_back(term_size.vertical - 2, "NO NAME");
         view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) {
-            logger->info("Creating view from file: " + file_name);
+            logger->info("Creating view from file: " + flags.file);
         }
 
-        opt_lines_t file_chars = open_file(file_name);
+        opt_lines_t file_chars = open_file(flags.file);
 
         if (file_chars.has_value()) {
-            models.emplace_back(file_chars.value(), file_name);
+            models.emplace_back(file_chars.value(), flags.file);
             view.add_model(&models.at(models.size() - 1));
 
-            if (lineno) {
-                lineno = std::min(lineno, models.at(models.size() - 1).buf.size());
-                view.cursor_down(uint32_t(std::min(lineno - 1, file_chars.value().size())));
+            if (flags.lineno) {
+                std::size_t line_num =
+                    std::min(flags.lineno, models.at(models.size() - 1).buf.size());
+                view.cursor_down(uint32_t(std::min(line_num - 1, file_chars.value().size())));
                 view.center_current_line();
             }
         } else {
-            models.emplace_back(term_size.vertical - 2, (file_name.empty() ? "" : file_name));
+            models.emplace_back(term_size.vertical - 2, (flags.file.empty() ? "" : flags.file));
             view.add_model(&models.at(models.size() - 1));
+        }
+
+        if (flags.readonly) {
+            view.get_active_model()->readonly = true;
         }
     }
 }

@@ -8,6 +8,7 @@
 #include <spdlog/spdlog.h>
 
 #include "controller.h"
+#include "flags.h"
 #include "text_io.h"
 #include "version.h"
 
@@ -15,19 +16,17 @@
 // TODO: Save file with given name `;w foo.txt`
 // TODO: detect if `;e` is opening an already-open file and switch to that buf instead
 //  NOTE: Maybe post a message in the command bar too
-
 // TODO: A way of detecting if the file is already open in another iris
 // instance
+
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
+    Flags flags;
 
-    std::string file = "";
-    unsigned int lineno = 0;
-    bool print_version = false;
-
-    app.add_option("file", file, "File to open");
-    app.add_option("-l,--line", lineno, "Set line number to start on");
-    app.add_flag("-v,--version", print_version, "Print version");
+    app.add_option("file", flags.file, "File to open");
+    app.add_option("-l,--line", flags.lineno, "Set line number to start on");
+    app.add_flag("-v,--version", flags.print_version, "Print version");
+    app.add_flag("-r,--readonly", flags.readonly, "Force file to be open in readonly mode");
 
     try {
         app.parse(argc, argv);
@@ -35,12 +34,12 @@ int main(int argc, char* argv[]) {
         return app.exit(e);
     }
 
-    if (print_version) {
+    if (flags.print_version) {
         std::println("{}", version());
         return 0;
     }
 
-    auto filename_error = check_filename(file);
+    auto filename_error = check_filename(flags.file);
     if (!(filename_error.empty())) {
         std::println("{}", filename_error);
         return 0;
@@ -60,7 +59,7 @@ int main(int argc, char* argv[]) {
     try {
         std::println("Setup...");
         Controller c;
-        c.create_view(file, lineno);
+        c.create_view(flags);
         c.start_action_engine();
     } catch (const std::exception& e) {
         rawterm::exit_alt_screen();

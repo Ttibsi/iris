@@ -394,3 +394,9 @@ def test_horizontal_scroll_and_change_tab(r: TmuxRunner):
     r.type_str("tn")
     assert r.statusbar_parts()[-1] == "1:91"
     assert r.cursor_pos() == (1, 77)
+
+
+def test_readonly_cli_flag():
+    with TmuxRunner("bash", "--norc") as r:
+        r.press_and_enter("./build/src/iris -r tests/fixture/test_file_1.txt")
+        assert "[RO]" in r.await_statusbar_parts()
