@@ -5,6 +5,7 @@
 
 #include <rawterm/core.h>
 
+#include "flags.h"
 #include "model.h"
 #include "text_io.h"
 #include "view.h"
@@ -32,7 +33,7 @@ struct Controller {
     Controller();
     void set_mode(Mode m);
     [[nodiscard]] const std::string get_mode() const;
-    void create_view(const std::string&, std::size_t, const bool);
+    void create_view(const Flags&);
     void start_action_engine();
     bool enter_command_mode();
     bool parse_command();
