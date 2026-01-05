@@ -3,6 +3,8 @@
 #include <catch2/catch_test_case_info.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include "flags.h"
+
 TEST_CASE("Construction", "[controller]") {
     Controller c;
     REQUIRE(c.models.capacity() == 8);
@@ -29,7 +31,8 @@ TEST_CASE("get_mode", "[controller]") {
 TEST_CASE("create_view", "[controller]") {
     SECTION("View with file") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
 
         REQUIRE(c.models.size() == 1);
         REQUIRE(*c.models.at(0).buf.at(0).begin() == 'T');
@@ -37,7 +40,8 @@ TEST_CASE("create_view", "[controller]") {
 
     SECTION("Empty view") {
         Controller c;
-        c.create_view("", 0);
+        Flags f = {};
+        c.create_view(f);
 
         REQUIRE(c.models.size() == 1);
         REQUIRE(c.models.at(0).buf.size() == 1);
@@ -45,16 +49,28 @@ TEST_CASE("create_view", "[controller]") {
 
     SECTION("View with scroll offset") {
         Controller c;
-        c.create_view("tests/fixture/lorem_ipsum.txt", 20);
+        Flags f = {"tests/fixture/lorem_ipsum.txt", std::size_t(20)};
+        c.create_view(f);
 
         REQUIRE(c.models.size() == 1);
         REQUIRE(*c.models.at(0).buf.at(0).begin() == 'L');
+    }
+
+    SECTION("View set to read only") {
+        Controller c;
+        Flags f = {"tests/fixture/lorem_ipsum.txt", true};
+        c.create_view(f);
+
+        REQUIRE(c.models.size() == 1);
+        REQUIRE(*c.models.at(0).buf.at(0).begin() == 'L');
+        REQUIRE(c.models.at(0).readonly == true);
     }
 }
 
 TEST_CASE("is_readonly_model", "[controller]") {
     Controller c;
-    c.create_view("tests/fixture/test_file_1.txt", 0);
+    Flags f = {std::string("tests/fixture/test_file_1.txt")};
+    c.create_view(f);
     REQUIRE(!c.is_readonly_model());
     c.view.get_active_model()->readonly = true;
     REQUIRE(c.is_readonly_model());
@@ -63,7 +79,8 @@ TEST_CASE("is_readonly_model", "[controller]") {
 TEST_CASE("quit_app", "[controller]") {
     SECTION("Only one tab open") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
 
         REQUIRE(!c.quit_app(false));
         REQUIRE(c.quit_flag);
@@ -71,7 +88,8 @@ TEST_CASE("quit_app", "[controller]") {
 
     SECTION("Only one tab and modified buffer") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.models.at(0).insert('!');
 
         REQUIRE(!c.quit_app(false));
@@ -80,7 +98,8 @@ TEST_CASE("quit_app", "[controller]") {
 
     SECTION("Multiple tabs open") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.view.tab_new();
 
         REQUIRE(c.quit_app(false));
@@ -89,7 +108,8 @@ TEST_CASE("quit_app", "[controller]") {
 
     SECTION("Two tab and this buffer is modified") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.view.tab_new();
         c.models.at(1).insert('!');
 
@@ -99,7 +119,8 @@ TEST_CASE("quit_app", "[controller]") {
 
     SECTION("Two tab and other buffer is modified") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.view.tab_new();
         c.models.at(0).insert('!');
 
@@ -111,14 +132,16 @@ TEST_CASE("quit_app", "[controller]") {
 TEST_CASE("check_for_saved_file", "[controller]") {
     SECTION("Unsaved") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.models.at(0).insert('!');
         REQUIRE(!c.check_for_saved_file(false));
     }
 
     SECTION("Saved") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
 
         REQUIRE(c.check_for_saved_file(false));
     }
@@ -131,7 +154,8 @@ TEST_CASE("check_for_saved_file", "[controller]") {
 
 TEST_CASE("write_all", "[controller]") {
     Controller c;
-    c.create_view("tests/fixture/test_file_1.txt", 0);
+    Flags f = {std::string("tests/fixture/test_file_1.txt")};
+    c.create_view(f);
     c.view.tab_new();
 
     c.models.at(0).insert('!');
@@ -151,7 +175,8 @@ TEST_CASE("write_all", "[controller]") {
 TEST_CASE("quit_all", "[controller]") {
     SECTION("No unsaved models") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.view.tab_new();
         c.add_model("tests/fixture/lorem_ipsum.txt");
 
@@ -163,7 +188,8 @@ TEST_CASE("quit_all", "[controller]") {
 
     SECTION("Unsaved models") {
         Controller c;
-        c.create_view("tests/fixture/test_file_1.txt", 0);
+        Flags f = {std::string("tests/fixture/test_file_1.txt")};
+        c.create_view(f);
         c.view.tab_new();
         c.add_model("tests/fixture/lorem_ipsum.txt");
 
@@ -180,7 +206,8 @@ TEST_CASE("quit_all", "[controller]") {
 
 TEST_CASE("display_all_buffers", "[controller]") {
     Controller c;
-    c.create_view("tests/fixture/test_file_1.txt", 0);
+    Flags f = {std::string("tests/fixture/test_file_1.txt")};
+    c.create_view(f);
     c.view.tab_new();
     c.add_model("tests/fixture/lorem_ipsum.txt");
 

@@ -594,7 +594,7 @@ TEST_CASE("change_model_cursor", "[view]") {
 
 TEST_CASE("set_buffer", "[view]") {
     Controller c;
-    c.create_view("tests/fixture/lorem_ipsum.txt", 0);
+    c.create_view(std::string("tests/fixture/lorem_ipsum.txt"));
     c.add_model("tests/fixture/test_file_1.txt");
 
     c.view.cursor_down(5);
