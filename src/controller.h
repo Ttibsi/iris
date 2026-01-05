@@ -32,7 +32,7 @@ struct Controller {
     Controller();
     void set_mode(Mode m);
     [[nodiscard]] const std::string get_mode() const;
-    void create_view(const std::string&, const unsigned long);
+    void create_view(const std::string&, std::size_t, const bool);
     void start_action_engine();
     bool enter_command_mode();
     bool parse_command();

@@ -24,10 +24,12 @@ int main(int argc, char* argv[]) {
     std::string file = "";
     unsigned int lineno = 0;
     bool print_version = false;
+    bool readonly = false;
 
     app.add_option("file", file, "File to open");
     app.add_option("-l,--line", lineno, "Set line number to start on");
     app.add_flag("-v,--version", print_version, "Print version");
+    app.add_flag("-r,--readonly", readonly, "Force file to be open in readonly mode");
 
     try {
         app.parse(argc, argv);
@@ -60,7 +62,7 @@ int main(int argc, char* argv[]) {
     try {
         std::println("Setup...");
         Controller c;
-        c.create_view(file, lineno);
+        c.create_view(file, lineno, readonly);
         c.start_action_engine();
     } catch (const std::exception& e) {
         rawterm::exit_alt_screen();

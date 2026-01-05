@@ -51,7 +51,7 @@ void Controller::set_mode(Mode m) {
     }
 }
 
-void Controller::create_view(const std::string& file_name, unsigned long lineno) {
+void Controller::create_view(const std::string& file_name, std::size_t lineno, const bool ro_mode) {
     if (file_name.empty()) {
         models.emplace_back(term_size.vertical - 2, "NO NAME");
         view.add_model(&models.at(models.size() - 1));
@@ -75,6 +75,10 @@ void Controller::create_view(const std::string& file_name, unsigned long lineno)
         } else {
             models.emplace_back(term_size.vertical - 2, (file_name.empty() ? "" : file_name));
             view.add_model(&models.at(models.size() - 1));
+        }
+
+        if (ro_mode) {
+            view.get_active_model()->readonly = true;
         }
     }
 }
