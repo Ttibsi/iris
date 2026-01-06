@@ -20,6 +20,11 @@
 * [x] Open a second file in a separate buffer and switch between views
 * [x] View a list of open files and switch between them
 * [x] Find and replace in the current buffer using the command pallete
+* [ ] Use the command pallete to run a shell command - investigate forking
+* [ ] visual mode to select multiple lines at once
+* [ ] Copy and paste to interact with the rest of the terminal
+    - potentially bracketted-paste handling in rawterm
+* [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Handle tab characters in text
     * [ ] Toggle an `expandtab` config variable with a command (default true)
     * [ ] Ensure pressing <TAB> inserts the right character where needed
@@ -27,15 +32,12 @@
     and visual positions of the cursor separately for vertical movement and
     char insertion
 * [ ] Handle tab complete in the command bar
-* [ ] Highlight trailing whitespace at the end of a line and delete on save
-* [ ] Open a second file in a split
-* [ ] Open a command pallete at the bottom third of the screen
 * [ ] Syntax highlighting via lexical analysis and regex
-* [ ] Use the command pallete to run a shell command - investigate forking
+    - also consider: `eisenwave/ulight`
 * [ ] Some form of simple file manager like vim's netrw
 * [ ] Configuration file (potentially JSON) - global at `XDG_CONFIG_HOME/iris`
     and a repo-specific config to be found with `git grep` potentially
-* [ ] Lua plugins and custon themes extensibility
+* [ ] Custom embedded language for plugins
 
 ## Vim commands
 
@@ -67,4 +69,4 @@
 * [x] `J`
 * [x] `K`
 * [ ] `e`
-* [x] `:wqa` - write and quit all named buffers
+* [ ] `>` / `<` (indentation)
