@@ -21,7 +21,11 @@
 * [x] View a list of open files and switch between them
 * [x] Find and replace in the current buffer using the command pallete
 * [ ] Use the command pallete to run a shell command - investigate forking
+* [ ] Vim-style marks
 * [ ] visual mode to select multiple lines at once
+    * [ ] `sort` command to sort highlighted lines based on text
+    * [ ] `align` command to align all the text in the highlighted lines based on a substr
+            - based on emacs align-regexp
 * [ ] Copy and paste to interact with the rest of the terminal
     - potentially bracketted-paste handling in rawterm
 * [ ] Highlight trailing whitespace at the end of a line and delete on save
