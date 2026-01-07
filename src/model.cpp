@@ -236,9 +236,8 @@ void Model::insert(const char c) {
     while (is_letter(line_frag.at(incrementer))) {
         incrementer++;
 
-        // At end of line, don't move
         if (incrementer == line_frag.size() - 1) {
-            return {};
+            return incrementer;
         }
     }
 
