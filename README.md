@@ -44,7 +44,8 @@ perform the following actions (alphabetically ordered):
 | <kbd>b</kbd>  | Move cursor back one word                             |
 | <kbd>dl</kbd> | Delete the current line                               |
 | <kbd>dw</kbd> | Delete the current word                               |
-| <kbd>f</kbd>  | Find next entered char ahead in file                  |
+| <kbd>e</kbd>  | Find next entered char ahead in file                  |
+| <kbd>f</kbd>  | Move cursor to end of current word                    |
 | <kbd>F</kbd>  | Find next entered char back in file                   |
 | <kbd>g</kbd>  | Go to top of file                                     |
 | <kbd>G</kbd>  | Go to bottom of file                                  |

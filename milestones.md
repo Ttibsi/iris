@@ -72,5 +72,5 @@
     * [x] `w` (delete word)
 * [x] `J`
 * [x] `K`
-* [ ] `e`
+* [x] `e`
 * [ ] `>` / `<` (indentation)
