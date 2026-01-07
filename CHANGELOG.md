@@ -13,6 +13,7 @@ moves back that amount of space
 * Refactored how `;s` works for find and replace
 * Added `;f` command to find a given string further on in the buffer
 * Iris now handles horizontal scrolling when a line is longer than the screen
+* Allow for specifying file to save to from command bar
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar

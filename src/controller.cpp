@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <format>
+#include <optional>
+#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -598,17 +600,13 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd == ";wqa") {
-        // This just does the same as ;w and ;q, but for every file
-        for (auto&& m : models) {
-            std::ignore = write_to_file(&m);
-        }
-
+        WriteAllData write_data = write_all();
         std::ignore = quit_app(true);
         return true;
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
-        std::ignore = write_to_file(view.get_active_model());
+        std::ignore = write_to_file(view.get_active_model(), std::nullopt);
         return quit_app(false);
 
     } else if (cmd == ";wa") {
@@ -620,8 +618,14 @@ bool Controller::parse_command() {
             view.display_message("Error with saving files", rawterm::Colors::red);
         }
 
-    } else if (cmd == ";w") {
-        WriteData file_write = write_to_file(view.get_active_model());
+    } else if (cmd.substr(0, 2) == ";w") {
+        std::optional<std::string> chosen_filename = std::nullopt;
+        if (cmd.size() > 2) {
+            chosen_filename = cmd.substr(3, cmd.size());
+            rtrim(chosen_filename.value());
+        }
+
+        WriteData file_write = write_to_file(view.get_active_model(), chosen_filename);
         if (file_write.valid) {
             std::string msg =
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
@@ -723,7 +727,7 @@ void Controller::add_model(const std::string& filename) {
             continue;
         }
 
-        if (write_to_file(&m).valid) {
+        if (write_to_file(&m, std::nullopt).valid) {
             write_all_data.files++;
         } else {
             write_all_data.valid = false;

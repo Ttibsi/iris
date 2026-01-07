@@ -64,10 +64,15 @@
     }
 }
 
-[[nodiscard]] WriteData write_to_file(Model* model) {
-    if (model->filename == "") {
+[[nodiscard]] WriteData write_to_file(Model* model, std::optional<std::string> filename_input) {
+    if (!filename_input.has_value() && model->filename == "") {
         return WriteData();
     }
+
+    if (filename_input.has_value()) {
+        model->filename = filename_input.value();
+    }
+
     std::ofstream out(model->filename);
     for (auto&& line : model->buf) {
         rtrim(line);
