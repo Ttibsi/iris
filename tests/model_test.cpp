@@ -264,6 +264,41 @@ TEST_CASE("prev_para_pos", "[model]") {
     REQUIRE(opt.value() == 2);
 }
 
+TEST_CASE("end_of_word_pos", "[model]") {
+    auto m = Model({"line one", "", "line five"}, "");
+
+    m.current_char = 7;
+    REQUIRE(m.end_of_word_pos() == std::nullopt);
+
+    m.current_char = 0;
+    m.current_line = 1;
+    REQUIRE(m.end_of_word_pos() == std::nullopt);
+
+    m.current_line = 0;
+    REQUIRE(m.end_of_word_pos().has_value());
+    REQUIRE(m.end_of_word_pos().value() == 3);
+
+    m.current_char = 3;
+    REQUIRE(m.end_of_word_pos().has_value());
+    REQUIRE(m.end_of_word_pos().value() == 4);
+}
+
+TEST_CASE("replace_char", "[model]") {
+    auto m = Model({"line one", "", "line five"}, "");
+
+    m.current_line = 1;
+    m.replace_char('c');
+    REQUIRE(m.buf.at(1).size() == 1);
+    REQUIRE(m.buf.at(1) == "c");
+
+    m.current_line = 2;
+    m.current_char = 4;
+    m.replace_char('_');
+    REQUIRE(m.buf.at(2).size() == 9);
+    REQUIRE(m.buf.at(2).at(4) == '_');
+    REQUIRE(m.buf.at(2) == "line_five");
+}
+
 TEST_CASE("toggle_case", "[model]") {
     auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
 
