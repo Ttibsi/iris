@@ -32,6 +32,7 @@ struct View {
     uint_t line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
+    std::string prev_tab_bar = "";  // For ensuring we only redraw when we need to
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
