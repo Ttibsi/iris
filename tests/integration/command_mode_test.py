@@ -299,18 +299,16 @@ def test_list_open_buffers(r: TmuxRunner):
     inverted_buf_name = "\x1B[7m[BUFFERS]\x1B[0m"
     assert inverted_buf_name in r.await_tab_bar_parts()
 
+    expected_lines: list[str] = [
+        "║  0 │  tests/fixture/temp_file.txt     │  1:1  ║",
+        "║  1 │  NO NAME                         │  1:1  ║",
+        "║  2 │  tests/fixture/test_file_1.txt   │  1:1  ║",
+    ]
+
     lines: list[str] = r.lines()
-    assert "0" in lines[4]
-    assert "tests/fixture/temp_file.txt" in lines[4]
-    assert "1:1" in lines[4]
-
-    assert "1" in lines[5]
-    assert "NO NAME" in lines[5]
-    assert "1:1" in lines[5]
-
-    assert "2" in lines[6]
-    assert r.filename in lines[6]
-    assert "1:1" in lines[6]
+    assert expected_lines[0] in lines[4]
+    assert expected_lines[1] in lines[5]
+    assert expected_lines[2] in lines[6]
 
     assert r.await_statusbar_parts()[1] == "[RO]"
 
