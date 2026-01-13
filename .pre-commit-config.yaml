@@ -13,7 +13,7 @@ repos:
         exclude: "tests/fixture/no_newline_file.txt"
     -   id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v21.1.2
+    rev: v21.1.8
     hooks:
       - id: clang-format
         exclude: ".json"
@@ -41,14 +41,18 @@ repos:
     hooks:
     - id: flake8
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.19.1
     hooks:
     - id: mypy
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.8
+    rev: v1.7.10
     hooks:
     - id: actionlint
   - repo: https://github.com/sco1/brie-commit
     rev: v1.1.0
     hooks:
     -   id: brie-commit
+  - repo: https://github.com/GideonBear/pre-comet
+    rev: v1.0.0
+    hooks:
+      - id: pre-comet
