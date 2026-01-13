@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.22.0)
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 project(iris LANGUAGES CXX)
 
 option(RUN_TESTS "Run unit tests" OFF)
@@ -21,7 +20,6 @@ add_compile_options(-Wall)
 add_compile_options(-Wextra)
 add_compile_options(-pedantic)
 add_compile_options(-Wconversion)
-add_compile_options(-Wno-implicit-int-float-conversion)
 add_compile_options(-Wimplicit-fallthrough)
 
 if(ENABLE_ASAN)

@@ -88,7 +88,7 @@ void View::draw_screen() {
 
     const std::size_t start_idx = get_active_model()->view_offset + 1;
     const std::size_t vert_offset = get_active_model()->vertical_offset;
-    for (const auto [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
+    for (const auto& [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
             if (idx == get_active_model()->current_line + 1) { c = COLOR_DARK_YELLOW; }
@@ -483,7 +483,7 @@ void View::set_current_line(const unsigned int lineno) {
 
     get_active_model()->current_line = lineno - 1;
     uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
-    uint_t curr_char = get_active_model()->current_char + line_number_offset + 2;
+    std::size_t curr_char = get_active_model()->current_char + line_number_offset + 2;
     if (get_active_model()->vertical_offset) {
         curr_char -= (get_active_model()->vertical_offset - 1);
     }
@@ -546,7 +546,7 @@ void View::tab_prev() {
 void View::change_model_cursor() {
     const uint_t vertical =
         get_active_model()->current_line - get_active_model()->view_offset + visible_tab_bar() + 1;
-    uint_t horizontal = get_active_model()->current_char + uint_t(line_number_offset) + 2;
+    std::size_t horizontal = get_active_model()->current_char + uint_t(line_number_offset) + 2;
     if (get_active_model()->vertical_offset) {
         horizontal -= get_active_model()->vertical_offset - 1;
     }

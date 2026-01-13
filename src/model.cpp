@@ -265,7 +265,7 @@ void Model::toggle_case() {
     unsigned int cur_line = current_line;
     int cur_char = int32_t(current_char);
 
-    for (; cur_line >= 0 && cur_line < buf.size(); cur_line--) {
+    for (; cur_line && cur_line < buf.size(); cur_line--) {
         if (!(cur_line == current_line)) { cur_char = int32_t(buf.at(cur_line).size() - 1); }
 
         auto iter = std::find(
