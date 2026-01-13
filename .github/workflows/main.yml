@@ -19,7 +19,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install ninja-build gcc-14
+      - run: sudo apt-get install ninja-build
+      - run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test && \
+          sudo apt update && \
+          sudo apt install -y gcc-16 g++-16
       - run: ./run.py test
         env:
           CXX: /usr/bin/g++
@@ -35,7 +39,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install ninja-build gcc-14
+      - run: sudo apt-get install ninja-build
+      - run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test && \
+          sudo apt update && \
+          sudo apt install -y gcc-16 g++-16
       - run: ./run.py test -I
         env:
           PYTEST_ADDOPTS: "--color=yes"
