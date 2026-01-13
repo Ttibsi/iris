@@ -1,7 +1,8 @@
 ---
-BasedOnStyle: Chromium
 AlignAfterOpenBracket: AlwaysBreak
+AllowShortBlocksOnASingleLine: "Always"
 AllowShortIfStatementsOnASingleLine: WithoutElse
+BasedOnStyle: Chromium
 ColumnLimit: '100'
 ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
 Cpp11BracedListStyle: 'true'
