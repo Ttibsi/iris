@@ -28,9 +28,7 @@ TEST_CASE("add_model", "[view]") {
     REQUIRE(v.active_model == 0);
     REQUIRE(v.get_active_model()->filename == "test_file.txt");
 
-    if (LINE_NUMBERS) {
-        REQUIRE(v.line_number_offset == 2);
-    }
+    if (LINE_NUMBERS) { REQUIRE(v.line_number_offset == 2); }
 }
 
 TEST_CASE("get_active_model", "[view]") {

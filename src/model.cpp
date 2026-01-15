@@ -28,9 +28,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
         // Concat two lines
 
         // At top of buffer
-        if (current_line == 0) {
-            return Redraw(RedrawType::None);
-        }
+        if (current_line == 0) { return Redraw(RedrawType::None); }
 
         const std::size_t prev_line_len = buf.at(current_line - 1).size();
         buf.at(current_line - 1) += buf.at(current_line);
@@ -80,9 +78,7 @@ Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
     buf.at(current_line) = first;
     current_line++;
 
-    if (!second.size()) {
-        second.push_back(' ');
-    }
+    if (!second.size()) { second.push_back(' '); }
 
     // Add intentional indentation
     const int preceeding_ws = first_non_whitespace(first);
@@ -129,9 +125,7 @@ void Model::insert(const char c) {
         incrementer++;
 
         // At end of line, don't move
-        if (incrementer == line_frag.size() - 1) {
-            return {};
-        }
+        if (incrementer == line_frag.size() - 1) { return {}; }
     }
 
     // go to start of next word
@@ -139,9 +133,7 @@ void Model::insert(const char c) {
         incrementer++;
 
         // At end of line, don't move
-        if (incrementer >= line_frag.size() - 1) {
-            return incrementer;
-        }
+        if (incrementer >= line_frag.size() - 1) { return incrementer; }
     }
 
     return incrementer;
@@ -161,27 +153,21 @@ void Model::insert(const char c) {
         incrementer++;
 
         // At end of line, don't move
-        if (incrementer == line_frag.size()) {
-            return incrementer;
-        }
+        if (incrementer == line_frag.size()) { return incrementer; }
     }
 
     while (!(is_letter(line_frag.at(current_char - incrementer)))) {
         incrementer++;
 
         // At end of line, don't move
-        if (incrementer == line_frag.size()) {
-            return incrementer;
-        }
+        if (incrementer == line_frag.size()) { return incrementer; }
     }
 
     return incrementer;
 }
 
 [[nodiscard]] std::optional<unsigned int> Model::next_para_pos() {
-    if (current_line == buf.size() - 1) {
-        return {};
-    }
+    if (current_line == buf.size() - 1) { return {}; }
     auto pos = std::find_if(buf.begin() + current_line + 1, buf.end(), [](const std::string& s) {
         return s.empty() ||
                std::all_of(s.begin(), s.end(), [](unsigned char c) { return std::isspace(c); });
@@ -189,16 +175,12 @@ void Model::insert(const char c) {
 
     unsigned int distance =
         static_cast<unsigned int>(std::distance(buf.begin() + current_line, pos));
-    if (current_line + distance >= buf.size()) {
-        return buf.size() - current_line - 1;
-    }
+    if (current_line + distance >= buf.size()) { return buf.size() - current_line - 1; }
     return distance;
 }
 
 [[nodiscard]] std::optional<unsigned int> Model::prev_para_pos() {
-    if (current_line == 0) {
-        return {};
-    }
+    if (current_line == 0) { return {}; }
 
     auto rev_pos = std::find_if(
         buf.rbegin() + static_cast<long>(buf.size() - current_line + 1), buf.rend(),
@@ -210,9 +192,7 @@ void Model::insert(const char c) {
     auto pos = rev_pos.base();
     unsigned int distance =
         static_cast<unsigned int>(std::distance(pos, buf.begin() + current_line));
-    if (distance > current_line) {
-        return current_line;
-    }
+    if (distance > current_line) { return current_line; }
     return distance;
 }
 
@@ -228,17 +208,13 @@ void Model::insert(const char c) {
         std::string_view(buf.at(current_line)).substr(current_char, buf.at(current_line).size());
 
     // If the _next_ char is a space, we want to go past that
-    if (line_frag.at(1) == ' ') {
-        incrementer += 2;
-    };
+    if (line_frag.at(1) == ' ') { incrementer += 2; };
 
     // go to end of current "word"
     while (is_letter(line_frag.at(incrementer))) {
         incrementer++;
 
-        if (incrementer == line_frag.size() - 1) {
-            return incrementer;
-        }
+        if (incrementer == line_frag.size() - 1) { return incrementer; }
     }
 
     return --incrementer;
@@ -290,9 +266,7 @@ void Model::toggle_case() {
     int cur_char = int32_t(current_char);
 
     for (; cur_line >= 0 && cur_line < buf.size(); cur_line--) {
-        if (!(cur_line == current_line)) {
-            cur_char = int32_t(buf.at(cur_line).size() - 1);
-        }
+        if (!(cur_line == current_line)) { cur_char = int32_t(buf.at(cur_line).size() - 1); }
 
         auto iter = std::find(
             buf.at(cur_line).rbegin() + int32_t(buf.at(cur_line).size()) - cur_char,
@@ -311,9 +285,7 @@ void Model::toggle_case() {
 }
 
 [[nodiscard]] bool Model::undo(const int height) {
-    if (!undo_stack.size()) {
-        return false;
-    }
+    if (!undo_stack.size()) { return false; }
 
     Change cur_change = undo_stack.at(undo_stack.size() - 1);
     undo_stack.pop_back();
@@ -372,19 +344,13 @@ void Model::toggle_case() {
             break;
     };
 
-    if (!undo_stack.size()) {
-        unsaved = false;
-    }
+    if (!undo_stack.size()) { unsaved = false; }
 
     current_line = uint32_t(cur_pos.vertical);
     current_char = uint32_t(cur_pos.horizontal);
 
-    if (view_offset <= cur_change.line_pos) {
-        return true;
-    }
-    if (cur_change.line_pos <= view_offset + uint32_t(height)) {
-        return true;
-    }
+    if (view_offset <= cur_change.line_pos) { return true; }
+    if (cur_change.line_pos <= view_offset + uint32_t(height)) { return true; }
 
     return false;
 }
@@ -394,16 +360,12 @@ void Model::toggle_case() {
 }
 
 [[nodiscard]] bool Model::redo(const int height) {
-    if (!redo_stack.size()) {
-        return false;
-    }
+    if (!redo_stack.size()) { return false; }
 
     const Change cur_change = redo_stack.top();
     redo_stack.pop();
     undo_stack.push_back(cur_change);
-    if (undo_stack.size()) {
-        unsaved = true;
-    }
+    if (undo_stack.size()) { unsaved = true; }
 
     rawterm::Pos cur_pos = {int32_t(current_line), int32_t(current_char)};
     current_line = cur_change.line_pos;
@@ -467,9 +429,7 @@ void Model::move_line_up() {
 }
 
 void Model::set_read_only(std::string_view file) {
-    if (file == "" || !(file_exists(file))) {
-        return;
-    }
+    if (file == "" || !(file_exists(file))) { return; }
 
     readonly = (access(file.data(), W_OK) == -1);
 }
@@ -493,9 +453,7 @@ void Model::delete_current_line() {
     }
 
     // if we aren't at 0, we're on a whitespace, so we want to increment once
-    if (start) {
-        start++;
-    }
+    if (start) { start++; }
 
     uint_t len = uint_t(
         std::distance(
@@ -524,9 +482,7 @@ void Model::delete_current_word(const WordPos pos) {
             ret.push_back(std::format("|{}| {}", idx + 1, highlighted_line));
         }
 
-        if (ret.size() == 7) {
-            break;
-        }
+        if (ret.size() == 7) { break; }
     }
 
     return ret;
@@ -537,9 +493,7 @@ void Model::delete_current_word(const WordPos pos) {
 void Model::search_and_replace(const std::string& input) {
     // TODO: c (confirm) (todo once we have highlighting?)
     std::vector<std::string> parts = split_by(input, '|');
-    if (parts.size() < 2 || parts.size() > 3) {
-        return;
-    }
+    if (parts.size() < 2 || parts.size() > 3) { return; }
 
     auto logger = spdlog::get("basic_logger");
     if (logger != nullptr) {
@@ -559,9 +513,7 @@ void Model::search_and_replace(const std::string& input) {
 // NOTE: This is the "find next" used for finding from the command line
 // for finding the next char, see `find_next`
 std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
-    if (sv.size() >= 3) {
-        search_str = sv.substr(3, sv.size()).data();
-    }
+    if (sv.size() >= 3) { search_str = sv.substr(3, sv.size()).data(); }
 
     // We're using a single loop here to get both the right line number and
     // position in the line. This is faster than two complete iterations
@@ -569,9 +521,7 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
     // NOTE: + 1 to avoid searching the current line (cursor may go backward in current line)
     // TODO: switch to using enumerate
     for (std::size_t i = current_line + 1; i < buf.size(); i++) {
-        if (!buf.at(i).contains(search_str)) {
-            continue;
-        }
+        if (!buf.at(i).contains(search_str)) { continue; }
         const std::size_t str_pos = buf.at(i).find(search_str);
         return rawterm::Pos {static_cast<int>(i), static_cast<int>(str_pos)};
     }

@@ -62,9 +62,7 @@ void View::draw_screen() {
         }
     }
 
-    if (visible_tab_bar() && cur.vertical == 1) {
-        cur.move_down();
-    }
+    if (visible_tab_bar() && cur.vertical == 1) { cur.move_down(); }
 
     if (get_active_model()->type == ModelType::META) {
         rawterm::Cursor::cursor_hide();
@@ -77,9 +75,7 @@ void View::draw_screen() {
     std::string screen;
 
     // Draw tab bar
-    if (view_models.size() > 1) {
-        screen += render_tab_bar();
-    }
+    if (view_models.size() > 1) { screen += render_tab_bar(); }
 
     // Get displayable subrange
     std::size_t end = std::min(std::size_t(view_size.vertical - 2), get_active_model()->buf.size());
@@ -95,9 +91,7 @@ void View::draw_screen() {
     for (const auto [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
-            if (idx == get_active_model()->current_line + 1) {
-                c = COLOR_DARK_YELLOW;
-            }
+            if (idx == get_active_model()->current_line + 1) { c = COLOR_DARK_YELLOW; }
             screen +=
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
@@ -107,17 +101,13 @@ void View::draw_screen() {
             continue;
         }
 
-        if (vert_offset) {
-            screen += "\u00AB";
-        }
+        if (vert_offset) { screen += "\u00AB"; }
 
         if (line.size() > viewable_hor_len) {
             const std::size_t draw_len = viewable_hor_len - 2 - (vert_offset ? 1 : 0);
             screen += line.substr(vert_offset, draw_len);
 
-            if (line.size() > draw_len + vert_offset + 3) {
-                screen += "\u00BB";
-            }
+            if (line.size() > draw_len + vert_offset + 3) { screen += "\u00BB"; }
         } else {
             screen += line.substr(vert_offset, line.size());
         };
@@ -144,14 +134,10 @@ void View::draw_screen() {
 }
 
 void View::draw_tab_bar() {
-    if (view_models.size() == 1) {
-        return;
-    }
+    if (view_models.size() == 1) { return; }
 
     std::string new_tab_bar = render_tab_bar();
-    if (new_tab_bar == prev_tab_bar) {
-        return;
-    }
+    if (new_tab_bar == prev_tab_bar) { return; }
 
     rawterm::Pos starting_cur_pos = cur;
     cur.move(1, 1);
@@ -189,9 +175,7 @@ const std::string View::render_tab_bar() const {
                 display_name = display_name.substr(0, filename_max_length);
             }
 
-            if (view_models.at(i)->unsaved) {
-                display_name += "*";
-            }
+            if (view_models.at(i)->unsaved) { display_name += "*"; }
 
             if (i == active_model) {
                 ret += rawterm::inverse(display_name);
@@ -250,22 +234,16 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     }
 
     const std::size_t vert_offset = get_active_model()->vertical_offset;
-    if (curr_line.empty() || (vert_offset && curr_line.size() < vert_offset)) {
-        return line;
-    }
+    if (curr_line.empty() || (vert_offset && curr_line.size() < vert_offset)) { return line; }
 
     // Truncate
     if (curr_line.size() > viewable_hor_len) {
-        if (vert_offset) {
-            line += "\u00AB";
-        }
+        if (vert_offset) { line += "\u00AB"; }
 
         const std::size_t draw_len = viewable_hor_len - 2 - (vert_offset ? 1 : 0);
         line += curr_line.substr(vert_offset, draw_len);
 
-        if (curr_line.size() > draw_len + vert_offset + 2) {
-            line += "\u00BB";
-        }
+        if (curr_line.size() > draw_len + vert_offset + 2) { line += "\u00BB"; }
 
     } else {
         line += curr_line.substr(vert_offset, curr_line.size());
@@ -363,9 +341,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     cur.move({view_size.vertical, 1});
     rawterm::clear_line();
 
-    if (color.has_value()) {
-        msg = rawterm::set_foreground(msg, color.value());
-    }
+    if (color.has_value()) { msg = rawterm::set_foreground(msg, color.value()); }
 
     std::print("{}", msg);
     cur.move(prev_pos);
@@ -377,9 +353,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 // crashes that were down to the offset being wrong after editing text (I think)
 [[nodiscard]] std::size_t View::clamp_horizontal_movement(const int offset) {
     const int line_pos = static_cast<int>(get_active_model()->current_line) + offset;
-    if (line_pos < 0 || line_pos > int32_t(get_active_model()->buf.size())) {
-        return 0;
-    }
+    if (line_pos < 0 || line_pos > int32_t(get_active_model()->buf.size())) { return 0; }
 
     std::string_view line_moving_to =
         get_active_model()->buf.at(static_cast<std::size_t>(line_pos));
@@ -396,9 +370,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     if (get_active_model()->vertical_offset &&
         uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
         get_active_model()->current_char--;
-        if (get_active_model()->vertical_offset == 2) {
-            get_active_model()->vertical_offset--;
-        }
+        if (get_active_model()->vertical_offset == 2) { get_active_model()->vertical_offset--; }
         get_active_model()->vertical_offset--;
         return true;
     } else if (get_active_model()->current_char) {
@@ -412,9 +384,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 
 [[maybe_unused]] bool View::cursor_up(unsigned int count) {
     // If no line above, do nothing
-    if (!(get_active_model()->current_line)) {
-        return false;
-    }
+    if (!(get_active_model()->current_line)) { return false; }
 
     std::size_t horizontal_clamp = clamp_horizontal_movement(int32_t(-count));
     get_active_model()->current_line -= count;
@@ -439,9 +409,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 
 [[maybe_unused]] bool View::cursor_down(unsigned int count) {
     // If we're on the last line, do nothing
-    if (get_active_model()->current_line >= get_active_model()->buf.size() - 1) {
-        return false;
-    }
+    if (get_active_model()->current_line >= get_active_model()->buf.size() - 1) { return false; }
 
     std::size_t horizontal_clamp = clamp_horizontal_movement(int32_t(count));
     get_active_model()->current_line += count;
@@ -471,9 +439,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     // Only scroll if we're still in the line
     std::string_view curr_line = get_active_model()->buf.at(get_active_model()->current_line);
     const std::size_t line_size = curr_line.size();
-    if (get_active_model()->current_char == line_size) {
-        return false;
-    }
+    if (get_active_model()->current_char == line_size) { return false; }
 
     if (cur.horizontal < view_size.horizontal - 2) {
         get_active_model()->current_char++;
@@ -481,9 +447,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
         return false;
     } else {
         get_active_model()->current_char++;
-        if (!get_active_model()->vertical_offset) {
-            get_active_model()->vertical_offset++;
-        }
+        if (!get_active_model()->vertical_offset) { get_active_model()->vertical_offset++; }
         get_active_model()->vertical_offset++;
         return true;
     }
@@ -515,9 +479,7 @@ void View::center_current_line() {
 }
 
 void View::set_current_line(const unsigned int lineno) {
-    if (lineno > get_active_model()->buf.size()) {
-        return;
-    }
+    if (lineno > get_active_model()->buf.size()) { return; }
 
     get_active_model()->current_line = lineno - 1;
     uint_t half_view = static_cast<uint_t>(std::floor(view_size.vertical / 2));
@@ -537,9 +499,7 @@ void View::set_current_line(const unsigned int lineno) {
 
 void View::get_git_branch() {
     auto resp = shell_exec("git rev-parse --abbrev-ref HEAD");
-    if (resp.has_value()) {
-        git_branch = resp.value().out;
-    }
+    if (resp.has_value()) { git_branch = resp.value().out; }
 }
 
 void View::tab_new() {
@@ -595,9 +555,7 @@ void View::change_model_cursor() {
 }
 
 bool View::set_buffer(const std::size_t bufnr, const std::size_t model_len) {
-    if (bufnr >= model_len) {
-        return false;
-    }
+    if (bufnr >= model_len) { return false; }
 
     view_models.at(active_model) = &ctrlr_ptr->models.at(std::size_t(bufnr));
     change_model_cursor();
@@ -619,9 +577,7 @@ void View::draw_overlay(std::span<std::string> contents, std::string_view title)
     std::string ret = "";
     const std::size_t curr_char = get_active_model()->current_char + 1;
 
-    if (curr_char >= LINE_BORDER) {
-        ret += COLOR_ALERT;
-    }
+    if (curr_char >= LINE_BORDER) { ret += COLOR_ALERT; }
 
     ret += " ";
 
