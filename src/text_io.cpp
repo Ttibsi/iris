@@ -15,18 +15,14 @@
 #include "view.h"
 
 [[nodiscard]] opt_lines_t open_file(const std::string& file) {
-    if (!get_file_size(file)) {
-        return {};
-    }
+    if (!get_file_size(file)) { return {}; }
 
     auto ret = std::vector<std::string>();
     std::string line = "";
     char ch;
 
     std::ifstream ifs(file);
-    if (ifs.fail()) {
-        return {};
-    }
+    if (ifs.fail()) { return {}; }
 
     while (ifs.get(ch)) {
         switch (ch) {
@@ -46,9 +42,7 @@
 
     // If there's no newlines in the stream at all, it never gets added to
     // the vector
-    if (line.size()) {
-        ret.push_back(line);
-    }
+    if (line.size()) { ret.push_back(line); }
 
     return ret;
 }
@@ -59,19 +53,13 @@
 
     try {
         return uint_t(fs::file_size(p));
-    } catch (const fs::filesystem_error&) {
-        return 0;
-    }
+    } catch (const fs::filesystem_error&) { return 0; }
 }
 
 [[nodiscard]] WriteData write_to_file(Model* model, std::optional<std::string> filename_input) {
-    if (!filename_input.has_value() && model->filename == "") {
-        return WriteData();
-    }
+    if (!filename_input.has_value() && model->filename == "") { return WriteData(); }
 
-    if (filename_input.has_value()) {
-        model->filename = filename_input.value();
-    }
+    if (filename_input.has_value()) { model->filename = filename_input.value(); }
 
     std::ofstream out(model->filename);
     for (auto&& line : model->buf) {
@@ -94,9 +82,7 @@ void rtrim(std::string& str) {
     std::string line;
 
     while (std::getline(ss, line)) {
-        if (line.back() == '\r') {
-            line.pop_back();
-        }
+        if (line.back() == '\r') { line.pop_back(); }
         result.push_back(rawterm::raw_str(line));
     }
 
@@ -194,9 +180,7 @@ void rtrim(std::string& str) {
         }
 
         auto logger = spdlog::get("basic_logger");
-        if (logger != nullptr) {
-            logger->info("Shell cmd run: `" + cmd + "`");
-        }
+        if (logger != nullptr) { logger->info("Shell cmd run: `" + cmd + "`"); }
 
         if (!resp.out.empty() && resp.out.at(resp.out.size() - 1) == '\n') {
             resp.out = resp.out.substr(0, resp.out.size() - 1);
@@ -220,8 +204,6 @@ void rtrim(std::string& str) {
 
 [[nodiscard]] int first_non_whitespace(const std::string& line) {
     std::size_t ret = line.find_first_not_of(WHITESPACE, 0);
-    if (ret == std::string::npos) {
-        return -1;
-    }
+    if (ret == std::string::npos) { return -1; }
     return int32_t(ret);
 }

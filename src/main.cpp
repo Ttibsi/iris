@@ -29,9 +29,7 @@ int main(int argc, char* argv[]) {
 
     try {
         app.parse(argc, argv);
-    } catch (const CLI::ParseError& e) {
-        return app.exit(e);
-    }
+    } catch (const CLI::ParseError& e) { return app.exit(e); }
 
     if (print_version) {
         std::println("{}", version());
@@ -46,9 +44,7 @@ int main(int argc, char* argv[]) {
 
     try {
         auto logger = spdlog::basic_logger_mt("basic_logger", "iris.log");
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::println("Log init failed: {}", ex.what());
-    }
+    } catch (const spdlog::spdlog_ex& ex) { std::println("Log init failed: {}", ex.what()); }
     spdlog::set_pattern("[%H:%M:%S %z] [thread %t] [%l] %v");
 
     spdlog::get("basic_logger")->info("Iris startup");
