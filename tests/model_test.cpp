@@ -673,9 +673,7 @@ TEST_CASE("search_and_replace", "[model]") {
     // multiline flag
     m.search_and_replace("line|entry|m");
     for (std::size_t i = 0; i < m.buf.size(); i++) {
-        if (i == 3) {
-            continue;
-        }
+        if (i == 3) { continue; }
         REQUIRE(m.buf.at(i).substr(0, 5) == "entry");
     }
 }
