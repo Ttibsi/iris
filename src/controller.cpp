@@ -115,7 +115,7 @@ void Controller::start_action_engine() {
                 continue;
 
             } else if (k.value() == rawterm::Key('D', rawterm::Mod::Arrow)) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
 
             } else if (k.value() == rawterm::Key('B', rawterm::Mod::Arrow)) {
                 auto redraw =
@@ -136,7 +136,7 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('C', rawterm::Mod::Arrow)) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
 
             } else if (k.value() == rawterm::Key(' ', rawterm::Mod::Backspace)) {
                 auto draw = parse_action<void, Redraw>(&view, Action<void> {ActionType::Backspace});
@@ -171,7 +171,7 @@ void Controller::start_action_engine() {
             if (k.value() == rawterm::Key('a')) {
                 if (is_readonly_model()) { continue; }
 
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
                 // Move cur to end of line and enter insert mode
@@ -296,7 +296,7 @@ void Controller::start_action_engine() {
 
                 uint32_t horizontal_cursor_pos = view.get_active_model()->current_char;
                 while (horizontal_cursor_pos) {
-                    parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
                     horizontal_cursor_pos--;
                 }
 
