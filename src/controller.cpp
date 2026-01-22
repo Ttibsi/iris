@@ -560,7 +560,7 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd == ";wqa") {
-        WriteAllData write_data = write_all();
+        [[maybe_unused]] WriteAllData write_data = write_all();
         std::ignore = quit_app(true);
         return true;
 
