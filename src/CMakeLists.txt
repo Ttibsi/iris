@@ -2,10 +2,11 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 include(FetchContent)
+set(RAWTERM_GIT_TAG "main")
 fetchcontent_declare(
   rawterm
   GIT_REPOSITORY https://github.com/ttibsi/rawterm
-  GIT_TAG        main
+  GIT_TAG        ${RAWTERM_GIT_TAG}
 )
 fetchcontent_makeavailable(rawterm)
 
