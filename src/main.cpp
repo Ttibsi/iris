@@ -13,11 +13,9 @@
 #include "version.h"
 
 // TODO: command to toggle line numbers
-// TODO: Save file with given name `;w foo.txt`
 // TODO: detect if `;e` is opening an already-open file and switch to that buf instead
-//  NOTE: Maybe post a message in the command bar too
-// TODO: A way of detecting if the file is already open in another iris
-// instance
+// NOTE: Maybe post a message in the command bar too
+// TODO: A way of detecting if the file is already open in another iris instance
 
 int main(int argc, char* argv[]) {
     CLI::App app {"Iris text editor"};
@@ -30,9 +28,7 @@ int main(int argc, char* argv[]) {
 
     try {
         app.parse(argc, argv);
-    } catch (const CLI::ParseError& e) {
-        return app.exit(e);
-    }
+    } catch (const CLI::ParseError& e) { return app.exit(e); }
 
     if (flags.print_version) {
         std::println("{}", version());
@@ -47,9 +43,7 @@ int main(int argc, char* argv[]) {
 
     try {
         auto logger = spdlog::basic_logger_mt("basic_logger", "iris.log");
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::println("Log init failed: {}", ex.what());
-    }
+    } catch (const spdlog::spdlog_ex& ex) { std::println("Log init failed: {}", ex.what()); }
     spdlog::set_pattern("[%H:%M:%S %z] [thread %t] [%l] %v");
 
     spdlog::get("basic_logger")->info("Iris startup");

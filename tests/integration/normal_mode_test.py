@@ -20,7 +20,7 @@ def test_a_key(r: TmuxRunner):
 
     statusbar: list[str] = r.await_statusbar_parts()
     assert statusbar[0] == "WRITE"
-    assert statusbar[-1] == "1:1"
+    assert statusbar[-1] == "1:2"
 
 
 @setup("tests/fixture/test_file_1.txt")
@@ -521,3 +521,14 @@ def test_dw_key(r: TmuxRunner):
     r.type_str("dw")  # delete word
 
     assert "Lorem ipsum" not in r.lines()[0]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_e_key(r: TmuxRunner):
+    assert r.statusbar_parts()[-1] == "1:1"
+
+    r.press("e")
+    assert r.statusbar_parts()[-1] == "1:4"
+
+    r.press("e")
+    assert r.statusbar_parts()[-1] == "1:7"

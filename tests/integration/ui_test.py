@@ -202,6 +202,7 @@ def test_multi_file_cursor_on_active_line(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_modified_marker_in_tab_bar(r: TmuxRunner):
     r.press("x")
+    time.sleep(0.1)
     tab_bar = r.await_tab_bar_parts()
     assert tab_bar[0] == "temp_file.txt"
     r.assert_inverted_text(tab_bar[1], "test_file_1.txt*")

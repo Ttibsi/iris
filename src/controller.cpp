@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <format>
+#include <optional>
+#include <ranges>
 
 #include <rawterm/core.h>
 #include <rawterm/cursor.h>
@@ -57,9 +59,7 @@ void Controller::create_view(const Flags& flags) {
         view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
-        if (logger != nullptr) {
-            logger->info("Creating view from file: " + flags.file);
-        }
+        if (logger != nullptr) { logger->info("Creating view from file: " + file_name); }
 
         opt_lines_t file_chars = open_file(flags.file);
 
@@ -109,9 +109,7 @@ void Controller::start_action_engine() {
         rawterm::signal_handler(rawterm::Signal::SIG_CONT, sig_resize_redraw);
         rawterm::signal_handler(rawterm::Signal::SIG_WINCH, sig_resize_redraw);
 
-        if (!(k.has_value())) {
-            continue;
-        }
+        if (!(k.has_value())) { continue; }
 
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
@@ -122,7 +120,7 @@ void Controller::start_action_engine() {
                 continue;
 
             } else if (k.value() == rawterm::Key('D', rawterm::Mod::Arrow)) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
 
             } else if (k.value() == rawterm::Key('B', rawterm::Mod::Arrow)) {
                 auto redraw =
@@ -143,7 +141,7 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('C', rawterm::Mod::Arrow)) {
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
 
             } else if (k.value() == rawterm::Key(' ', rawterm::Mod::Backspace)) {
                 auto draw = parse_action<void, Redraw>(&view, Action<void> {ActionType::Backspace});
@@ -176,18 +174,14 @@ void Controller::start_action_engine() {
         } else if (mode == Mode::Read) {
             // Move right, then enter insert mode
             if (k.value() == rawterm::Key('a')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
-                parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorRight});
+                parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
 
                 // Move cur to end of line and enter insert mode
             } else if (k.value() == rawterm::Key('A', rawterm::Mod::Shift)) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
@@ -199,9 +193,7 @@ void Controller::start_action_engine() {
                 // Delete
             } else if (k.value() == rawterm::Key('d')) {
                 auto k2 = rawterm::wait_for_input();
-                if (!(k2.isCharInput())) {
-                    continue;
-                }
+                if (!(k2.isCharInput())) { continue; }
 
                 switch (k2.code) {
                     case 'l':
@@ -213,6 +205,10 @@ void Controller::start_action_engine() {
                         redraw_all = true;
                         continue;
                 }
+
+                // Go to end of current word
+            } else if (k.value() == rawterm::Key('e')) {
+                parse_action<void, None>(&view, Action<void> {ActionType::JumpEndOfWord});
 
                 // find forward
             } else if (k.value() == rawterm::Key('f')) {
@@ -252,9 +248,7 @@ void Controller::start_action_engine() {
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
                 redraw_all = ret.value();
             } else if (k.value() == rawterm::Key('i')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Write});
             } else if (k.value() == rawterm::Key('j')) {
@@ -267,9 +261,7 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('J', rawterm::Mod::Shift)) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveLineDown});
                 redraw_all = true;
@@ -284,9 +276,7 @@ void Controller::start_action_engine() {
                 }
 
             } else if (k.value() == rawterm::Key('K', rawterm::Mod::Shift)) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<void, None>(&view, Action<void> {ActionType::MoveLineUp});
                 redraw_all = true;
@@ -298,9 +288,7 @@ void Controller::start_action_engine() {
 
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<void, None>(&view, Action<void> {ActionType::EndOfLine});
                 parse_action<void, None>(&view, Action<void> {ActionType::Newline});
@@ -309,13 +297,11 @@ void Controller::start_action_engine() {
 
                 // add new line and go to insert mode (above)
             } else if (k.value() == rawterm::Key('O', rawterm::Mod::Shift)) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 uint32_t horizontal_cursor_pos = view.get_active_model()->current_char;
                 while (horizontal_cursor_pos) {
-                    parse_action<void, None>(&view, Action<void> {ActionType::MoveCursorLeft});
+                    parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorLeft});
                     horizontal_cursor_pos--;
                 }
 
@@ -327,9 +313,7 @@ void Controller::start_action_engine() {
 
                 // Replace current char
             } else if (k.value() == rawterm::Key('r')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) {
@@ -340,14 +324,10 @@ void Controller::start_action_engine() {
 
                 // redo
             } else if (k.value() == rawterm::Key('R', rawterm::Mod::Shift)) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerRedo});
-                if (ret.has_value()) {
-                    redraw_all = ret.value();
-                }
+                if (ret.has_value()) { redraw_all = ret.value(); }
 
                 // tabs
             } else if (k.value() == rawterm::Key('t')) {
@@ -365,14 +345,10 @@ void Controller::start_action_engine() {
 
                 // Undo
             } else if (k.value() == rawterm::Key('u')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 auto ret = parse_action<void, bool>(&view, Action<void> {ActionType::TriggerUndo});
-                if (ret.has_value()) {
-                    redraw_all = ret.value();
-                }
+                if (ret.has_value()) { redraw_all = ret.value(); }
 
                 // Jump to next "word"
             } else if (k.value() == rawterm::Key('w')) {
@@ -380,9 +356,7 @@ void Controller::start_action_engine() {
 
                 // Delete char under key
             } else if (k.value() == rawterm::Key('x')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 auto draw =
                     parse_action<void, Redraw>(&view, Action<void> {ActionType::DelCurrentChar});
@@ -404,9 +378,7 @@ void Controller::start_action_engine() {
                 view.draw_status_bar();
                 redraw_all = enter_command_mode();
                 view.cur.reset();
-                if (quit_flag) {
-                    break;
-                }
+                if (quit_flag) { break; }
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
                 // Move to beginning/end of line
@@ -425,9 +397,7 @@ void Controller::start_action_engine() {
 
                 // toggle case of char
             } else if (k.value() == rawterm::Key('~')) {
-                if (is_readonly_model()) {
-                    continue;
-                }
+                if (is_readonly_model()) { continue; }
 
                 parse_action<void, None>(&view, Action<void> {ActionType::ToggleCase});
                 view.draw_line(Draw_Line_dir::None);
@@ -438,7 +408,11 @@ void Controller::start_action_engine() {
         // If we redraw on the next loop, we'll trigger these anyway
         if (!redraw_all) {
             view.draw_status_bar();
-            view.draw_tab_bar();
+
+            if (view.get_active_model()->undo_stack.size() == 1 ||
+                view.get_active_model()->undo_stack.empty()) {
+                view.draw_tab_bar();
+            }
         }
     }
 
@@ -454,9 +428,7 @@ bool Controller::enter_command_mode() {
 
     while (true) {
         auto previous = view.draw_command_bar(cmd_text_pos + 1);
-        if (!(prev_cursor_pos.has_value())) {
-            prev_cursor_pos = previous;
-        }
+        if (!(prev_cursor_pos.has_value())) { prev_cursor_pos = previous; }
 
         auto in = rawterm::wait_for_input();
         if (in == rawterm::Key(' ', rawterm::Mod::Escape)) {
@@ -465,9 +437,7 @@ bool Controller::enter_command_mode() {
             view.cur = prev_cursor_pos.value();
             break;
         } else if (in == rawterm::Key('m', rawterm::Mod::Enter)) {
-            if (view.command_text.substr(0, 2) == ";s") {
-                view.draw_screen();
-            }
+            if (view.command_text.substr(0, 2) == ";s") { view.draw_screen(); }
             view.cur = prev_cursor_pos.value();
             ret = parse_command();
             break;
@@ -482,9 +452,7 @@ bool Controller::enter_command_mode() {
                     const long pipes = std::count_if(
                         view.command_text.begin(), view.command_text.end(),
                         [](char c) { return c == '|'; });
-                    if (pipes == 2) {
-                        view.draw_screen();
-                    }
+                    if (pipes == 2) { view.draw_screen(); }
                 }
 
             } else {
@@ -524,9 +492,7 @@ bool Controller::enter_command_mode() {
                 const long pipes = std::count_if(
                     view.command_text.begin(), view.command_text.end(),
                     [](char c) { return c == '|'; });
-                if (pipes < 3) {
-                    continue;
-                }
+                if (pipes < 3) { continue; }
 
                 const std::vector<std::string> parts = split_by(view.command_text, '|');
                 std::vector<std::string> found_lines =
@@ -546,14 +512,10 @@ bool Controller::enter_command_mode() {
 bool Controller::parse_command() {
     std::string cmd = std::move(view.command_text);
     auto logger = spdlog::get("basic_logger");
-    if (logger != nullptr) {
-        logger->info("Iris CMD called: " + cmd);
-    }
+    if (logger != nullptr) { logger->info("Iris CMD called: " + cmd); }
 
     // Empty command
-    if (cmd.size() < 2) {
-        return false;
-    }
+    if (cmd.size() < 2) { return false; }
 
     if (std::isdigit(cmd.at(1))) {
         const unsigned int offset = uint32_t(std::stoi(cmd.substr(1, cmd.size())));
@@ -603,17 +565,13 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd == ";wqa") {
-        // This just does the same as ;w and ;q, but for every file
-        for (auto&& m : models) {
-            std::ignore = write_to_file(&m);
-        }
-
+        [[maybe_unused]] WriteAllData write_data = write_all();
         std::ignore = quit_app(true);
         return true;
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
-        std::ignore = write_to_file(view.get_active_model());
+        std::ignore = write_to_file(view.get_active_model(), std::nullopt);
         return quit_app(false);
 
     } else if (cmd == ";wa") {
@@ -625,8 +583,14 @@ bool Controller::parse_command() {
             view.display_message("Error with saving files", rawterm::Colors::red);
         }
 
-    } else if (cmd == ";w") {
-        WriteData file_write = write_to_file(view.get_active_model());
+    } else if (cmd.substr(0, 2) == ";w") {
+        std::optional<std::string> chosen_filename = std::nullopt;
+        if (cmd.size() > 2) {
+            chosen_filename = cmd.substr(3, cmd.size());
+            rtrim(chosen_filename.value());
+        }
+
+        WriteData file_write = write_to_file(view.get_active_model(), chosen_filename);
         if (file_write.valid) {
             std::string msg =
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
@@ -724,11 +688,9 @@ void Controller::add_model(const std::string& filename) {
     WriteAllData write_all_data = {};
 
     for (auto&& m : models) {
-        if (m.filename == "NO NAME") {
-            continue;
-        }
+        if (m.filename == "NO NAME") { continue; }
 
-        if (write_to_file(&m).valid) {
+        if (write_to_file(&m, std::nullopt).valid) {
             write_all_data.files++;
         } else {
             write_all_data.valid = false;

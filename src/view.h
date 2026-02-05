@@ -32,6 +32,7 @@ struct View {
     uint_t line_number_offset = 0;
     std::string command_text = ";";
     std::string git_branch = "";
+    std::string prev_tab_bar = "";  // For ensuring we only redraw when we need to
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
@@ -64,6 +65,7 @@ struct View {
     void change_model_cursor();
     bool set_buffer(const std::size_t, const std::size_t);
     void draw_overlay(std::span<std::string>, std::string_view);
+    [[nodiscard]] std::string render_cursor_coords() const;
 };
 
 #endif  // VIEW_H
