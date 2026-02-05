@@ -592,7 +592,8 @@ TEST_CASE("change_model_cursor", "[view]") {
 
 TEST_CASE("set_buffer", "[view]") {
     Controller c;
-    c.create_view("tests/fixture/lorem_ipsum.txt", 0);
+    Flags f = {std::string("tests/fixture/lorem_ipsum.txt")};
+    c.create_view(f);
     c.add_model("tests/fixture/test_file_1.txt");
 
     c.view.cursor_down(5);
@@ -608,7 +609,8 @@ TEST_CASE("set_buffer", "[view]") {
 
 TEST_CASE("render_cursor_coords", "[view]") {
     Controller c;
-    c.create_view("tests/fixture/very_long_line.txt", 0);
+    Flags f = {std::string("tests/fixture/very_long_line.txt")};
+    c.create_view(f);
     c.view.cursor_end_of_line();
 
     const std::string statusbar = c.view.render_cursor_coords();
