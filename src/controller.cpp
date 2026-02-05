@@ -59,7 +59,7 @@ void Controller::create_view(const Flags& flags) {
         view.add_model(&models.at(models.size() - 1));
     } else {
         auto logger = spdlog::get("basic_logger");
-        if (logger != nullptr) { logger->info("Creating view from file: " + file_name); }
+        if (logger != nullptr) { logger->info("Creating view from file: " + flags.file); }
 
         opt_lines_t file_chars = open_file(flags.file);
 
@@ -78,9 +78,7 @@ void Controller::create_view(const Flags& flags) {
             view.add_model(&models.at(models.size() - 1));
         }
 
-        if (flags.readonly) {
-            view.get_active_model()->readonly = true;
-        }
+        if (flags.readonly) { view.get_active_model()->readonly = true; }
     }
 }
 
