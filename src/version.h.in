@@ -3,10 +3,11 @@
 
 #include <string_view>
 
-[[nodiscard]] constexpr inline std::string_view version() noexcept {
+[[nodiscard]] constexpr std::string_view version() noexcept {
     return "Iris version: " "@GIT_VERSION@" "\n"
         "Compiled on date: " "@COMPILE_DATE@" "\n"
-        "Build type: " "@BUILD_MODE@";
+        "Build type: " "@BUILD_MODE@" "\n"
+        "Rawterm version: " "@RAWTERM_GIT_TAG@" "\n";
 }
 
 #endif // VERSION_H

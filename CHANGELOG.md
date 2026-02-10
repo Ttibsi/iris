@@ -15,6 +15,8 @@ moves back that amount of space
 * Iris now handles horizontal scrolling when a line is longer than the screen
 * Allow for specifying file to save to from command bar
 * `e` key now moves cursor to end of the current word
+* Add the version of the `rawterm` library used to the `--version` command
+when making a release build
 
 * Resolved issue with iris crashing after opening an existing file with 0 bytes
 * Resolved issue where filename isn't centered in the status bar

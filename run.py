@@ -32,6 +32,20 @@ def loc() -> int:
     )
 
 
+def restore_rawterm_to_main() -> None:
+    print("[LOG] Restoring rawterm to main branch")
+    with open("src/CMakeLists.txt", "r") as f:
+        lines = f.readlines()
+
+    for idx, line in enumerate(lines):
+        if "set(RAWTERM_GIT_TAG" in line and "main" not in line:
+            lines[idx] = "set(RAWTERM_GIT_TAG \"main\")\n"
+            break
+
+    with open("src/CMakeLists.txt", "w") as f:
+        f.writelines(lines)
+
+
 def clean() -> int:
     print("Removing build directory")
     shutil.rmtree("build", ignore_errors=True)
@@ -55,9 +69,10 @@ def clean() -> int:
 
     for file in files:
         if os.path.isfile(file):
-            print(f"Removing {file}")
+            print(f"[LOG] Removing {file}")
             os.remove(file)
 
+    restore_rawterm_to_main()
     return 0
 
 
@@ -66,7 +81,7 @@ def create_read_only_file() -> None:
     if os.path.exists(file_name):
         return
 
-    print("Creating readonly file...")
+    print("[LOG] Creating readonly file...")
     with open(file_name, "w") as f:
         f.write("This is a read-only file\n")
         f.write("We have some more text here")
@@ -115,10 +130,10 @@ def create_symlink() -> None:
 
     if platform.machine() == "x86_64":
         src += "_x86_64"
-        print("Creating symlink (x86_64)...")
+        print("[LOG] Creating symlink (x86_64)...")
     elif platform.machine() == "aarch64":
         src += "_aarch64"
-        print("Creating symlink (aarch64)...")
+        print("[LOG] Creating symlink (aarch64)...")
     else:
         raise OSError("Architecture not found")
 
@@ -157,11 +172,43 @@ def test(testname: str | None, asan: bool) -> int:
     )
 
 
+def get_rawterm_version() -> str:
+    cmd = [
+        "git",
+        "ls-remote",
+        "--tags",
+        "--sort=v:refname",
+        "git@github.com:Ttibsi/rawterm",
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+
+    last_version_str = result.stdout.strip().splitlines()[-1]
+    version_tag = last_version_str.split("/")[-1]
+    return version_tag.strip()
+
+
+def write_rawterm_version(tag: str) -> None:
+    print(f"[LOG] rawterm version: {tag}")
+    with open("src/CMakeLists.txt", "r") as f:
+        lines = f.readlines()
+
+    for idx, line in enumerate(lines):
+        if "set(RAWTERM_GIT_TAG" in line and "main" in line:
+            lines[idx] = line.replace("main", tag)
+
+    with open("src/CMakeLists.txt", "w") as f:
+        f.writelines(lines)
+
+
 def build(release: bool = False) -> int:
     ret: int = 0
     cmd: str = "cmake -G Ninja -S . -B build"
     if release:
         cmd += " -DRELEASE=true"
+
+        version_tag = get_rawterm_version()
+        write_rawterm_version(version_tag)
 
     ret = run_shell_cmd(cmd)
     if ret:
@@ -216,7 +263,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         ret = build(args.release)
 
-    print(f"Elapsed time: {round(timeit.default_timer() - start, 2)} Seconds")
+    elapsed_time = round(timeit.default_timer() - start, 2)
+    print(f"[LOG] Elapsed time: {elapsed_time} Seconds")
 
     return ret
 
