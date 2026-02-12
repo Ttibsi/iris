@@ -78,7 +78,7 @@ def test_quit_all_this_modified_file(r: TmuxRunner):
     current_cursor: tuple[int, ...] = r.cursor_pos()
     r.iris_cmd("qa")
 
-    time.sleep(0.1)
+    time.sleep(0.5)
     assert r.await_statusbar_parts()[-2] != "[2]"
     assert r.await_statusbar_parts()[1] == "[X]"
     assert " | " not in r.lines()[0]  # no tab bar
@@ -365,6 +365,7 @@ def test_search_live_command(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt")
 def test_search_and_replace_command(r: TmuxRunner):
     r.iris_cmd("s  is| was")
+    time.sleep(0.1)
 
     assert "This was some text" in r.lines()[0]
     assert "here is a newline and a tab" in r.lines()[1]
