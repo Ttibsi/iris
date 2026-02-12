@@ -166,11 +166,7 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: JumpEndOfWord"); }
 
             std::optional<int> count = v->get_active_model()->end_of_word_pos();
-            if (count.has_value()) {
-                for (int i = 0; i < count.value(); i++) {
-                    v->cursor_right();
-                }
-            }
+            if (count.has_value()) { v->cursor_right(count.value()); }
 
         } break;
 
@@ -197,9 +193,7 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: JumpNextWord"); }
 
             std::optional<int> count = v->get_active_model()->next_word_pos();
-            if (count.has_value()) {
-                v->cursor_right(uint_t(count.value()));
-            }
+            if (count.has_value()) { v->cursor_right(uint_t(count.value())); }
 
         } break;
 
@@ -208,9 +202,7 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: JumpPrevWord"); }
 
             std::optional<int> count = v->get_active_model()->prev_word_pos();
-            if (count.has_value()) {
-                v->cursor_left(uint_t(count.value()));
-            }
+            if (count.has_value()) { v->cursor_left(uint_t(count.value())); }
 
         } break;
 
@@ -245,14 +237,8 @@ template <typename T, typename U>
                 auto logger = spdlog::get("basic_logger");
                 if (logger != nullptr) { logger->info("Action called: MoveCursorRight"); }
 
-<<<<<<< HEAD
-                v->cursor_right(1);
-                return {};
+                return v->cursor_right(1);
             }
-=======
-            v->cursor_right(1);
-            return {};
->>>>>>> 1f063b0 (refactor cursor movement for consistency)
         } break;
 
         case ActionType::MoveLineDown: {

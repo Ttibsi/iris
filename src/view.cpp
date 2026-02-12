@@ -441,12 +441,16 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     const std::size_t line_size = curr_line.size();
     if (get_active_model()->current_char == line_size) { return false; }
 
-    if (cur.horizontal < view_size.horizontal - 2) {
-        get_active_model()->current_char += dist;
-        cur.move_right();
+    // Clamp dist to line
+    dist = std::min(dist, line_size - get_active_model()->current_char);
+    if (dist == 0) { return false; }
+    get_active_model()->current_char += dist;
+
+    // Move within the currently viewed line
+    if (cur.horizontal + dist < view_size.horizontal - 1) {
+        cur.move_right(int32_t(dist));
         return false;
     } else {
-        get_active_model()->current_char += dist;
         if (!get_active_model()->vertical_offset) { get_active_model()->vertical_offset++; }
         get_active_model()->vertical_offset += dist;
         return true;
