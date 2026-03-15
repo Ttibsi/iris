@@ -36,6 +36,7 @@
     and visual positions of the cursor separately for vertical movement and
     char insertion
 * [ ] Handle tab complete in the command bar
+* [ ] Command palette history with ^v arrows
 * [ ] Syntax highlighting via lexical analysis and regex
     - also consider: `eisenwave/ulight`
 * [ ] Some form of simple file manager like vim's netrw
@@ -74,3 +75,4 @@
 * [x] `K`
 * [x] `e`
 * [ ] `>` / `<` (indentation)
+* [ ] `0`
