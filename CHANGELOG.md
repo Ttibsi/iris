@@ -1,4 +1,6 @@
 ### main / head
+
+### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
 * Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs
 * Display modified marker in the tab bar

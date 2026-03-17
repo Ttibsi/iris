@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - run: sudo apt-get install llvm-18 libstdc++-14-dev
+      - run: sudo apt-get install llvm-18 libstdc++-14-dev git
       - run: ./run.py --release
       - run: mv release iris-${{ github.ref_name }}-${{ inputs.slug }}
       - run: tar czf iris-${{ github.ref_name }}-${{ inputs.slug }}.tar iris-${{ github.ref_name }}-${{ inputs.slug }}
