@@ -118,7 +118,7 @@ template <typename T, typename U>
                     ActionType::DelCurrentChar, v->get_active_model()->current_line,
                     v->get_active_model()->current_char,
                     v->get_active_model()->get_current_char()));
-                v->cursor_right();
+                v->cursor_right(1);
                 Redraw ret = v->get_active_model()->backspace();
                 v->cur.move_left();
 
@@ -197,11 +197,7 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: JumpNextWord"); }
 
             std::optional<int> count = v->get_active_model()->next_word_pos();
-            if (count.has_value()) {
-                for (int i = 0; i < count.value(); i++) {
-                    v->cursor_right();
-                }
-            }
+            if (count.has_value()) { v->cursor_right(uint_t(count.value())); }
 
         } break;
 
@@ -210,11 +206,7 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: JumpPrevWord"); }
 
             std::optional<int> count = v->get_active_model()->prev_word_pos();
-            if (count.has_value()) {
-                for (int i = 0; i < count.value(); i++) {
-                    v->cursor_left();
-                }
-            }
+            if (count.has_value()) { v->cursor_left(uint_t(count.value())); }
 
         } break;
 
@@ -223,11 +215,9 @@ template <typename T, typename U>
                 auto logger = spdlog::get("basic_logger");
                 if (logger != nullptr) { logger->info("Action called: MoveCursorLeft"); }
 
-                return v->cursor_left();
+                return v->cursor_left(1);
             }
-            break;
 
-            return {};
         } break;
 
         case ActionType::MoveCursorUp: {
@@ -251,7 +241,7 @@ template <typename T, typename U>
                 auto logger = spdlog::get("basic_logger");
                 if (logger != nullptr) { logger->info("Action called: MoveCursorRight"); }
 
-                return v->cursor_right();
+                return v->cursor_right(1);
             }
         } break;
 
@@ -376,18 +366,11 @@ template <typename T, typename U>
                         v->cursor_down();
                     }
 
+                    const uint_t curr_char = v->get_active_model()->current_char;
                     if (ret.value().horizontal > int32_t(v->get_active_model()->current_char)) {
-                        std::size_t diff =
-                            uint32_t(ret.value().horizontal) - v->get_active_model()->current_char;
-                        for (std::size_t i = 0; i < diff; i++) {
-                            v->cursor_right();
-                        }
+                        v->cursor_right(uint32_t(ret.value().horizontal) - curr_char);
                     } else {
-                        uint32_t diff =
-                            v->get_active_model()->current_char - uint32_t(ret.value().horizontal);
-                        for (unsigned int i = 0; i < diff; i++) {
-                            v->cursor_left();
-                        }
+                        v->cursor_left(curr_char - uint32_t(ret.value().horizontal));
                     }
 
                     v->draw_status_bar();
@@ -403,18 +386,11 @@ template <typename T, typename U>
                         v->cursor_up();
                     }
 
+                    const uint_t curr_char = v->get_active_model()->current_char;
                     if (ret.value().horizontal > int32_t(v->get_active_model()->current_char)) {
-                        uint32_t diff =
-                            uint32_t(ret.value().horizontal) - v->get_active_model()->current_char;
-                        for (uint32_t i = 0; i < diff; i++) {
-                            v->cursor_right();
-                        }
+                        v->cursor_right(uint32_t(ret.value().horizontal) - curr_char);
                     } else {
-                        uint32_t diff =
-                            v->get_active_model()->current_char - uint32_t(ret.value().horizontal);
-                        for (uint32_t i = 0; i < diff; i++) {
-                            v->cursor_left();
-                        }
+                        v->cursor_left(curr_char - uint32_t(ret.value().horizontal));
                     }
                 }
             }

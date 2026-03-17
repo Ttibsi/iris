@@ -14,6 +14,7 @@ release/
 tests/fixture/temp_file.txt
 tests/fixture/does_not_exist.txt
 tests/fixture/read_only.txt
+tests/fixture/test_file_2.txt
 This_is_a_really_really_really_really_really_really_really_really_long_file_name.txt
 
 # other
