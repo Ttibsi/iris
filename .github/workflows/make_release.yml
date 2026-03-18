@@ -18,18 +18,18 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
 
-  build_linux_x86:
-    permissions:
-      contents: write
-    uses: ./.github/workflows/build_artifact.yml
-    with:
-      runner: ubuntu-24.04
-      slug: x86_64
-
-  build_linux_arm:
-    permissions:
-      contents: write
-    uses: ./.github/workflows/build_artifact.yml
-    with:
-      runner: ubuntu-24.04-arm
-      slug: arm64
+  # build_linux_x86:
+  #   permissions:
+  #     contents: write
+  #   uses: ./.github/workflows/build_artifact.yml
+  #   with:
+  #     runner: ubuntu-24.04
+  #     slug: x86_64
+  #
+  # build_linux_arm:
+  #   permissions:
+  #     contents: write
+  #   uses: ./.github/workflows/build_artifact.yml
+  #   with:
+  #     runner: ubuntu-24.04-arm
+  #     slug: arm64
