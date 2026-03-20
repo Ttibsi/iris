@@ -519,7 +519,7 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
     // position in the line. This is faster than two complete iterations
     // over the buffer using std::find
     // NOTE: + 1 to avoid searching the current line (cursor may go backward in current line)
-    for (const auto [idx, line] : enumerate<std::string>(buf, 1)) {
+    for (const auto&& [idx, line] : enumerate<std::string>(buf)) {
         if (!line.contains(search_str)) { continue; }
         const std::size_t str_pos = line.find(search_str);
         return rawterm::Pos {int32_t(idx), int32_t(str_pos)};
