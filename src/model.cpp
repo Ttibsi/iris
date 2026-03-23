@@ -528,3 +528,7 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
 
     return std::nullopt;
 }
+
+void Model::indent_curr_line() {
+    if (buf.at(current_line).size()) { buf.at(current_line).insert(0, TAB_SIZE, ' '); }
+}

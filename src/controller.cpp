@@ -399,6 +399,12 @@ void Controller::start_action_engine() {
 
                 parse_action<void, None>(&view, Action<void> {ActionType::ToggleCase});
                 view.draw_line(Draw_Line_dir::None);
+
+                // Increment line
+            } else if (k.value() == rawterm::Key('>')) {
+                if (is_readonly_model()) { continue; }
+                parse_action<void, None>(&view, Action<void> {ActionType::IndentLine});
+                view.draw_line(Draw_Line_dir::None);
             }
         }
 
