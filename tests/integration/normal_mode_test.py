@@ -532,3 +532,9 @@ def test_e_key(r: TmuxRunner):
 
     r.press("e")
     assert r.statusbar_parts()[-1] == "1:7"
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_right_chevron_key(r: TmuxRunner):
+    r.press('>')
+    assert "    This" in r.lines()[0]
