@@ -15,6 +15,7 @@ enum class ActionType {
     // Pass no values
     Backspace,
     CenterCurrentLine,
+    DedentLine,
     DelCurrentChar,
     DelCurrentLine,
     DelCurrentWord,
@@ -107,6 +108,12 @@ template <typename T, typename U>
 
         case ActionType::CenterCurrentLine: {
             v->center_current_line();
+        } break;
+
+        case ActionType::DedentLine: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) { logger->info("Action called: DedentLine"); }
+            v->get_active_model()->dedent_curr_line();
         } break;
 
         case ActionType::DelCurrentChar: {
