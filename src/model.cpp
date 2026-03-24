@@ -420,12 +420,16 @@ void Model::toggle_case() {
     return false;
 }
 
-void Model::move_line_down() {
+[[nodiscard]] bool Model::move_line_down() {
+    if (current_line == buf.size() - 1) { return false; }
     std::iter_swap(buf.begin() + current_line, buf.begin() + current_line + 1);
+    return true;
 }
 
-void Model::move_line_up() {
+[[nodiscard]] bool Model::move_line_up() {
+    if (!current_line) { return false; }
     std::iter_swap(buf.begin() + current_line, buf.begin() + current_line - 1);
+    return true;
 }
 
 void Model::set_read_only(std::string_view file) {

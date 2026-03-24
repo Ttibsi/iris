@@ -1,5 +1,7 @@
 ### main / head
 
+* Resolve crash when user tries to switch top or bottom line outside of scope
+
 ### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
 * Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs

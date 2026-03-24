@@ -62,8 +62,8 @@ struct Model {
     [[nodiscard]] bool undo(const int);
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] bool redo(const int);
-    void move_line_down();
-    void move_line_up();
+    [[nodiscard]] bool move_line_down();
+    [[nodiscard]] bool move_line_up();
     void set_read_only(std::string_view);
     void delete_current_line();
     [[nodiscard]] const WordPos current_word() const;
