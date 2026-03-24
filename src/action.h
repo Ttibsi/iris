@@ -144,14 +144,14 @@ template <typename T, typename U>
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) { logger->info("Action called: DelCurrentWord"); }
 
-            const WordPos word = v->get_active_model()->current_word();
+            const std::optional<WordPos> word = v->get_active_model()->current_word();
+            if (!word.has_value()) { break; }
 
             v->get_active_model()->undo_stack.push_back(Change(
-                ActionType::DelCurrentWord, v->get_active_model()->current_line, word.start_pos,
-                word.text));
+                ActionType::DelCurrentWord, v->get_active_model()->current_line,
+                word.value().start_pos, word.value().text));
 
-            v->get_active_model()->delete_current_word(word);
-
+            v->get_active_model()->delete_current_word(word.value());
         } break;
 
         case ActionType::EndOfLine: {

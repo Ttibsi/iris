@@ -458,7 +458,7 @@ TEST_CASE("undo", "[model]") {
         m.current_char = 1;
         m.undo_stack.push_back(Change(ActionType::DelCurrentWord, 1, 0, "line"));
 
-        m.delete_current_word(m.current_word());
+        m.delete_current_word(m.current_word().value());
         REQUIRE(m.buf.at(1) == " two");
 
         REQUIRE(m.undo(24));
@@ -550,7 +550,7 @@ TEST_CASE("redo", "[model]") {
         m.current_char = 1;
         m.undo_stack.push_back(Change(ActionType::DelCurrentWord, 1, 0, "line"));
 
-        m.delete_current_word(m.current_word());
+        m.delete_current_word(m.current_word().value());
         REQUIRE(m.buf.at(1) == " two");
 
         REQUIRE(m.undo(24));
@@ -614,19 +614,21 @@ TEST_CASE("current_word", "[model]") {
         m.current_line = 1;
         m.current_char = 2;
 
-        const WordPos ret = m.current_word();
-        REQUIRE(ret.text == "line");
-        REQUIRE(ret.start_pos == 0);
+        const std::optional<WordPos> ret = m.current_word();
+        REQUIRE(ret.has_value());
+        REQUIRE(ret.value().text == "line");
+        REQUIRE(ret.value().start_pos == 0);
     }
 
     SECTION("Search to end of line") {
         m.current_line = 1;
         m.current_char = 6;
 
-        const WordPos ret = m.current_word();
+        const std::optional<WordPos> ret = m.current_word();
+        REQUIRE(ret.has_value());
         REQUIRE(m.buf.at(m.current_line).at(m.current_char) == 'w');
-        REQUIRE(ret.text == "two");
-        REQUIRE(ret.start_pos == 5);
+        REQUIRE(ret.value().text == "two");
+        REQUIRE(ret.value().start_pos == 5);
     }
 }
 
@@ -635,13 +637,13 @@ TEST_CASE("delete_current_word", "[model]") {
     m.current_line = 1;
     m.current_char = 2;
 
-    m.delete_current_word(m.current_word());
+    m.delete_current_word(m.current_word().value());
     REQUIRE(m.buf.at(1) == " two");
 
     m.current_line = 2;
     m.current_char = 7;
 
-    m.delete_current_word(m.current_word());
+    m.delete_current_word(m.current_word().value());
     REQUIRE(m.buf.at(2) == "line ");
 }
 
