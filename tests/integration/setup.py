@@ -15,6 +15,7 @@ T = TypeVar("T", bound=Callable[[Runner], None])
 class TmuxRunner(Runner):
     CMD_KEY: Final[str] = "\\;"
     SELECTED_LINE_ANSI: Final[str] = "\x1b[38;2;255;221;51m"
+    MODIFIED_MARKER: Final[str] = "[X]"
     filename: str
 
     def __init__(self, *args, **kwargs) -> None:

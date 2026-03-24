@@ -470,6 +470,7 @@ void Model::delete_current_line() {
 }
 
 void Model::delete_current_word(const WordPos pos) {
+    unsaved = true;
     buf.at(pos.lineno).erase(pos.start_pos, pos.text.size());
 }
 
