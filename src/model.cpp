@@ -443,10 +443,13 @@ void Model::delete_current_line() {
     }
 }
 
-[[nodiscard]] const WordPos Model::current_word() const {
+[[nodiscard]] const std::optional<WordPos> Model::current_word() const {
     WordPos ret = {"", 0, 0};
     const std::string* cur_line = &buf.at(current_line);
     uint_t start = current_char;
+
+    // "Start" is already at the end of the line
+    if (start == cur_line->size()) { return {}; }
 
     while (start && is_letter(cur_line->at(start))) {
         start--;
@@ -467,6 +470,7 @@ void Model::delete_current_line() {
 }
 
 void Model::delete_current_word(const WordPos pos) {
+    unsaved = true;
     buf.at(pos.lineno).erase(pos.start_pos, pos.text.size());
 }
 

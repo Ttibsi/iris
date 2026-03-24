@@ -524,6 +524,15 @@ def test_dw_key(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_dw_key_end_of_file(r: TmuxRunner):
+    r.type_str("Gwwel")
+    r.type_str("dw")
+
+    assert r.MODIFIED_MARKER not in r.statusbar_parts()
+    assert "newline" in r.lines()[2]
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_e_key(r: TmuxRunner):
     assert r.statusbar_parts()[-1] == "1:1"
 
