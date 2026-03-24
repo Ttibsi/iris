@@ -528,3 +528,13 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
 
     return std::nullopt;
 }
+
+void Model::dedent_curr_line() {
+    auto offset = buf.at(current_line).find_first_not_of(' ');
+    if (offset == 0) { return; }
+    unsaved = true;
+
+    const std::size_t to_delete = std::min(4ul, offset);
+    const std::size_t line_size = buf.at(current_line).size();
+    buf.at(current_line) = buf.at(current_line).substr(to_delete, line_size);
+}

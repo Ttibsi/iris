@@ -702,3 +702,19 @@ TEST_CASE("find_next_str", "[model]") {
         REQUIRE(m.search_str == "line");
     }
 }
+
+TEST_CASE("dedent_curr_line", "[model]") {
+    auto m = Model({"    foo", "bar"}, "");
+
+    // Dedent a line that has some indentation
+    m.dedent_curr_line();
+    REQUIRE(m.buf.at(0).size() == 3);
+    REQUIRE(m.buf.at(1).size() == 3);
+    REQUIRE(m.buf.at(0).at(0) == 'f');
+
+    // Dedent a line that has no indentation
+    m.dedent_curr_line();
+    REQUIRE(m.buf.at(0).size() == 3);
+    REQUIRE(m.buf.at(1).size() == 3);
+    REQUIRE(m.buf.at(0).at(0) == 'f');
+}
