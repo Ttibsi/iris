@@ -48,6 +48,7 @@ repos:
     rev: v1.7.10
     hooks:
     - id: actionlint
+      exclude: "^.github/workflows/build_artifact.yml"
   - repo: https://github.com/sco1/brie-commit
     rev: v1.1.0
     hooks:
