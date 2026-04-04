@@ -771,7 +771,7 @@ void Controller::add_model(const std::string& filename) {
         line += " \u2502  ";
         line += rawterm::bold(m.filename);
 
-        int spacing = 0;
+        std::size_t spacing = 0;
         if (max_name_len > m.filename.size()) { spacing = max_name_len - m.filename.size(); }
 
         if (m.unsaved) {
