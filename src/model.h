@@ -71,6 +71,7 @@ struct Model {
     [[nodiscard]] std::vector<std::string> search_text(const std::string&) const;
     void search_and_replace(const std::string&);
     std::optional<rawterm::Pos> find_next_str(std::string_view);
+    void indent_curr_line();
 };
 
 #endif  // MODEL_H
