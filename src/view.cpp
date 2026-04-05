@@ -336,6 +336,7 @@ const std::string View::render_status_bar() const {
     return prev_pos;
 }
 
+// TODO: Modify this to take a string_view instead
 void View::display_message(std::string msg, std::optional<rawterm::Color> color) {
     rawterm::Pos prev_pos = cur;
     cur.move({view_size.vertical, 1});

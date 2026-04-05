@@ -521,6 +521,24 @@ bool Controller::parse_command() {
     // Empty command
     if (cmd.size() < 2) { return false; }
 
+    // Run shell command
+    if (cmd.at(1) == '!') {
+        const std::optional<Response> opt_resp = shell_exec(cmd.substr(2, cmd.size()));
+        if (!opt_resp.has_value()) { return false; }
+        const Response resp = opt_resp.value();
+        if (resp.out.size()) {
+            std::size_t nlPos = resp.out.find('\n');
+            std::string msg = (nlPos == std::string::npos) ? resp.out : resp.out.substr(0, nlPos);
+            view.display_message(msg, rawterm::Colors::green);
+        } else {
+            std::size_t nlPos = resp.err.find('\n');
+            std::string msg = (nlPos == std::string::npos) ? resp.err : resp.err.substr(0, nlPos);
+            view.display_message(msg, rawterm::Colors::red);
+        }
+
+        return false;
+    }
+
     if (std::isdigit(cmd.at(1))) {
         const unsigned int offset = uint32_t(std::stoi(cmd.substr(1, cmd.size())));
         view.set_current_line(offset);
@@ -777,7 +795,7 @@ void Controller::add_model(const std::string& filename) {
         line += " \u2502  ";
         line += rawterm::bold(m.filename);
 
-        int spacing = 0;
+        std::size_t spacing = 0;
         if (max_name_len > m.filename.size()) { spacing = max_name_len - m.filename.size(); }
 
         if (m.unsaved) {

@@ -1,6 +1,9 @@
 ### main / head
 
 * `>` now intends the current line.
+* Implement `;!` to execute a shell command from the command bar
+* Disabled continuous deployment in GHA. See `.github/workflows/build_artifact.yml`
+for details
 
 ### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
