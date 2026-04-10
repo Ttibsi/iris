@@ -400,11 +400,12 @@ template <typename T, typename U>
             if constexpr (std::is_same_v<T, char>) {
                 auto ret = v->get_active_model()->find_prev(action.payload);
                 if (ret.has_value()) {
-                    for (int i = 0; i < ret.value().vertical; i++) {
+                    const uint_t curr_char = v->get_active_model()->current_char;
+                    const std::size_t steps =
+                        v->get_active_model()->current_line - ret.value().vertical;
+                    for (std::size_t i = 0; i < steps; i++) {
                         v->cursor_up();
                     }
-
-                    const uint_t curr_char = v->get_active_model()->current_char;
                     if (ret.value().horizontal > int32_t(v->get_active_model()->current_char)) {
                         v->cursor_right(uint32_t(ret.value().horizontal) - curr_char);
                     } else {

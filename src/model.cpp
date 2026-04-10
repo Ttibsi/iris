@@ -243,7 +243,7 @@ void Model::toggle_case() {
     unsaved = true;
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) const {
     unsigned int cur_line = current_line;
     int cur_char = int32_t(current_char);
 
@@ -262,7 +262,7 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) const {
     unsigned int cur_line = current_line;
 
     while (cur_line) {
