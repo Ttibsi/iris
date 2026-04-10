@@ -343,11 +343,14 @@ TEST_CASE("find_prev", "[model]") {
     REQUIRE(ret.value().horizontal == 5);
 
     m.current_line -= static_cast<unsigned int>(ret.value().vertical);
-    m.current_char -= static_cast<unsigned int>(ret.value().horizontal);
+    m.current_char = static_cast<unsigned int>(ret.value().horizontal);
+    REQUIRE(m.current_line == 5);
+    REQUIRE(m.current_char == 5);
+    REQUIRE(m.buf.at(5).at(5) == 'f');
 
     ret = m.find_prev('t');
     REQUIRE(ret.has_value());
-    REQUIRE(ret.value().vertical == 3);
+    REQUIRE(ret.value().vertical == 2);
     REQUIRE(ret.value().horizontal == 5);
 
     m.current_line -= static_cast<unsigned int>(ret.value().vertical);

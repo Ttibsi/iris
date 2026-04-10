@@ -277,7 +277,8 @@ void Model::toggle_case() {
 
             // line is a relative value, char is an absolute value
             return rawterm::Pos(
-                {static_cast<int>(current_line - cur_line), static_cast<int>(cur_char)});
+                static_cast<int>(current_line - cur_line),
+                static_cast<int>(cur_char < 0 ? current_char : cur_char));
         }
     }
 
