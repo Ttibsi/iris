@@ -706,6 +706,17 @@ TEST_CASE("find_next_str", "[model]") {
     }
 }
 
+TEST_CASE("indent_curr_line", "[model]") {
+    auto m = Model({"foo", "bar"}, "");
+    m.indent_curr_line();
+
+    REQUIRE(m.buf.at(0).size() == 7);
+    REQUIRE(m.buf.at(1).size() == 3);
+
+    REQUIRE(m.buf.at(0).at(0) == ' ');
+    REQUIRE(m.buf.at(0).at(4) == 'f');
+}
+
 TEST_CASE("dedent_curr_line", "[model]") {
     auto m = Model({"    foo", "bar"}, "");
 

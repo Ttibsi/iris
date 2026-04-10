@@ -543,3 +543,9 @@ def test_left_chevron_key(r: TmuxRunner):
     r.press('<')
     assert "[X]" in r.statusbar_parts()
     assert "2\u2502here" in r.lines()[1]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_right_chevron_key(r: TmuxRunner):
+    r.press('>')
+    assert "    This" in r.lines()[0]

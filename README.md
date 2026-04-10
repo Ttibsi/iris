@@ -73,6 +73,7 @@ perform the following actions (alphabetically ordered):
 | <kbd>]</Kbd>  | Go to end of paragraph (next empty line)              |
 | <kbd>_</Kbd>  | Go to beginning of line                               |
 | <kbd>$</Kbd>  | Go to end of line                                     |
+| <kbd>></kbd>  | Indent current line                                   |
 | <kbd><</kbd>  | Dedent current line                                   |
 
 ### Command mode

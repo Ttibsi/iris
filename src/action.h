@@ -20,6 +20,7 @@ enum class ActionType {
     DelCurrentLine,
     DelCurrentWord,
     EndOfLine,
+    IndentLine,
     JumpEndOfWord,
     JumpNextPara,
     JumpPrevPara,
@@ -170,6 +171,12 @@ template <typename T, typename U>
             if (logger != nullptr) { logger->info("Action called: EndOfLine"); }
 
             v->cursor_end_of_line();
+        } break;
+
+        case ActionType::IndentLine: {
+            auto logger = spdlog::get("basic_logger");
+            if (logger != nullptr) { logger->info("Action called: IndentLine"); }
+            v->get_active_model()->indent_curr_line();
         } break;
 
         case ActionType::JumpEndOfWord: {
