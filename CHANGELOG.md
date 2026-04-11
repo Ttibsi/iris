@@ -1,6 +1,7 @@
 ### main / head
 
 * `>` now intends the current line.
+* `<` now dedents current line
 * Implement `;!` to execute a shell command from the command bar
 * Disabled continuous deployment in GHA. See `.github/workflows/build_artifact.yml`
 for details

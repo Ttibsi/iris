@@ -74,6 +74,7 @@ perform the following actions (alphabetically ordered):
 | <kbd>_</Kbd>  | Go to beginning of line                               |
 | <kbd>$</Kbd>  | Go to end of line                                     |
 | <kbd>></kbd>  | Indent current line                                   |
+| <kbd><</kbd>  | Dedent current line                                   |
 
 ### Command mode
 Likewise, you can switch to `command` mode with the semicolon `;` key. The

@@ -243,7 +243,7 @@ void Model::toggle_case() {
     unsaved = true;
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) const {
     unsigned int cur_line = current_line;
     int cur_char = int32_t(current_char);
 
@@ -262,24 +262,27 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) const {
     unsigned int cur_line = current_line;
-    int cur_char = int32_t(current_char);
 
-    for (; cur_line && cur_line < buf.size(); cur_line--) {
-        if (!(cur_line == current_line)) { cur_char = int32_t(buf.at(cur_line).size() - 1); }
+    while (cur_line) {
+        if (cur_line == current_line) {
+            const std::string_view search_area =
+                std::string_view(buf.at(current_line)).substr(0, current_char);
+            const auto pos = search_area.find_last_of(c);
+            if (pos != std::string::npos) {
+                return rawterm::Pos(static_cast<int>(current_line), static_cast<int>(pos));
+            }
 
-        auto iter = std::find(
-            buf.at(cur_line).rbegin() + int32_t(buf.at(cur_line).size()) - cur_char,
-            buf.at(cur_line).rend(), c);
+        } else {
+            const auto pos = buf.at(cur_line).find_last_of(c);
 
-        if (iter != buf.at(cur_line).rend()) {
-            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
-
-            // line is a relative value, char is an absolute value
-            return rawterm::Pos(
-                {static_cast<int>(current_line - cur_line), static_cast<int>(cur_char)});
+            if (pos != std::string::npos) {
+                return rawterm::Pos(static_cast<int>(cur_line), static_cast<int>(pos));
+            }
         }
+
+        cur_line--;
     }
 
     return {};
@@ -532,4 +535,14 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
 
 void Model::indent_curr_line() {
     if (buf.at(current_line).size()) { buf.at(current_line).insert(0, TAB_SIZE, ' '); }
+}
+
+void Model::dedent_curr_line() {
+    auto offset = buf.at(current_line).find_first_not_of(' ');
+    if (offset == 0) { return; }
+    unsaved = true;
+
+    const std::size_t to_delete = std::min(4ul, offset);
+    const std::size_t line_size = buf.at(current_line).size();
+    buf.at(current_line) = buf.at(current_line).substr(to_delete, line_size);
 }

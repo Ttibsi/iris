@@ -57,8 +57,8 @@ struct Model {
     [[nodiscard]] std::optional<int> end_of_word_pos();
     void replace_char(const char);
     void toggle_case();
-    [[nodiscard]] std::optional<rawterm::Pos> find_next(const char);
-    [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char);
+    [[nodiscard]] std::optional<rawterm::Pos> find_next(const char) const;
+    [[nodiscard]] std::optional<rawterm::Pos> find_prev(const char) const;
     [[nodiscard]] bool undo(const int);
     [[nodiscard]] char get_current_char() const;
     [[nodiscard]] bool redo(const int);
@@ -72,6 +72,7 @@ struct Model {
     void search_and_replace(const std::string&);
     std::optional<rawterm::Pos> find_next_str(std::string_view);
     void indent_curr_line();
+    void dedent_curr_line();
 };
 
 #endif  // MODEL_H
