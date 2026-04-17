@@ -4,6 +4,7 @@
 #include <format>
 #include <functional>
 #include <regex>
+#include <span>
 
 #include "action.h"
 #include "constants.h"
@@ -242,7 +243,7 @@ void Model::toggle_case() {
     unsaved = true;
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_next(const char c) const {
     unsigned int cur_line = current_line;
     int cur_char = int32_t(current_char);
 
@@ -261,24 +262,27 @@ void Model::toggle_case() {
     return {};
 }
 
-[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) {
+[[nodiscard]] std::optional<rawterm::Pos> Model::find_prev(const char c) const {
     unsigned int cur_line = current_line;
-    int cur_char = int32_t(current_char);
 
-    for (; cur_line && cur_line < buf.size(); cur_line--) {
-        if (!(cur_line == current_line)) { cur_char = int32_t(buf.at(cur_line).size() - 1); }
+    while (cur_line) {
+        if (cur_line == current_line) {
+            const std::string_view search_area =
+                std::string_view(buf.at(current_line)).substr(0, current_char);
+            const auto pos = search_area.find_last_of(c);
+            if (pos != std::string::npos) {
+                return rawterm::Pos(static_cast<int>(current_line), static_cast<int>(pos));
+            }
 
-        auto iter = std::find(
-            buf.at(cur_line).rbegin() + int32_t(buf.at(cur_line).size()) - cur_char,
-            buf.at(cur_line).rend(), c);
+        } else {
+            const auto pos = buf.at(cur_line).find_last_of(c);
 
-        if (iter != buf.at(cur_line).rend()) {
-            cur_char = int32_t(std::distance(buf.at(cur_line).begin(), iter.base() - 1));
-
-            // line is a relative value, char is an absolute value
-            return rawterm::Pos(
-                {static_cast<int>(current_line - cur_line), static_cast<int>(cur_char)});
+            if (pos != std::string::npos) {
+                return rawterm::Pos(static_cast<int>(cur_line), static_cast<int>(pos));
+            }
         }
+
+        cur_line--;
     }
 
     return {};
@@ -523,12 +527,26 @@ std::optional<rawterm::Pos> Model::find_next_str(std::string_view sv) {
     // position in the line. This is faster than two complete iterations
     // over the buffer using std::find
     // NOTE: + 1 to avoid searching the current line (cursor may go backward in current line)
-    // TODO: switch to using enumerate
-    for (std::size_t i = current_line + 1; i < buf.size(); i++) {
-        if (!buf.at(i).contains(search_str)) { continue; }
-        const std::size_t str_pos = buf.at(i).find(search_str);
-        return rawterm::Pos {static_cast<int>(i), static_cast<int>(str_pos)};
+    std::span forward_buf = std::span {buf.begin() + current_line + 1, buf.end()};
+    for (const auto&& [idx, line] : enumerate<std::string>(forward_buf, 1)) {
+        if (!line.contains(search_str)) { continue; }
+        const std::size_t str_pos = line.find(search_str);
+        return rawterm::Pos {int32_t(current_line + idx), int32_t(str_pos)};
     }
 
     return std::nullopt;
+}
+
+void Model::indent_curr_line() {
+    if (buf.at(current_line).size()) { buf.at(current_line).insert(0, TAB_SIZE, ' '); }
+}
+
+void Model::dedent_curr_line() {
+    auto offset = buf.at(current_line).find_first_not_of(' ');
+    if (offset == 0) { return; }
+    unsaved = true;
+
+    const std::size_t to_delete = std::min(4ul, offset);
+    const std::size_t line_size = buf.at(current_line).size();
+    buf.at(current_line) = buf.at(current_line).substr(to_delete, line_size);
 }
