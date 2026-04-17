@@ -160,7 +160,7 @@ def test(testname: str | None, asan: bool) -> int:
 
     create_read_only_file()
     testname = testname if testname is not None else ""
-    test_flags: str = "-sr compact --order rand"
+    test_flags: str = "-r compact --order rand"
     shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"
 
     return run_shell_cmd(

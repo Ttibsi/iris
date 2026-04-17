@@ -1,3 +1,12 @@
+# This code was disabled with the 0.0.3 release as builds were failing
+# due to retrieving the rawterm version in github actions
+# <https://github.com/Ttibsi/iris/actions/runs/23191859408/job/67389782020>
+# The root cause is that github actions will require extra muddling around
+# with checkout and secrets to be able to read a separate repo. I've disabled
+# this for now as I don't want to mirror code from run.py in GHA yaml.
+# However I may come back to this for a future release.
+
+
 name: build-artifact
 on:
   workflow_call:
@@ -11,6 +20,7 @@ on:
 
 jobs:
   build:
+    if: false
     permissions:
       contents: write
     runs-on: ${{ inputs.runner }}

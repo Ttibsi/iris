@@ -24,7 +24,7 @@ def test_quit_with_modified_buffer(r: TmuxRunner):
     r.iris_cmd("q")
     err_line: str = r.color_screenshot()[-1]
     assert "Unsaved changes. Use `;q!` to discard" in err_line
-    assert "\x1b[49m" in err_line  # red text
+    assert "255;0;0" in err_line  # red text
 
 
 @setup("tests/fixture/test_file_2.txt", multi_file=True)
@@ -399,3 +399,19 @@ def test_find_next_str_repeat_input_command(r: TmuxRunner):
     r.iris_cmd("f")
     r.await_cursor_pos(12, 10)
     assert r.await_statusbar_parts()[-1] == "46:7"
+
+
+@setup()
+def test_run_shell_cmd_stdout(r: TmuxRunner):
+    r.iris_cmd("!echo 'hello'")
+    msg: str = r.color_screenshot()[-1]
+    assert "hello" in msg
+    assert "0;128;0" in msg  # green text
+
+
+@setup()
+def test_run_shell_cmd_stderr(r: TmuxRunner):
+    r.iris_cmd("!echo 'hello' 1>&2")
+    msg: str = r.color_screenshot()[-1]
+    assert "hello" in msg
+    assert "255;0;0" in msg  # red text

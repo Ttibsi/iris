@@ -1,5 +1,11 @@
 ### main / head
 
+* `>` now intends the current line.
+* `<` now dedents current line
+* Implement `;!` to execute a shell command from the command bar
+* Disabled continuous deployment in GHA. See `.github/workflows/build_artifact.yml`
+for details
+
 * Resolve crash when user tries to switch top or bottom line outside of scope
 
 ### v0.0.3 | 17/Mar/2026

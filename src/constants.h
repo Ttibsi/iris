@@ -7,7 +7,7 @@
 
 const bool LINE_NUMBERS = true;
 const int TAB_SIZE = 4;
-const std::size_t LINE_BORDER = 80;
+const std::size_t LINE_BORDER = 100;
 
 const rawterm::Color COLOR_UI_BG = rawterm::Colors::gray;
 const rawterm::Color COLOR_DARK_YELLOW = rawterm::Color("#ffdd33");
