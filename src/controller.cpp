@@ -284,6 +284,11 @@ void Controller::start_action_engine() {
                     parse_action<void, bool>(&view, Action<void> {ActionType::MoveCursorRight});
                 redraw_all = redraw.value();
 
+                // Add mark
+            } else if (k.value() == rawterm::Key('m')) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput()) { view.get_active_model()->add_mark(k2.code); }
+
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {
                 if (is_readonly_model()) { continue; }

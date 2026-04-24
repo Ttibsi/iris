@@ -238,6 +238,9 @@ template <typename T, typename U>
 
         } break;
 
+        // At some point, we'll need to figure out how to redraw the whole screen faster
+        // to prevent flickering, but the whole screen will need redrawing when a mark
+        // is changed
         case ActionType::MoveCursorUp: {
             if constexpr (std::is_same_v<U, bool>) {
                 auto logger = spdlog::get("basic_logger");
