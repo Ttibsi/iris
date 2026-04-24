@@ -66,7 +66,7 @@ struct Model {
     void move_line_up();
     void set_read_only(std::string_view);
     void delete_current_line();
-    [[nodiscard]] const WordPos current_word() const;
+    [[nodiscard]] const std::optional<WordPos> current_word() const;
     void delete_current_word(const WordPos);
     [[nodiscard]] std::vector<std::string> search_text(const std::string&) const;
     void search_and_replace(const std::string&);

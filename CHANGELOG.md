@@ -6,6 +6,8 @@
 * Disabled continuous deployment in GHA. See `.github/workflows/build_artifact.yml`
 for details
 
+* Resolved crash when the user tries to `delete word` past the end of a line
+
 ### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
 * Keyboard commands `tt`, `tn`, `tp` to create and switch between tabs
