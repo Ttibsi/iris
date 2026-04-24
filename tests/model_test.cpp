@@ -1,5 +1,7 @@
 #include "model.h"
 
+#include <stdexcept>
+
 #include <catch2/catch_test_macros.hpp>
 #include <rawterm/core.h>
 #include <rawterm/text.h>
@@ -733,4 +735,21 @@ TEST_CASE("dedent_curr_line", "[model]") {
     REQUIRE(m.buf.at(0).size() == 3);
     REQUIRE(m.buf.at(1).size() == 3);
     REQUIRE(m.buf.at(0).at(0) == 'f');
+}
+
+TEST_CASE("add_mark", "[model]") {
+    auto m = Model({"    foo", "bar"}, "");
+    m.add_mark('a');
+
+    REQUIRE(m.marks.size() == 1);
+    REQUIRE(m.marks.at('a') == Mark(0, 0));
+    REQUIRE_THROWS_AS(m.marks.at('b'), std::out_of_range);
+}
+
+TEST_CASE("is_marked", "[model]") {
+    auto m = Model({"    foo", "bar"}, "");
+    m.add_mark('a');
+
+    REQUIRE(m.is_marked(0));
+    REQUIRE(!m.is_marked(1));
 }
