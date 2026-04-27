@@ -7,6 +7,7 @@
 for details
 
 * Resolve crash when user tries to switch top or bottom line outside of scope
+* Resolved crash when the user tries to `delete word` past the end of a line
 
 ### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
