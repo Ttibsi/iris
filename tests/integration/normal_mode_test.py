@@ -431,6 +431,27 @@ def test_upper_k_key(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_upper_j_key_end_of_file(r: TmuxRunner):
+    r.press("G")
+    r.press("J")
+
+    # Check nothing has changed
+    # TODO: replace with r.MODIFIED_MARKER
+    assert "[X]" not in r.statusbar_parts()
+    assert len(r.statusbar_parts())
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_upper_k_key_start_of_file(r: TmuxRunner):
+    r.press("K")
+
+    # Check nothing has changed
+    # TODO: replace with r.MODIFIED_MARKER
+    assert "[X]" not in r.statusbar_parts()
+    assert len(r.statusbar_parts())
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_tt_key(r: TmuxRunner):
     r.type_str("tt")
 

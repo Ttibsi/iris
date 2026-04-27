@@ -267,8 +267,8 @@ template <typename T, typename U>
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) { logger->info("Action called: MoveLineDown"); }
 
-            v->get_active_model()->move_line_down();
-            v->cursor_down();
+            bool actionable = v->get_active_model()->move_line_down();
+            if (actionable) { v->cursor_down(); }
             return {};
         } break;
 
@@ -276,8 +276,8 @@ template <typename T, typename U>
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) { logger->info("Action called: MoveLineUp"); }
 
-            v->get_active_model()->move_line_up();
-            v->cursor_up();
+            bool actionable = v->get_active_model()->move_line_up();
+            if (actionable) { v->cursor_up(); }
             return {};
         } break;
 
