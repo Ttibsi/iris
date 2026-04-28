@@ -590,3 +590,20 @@ def test_m_key(r: TmuxRunner):
     target_line: str = r.color_screenshot()[3]
     assert "4\u2502" in target_line
     assert target_line.startswith("\x1b[38;2;95;250;104m")
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_comma_key(r: TmuxRunner):
+    r.type_str("j" * 3)
+    r.type_str("ma")
+    pos = r.cursor_pos()
+
+    r.type_str("j" * 3)
+    assert r.cursor_pos != pos
+
+    r.type_str("'a")
+    assert r.cursor_pos == pos
+
+    target_line: str = r.color_screenshot()[3]
+    assert "4\u2502" in target_line
+    assert target_line.startswith(r.SELECTED_LINE_ANSI)
