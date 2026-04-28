@@ -753,3 +753,7 @@ TEST_CASE("is_marked", "[model]") {
     REQUIRE(m.is_marked(0));
     REQUIRE(!m.is_marked(1));
 }
+
+TEST_CASE("go_to_mark", "[model]") {
+    REQUIRE(false);
+}

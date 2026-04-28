@@ -285,6 +285,7 @@ void Controller::start_action_engine() {
                 redraw_all = redraw.value();
 
                 // Add mark
+                // TODO: Make sure this becomes an action instead
             } else if (k.value() == rawterm::Key('m')) {
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) { view.get_active_model()->add_mark(k2.code); }
@@ -383,6 +384,12 @@ void Controller::start_action_engine() {
                 view.cur.reset();
                 if (quit_flag) { break; }
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
+
+                // go to mark
+                // TODO: Make sure this becomes an action instead
+            } else if (k.value() == rawterm::Key('\'')) {
+                auto k2 = rawterm::wait_for_input();
+                if (k2.isCharInput()) { redraw_all = view.get_active_model()->go_to_mark(k2.code); }
 
                 // Move to beginning/end of line
             } else if (k.value() == rawterm::Key('_')) {

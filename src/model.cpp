@@ -564,3 +564,13 @@ void Model::add_mark(const char c) {
                return map.second.line_pos == idx;
            }) != marks.end();
 }
+
+[[nodiscard]] bool Model::go_to_mark(const char c) {
+    try {
+        const Mark& m = marks.at(c);
+        current_line = m.line_pos;
+        current_char = m.char_pos;
+
+        return true;
+    } catch (const std::out_of_range& e) { return false; }
+}
