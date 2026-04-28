@@ -389,7 +389,12 @@ void Controller::start_action_engine() {
                 // TODO: Make sure this becomes an action instead
             } else if (k.value() == rawterm::Key('\'')) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput()) { redraw_all = view.get_active_model()->go_to_mark(k2.code); }
+                if (k2.isCharInput()) {
+                    redraw_all = view.get_active_model()->go_to_mark(k2.code);
+
+                    // TODO: rename this method to something like "replace cursor"
+                    view.change_model_cursor();
+                }
 
                 // Move to beginning/end of line
             } else if (k.value() == rawterm::Key('_')) {

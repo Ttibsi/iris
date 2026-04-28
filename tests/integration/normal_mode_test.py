@@ -599,10 +599,10 @@ def test_comma_key(r: TmuxRunner):
     pos = r.cursor_pos()
 
     r.type_str("j" * 3)
-    assert r.cursor_pos != pos
+    assert r.cursor_pos() != pos
 
     r.type_str("'a")
-    assert r.cursor_pos == pos
+    assert r.cursor_pos() == pos
 
     target_line: str = r.color_screenshot()[3]
     assert "4\u2502" in target_line
