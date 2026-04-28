@@ -92,6 +92,8 @@ void View::draw_screen() {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
             if (idx == get_active_model()->current_line + 1) { c = COLOR_DARK_YELLOW; }
+            if (get_active_model()->is_marked(idx)) { c = COLOR_GREEN; }
+
             screen +=
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
         }
@@ -227,10 +229,13 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     std::string_view curr_line = get_active_model()->buf.at(idx);
 
     if (LINE_NUMBERS) {
-        const rawterm::Color color =
-            (idx == get_active_model()->current_line) ? COLOR_DARK_YELLOW : COLOR_UI_BG;
-        line += rawterm::set_foreground(
-            std::format("{:>{}}\u2502", idx + 1, line_number_offset), color);
+        // TODO: refactor lineno colour into it's own view method
+        rawterm::Color c = COLOR_UI_BG;
+        if (idx == get_active_model()->current_line) { c = COLOR_DARK_YELLOW; }
+        if (get_active_model()->is_marked(idx)) { c = COLOR_GREEN; }
+
+        line +=
+            rawterm::set_foreground(std::format("{:>{}}\u2502", idx + 1, line_number_offset), c);
     }
 
     const std::size_t vert_offset = get_active_model()->vertical_offset;

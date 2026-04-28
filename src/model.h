@@ -5,6 +5,7 @@
 #include <stack>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include <rawterm/screen.h>
@@ -26,6 +27,17 @@ struct WordPos {
     uint_t lineno;
 };
 
+struct Mark {
+    unsigned int line_pos;
+    unsigned int char_pos;
+
+    explicit Mark(unsigned int l, unsigned int c) : line_pos(l), char_pos(c) {}
+
+    [[nodiscard]] bool operator==(const Mark& other) const {
+        return line_pos == other.line_pos && char_pos == other.char_pos;
+    }
+};
+
 struct Model {
     ModelType type = ModelType::BUF;
     std::vector<std::string> buf;
@@ -34,6 +46,7 @@ struct Model {
     unsigned int current_char = 0;  // 0-indexed
     std::string search_str = "";
     std::size_t vertical_offset = 0;
+    std::unordered_map<char, Mark> marks = {};
 
     // Num of lines offset to view
     unsigned int view_offset = 0;
@@ -73,6 +86,8 @@ struct Model {
     std::optional<rawterm::Pos> find_next_str(std::string_view);
     void indent_curr_line();
     void dedent_curr_line();
+    void add_mark(const char);
+    [[nodiscard]] bool is_marked(const std::size_t) const;
 };
 
 #endif  // MODEL_H

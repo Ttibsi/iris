@@ -37,44 +37,45 @@ $ ./run.py --release
 switch to `write` mode to insert any characters. In `read` mode, you can
 perform the following actions (alphabetically ordered):
 
-| Key           | Description                                           |
-|---------------|-------------------------------------------------------|
-| <kbd>a</kbd>  | Go to write mode right of the current character       |
-| <kbd>A</kbd>  | Go to write mode at the end of the current line       |
-| <kbd>b</kbd>  | Move cursor back one word                             |
-| <kbd>dl</kbd> | Delete the current line                               |
-| <kbd>dw</kbd> | Delete the current word                               |
-| <kbd>e</kbd>  | Find next entered char ahead in file                  |
-| <kbd>f</kbd>  | Move cursor to end of current word                    |
-| <kbd>F</kbd>  | Find next entered char back in file                   |
-| <kbd>g</kbd>  | Go to top of file                                     |
-| <kbd>G</kbd>  | Go to bottom of file                                  |
-| <kbd>h</kbd>  | Move cursor left                                      |
-| <kbd>i</kbd>  | Go to write mode left of the current character        |
-| <kbd>j</kbd>  | Move cursor down                                      |
-| <kbd>J</kbd>  | Move current line down one                            |
-| <kbd>k</kbd>  | Move cursor up                                        |
-| <kbd>K</kbd>  | Move current line up one                              |
-| <kbd>l</kbd>  | Move cursor right                                     |
-| <kbd>o</kbd>  | Enter newline below and go to write mode              |
-| <kbd>O</kbd>  | Move cursor right                                     |
-| <kbd>r</kbd>  | Replace char under cursor with next entered character |
-| <kbd>R</kbd>  | Redo                                                  |
-| <kbd>tn</kbd> | Go to next tab                                        |
-| <kbd>tp</kbd> | Go to previous tab                                    |
-| <kbd>tt</kbd> | Open new tab                                          |
-| <kbd>u</kbd>  | Undo                                                  |
-| <kbd>w</kbd>  | Move cursor forward one word                          |
-| <kbd>x</kbd>  | Delete character under the cursor                     |
-| <kbd>z</kbd>  | Center the current line in the screen                 |
-| <kbd>;</kbd>  | Go to command mode                                    |
-| <kbd>~</Kbd>  | Switch case of char under cursor                      |
-| <kbd>[</Kbd>  | Go to beginning of paragraph (previous empty line)    |
-| <kbd>]</Kbd>  | Go to end of paragraph (next empty line)              |
-| <kbd>_</Kbd>  | Go to beginning of line                               |
-| <kbd>$</Kbd>  | Go to end of line                                     |
-| <kbd>></kbd>  | Indent current line                                   |
-| <kbd><</kbd>  | Dedent current line                                   |
+| Key           | Description                                              |
+|---------------|----------------------------------------------------------|
+| <kbd>a</kbd>  | Go to write mode right of the current character          |
+| <kbd>A</kbd>  | Go to write mode at the end of the current line          |
+| <kbd>b</kbd>  | Move cursor back one word                                |
+| <kbd>dl</kbd> | Delete the current line                                  |
+| <kbd>dw</kbd> | Delete the current word                                  |
+| <kbd>e</kbd>  | Find next entered char ahead in file                     |
+| <kbd>f</kbd>  | Move cursor to end of current word                       |
+| <kbd>F</kbd>  | Find next entered char back in file                      |
+| <kbd>g</kbd>  | Go to top of file                                        |
+| <kbd>G</kbd>  | Go to bottom of file                                     |
+| <kbd>h</kbd>  | Move cursor left                                         |
+| <kbd>i</kbd>  | Go to write mode left of the current character           |
+| <kbd>j</kbd>  | Move cursor down                                         |
+| <kbd>J</kbd>  | Move current line down one                               |
+| <kbd>k</kbd>  | Move cursor up                                           |
+| <kbd>K</kbd>  | Move current line up one                                 |
+| <kbd>l</kbd>  | Move cursor right                                        |
+| <kbd>m</kbd>  | Mark the current row against a provided letter (ex `ma`) |
+| <kbd>o</kbd>  | Enter newline below and go to write mode                 |
+| <kbd>O</kbd>  | Move cursor right                                        |
+| <kbd>r</kbd>  | Replace char under cursor with next entered character    |
+| <kbd>R</kbd>  | Redo                                                     |
+| <kbd>tn</kbd> | Go to next tab                                           |
+| <kbd>tp</kbd> | Go to previous tab                                       |
+| <kbd>tt</kbd> | Open new tab                                             |
+| <kbd>u</kbd>  | Undo                                                     |
+| <kbd>w</kbd>  | Move cursor forward one word                             |
+| <kbd>x</kbd>  | Delete character under the cursor                        |
+| <kbd>z</kbd>  | Center the current line in the screen                    |
+| <kbd>;</kbd>  | Go to command mode                                       |
+| <kbd>~</Kbd>  | Switch case of char under cursor                         |
+| <kbd>[</Kbd>  | Go to beginning of paragraph (previous empty line)       |
+| <kbd>]</Kbd>  | Go to end of paragraph (next empty line)                 |
+| <kbd>_</Kbd>  | Go to beginning of line                                  |
+| <kbd>$</Kbd>  | Go to end of line                                        |
+| <kbd>></kbd>  | Indent current line                                      |
+| <kbd><</kbd>  | Dedent current line                                      |
 
 ### Command mode
 Likewise, you can switch to `command` mode with the semicolon `;` key. The

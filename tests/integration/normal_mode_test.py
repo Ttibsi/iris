@@ -579,3 +579,14 @@ def test_left_chevron_key(r: TmuxRunner):
 def test_right_chevron_key(r: TmuxRunner):
     r.press('>')
     assert "    This" in r.lines()[0]
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_m_key(r: TmuxRunner):
+    r.type_str("j" * 3)
+    r.type_str("ma")
+    r.press('j')
+
+    target_line: str = r.color_screenshot()[3]
+    assert "4\u2502" in target_line
+    assert target_line.startswith("\x1b[38;2;95;250;104m")

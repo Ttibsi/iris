@@ -554,3 +554,13 @@ void Model::dedent_curr_line() {
     const std::size_t line_size = buf.at(current_line).size();
     buf.at(current_line) = buf.at(current_line).substr(to_delete, line_size);
 }
+
+void Model::add_mark(const char c) {
+    marks.insert_or_assign(c, Mark(current_line, current_char));
+}
+
+[[nodiscard]] bool Model::is_marked(const std::size_t idx) const {
+    return std::find_if(marks.begin(), marks.end(), [&](const auto& map) {
+               return map.second.line_pos == idx;
+           }) != marks.end();
+}
