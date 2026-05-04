@@ -91,8 +91,8 @@ void View::draw_screen() {
     for (const auto& [idx, line] : enumerate<std::string>(viewable_range, start_idx)) {
         if (LINE_NUMBERS) {
             rawterm::Color c = COLOR_UI_BG;
+            if (get_active_model()->is_marked(idx - 1)) { c = COLOR_GREEN; }
             if (idx == get_active_model()->current_line + 1) { c = COLOR_DARK_YELLOW; }
-            if (get_active_model()->is_marked(idx)) { c = COLOR_GREEN; }
 
             screen +=
                 rawterm::set_foreground(std::format("{:>{}}\u2502", idx, line_number_offset), c);
@@ -231,8 +231,8 @@ void View::draw_line(const Draw_Line_dir::values redraw_prev) {
     if (LINE_NUMBERS) {
         // TODO: refactor lineno colour into it's own view method
         rawterm::Color c = COLOR_UI_BG;
-        if (idx == get_active_model()->current_line) { c = COLOR_DARK_YELLOW; }
         if (get_active_model()->is_marked(idx)) { c = COLOR_GREEN; }
+        if (idx == get_active_model()->current_line) { c = COLOR_DARK_YELLOW; }
 
         line +=
             rawterm::set_foreground(std::format("{:>{}}\u2502", idx + 1, line_number_offset), c);

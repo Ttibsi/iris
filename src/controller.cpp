@@ -289,6 +289,8 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('m')) {
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) { view.get_active_model()->add_mark(k2.code); }
+                // TODO: redraw just this line?
+                redraw_all = true;
 
                 // add new line and go to insert mode (below)
             } else if (k.value() == rawterm::Key('o')) {
@@ -394,6 +396,10 @@ void Controller::start_action_engine() {
 
                     // TODO: rename this method to something like "replace cursor"
                     view.change_model_cursor();
+
+                    // TODO: calculate if the marked line wasn't currently on screen
+                    // and redraw if needed
+                    redraw_all = true;
                 }
 
                 // Move to beginning/end of line
