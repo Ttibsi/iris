@@ -753,3 +753,20 @@ TEST_CASE("is_marked", "[model]") {
     REQUIRE(m.is_marked(0));
     REQUIRE(!m.is_marked(1));
 }
+
+TEST_CASE("go_to_mark", "[model]") {
+    auto m = Model({"    foo", "bar"}, "");
+    m.current_line = 1;
+    m.current_char = 1;
+    m.add_mark('a');
+    REQUIRE(m.marks.size() == 1);
+
+    m.current_line = 0;
+    m.current_char = 0;
+
+    REQUIRE(m.go_to_mark('a'));
+    REQUIRE(m.current_line == 1);
+    REQUIRE(m.current_char == 1);
+
+    REQUIRE(!m.go_to_mark('b'));
+}

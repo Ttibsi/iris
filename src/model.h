@@ -88,6 +88,7 @@ struct Model {
     void dedent_curr_line();
     void add_mark(const char);
     [[nodiscard]] bool is_marked(const std::size_t) const;
+    [[nodiscard]] bool go_to_mark(const char);
 };
 
 #endif  // MODEL_H
