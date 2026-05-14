@@ -42,9 +42,11 @@ enum class ActionType {
     TriggerUndo,
 
     // Pass value
+    AddMark,      // char
     ChangeMode,   // Mode
     FindNext,     // Char
     FindPrev,     // Char
+    GoToMark,     // char
     InsertChar,   // Char
     ReplaceChar,  // Char
 };
@@ -368,6 +370,14 @@ template <typename T, typename U>
             return {};
         } break;
 
+        case ActionType::AddMark: {
+            if constexpr (std::is_same_v<T, char>) {
+                v->get_active_model()->add_mark(action.payload);
+            }
+
+            return {};
+        } break;
+
         case ActionType::ChangeMode: {
             if constexpr (std::is_same_v<T, Mode>) {
                 auto logger = spdlog::get("basic_logger");
@@ -416,6 +426,17 @@ template <typename T, typename U>
                     }
                 }
             }
+        } break;
+
+        case ActionType::GoToMark: {
+            if constexpr (std::is_same_v<T, char> && std::is_same_v<U, bool>) {
+                bool ret = v->get_active_model()->go_to_mark(action.payload);
+
+                // TODO: rename this method to something like "replace cursor"
+                v->change_model_cursor();
+                return ret;
+            }
+            return {};
         } break;
 
         case ActionType::InsertChar: {
