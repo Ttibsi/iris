@@ -395,7 +395,7 @@ void Controller::start_action_engine() {
                 if (k2.isCharInput()) {
                     // TODO: calculate if the marked line wasn't currently on screen
                     // and only redraw if needed
-                    std::optional<bool> ret = parse_action<char, bool>(
+                    std::optional<const bool> ret = parse_action<char, bool>(
                         &view, Action<char> {ActionType::GoToMark, k2.code});
                     if (ret.has_value()) { redraw_all = ret.value(); }
                 }
