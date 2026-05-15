@@ -375,12 +375,12 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 [[maybe_unused]] bool View::cursor_left(std::size_t dist) {
     if (get_active_model()->vertical_offset &&
         uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
-        get_active_model()->current_char -= dist;
+        get_active_model()->current_char -= uint_t(dist);
         if (get_active_model()->vertical_offset == 2) { get_active_model()->vertical_offset--; }
         get_active_model()->vertical_offset -= dist;
         return true;
     } else if (get_active_model()->current_char) {
-        get_active_model()->current_char -= dist;
+        get_active_model()->current_char -= uint_t(dist);
         cur.move_left(int32_t(dist));
         return false;
     }
@@ -450,7 +450,7 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
     // Clamp dist to line
     dist = std::min(dist, line_size - get_active_model()->current_char);
     if (dist == 0) { return false; }
-    get_active_model()->current_char += dist;
+    get_active_model()->current_char += uint_t(dist);
 
     if (cur.horizontal < view_size.horizontal - 2) {
         cur.move_right(int32_t(dist));

@@ -285,10 +285,12 @@ void Controller::start_action_engine() {
                 redraw_all = redraw.value();
 
                 // Add mark
-                // TODO: Make sure this becomes an action instead
             } else if (k.value() == rawterm::Key('m')) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput()) { view.get_active_model()->add_mark(k2.code); }
+                if (k2.isCharInput()) {
+                    parse_action<char, None>(&view, Action<char> {ActionType::AddMark, k2.code});
+                }
+
                 // TODO: redraw just this line?
                 redraw_all = true;
 
@@ -388,18 +390,14 @@ void Controller::start_action_engine() {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
 
                 // go to mark
-                // TODO: Make sure this becomes an action instead
             } else if (k.value() == rawterm::Key('\'')) {
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) {
-                    redraw_all = view.get_active_model()->go_to_mark(k2.code);
-
-                    // TODO: rename this method to something like "replace cursor"
-                    view.change_model_cursor();
-
                     // TODO: calculate if the marked line wasn't currently on screen
-                    // and redraw if needed
-                    redraw_all = true;
+                    // and only redraw if needed
+                    std::optional<const bool> ret = parse_action<char, bool>(
+                        &view, Action<char> {ActionType::GoToMark, k2.code});
+                    if (ret.has_value()) { redraw_all = ret.value(); }
                 }
 
                 // Move to beginning/end of line
