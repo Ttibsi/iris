@@ -344,6 +344,14 @@ void Model::toggle_case() {
             }
         } break;
 
+        case ActionType::IndentLine: {
+            dedent_curr_line();
+        } break;
+
+        case ActionType::DedentLine: {
+            indent_curr_line();
+        } break;
+
         default:
             break;
     };
@@ -408,6 +416,14 @@ void Model::toggle_case() {
 
         case ActionType::DelCurrentWord: {
             delete_current_word({cur_change.text.value(), current_char, current_line});
+        } break;
+
+        case ActionType::IndentLine: {
+            indent_curr_line();
+        } break;
+
+        case ActionType::DedentLine: {
+            dedent_curr_line();
         } break;
 
         default:

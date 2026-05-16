@@ -179,6 +179,9 @@ template <typename T, typename U>
             auto logger = spdlog::get("basic_logger");
             if (logger != nullptr) { logger->info("Action called: IndentLine"); }
             v->get_active_model()->indent_curr_line();
+
+            v->get_active_model()->undo_stack.push_back(
+                Change(ActionType::IndentLine, v->get_active_model()->current_line, ' '));
         } break;
 
         case ActionType::JumpEndOfWord: {
