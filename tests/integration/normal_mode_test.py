@@ -417,12 +417,31 @@ def test_undo_redo_delete_word(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt")
 def test_undo_redo_indentline(r: TmuxRunner):
-    assert False
+    r.press('>')
+    assert r.lines()[0].startswith(" 1\u2502    ")
+
+    # undo
+    r.press("u")
+    assert r.lines()[0].startswith(" 1\u2502This")
+
+    # redo
+    r.press("R")
+    assert r.lines()[0].startswith(" 1\u2502    ")
 
 
 @setup("tests/fixture/test_file_1.txt")
 def test_undo_redo_dedentline(r: TmuxRunner):
-    assert False
+    r.press('j')
+    r.press('<')
+    assert r.lines()[1].startswith(" 2\u2502here")
+
+    # undo
+    r.press("u")
+    assert r.lines()[1].startswith(" 2\u2502    ")
+
+    # redo
+    r.press("R")
+    assert r.lines()[1].startswith(" 2\u2502here")
 
 
 @setup("tests/fixture/test_file_1.txt")
