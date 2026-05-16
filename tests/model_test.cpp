@@ -493,7 +493,7 @@ TEST_CASE("undo", "[model]") {
         REQUIRE(m.buf.at(m.current_line).at(2) == ' ');
         REQUIRE(m.buf.at(m.current_line).at(3) == ' ');
 
-        m.undo_stack.push_back(Change(ActionType::IndentLine, 0, 0));
+        m.undo_stack.push_back(Change(ActionType::DedentLine, 0, 0));
         m.dedent_curr_line();
         REQUIRE(m.buf.at(m.current_line).at(0) == 'l');
         REQUIRE(m.buf.at(m.current_line).at(1) == 'i');
@@ -603,11 +603,56 @@ TEST_CASE("redo", "[model]") {
     }
 
     SECTION("IndentLine") {
-        REQUIRE(false);
+        m.current_line = 0;
+        m.current_char = 0;
+        m.undo_stack.push_back(Change(ActionType::IndentLine, 0, 0));
+
+        m.indent_curr_line();
+        REQUIRE(m.buf.at(m.current_line).at(0) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(1) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(2) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(3) == ' ');
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(m.current_line).at(0) == 'l');
+        REQUIRE(m.buf.at(m.current_line).at(1) == 'i');
+        REQUIRE(m.buf.at(m.current_line).at(2) == 'n');
+        REQUIRE(m.buf.at(m.current_line).at(3) == 'e');
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(m.current_line).at(0) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(1) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(2) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(3) == ' ');
     }
 
     SECTION("DedentLine") {
-        REQUIRE(false);
+        m.current_line = 0;
+        m.current_char = 0;
+        m.indent_curr_line();
+        REQUIRE(m.buf.at(m.current_line).at(0) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(1) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(2) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(3) == ' ');
+
+        m.undo_stack.push_back(Change(ActionType::DedentLine, 0, 0));
+        m.dedent_curr_line();
+        REQUIRE(m.buf.at(m.current_line).at(0) == 'l');
+        REQUIRE(m.buf.at(m.current_line).at(1) == 'i');
+        REQUIRE(m.buf.at(m.current_line).at(2) == 'n');
+        REQUIRE(m.buf.at(m.current_line).at(3) == 'e');
+
+        REQUIRE(m.undo(24));
+        REQUIRE(m.buf.at(m.current_line).at(0) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(1) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(2) == ' ');
+        REQUIRE(m.buf.at(m.current_line).at(3) == ' ');
+
+        REQUIRE(m.redo(24));
+        REQUIRE(m.buf.at(m.current_line).at(0) == 'l');
+        REQUIRE(m.buf.at(m.current_line).at(1) == 'i');
+        REQUIRE(m.buf.at(m.current_line).at(2) == 'n');
+        REQUIRE(m.buf.at(m.current_line).at(3) == 'e');
     }
 }
 
