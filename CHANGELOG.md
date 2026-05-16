@@ -2,6 +2,7 @@
 
 * `>` now intends the current line.
 * `<` now dedents current line
+* `<` and `>` now are part of the undo/redo system
 * Implement `;!` to execute a shell command from the command bar
 * Disabled continuous deployment in GHA. See `.github/workflows/build_artifact.yml`
 for details
