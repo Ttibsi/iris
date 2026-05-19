@@ -620,8 +620,10 @@ bool Controller::parse_command() {
 
     } else if (cmd == ";wq") {
         // This just does the same as ;w and ;q
-        std::ignore = write_to_file(view.get_active_model(), std::nullopt);
-        return quit_app(false);
+        WriteData data = write_to_file(view.get_active_model(), std::nullopt);
+        if (data.valid) { return quit_app(false); }
+        view.display_message("Could not save file: no filename specified", rawterm::Colors::red);
+        return false;
 
     } else if (cmd == ";wa") {
         WriteAllData write_data = write_all();
@@ -644,6 +646,9 @@ bool Controller::parse_command() {
             std::string msg =
                 std::format("Saved {} bytes ({} lines)", file_write.bytes, file_write.lines);
             view.display_message(msg, rawterm::Colors::green);
+        } else {
+            view.display_message(
+                "Could not save file: no filename specified", rawterm::Colors::red);
         }
 
     } else if (cmd == ";qa") {
