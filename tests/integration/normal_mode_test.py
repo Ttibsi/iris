@@ -416,6 +416,35 @@ def test_undo_redo_delete_word(r: TmuxRunner):
 
 
 @setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_indentline(r: TmuxRunner):
+    r.press('>')
+    assert r.lines()[0].startswith(" 1\u2502    ")
+
+    # undo
+    r.press("u")
+    assert r.lines()[0].startswith(" 1\u2502This")
+
+    # redo
+    r.press("R")
+    assert r.lines()[0].startswith(" 1\u2502    ")
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_undo_redo_dedentline(r: TmuxRunner):
+    r.press('j')
+    r.press('<')
+    assert r.lines()[1].startswith(" 2\u2502here")
+
+    # undo
+    r.press("u")
+    assert r.lines()[1].startswith(" 2\u2502    ")
+
+    # redo
+    r.press("R")
+    assert r.lines()[1].startswith(" 2\u2502here")
+
+
+@setup("tests/fixture/test_file_1.txt")
 def test_upper_j_key(r: TmuxRunner):
     r.press("J")
     assert "here is a newline and a tab" in r.lines()[0]
