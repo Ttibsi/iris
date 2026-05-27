@@ -415,3 +415,12 @@ def test_run_shell_cmd_stderr(r: TmuxRunner):
     msg: str = r.color_screenshot()[-1]
     assert "hello" in msg
     assert "255;0;0" in msg  # red text
+
+
+@setup("tests/fixture/lorem_ipsum.txt")
+def test_list_marks(r: TmuxRunner):
+    r.type_str("ma")
+    r.iris_cmd("lm")
+
+    breakpoint()
+    assert "Marks (lorem_ipsum.txt)" in r.lines()[-11]
