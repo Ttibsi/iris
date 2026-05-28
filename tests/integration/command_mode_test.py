@@ -1,5 +1,6 @@
 import os
 import time
+from typing import Final
 
 from setup import setup
 from setup import TmuxRunner
@@ -422,5 +423,7 @@ def test_list_marks(r: TmuxRunner):
     r.type_str("ma")
     r.iris_cmd("lm")
 
-    breakpoint()
-    assert "Marks (lorem_ipsum.txt)" in r.lines()[-11]
+    title_line: Final[str] = r.lines()[-11]
+    assert "Marks" in title_line
+    assert "lorem_ipsum.txt" in title_line
+    assert "a | 0:0 " in r.lines()[-10]
