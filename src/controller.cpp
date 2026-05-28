@@ -109,6 +109,11 @@ void Controller::start_action_engine() {
 
         if (!(k.has_value())) { continue; }
 
+        if (view.overlay_open) {
+            view.overlay_open = false;
+            view.draw_screen();
+        }
+
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});

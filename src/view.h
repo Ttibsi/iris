@@ -33,6 +33,7 @@ struct View {
     std::string command_text = ";";
     std::string git_branch = "";
     std::string prev_tab_bar = "";  // For ensuring we only redraw when we need to
+    bool overlay_open = false;
 
     View(Controller*, const rawterm::Pos);
     void add_model(Model*);
