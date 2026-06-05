@@ -21,6 +21,7 @@ add_compile_options(-Wextra)
 add_compile_options(-pedantic)
 add_compile_options(-Wconversion)
 add_compile_options(-Wimplicit-fallthrough)
+add_compile_options(-lstdc++exp)
 
 if(ENABLE_ASAN)
     add_compile_options(-g)
