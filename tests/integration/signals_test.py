@@ -56,3 +56,14 @@ def test_resize_while_suspended():
 
         # Check
         assert r.lines()[0].endswith("67\u00BB")
+
+
+def test_terminate_handler():
+    with TmuxRunner("bash", "--norc") as r:
+        r.press_and_enter("./build/src/iris t.txt")
+        r.await_text("READ")
+
+        # This won't trigger for some reason
+        r.press(';')
+        r.type_str("die")
+        r.press("Enter")
