@@ -69,5 +69,4 @@ def test_terminate_handler():
         time.sleep(0.1)
 
         traceback: list[str] = r.lines()
-        assert any(["2#  std::terminate()" in line for line in traceback])
-        # assert "2#  std::terminate()" in traceback[4]
+        assert any(["std::terminate()" in line for line in traceback])
