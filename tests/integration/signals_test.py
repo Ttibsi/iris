@@ -1,3 +1,5 @@
+import time
+
 from setup import setup
 from setup import TmuxRunner
 
@@ -36,7 +38,7 @@ def test_resize(r: TmuxRunner):
 
 
 def test_resize_while_suspended():
-    dims = {"width": 100, "height": 24}
+    dims: dict[str, int] = {"width": 100, "height": 24}
     with TmuxRunner("bash", "--norc", **dims) as r:
         # Open file
         r.press_and_enter("./build/src/iris tests/fixture/very_long_line.txt")
@@ -60,10 +62,12 @@ def test_resize_while_suspended():
 
 def test_terminate_handler():
     with TmuxRunner("bash", "--norc") as r:
-        r.press_and_enter("./build/src/iris t.txt")
+        r.press_and_enter("./build/src/iris")
         r.await_text("READ")
 
-        # This won't trigger for some reason
-        r.press(';')
-        r.type_str("die")
-        r.press("Enter")
+        r.iris_cmd("die")
+        time.sleep(0.1)
+
+        traceback: list[str] = r.lines()
+        assert any(["2#  std::terminate()" in line for line in traceback])
+        # assert "2#  std::terminate()" in traceback[4]
