@@ -23,6 +23,7 @@
 void exit_app() {
     rawterm::exit_alt_screen();
     rawterm::Cursor::cursor_block();
+    rawterm::disable_raw_mode();
 }
 
 [[noreturn]] constexpr void handler() noexcept {
