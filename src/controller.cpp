@@ -681,8 +681,10 @@ bool Controller::parse_command() {
     } else if (cmd == ";lb") {
         return display_all_buffers();
 
+#ifndef NDEBUG
     } else if (cmd == ";die") {
         std::terminate();
+#endif
 
     } else {
         std::string msg = "Unknown command";
