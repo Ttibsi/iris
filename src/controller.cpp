@@ -816,80 +816,19 @@ void Controller::add_model(const std::string& filename) {
 }
 
 [[nodiscard]] bool Controller::display_all_buffers() {
-    meta_buffers.emplace_back(term_size.vertical - 2, "");
-    Model* list = &meta_buffers.at(meta_buffers.size() - 1);
-
-    list->type = ModelType::META;
-    list->filename = "[BUFFERS]";
-    list->readonly = true;
-    list->buf.reserve(32);
-
-    std::size_t max_name_len =
-        std::max_element(models.begin(), models.end(), [](const auto& lhs, const auto& rhs) {
-            return lhs.filename.size() < rhs.filename.size();
-        })->filename.size();
-
-    // "filename"
-    if (max_name_len < 8) { max_name_len = 8; }
-    max_name_len += 2;
-
-    std::string title = "\u2551 id \u2502  filename" + std::string(uint_t(max_name_len - 8), ' ');
-    title += " \u2502  pos  \u2551";
-    std::size_t title_len = title.size() - 9;
-
-    // header border
-    std::string top_border = "\u2554";
-    for (std::size_t i = 0; i < title_len - 1; i++) {
-        top_border += "\u2550";
-    }
-    top_border += "\u2557";
-    list->buf.at(0) = top_border;
-
-    // header
-    list->buf.push_back(title);
-    list->buf.push_back("\u2551");
-    for (std::size_t i = 0; i < title_len - 1; i++) {
-        list->buf.at(2) += "\u2500";
-    }
-    list->buf.at(2) += "\u2551";
+    std::vector<std::string> filenames = {};
 
     for (const auto&& [idx, m] : enumerate<Model>(models)) {
-        std::string line = "\u2551  " + std::to_string(idx);
-        line += " \u2502  ";
-        line += rawterm::bold(m.filename);
+        std::string line = std::format("{} \u2502 {}", idx, m.filename);
 
-        std::size_t spacing = 0;
-        if (max_name_len > m.filename.size()) { spacing = max_name_len - m.filename.size(); }
-
-        if (m.unsaved) {
-            line += rawterm::bold("*");
-            spacing--;
-        }
-
-        if (spacing > 0) { line += std::string(spacing, ' '); }
-
-        line += " \u2502  ";
-        line += std::to_string(m.current_line + 1);
-        line.push_back(':');
-        line += std::to_string(m.current_char + 1);
-
-        const std::size_t diff =
-            title.size() - rawterm::raw_size(line) - std::string("\u2551").size();
-        line += std::string(diff, ' ');
-        line += "\u2551";
-
-        list->buf.push_back(line);
+        if (m.unsaved) { line += rawterm::bold("*"); }
+        filenames.push_back(line);
+        if (filenames.size() == 7) { break; }
     }
 
-    // bottom border
-    std::string btm_border = "\u255A";
-    for (std::size_t i = 0; i < title_len - 1; i++) {
-        btm_border += "\u2550";
+    while (filenames.size() < 7) {
+        filenames.push_back("");
     }
-    btm_border += "\u255D";
-    list->buf.push_back(btm_border);
-
-    view.view_models.push_back(list);
-    view.active_model++;
+    view.draw_overlay(filenames, "BUFFERS");
     return true;
 }

@@ -212,15 +212,5 @@ TEST_CASE("display_all_buffers", "[controller]") {
     c.add_model("tests/fixture/lorem_ipsum.txt");
 
     REQUIRE(c.display_all_buffers());
-
-    REQUIRE(c.meta_buffers.size() == 1);
-    Model* buf_list = &c.meta_buffers.at(0);
-
-    REQUIRE(buf_list->type == ModelType::META);
-    REQUIRE(buf_list->filename == "[BUFFERS]");
-    REQUIRE(buf_list->readonly);
-
-    REQUIRE(buf_list->buf.size() == 7);
-
-    REQUIRE(c.view.get_active_model() == buf_list);
+    REQUIRE(c.view.overlay_open);
 }
