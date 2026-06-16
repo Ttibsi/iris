@@ -373,8 +373,9 @@ void View::display_message(std::string msg, std::optional<rawterm::Color> color)
 
 // Returns: (bool) Redraw whole screen
 [[maybe_unused]] bool View::cursor_left(std::size_t dist) {
-    if (get_active_model()->vertical_offset &&
-        uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0)) {
+    const bool at_start = uint_t(cur.horizontal) == (LINE_NUMBERS ? line_number_offset + 3 : 0);
+
+    if (get_active_model()->vertical_offset && at_start) {
         get_active_model()->current_char -= uint_t(dist);
         if (get_active_model()->vertical_offset == 2) { get_active_model()->vertical_offset--; }
         get_active_model()->vertical_offset -= dist;
@@ -546,16 +547,19 @@ void View::tab_prev() {
 [[maybe_unused]] uint_t View::set_lineno_offset(Model* m) {
     if (LINE_NUMBERS) {
         line_number_offset = uint_t(std::to_string(m->buf.size()).size() + 1);
-        return line_number_offset;
+    } else {
+        line_number_offset = 1;
     }
 
-    return 0;
+    return line_number_offset;
 }
 
 void View::change_model_cursor() {
     const uint_t vertical =
         get_active_model()->current_line - get_active_model()->view_offset + visible_tab_bar() + 1;
-    std::size_t horizontal = get_active_model()->current_char + uint_t(line_number_offset) + 2;
+    std::size_t horizontal = get_active_model()->current_char;
+    horizontal += LINE_NUMBERS ? uint_t(line_number_offset) + 2 : 1;
+
     if (get_active_model()->vertical_offset) {
         horizontal -= get_active_model()->vertical_offset - 1;
     }

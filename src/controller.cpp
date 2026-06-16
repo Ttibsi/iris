@@ -680,6 +680,13 @@ bool Controller::parse_command() {
     } else if (cmd == ";lb") {
         return display_all_buffers();
 
+        // Toggle line numbers
+    } else if (cmd == ";lineno") {
+        LINE_NUMBERS = !LINE_NUMBERS;
+        view.set_lineno_offset(view.get_active_model());
+        view.change_model_cursor();
+        return true;
+
     } else {
         std::string msg = "Unknown command";
         view.display_message(msg, rawterm::Colors::red);
