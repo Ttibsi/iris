@@ -21,6 +21,10 @@ add_library(iris_src STATIC
 )
 target_link_libraries(iris_src PUBLIC rawterm)
 
+if(RELEASE)
+    set_property(TARGET iris_src PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 if(ENABLE_ASAN)
     target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
