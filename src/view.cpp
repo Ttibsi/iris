@@ -573,13 +573,17 @@ bool View::set_buffer(const std::size_t bufnr, const std::size_t model_len) {
 
 // TODO: Make this more generic for overlays in other locations
 void View::draw_overlay(std::span<std::string> contents, std::string_view title) {
-    // rawterm::Pos top_left = {view_size.vertical - 7 - 3, line_number_offset + 2};
     rawterm::Pos top_left = {view_size.vertical - 7 - 3, 0};
     rawterm::Pos bottom_right = {view_size.vertical - 1, view_size.horizontal - 1};
     auto region = rawterm::Region(top_left, bottom_right);
 
     auto border = rawterm::Border(region).set_padding(1).set_title(std::format(" {} ", title));
+    const rawterm::Cursor cur_pos = cur;
+
     border.draw(cur, contents);
+
+    cur = cur_pos;
+    overlay_open = true;
 }
 
 [[nodiscard]] std::string View::render_cursor_coords() const {

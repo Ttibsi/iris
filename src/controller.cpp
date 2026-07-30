@@ -109,6 +109,11 @@ void Controller::start_action_engine() {
 
         if (!(k.has_value())) { continue; }
 
+        if (view.overlay_open) {
+            view.overlay_open = false;
+            view.draw_screen();
+        }
+
         if (mode == Mode::Write) {
             if (k.value() == rawterm::Key(' ', rawterm::Mod::Escape)) {
                 parse_action<Mode, None>(&view, Action<Mode> {ActionType::ChangeMode, Mode::Read});
@@ -607,6 +612,26 @@ bool Controller::parse_command() {
         }
 
         return false;
+
+        // list marks
+    } else if (cmd.substr(0, 3) == ";lm") {
+        std::vector<std::string> body = {};
+        const Model* const active_model = view.get_active_model();
+
+        for (const auto& m : active_model->marks) {
+            body.push_back(
+                std::format("{} | {}:{}", m.first, m.second.line_pos, m.second.char_pos));
+
+            if (body.size() == 7) { break; }
+        }
+
+        while (body.size() < 7) {
+            body.push_back("");
+        }
+
+        const std::string title = "Marks (" + active_model->filename + ")";
+
+        view.draw_overlay(body, title);
 
         // find/replace (sed)
     } else if (cmd.substr(0, 2) == ";s" && cmd.size() > 2) {

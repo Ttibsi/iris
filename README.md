@@ -87,6 +87,7 @@ following commands in alphabetical order are available:
 | `;f <str>`         | Find the next occurence of the given string in the buffer       |
 | `;f`               | Find the next occurence of the previously entered string        |
 | `;lb`              | List all open buffers                                           |
+| `;lm`              | List marks on the current file                                  |
 | `;ping`            | `pong` (for testing purposes)                                   |
 | `;e`               | Open a new buffer - specify a filename to open an existing file |
 | `;q`               | Quit                                                            |
