@@ -37,6 +37,7 @@ def restore_rawterm_to_main() -> None:
     with open("src/CMakeLists.txt", "r") as f:
         lines = f.readlines()
 
+    # TODO: could I replace this with a regex?
     for idx, line in enumerate(lines):
         if "set(RAWTERM_GIT_TAG" in line and "main" not in line:
             lines[idx] = "set(RAWTERM_GIT_TAG \"main\")\n"
