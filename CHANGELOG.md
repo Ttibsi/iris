@@ -9,6 +9,8 @@ for details
 * `M<char>` now marks the current row to the given letter on the keyboard
 * `;lm` now lists all marks in the current file in an overlay
 * `--version` now states `Unknown` if the git tag/hash cannot be found
+* Implemented a proper termination handler to present tracebacks when iris
+crashes
 
 * Resolve crash when user tries to switch top or bottom line outside of scope
 * Resolved crash when the user tries to `delete word` past the end of a line

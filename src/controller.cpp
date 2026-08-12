@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include <algorithm>
+#include <exception>
 #include <format>
 #include <optional>
 #include <ranges>
@@ -704,6 +705,11 @@ bool Controller::parse_command() {
         view.display_message(std::string("Did you mean: `lb`"), rawterm::Colors::red);
     } else if (cmd == ";lb") {
         return display_all_buffers();
+
+#ifndef NDEBUG
+    } else if (cmd == ";die") {
+        std::terminate();
+#endif
 
     } else {
         std::string msg = "Unknown command";
