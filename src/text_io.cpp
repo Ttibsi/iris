@@ -104,19 +104,6 @@ void rtrim(std::string& str) {
     return std::find(alphabet.begin(), alphabet.end(), c) != alphabet.end();
 }
 
-[[nodiscard]] std::string check_filename(const std::string& filename) {
-    return "";
-    std::string err_text = "Iris currently does not support tab-delineated files";
-
-    if (filename == "Makefile" || filename == "makefile") {
-        return err_text;
-    } else if (filename.ends_with(".go")) {
-        return err_text;
-    }
-
-    return "";
-}
-
 // https://stackoverflow.com/a/12774387
 [[nodiscard]] bool file_exists(std::string_view name) {
     struct stat buffer;
