@@ -22,7 +22,7 @@ TEST_CASE("add_model", "[view]") {
     lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m = Model(raw, "test_file.txt");
+    auto m = Model(raw, "test_file.txt", false);
     v.add_model(&m);
 
     REQUIRE(v.active_model == 0);
@@ -36,7 +36,7 @@ TEST_CASE("get_active_model", "[view]") {
     lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m = Model(raw, "test_file.txt");
+    auto m = Model(raw, "test_file.txt", false);
     v.add_model(&m);
 
     REQUIRE(v.get_active_model() == &m);
@@ -47,7 +47,8 @@ TEST_CASE("render_screen", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
 
         auto buffer = lines(v.render_screen());
@@ -80,11 +81,11 @@ TEST_CASE("render_tab_bar", "[view]") {
     lines_t raw = {"This is some text", "    here is a newline and tab", "and another newline"};
 
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m = Model(raw, "test_file.txt");
+    auto m = Model(raw, "test_file.txt", false);
 
     v.add_model(&m);
-    auto m2 =
-        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    auto m2 = Model(
+        open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt", false);
     v.add_model(&m2);
 
     SECTION("Unmodified") {
@@ -111,7 +112,8 @@ TEST_CASE("render_line", "[view]") {
     SECTION("Standard line rendering") {
         Controller c;
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
 
         auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
@@ -152,8 +154,8 @@ TEST_CASE("render_status_bar", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 100));
 
-    auto m =
-        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    auto m = Model(
+        open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt", false);
 
     v.add_model(&m);
     std::string ret = v.render_status_bar();
@@ -168,8 +170,8 @@ TEST_CASE("clamp_horizontal_movement", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
 
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
 
     v.add_model(&m);
     m.current_line = 7;
@@ -188,7 +190,8 @@ TEST_CASE("cursor_left", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
 
         REQUIRE(v.cur == rawterm::Pos(1, 1));
@@ -200,7 +203,8 @@ TEST_CASE("cursor_left", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
 
         v.cursor_right(4);
@@ -216,7 +220,8 @@ TEST_CASE("cursor_up", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
 
         REQUIRE(v.cur == rawterm::Pos(1, 1));
@@ -228,7 +233,8 @@ TEST_CASE("cursor_up", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
         v.cursor_down();
         v.cursor_down();
@@ -244,7 +250,8 @@ TEST_CASE("cursor_up", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         v.add_model(&m);
 
         // Scroll down below initial view
@@ -274,7 +281,8 @@ TEST_CASE("cursor_down", "[view]") {
     SECTION("Move cursor down") {
         Controller c;
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
@@ -287,7 +295,8 @@ TEST_CASE("cursor_down", "[view]") {
     SECTION("Move view down (scroll)") {
         Controller c;
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
@@ -311,7 +320,8 @@ TEST_CASE("cursor_down", "[view]") {
     SECTION("Already at bottom-most row in file") {
         Controller c;
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
@@ -330,7 +340,8 @@ TEST_CASE("cursor_down", "[view]") {
     SECTION("bottom row of file within view (no scrolling required)") {
         Controller c;
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         auto v = View(&c, rawterm::Pos(24, 80));
         v.add_model(&m);
 
@@ -352,7 +363,8 @@ TEST_CASE("cursor_right", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
         v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
@@ -366,7 +378,8 @@ TEST_CASE("cursor_right", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
         v.cur.move({v.cur.vertical, int(v.line_number_offset + 1)});
 
@@ -379,7 +392,8 @@ TEST_CASE("cursor_right", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+            open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt",
+            false);
         v.add_model(&m);
 
         v.cursor_right(1);
@@ -390,8 +404,8 @@ TEST_CASE("cursor_right", "[view]") {
 TEST_CASE("cursor_end_of_line", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/test_file_1.txt").value(), "tests/fixture/test_file_1.txt");
+    auto m = Model(
+        open_file("tests/fixture/test_file_1.txt").lines, "tests/fixture/test_file_1.txt", false);
     v.add_model(&m);
 
     REQUIRE(v.cur == rawterm::Pos(1, 1));
@@ -404,7 +418,8 @@ TEST_CASE("center_current_line", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         v.add_model(&m);
 
         // Initial state
@@ -424,7 +439,8 @@ TEST_CASE("center_current_line", "[view]") {
         Controller c;
         auto v = View(&c, rawterm::Pos(24, 80));
         auto m = Model(
-            open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+            open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt",
+            false);
         v.add_model(&m);
 
         // Move cursor far down
@@ -451,8 +467,8 @@ TEST_CASE("center_current_line", "[view]") {
 TEST_CASE("set_current_line", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     SECTION("Move cursor to line already on screen") {
@@ -483,8 +499,8 @@ TEST_CASE("set_current_line", "[view]") {
 TEST_CASE("tab_new", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     v.tab_new();
@@ -500,8 +516,8 @@ TEST_CASE("tab_new", "[view]") {
 TEST_CASE("tab_next", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     v.tab_new();
@@ -517,8 +533,8 @@ TEST_CASE("tab_next", "[view]") {
 TEST_CASE("tab_prev", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     v.tab_new();
@@ -534,8 +550,8 @@ TEST_CASE("tab_prev", "[view]") {
 TEST_CASE("visible_tab_bar", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     REQUIRE(v.visible_tab_bar() == 0);
@@ -548,8 +564,8 @@ TEST_CASE("visible_tab_bar", "[view]") {
 TEST_CASE("set_lineno_offset", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
     unsigned int ret = v.set_lineno_offset(&m);
 
@@ -564,8 +580,8 @@ TEST_CASE("set_lineno_offset", "[view]") {
 TEST_CASE("change_model_cursor", "[view]") {
     Controller c;
     auto v = View(&c, rawterm::Pos(24, 80));
-    auto m =
-        Model(open_file("tests/fixture/lorem_ipsum.txt").value(), "tests/fixture/lorem_ipsum.txt");
+    auto m = Model(
+        open_file("tests/fixture/lorem_ipsum.txt").lines, "tests/fixture/lorem_ipsum.txt", false);
     v.add_model(&m);
 
     v.cursor_right(5);
