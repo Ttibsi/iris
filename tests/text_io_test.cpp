@@ -117,3 +117,22 @@ TEST_CASE("first_non_whitespace", "[textio]") {
     REQUIRE(first_non_whitespace("    test") == 4);
     REQUIRE(first_non_whitespace("test") == 0);
 }
+
+TEST_CASE("convert_tabs", "[textio]") {
+    SECTION("No tabs present") {
+        const std::vector<std::string> expected = {"foo", "    bar"};
+        REQUIRE(expected == convert_tabs(expected, false));
+    }
+
+    SECTION("One tab present") {
+        const std::vector<std::string> in = {"foo", "    bar"};
+        const std::vector<std::string> expected = {"foo", "\tbar"};
+        REQUIRE(expected == convert_tabs(in, true));
+    }
+
+    SECTION("Multiple tabs present") {
+        const std::vector<std::string> in = {"foo", "        bar"};
+        const std::vector<std::string> expected = {"foo", "\t\tbar"};
+        REQUIRE(expected == convert_tabs(in, true));
+    }
+}
