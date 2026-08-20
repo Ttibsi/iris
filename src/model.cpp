@@ -13,14 +13,14 @@
 #include "text_io.h"
 
 Model::Model(const std::size_t view_height, std::string_view file_name)
-    : buf({""}), filename(file_name) {
+    : buf({""}), filename(file_name), tabbed_file(false) {
     buf.reserve(view_height);
     set_read_only(file_name);
 }
 
 // NOTE: Intentional copy of file_chars
-Model::Model(std::vector<std::string> file_chars, std::string_view file_name)
-    : buf(file_chars), filename(file_name) {
+Model::Model(std::vector<std::string> file_chars, std::string_view file_name, bool tabbed_file)
+    : buf(file_chars), filename(file_name), tabbed_file(tabbed_file) {
     set_read_only(file_name);
 }
 

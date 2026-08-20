@@ -9,7 +9,16 @@
 #include "model.h"
 
 using lines_t = std::vector<std::string>;
-using opt_lines_t = std::optional<std::vector<std::string>>;
+// using opt_lines_t = std::optional<std::vector<std::string>>;
+
+struct ReadFile {
+    std::vector<std::string> lines;
+    bool has_tabs;
+    bool success;
+
+    ReadFile() : lines({}), has_tabs(false), success(false) {}
+    ReadFile(lines_t lines, bool has_tabs) : lines(lines), has_tabs(has_tabs), success(true) {}
+};
 
 struct WriteData {
     int bytes = 0;
@@ -35,7 +44,7 @@ struct Response {
     std::string err = "";
 };
 
-[[nodiscard]] opt_lines_t open_file(const std::string&);
+[[nodiscard]] ReadFile open_file(const std::string&);
 [[nodiscard]] unsigned int get_file_size(const std::string&);
 [[nodiscard]] WriteData write_to_file(Model*, std::optional<std::string>);
 void rtrim(std::string& str);
@@ -46,5 +55,6 @@ void rtrim(std::string& str);
 [[nodiscard]] std::optional<Response> shell_exec(std::string);
 [[nodiscard]] std::vector<std::string> split_by(const std::string&, const char);
 [[nodiscard]] int first_non_whitespace(const std::string&);
+[[nodiscard]] lines_t convert_tabs(lines_t, const bool);
 
 #endif  // TEXT_IO_H

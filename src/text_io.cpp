@@ -14,21 +14,23 @@
 #include "spdlog/spdlog.h"
 #include "view.h"
 
-[[nodiscard]] opt_lines_t open_file(const std::string& file) {
-    if (!get_file_size(file)) { return {}; }
+[[nodiscard]] ReadFile open_file(const std::string& file) {
+    if (!get_file_size(file)) { return ReadFile(); }
 
     auto ret = std::vector<std::string>();
     std::string line = "";
     char ch;
 
     std::ifstream ifs(file);
-    if (ifs.fail()) { return {}; }
+    if (ifs.fail()) { return ReadFile(); }
+    bool has_tabs = false;
 
     while (ifs.get(ch)) {
         switch (ch) {
             case '\r':
                 break;
             case '\t':
+                has_tabs = true;
                 line += std::string(TAB_SIZE, ' ');
                 break;
             case '\n':
@@ -44,7 +46,7 @@
     // the vector
     if (line.size()) { ret.push_back(line); }
 
-    return ret;
+    return ReadFile(ret, has_tabs);
 }
 
 [[nodiscard]] unsigned int get_file_size(const std::string& file) {
@@ -63,7 +65,8 @@
     if (filename_input.has_value()) { model->filename = filename_input.value(); }
 
     std::ofstream out(model->filename);
-    for (auto&& line : model->buf) {
+    lines_t lines_to_write = convert_tabs(model->buf, model->tabbed_file);
+    for (auto&& line : lines_to_write) {
         rtrim(line);
         out << line << "\n";
     }
@@ -102,6 +105,7 @@ void rtrim(std::string& str) {
 }
 
 [[nodiscard]] std::string check_filename(const std::string& filename) {
+    return "";
     std::string err_text = "Iris currently does not support tab-delineated files";
 
     if (filename == "Makefile" || filename == "makefile") {
@@ -207,4 +211,18 @@ void rtrim(std::string& str) {
     std::size_t ret = line.find_first_not_of(WHITESPACE, 0);
     if (ret == std::string::npos) { return -1; }
     return int32_t(ret);
+}
+
+[[nodiscard]] lines_t convert_tabs(lines_t buf, const bool has_tabs) {
+    if (!has_tabs) { return buf; }
+    const std::string tab_chars = std::string(TAB_SIZE, ' ');
+
+    for (auto&& line : buf) {
+        while (line.contains(tab_chars)) {
+            std::size_t replace_pos = line.find(tab_chars);
+            line = line.replace(replace_pos, TAB_SIZE, "\t");
+        }
+    }
+
+    return buf;
 }

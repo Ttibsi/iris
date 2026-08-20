@@ -62,16 +62,16 @@ void Controller::create_view(const Flags& flags) {
         auto logger = spdlog::get("basic_logger");
         if (logger != nullptr) { logger->info("Creating view from file: " + flags.file); }
 
-        opt_lines_t file_chars = open_file(flags.file);
+        ReadFile file_chars = open_file(flags.file);
 
-        if (file_chars.has_value()) {
-            models.emplace_back(file_chars.value(), flags.file);
+        if (file_chars.success) {
+            models.emplace_back(file_chars.lines, flags.file, file_chars.has_tabs);
             view.add_model(&models.at(models.size() - 1));
 
             if (flags.lineno) {
                 std::size_t line_num =
                     std::min(flags.lineno, models.at(models.size() - 1).buf.size());
-                view.cursor_down(uint32_t(std::min(line_num - 1, file_chars.value().size())));
+                view.cursor_down(uint32_t(std::min(line_num - 1, file_chars.lines.size())));
                 view.center_current_line();
             }
         } else {
@@ -756,9 +756,9 @@ bool Controller::parse_command() {
 }
 
 void Controller::add_model(const std::string& filename) {
-    opt_lines_t contents = open_file(filename);
-    if (contents.has_value()) {
-        models.emplace_back(contents.value(), filename);
+    ReadFile contents = open_file(filename);
+    if (contents.success) {
+        models.emplace_back(contents.lines, filename, contents.has_tabs);
     } else {
         models.emplace_back(term_size.vertical - 2, filename);
     }
