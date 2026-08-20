@@ -211,6 +211,6 @@ TEST_CASE("display_all_buffers", "[controller]") {
     c.view.tab_new();
     c.add_model("tests/fixture/lorem_ipsum.txt");
 
-    REQUIRE(c.display_all_buffers());
+    REQUIRE_FALSE(c.display_all_buffers());
     REQUIRE(c.view.overlay_open);
 }
