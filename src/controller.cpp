@@ -830,5 +830,5 @@ void Controller::add_model(const std::string& filename) {
         filenames.push_back("");
     }
     view.draw_overlay(filenames, "BUFFERS");
-    return true;
+    return false;
 }

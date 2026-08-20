@@ -303,8 +303,9 @@ def test_list_open_buffers(r: TmuxRunner):
     title_line: Final[str] = r.lines()[-11]
 
     assert "BUFFERS" in title_line
-    assert "0 | tests/fixture/temp_file.txt" in r.lines()[-10]
-    assert "1 | test_file_1.txt" in r.lines()[-9]
+    assert "0 \u2502 tests/fixture/temp_file.txt" in r.lines()[-10]
+    # Intermediate `NO NAME` between these two listings
+    assert "2 \u2502 tests/fixture/test_file_1.txt" in r.lines()[-8]
 
 
 @setup("tests/fixture/test_file_1.txt")
