@@ -401,3 +401,12 @@ def test_readonly_cli_flag():
     with TmuxRunner("bash", "--norc") as r:
         r.press_and_enter("./build/src/iris -r tests/fixture/test_file_1.txt")
         assert "[RO]" in r.await_statusbar_parts()
+
+
+def test_tabbed_file():
+    with TmuxRunner("bash", "--norc") as r:
+        r.press_and_enter("./build/src/iris -r tests/fixture/tabbed_file.txt")
+        assert r.await_statusbar_parts()
+        lines: list[str] = r.lines()
+        assert "foo" in lines[0]
+        assert "    bar" in lines[1]

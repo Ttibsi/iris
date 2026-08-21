@@ -66,12 +66,6 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    auto filename_error = check_filename(flags.file);
-    if (!(filename_error.empty())) {
-        std::println("{}", filename_error);
-        return 0;
-    }
-
     try {
         auto logger = spdlog::basic_logger_mt("basic_logger", "iris.log");
     } catch (const spdlog::spdlog_ex& ex) { std::println("Log init failed: {}", ex.what()); }
