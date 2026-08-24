@@ -29,6 +29,16 @@ if(ENABLE_ASAN)
     target_link_libraries(iris_src PRIVATE -fsanitize=address)
 endif()
 
+if(ENABLE_PROFILING)
+    add_subdirectory(
+        ${PROJECT_SOURCE_DIR}/include/tracy
+        ${CMAKE_BINARY_DIR}/tracy
+    )
+
+    target_link_libraries(iris_src PRIVATE TracyClient)
+    target_compile_definitions(iris_src PRIVATE TRACY_ENABLE)
+endif()
+
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC rawterm iris_src)
 target_link_libraries(${PROJECT_NAME} PRIVATE stdc++exp)
