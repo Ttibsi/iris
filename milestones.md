@@ -20,21 +20,16 @@
 * [x] Open a second file in a separate buffer and switch between views
 * [x] View a list of open files and switch between them
 * [x] Find and replace in the current buffer using the command pallete
+* [x] Vim-style marks
+* [x] Handle tab characters in text
+* [ ] Highlight trailing whitespace at the end of a line and delete on save
 * [ ] Use the command pallete to run a shell command - investigate forking
-* [ ] Vim-style marks
 * [ ] visual mode to select multiple lines at once
     * [ ] `sort` command to sort highlighted lines based on text
     * [ ] `align` command to align all the text in the highlighted lines based on a substr
             - based on emacs align-regexp
 * [ ] Copy and paste to interact with the rest of the terminal
     - potentially bracketted-paste handling in rawterm
-* [ ] Highlight trailing whitespace at the end of a line and delete on save
-* [ ] Handle tab characters in text
-    * [ ] Toggle an `expandtab` config variable with a command (default true)
-    * [ ] Ensure pressing <TAB> inserts the right character where needed
-    * [ ] If `expandtab` is false, have a way of calculating the logical
-    and visual positions of the cursor separately for vertical movement and
-    char insertion
 * [ ] Handle tab complete in the command bar
 * [ ] Command palette history with ^v arrows
 * [ ] Syntax highlighting via lexical analysis and regex
@@ -74,5 +69,5 @@
 * [x] `J`
 * [x] `K`
 * [x] `e`
-* [ ] `>` / `<` (indentation)
+* [x] `>` / `<` (indentation)
 * [ ] `0`
