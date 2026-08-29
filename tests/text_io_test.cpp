@@ -9,18 +9,20 @@ TEST_CASE("open_file", "[textio]") {
         lines_t expected = {
             "This is some text", "    here is a newline and a tab", "and another newline"};
 
-        opt_lines_t actual = open_file("tests/fixture/test_file_1.txt");
+        const ReadFile actual = open_file("tests/fixture/test_file_1.txt");
 
-        REQUIRE(actual.has_value() == true);
-        REQUIRE(actual.value() == expected);
-        REQUIRE(actual.value().at(1) == expected.at(1));
+        REQUIRE(actual.success == true);
+        REQUIRE(actual.lines == expected);
+        REQUIRE(actual.lines.at(1) == expected.at(1));
+        REQUIRE(actual.has_tabs == false);
     }
 
     SECTION("One line, no newlines") {
-        opt_lines_t actual = open_file("tests/fixture/no_newline_file.txt");
-        REQUIRE(actual.has_value() == true);
-        REQUIRE(actual.value().size() == 1);
-        REQUIRE(actual.value().at(0) == "hello");
+        const ReadFile actual = open_file("tests/fixture/no_newline_file.txt");
+        REQUIRE(actual.success == true);
+        REQUIRE(actual.lines.size() == 1);
+        REQUIRE(actual.lines.at(0) == "hello");
+        REQUIRE(actual.has_tabs == false);
     }
 }
 
@@ -31,7 +33,7 @@ TEST_CASE("get_file_size", "[textio]") {
 
 TEST_CASE("write_to_file", "[textio]") {
     lines_t expected_buf = {"foo", "bar", "baz"};
-    auto m = Model(expected_buf, "tests/fixture/temp_file.txt");
+    auto m = Model(expected_buf, "tests/fixture/temp_file.txt", false);
 
     SECTION("Filename already set") {
         const WriteData data = write_to_file(&m, std::nullopt);
@@ -83,15 +85,6 @@ TEST_CASE("is_letter", "[textio]") {
     REQUIRE_FALSE(is_letter(':'));
 }
 
-TEST_CASE("check_filename", "[textio]") {
-    std::string err_text = "Iris currently does not support tab-delineated files";
-
-    REQUIRE(check_filename("Makefile") == err_text);
-    REQUIRE(check_filename("makefile") == err_text);
-    REQUIRE(check_filename("t.go") == err_text);
-    REQUIRE(check_filename("t.py") == "");
-}
-
 TEST_CASE("file_exists", "[textio]") {
     REQUIRE(file_exists("tests/text_io_test.cpp"));
     REQUIRE(!(file_exists("tests/something_else.cpp")));
@@ -123,4 +116,23 @@ TEST_CASE("split_by", "[textio]") {
 TEST_CASE("first_non_whitespace", "[textio]") {
     REQUIRE(first_non_whitespace("    test") == 4);
     REQUIRE(first_non_whitespace("test") == 0);
+}
+
+TEST_CASE("convert_tabs", "[textio]") {
+    SECTION("No tabs present") {
+        const std::vector<std::string> expected = {"foo", "    bar"};
+        REQUIRE(expected == convert_tabs(expected, false));
+    }
+
+    SECTION("One tab present") {
+        const std::vector<std::string> in = {"foo", "    bar"};
+        const std::vector<std::string> expected = {"foo", "\tbar"};
+        REQUIRE(expected == convert_tabs(in, true));
+    }
+
+    SECTION("Multiple tabs present") {
+        const std::vector<std::string> in = {"foo", "        bar"};
+        const std::vector<std::string> expected = {"foo", "\t\tbar"};
+        REQUIRE(expected == convert_tabs(in, true));
+    }
 }

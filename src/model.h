@@ -44,6 +44,7 @@ struct Model {
     std::string filename;
     unsigned int current_line = 0;  // 0-indexed
     unsigned int current_char = 0;  // 0-indexed
+    bool tabbed_file = false;
     std::string search_str = "";
     std::size_t vertical_offset = 0;
     std::unordered_map<char, Mark> marks = {};
@@ -58,7 +59,7 @@ struct Model {
     std::stack<Change> redo_stack = {};
 
     Model(std::size_t, std::string_view);
-    Model(std::vector<std::string>, std::string_view);
+    Model(std::vector<std::string>, std::string_view, bool);
     [[nodiscard]] Redraw backspace();
     [[nodiscard]] std::size_t newline();
     void insert(const char);

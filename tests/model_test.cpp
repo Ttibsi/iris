@@ -20,7 +20,7 @@ TEST_CASE("Constructor", "[model]") {
 
 TEST_CASE("Constructor with params", "[model]") {
     lines_t expected_buf = {"foo", "bar", "baz"};
-    auto m = Model(expected_buf, "");
+    auto m = Model(expected_buf, "", false);
 
     REQUIRE(m.filename == "");
     REQUIRE(m.buf.at(0) == "foo");
@@ -29,7 +29,7 @@ TEST_CASE("Constructor with params", "[model]") {
 TEST_CASE("backspace", "[model]") {
     SECTION("backspace a newline") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_line = 1;
         std::ignore = m.backspace();
 
@@ -39,7 +39,7 @@ TEST_CASE("backspace", "[model]") {
 
     SECTION("backspace a char") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_line = 1;
         m.current_char = 2;
         std::ignore = m.backspace();
@@ -51,7 +51,7 @@ TEST_CASE("backspace", "[model]") {
 
     SECTION("backspace the last char") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_line = 1;
         m.current_char = 3;
         std::ignore = m.backspace();
@@ -63,7 +63,7 @@ TEST_CASE("backspace", "[model]") {
 
     SECTION("backspace a tab-space") {
         lines_t v = {"    Some tab"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_char = 4;
 
         Redraw draw = m.backspace();
@@ -78,7 +78,7 @@ TEST_CASE("backspace", "[model]") {
 TEST_CASE("newline", "[model]") {
     SECTION("At end of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         m.current_char = 3;
         const std::size_t prev_line_len = m.newline();
@@ -91,7 +91,7 @@ TEST_CASE("newline", "[model]") {
 
     SECTION("At mid of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         m.current_char = 1;
         const std::size_t prev_line_len = m.newline();
@@ -106,7 +106,7 @@ TEST_CASE("newline", "[model]") {
 
     SECTION("At start of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         const std::size_t prev_line_len = m.newline();
 
@@ -120,7 +120,7 @@ TEST_CASE("newline", "[model]") {
 
     SECTION("Remove whitespace from second line") {
         lines_t v = {"Some long text", "and another"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_char = 4;
 
         const std::size_t prev_line_len = m.newline();
@@ -132,7 +132,7 @@ TEST_CASE("newline", "[model]") {
 
     SECTION("Insert indentation") {
         lines_t v = {"    an indented line"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
         m.current_char = 15;
         const std::size_t line_one_len = m.newline();
 
@@ -145,7 +145,7 @@ TEST_CASE("newline", "[model]") {
 TEST_CASE("insert", "[model]") {
     SECTION("Insert at start of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         m.insert('x');
         REQUIRE(m.buf.at(0) == "xfoo");
@@ -160,7 +160,7 @@ TEST_CASE("insert", "[model]") {
 
     SECTION("Insert in mid of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         m.current_char++;
         m.insert('x');
@@ -172,7 +172,7 @@ TEST_CASE("insert", "[model]") {
 
     SECTION("Insert at end of line") {
         lines_t v = {"foo", "bar", "baz"};
-        auto m = Model(v, "");
+        auto m = Model(v, "", false);
 
         m.current_char = static_cast<unsigned int>(v.at(0).size());
         m.insert('x');
@@ -185,13 +185,13 @@ TEST_CASE("insert", "[model]") {
 
 TEST_CASE("lineno_in_scope", "[model]") {
     lines_t v = {"foo", "bar", "baz"};
-    auto m = Model(v, "");
+    auto m = Model(v, "", false);
     REQUIRE(m.lineno_in_scope(2));
     REQUIRE_FALSE(m.lineno_in_scope(6));
 }
 
 TEST_CASE("next_word_pos", "[model]") {
-    auto m = Model({"This is the first line", "std::foo();"}, "");
+    auto m = Model({"This is the first line", "std::foo();"}, "", false);
 
     REQUIRE(m.next_word_pos().has_value());
     REQUIRE(m.next_word_pos().value() == 5);
@@ -211,7 +211,7 @@ TEST_CASE("next_word_pos", "[model]") {
 }
 
 TEST_CASE("prev_word_pos", "[model]") {
-    auto m = Model({"This is the first line", "std::foo();"}, "");
+    auto m = Model({"This is the first line", "std::foo();"}, "", false);
 
     m.current_char = 21;
     REQUIRE(m.prev_word_pos().has_value());
@@ -231,7 +231,7 @@ TEST_CASE("prev_word_pos", "[model]") {
 }
 
 TEST_CASE("next_para_pos", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     auto opt = m.next_para_pos();
     REQUIRE(opt.has_value());
@@ -249,7 +249,7 @@ TEST_CASE("next_para_pos", "[model]") {
 }
 
 TEST_CASE("prev_para_pos", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     auto opt = m.prev_para_pos();
     REQUIRE_FALSE(opt.has_value());
@@ -267,7 +267,7 @@ TEST_CASE("prev_para_pos", "[model]") {
 }
 
 TEST_CASE("end_of_word_pos", "[model]") {
-    auto m = Model({"line one", "", "line five"}, "");
+    auto m = Model({"line one", "", "line five"}, "", false);
 
     m.current_char = 7;
     REQUIRE(m.end_of_word_pos() == std::nullopt);
@@ -286,7 +286,7 @@ TEST_CASE("end_of_word_pos", "[model]") {
 }
 
 TEST_CASE("replace_char", "[model]") {
-    auto m = Model({"line one", "", "line five"}, "");
+    auto m = Model({"line one", "", "line five"}, "", false);
 
     m.current_line = 1;
     m.replace_char('c');
@@ -302,7 +302,7 @@ TEST_CASE("replace_char", "[model]") {
 }
 
 TEST_CASE("toggle_case", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     m.toggle_case();
     REQUIRE(m.buf.at(0).at(0) == 'L');
@@ -312,7 +312,7 @@ TEST_CASE("toggle_case", "[model]") {
 }
 
 TEST_CASE("find_next", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     auto ret = m.find_next('o');
     REQUIRE(ret.has_value());
@@ -335,7 +335,7 @@ TEST_CASE("find_next", "[model]") {
 }
 
 TEST_CASE("find_prev", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     m.current_line = 5;
     m.current_char = 8;
 
@@ -363,7 +363,7 @@ TEST_CASE("find_prev", "[model]") {
 }
 
 TEST_CASE("undo", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     // NOTE: In the actual execution, wemove the cursor back one then perform
     // the same change as DelCurrentChar -- note that the current_char is one
@@ -509,7 +509,7 @@ TEST_CASE("undo", "[model]") {
 }
 
 TEST_CASE("get_current_char", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     REQUIRE(m.get_current_char() == 'l');
 
     m.current_line = 2;
@@ -518,7 +518,7 @@ TEST_CASE("get_current_char", "[model]") {
 }
 
 TEST_CASE("redo", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     m.current_line = 1;
     m.current_char = 1;
 
@@ -657,7 +657,7 @@ TEST_CASE("redo", "[model]") {
 }
 
 TEST_CASE("move_line_down", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     REQUIRE(m.move_line_down());
     REQUIRE(m.buf.at(0) == "line two");
@@ -671,7 +671,7 @@ TEST_CASE("move_line_down", "[model]") {
 }
 
 TEST_CASE("move_line_up", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     m.current_line = 5;
 
     REQUIRE(m.move_line_up());
@@ -696,14 +696,14 @@ TEST_CASE("set_read_only", "[model]") {
 }
 
 TEST_CASE("delete_current_line", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     m.delete_current_line();
     REQUIRE(m.buf.size() == 5);
     REQUIRE(m.buf.at(0) == "line two");
 }
 
 TEST_CASE("current_word", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
 
     SECTION("Middle of word") {
         m.current_line = 1;
@@ -728,7 +728,7 @@ TEST_CASE("current_word", "[model]") {
 }
 
 TEST_CASE("delete_current_word", "[model]") {
-    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "");
+    auto m = Model({"line one", "line two", "line three", "", "line four", "line five"}, "", false);
     m.current_line = 1;
     m.current_char = 2;
 
@@ -746,7 +746,7 @@ TEST_CASE("search_text", "[model]") {
     auto m = Model(
         {"line one", "line two", "line three", "", "line four", "line five", "line six",
          "line seven", "line eight", "line nine", "line ten"},
-        "");
+        "", false);
     std::vector<std::string> ret = m.search_text("one");
     REQUIRE(ret.size() == 1);
     REQUIRE(rawterm::raw_str(ret.at(0)) == "|1| line one");
@@ -763,7 +763,7 @@ TEST_CASE("search_and_replace", "[model]") {
     auto m = Model(
         {"line one", "line two", "line three", "", "line four", "line five", "line six",
          "line seven", "line eight", "line nine", "line ten"},
-        "");
+        "", false);
     m.search_and_replace("one|TEST");
     REQUIRE(m.buf.at(0) == "line TEST");
 
@@ -779,7 +779,7 @@ TEST_CASE("find_next_str", "[model]") {
     auto m = Model(
         {"line one", "line two", "line three", "", "line four", "line five", "line six",
          "line seven", "line eight", "line nine", "line ten"},
-        "");
+        "", false);
 
     SECTION("Text not found") {
         REQUIRE(m.find_next_str(";f unknown") == std::nullopt);
@@ -801,7 +801,7 @@ TEST_CASE("find_next_str", "[model]") {
 }
 
 TEST_CASE("indent_curr_line", "[model]") {
-    auto m = Model({"foo", "bar"}, "");
+    auto m = Model({"foo", "bar"}, "", false);
     m.indent_curr_line();
 
     REQUIRE(m.buf.at(0).size() == 7);
@@ -812,7 +812,7 @@ TEST_CASE("indent_curr_line", "[model]") {
 }
 
 TEST_CASE("dedent_curr_line", "[model]") {
-    auto m = Model({"    foo", "bar"}, "");
+    auto m = Model({"    foo", "bar"}, "", false);
 
     // Dedent a line that has some indentation
     m.dedent_curr_line();
@@ -828,7 +828,7 @@ TEST_CASE("dedent_curr_line", "[model]") {
 }
 
 TEST_CASE("add_mark", "[model]") {
-    auto m = Model({"    foo", "bar"}, "");
+    auto m = Model({"    foo", "bar"}, "", false);
     m.add_mark('a');
 
     REQUIRE(m.marks.size() == 1);
@@ -837,7 +837,7 @@ TEST_CASE("add_mark", "[model]") {
 }
 
 TEST_CASE("is_marked", "[model]") {
-    auto m = Model({"    foo", "bar"}, "");
+    auto m = Model({"    foo", "bar"}, "", false);
     m.add_mark('a');
 
     REQUIRE(m.is_marked(0));
@@ -845,7 +845,7 @@ TEST_CASE("is_marked", "[model]") {
 }
 
 TEST_CASE("go_to_mark", "[model]") {
-    auto m = Model({"    foo", "bar"}, "");
+    auto m = Model({"    foo", "bar"}, "", false);
     m.current_line = 1;
     m.current_char = 1;
     m.add_mark('a');
