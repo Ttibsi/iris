@@ -64,11 +64,7 @@ void View::draw_screen() {
 
     if (visible_tab_bar() && cur.vertical == 1) { cur.move_down(); }
 
-    if (get_active_model()->type == ModelType::META) {
-        rawterm::Cursor::cursor_hide();
-    } else {
-        rawterm::Cursor::cursor_show();
-    }
+    rawterm::Cursor::cursor_show();
 }
 
 [[nodiscard]] const std::string View::render_screen() const {
