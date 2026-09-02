@@ -92,7 +92,7 @@ void Controller::start_action_engine() {
         if (redraw_all) {
             view.draw_screen();
             redraw_all = false;
-        } else if (quit_flag) {
+        } else [[unlikely]] if (quit_flag) {
             break;
         }
 

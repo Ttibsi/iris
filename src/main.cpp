@@ -1,6 +1,11 @@
+#define TRACY_ENABLE
 #include <memory>
 #include <print>
 #include <string>
+
+#include "tracy/public/tracy/Tracy.hpp"
+
+#include "tracy/public/TracyClient.cpp"
 // To link stacktrace, we need `-lstdc++exp
 #include <stacktrace>
 
