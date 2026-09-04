@@ -41,7 +41,10 @@ Model* View::get_active_model() const {
 }
 
 void View::draw_screen() {
-    std::jthread jth(std::bind_front(&View::get_git_branch, this));
+    std::thread thr;
+    if (view_size.horizontal > 87) {
+        thr = std::thread(std::bind_front(&View::get_git_branch, this));
+    }
     rawterm::Pos starting_cur_pos = cur;
 
     // Draw to screen
@@ -50,7 +53,8 @@ void View::draw_screen() {
     std::print("{}", render_screen());
 
     // Wait for the thread to finish
-    jth.join();
+    if (view_size.horizontal > 87) { thr.join(); }
+
     draw_status_bar();
     std::print("\n");  // Notification bar
 
@@ -502,6 +506,11 @@ void View::set_current_line(const unsigned int lineno) {
     }
 }
 
+// This takes 3.8ms no matter what
+// This was discovered during profiling with tracy. We can't modify `shell_exec` to be
+// any faster as `git` is the limiter here.
+// (see `time git rev-parse --abbrev-ref HEAD`)
+// TODO: investigate reading `.git/HEAD` manually instead
 void View::get_git_branch() {
     auto resp = shell_exec("git rev-parse --abbrev-ref HEAD");
     if (resp.has_value()) { git_branch = resp.value().out; }

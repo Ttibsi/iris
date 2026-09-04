@@ -115,6 +115,7 @@ void rtrim(std::string& str) {
 [[nodiscard]] std::optional<Response> shell_exec(std::string cmd) {
     // Convert to a C interface (`char* array`)
     std::vector<char*> cstrs;
+    cstrs.reserve(256);
     cstrs.push_back(const_cast<char*>("sh"));
     cstrs.push_back(const_cast<char*>("-c"));
     cstrs.push_back(const_cast<char*>(cmd.c_str()));
@@ -128,7 +129,7 @@ void rtrim(std::string& str) {
     int err_fds[2];
     pipe(err_fds);
 
-    pid_t pid = fork();
+    pid_t pid = vfork();
 
     if (pid == 0) {
         // child process
