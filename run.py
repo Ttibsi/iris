@@ -54,7 +54,12 @@ def remove_tracing_from_main():
 
     print("[LOG] Removing tracing header from main")
     with open("src/main.cpp", "w") as f:
-        [f.write(line) for line in lines[2:]]
+        for line in lines:
+            # NOTE: Just in case we run main.cpp through a formatter and
+            # the includes get reordered
+            if "tracy" in line.lower():
+                continue
+            f.write(line)
 
 
 def clean() -> int:
