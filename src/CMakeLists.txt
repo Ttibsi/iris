@@ -30,9 +30,16 @@ if(ENABLE_ASAN)
 endif()
 
 if(ENABLE_PROFILING)
+    option(TRACY_ENABLE "" ON)
+    option(TRACY_ON_DEMAND "" ON)
     add_subdirectory(
         ${PROJECT_SOURCE_DIR}/include/tracy
         ${CMAKE_BINARY_DIR}/tracy
+    )
+
+    target_sources(
+        iris_src PRIVATE
+        ${PROJECT_SOURCE_DIR}/include/tracy/public/TracyClient.cpp
     )
 
     target_link_libraries(iris_src PRIVATE TracyClient)

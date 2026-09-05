@@ -262,14 +262,12 @@ def profile() -> int:
             return ret
 
     # step 2: add header import to main.cpp
-    # TODO: Compile tracyclient.cpp as part of the build in cmake
     content = open("src/main.cpp", "r").readlines()
     if "TRACY_ENABLE" not in content[0]:
         with open("src/main.cpp", "w") as f:
             f.seek(0, 0)
             f.write("#define TRACY_ENABLE\n")
-            f.write("#include \"tracy/public/tracy/Tracy.hpp\"\n")
-            f.write("#include \"tracy/public/TracyClient.cpp\"\n\n")
+            f.write("#include \"tracy/public/tracy/Tracy.hpp\"\n\n")
             [f.write(line) for line in content]
 
     # step 3: compile with ENABLE_PROFILING
