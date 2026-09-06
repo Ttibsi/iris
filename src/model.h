@@ -19,8 +19,6 @@ enum class RedrawType;
 // Forward declare from view.h
 struct View;
 
-enum class ModelType { BUF, META };
-
 struct WordPos {
     std::string text;
     uint_t start_pos;
@@ -39,7 +37,6 @@ struct Mark {
 };
 
 struct Model {
-    ModelType type = ModelType::BUF;
     std::vector<std::string> buf;
     std::string filename;
     unsigned int current_line = 0;  // 0-indexed

@@ -34,7 +34,6 @@ def test_quit_all_with_modified_buffer(r: TmuxRunner):
     r.type_str("test")
     r.press("Escape")
     r.iris_cmd("wqa")
-    time.sleep(0.1)
 
     with open(r.filename) as f:
         text = f.read()
@@ -79,7 +78,6 @@ def test_quit_all_this_modified_file(r: TmuxRunner):
     current_cursor: tuple[int, ...] = r.cursor_pos()
     r.iris_cmd("qa")
 
-    time.sleep(0.1)
     assert r.await_statusbar_parts()[-2] != "[2]"
     assert r.await_statusbar_parts()[1] == "[X]"
     assert " | " not in r.lines()[0]  # no tab bar
@@ -203,7 +201,6 @@ def test_write_all_command(r: TmuxRunner):
     r.iris_cmd("wa")
     assert "[X]" not in r.statusbar_parts()
     assert "*" not in r.await_tab_bar_parts()[1]
-    time.sleep(0.1)
 
     with open(r.filename, "r") as f:
         first_line: str = f.readlines()[0]
@@ -211,6 +208,7 @@ def test_write_all_command(r: TmuxRunner):
 
     r.press("u")
     r.iris_cmd("wa")
+    # NOTE: cannot be removed due to the time needed for IO operation :/
     time.sleep(0.1)
 
     with open(r.filename, "r") as f:
@@ -319,7 +317,6 @@ def test_edit_no_file_specified(r: TmuxRunner):
 
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_change_buffer(r: TmuxRunner):
-    time.sleep(0.1)
     cur_pos = r.cursor_pos()
 
     r.iris_cmd("b0")

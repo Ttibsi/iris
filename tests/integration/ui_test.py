@@ -1,5 +1,3 @@
-import time
-
 from setup import setup
 from setup import temp_named_file
 from setup import TmuxRunner
@@ -202,7 +200,6 @@ def test_multi_file_cursor_on_active_line(r: TmuxRunner):
 @setup("tests/fixture/test_file_1.txt", multi_file=True)
 def test_modified_marker_in_tab_bar(r: TmuxRunner):
     r.press("x")
-    time.sleep(0.1)
     tab_bar = r.await_tab_bar_parts()
     assert tab_bar[0] == "temp_file.txt"
     r.assert_inverted_text(tab_bar[1], "test_file_1.txt*")
@@ -296,7 +293,6 @@ def test_horizontal_scroll_move_right(r: TmuxRunner):
 
     # horizontal scroll
     r.press("l")
-    time.sleep(0.1)
     assert r.cursor_pos() == (0, 77)
     assert r.statusbar_parts()[-1] == "1:75"
     assert r.lines()[0].startswith("  1\u2502\u00AB23")
@@ -314,7 +310,6 @@ def test_horizontal_scroll_move_back_left(r: TmuxRunner):
 
     # horizontal scroll
     r.press("l")
-    time.sleep(0.1)
     assert r.cursor_pos() == (0, 77)
     assert r.statusbar_parts()[-1] == "1:75"
     assert r.lines()[0].startswith("  1\u2502\u00AB23")
@@ -328,7 +323,6 @@ def test_horizontal_scroll_move_back_left(r: TmuxRunner):
 
     # Scroll leftward
     r.press("h")
-    time.sleep(0.1)
     assert r.statusbar_parts()[-1] == "1:2"
     assert r.cursor_pos() == (0, 5)
     assert r.lines()[0].startswith("  1\u2502012")
