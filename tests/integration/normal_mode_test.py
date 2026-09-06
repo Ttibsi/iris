@@ -1,5 +1,3 @@
-import time
-
 from setup import setup
 from setup import TmuxRunner
 
@@ -214,7 +212,6 @@ def test_multi_file_z_key(r: TmuxRunner):
 def test_upper_g_key(r: TmuxRunner):
     r.press("G")
 
-    time.sleep(0.1)
     statusbar: list[str] = r.await_statusbar_parts()
     assert statusbar[-1] == "88:1"
 
@@ -226,7 +223,6 @@ def test_g_key(r: TmuxRunner):
     r.type_str("]]]]]")
 
     statusbar: list[str] = r.await_statusbar_parts()
-    time.sleep(0.05)
     assert statusbar[-1] == "48:1"
     assert r.cursor_pos() == (18, 4)
 
