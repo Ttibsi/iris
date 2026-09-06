@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <exception>
 #include <format>
+#include <mutex>
 #include <optional>
 #include <ranges>
 
@@ -640,7 +641,7 @@ bool Controller::parse_command() {
         return true;
 
     } else if (cmd == ";wqa") {
-        [[maybe_unused]] WriteAllData write_data = write_all();
+        std::ignore = write_all();
         std::ignore = quit_app(true);
         return true;
 
@@ -771,19 +772,26 @@ void Controller::add_model(const std::string& filename) {
 
 [[nodiscard]] WriteAllData Controller::write_all() {
     WriteAllData write_all_data = {};
+    std::mutex mtx;
 
-    for (auto&& m : models) {
+    auto logic = [&mtx](Model* m, WriteAllData* write_all_data) {
+        const auto writeData = write_to_file(m, std::nullopt);
+
+        mtx.lock();
+        if (writeData.valid) {
+            write_all_data->files++;
+        } else {
+            write_all_data->valid = false;
+        }
+        mtx.unlock();
+    };
+
+    for (auto& m : models) {
         if (m.filename == "NO NAME") { continue; }
 
-        if (write_to_file(&m, std::nullopt).valid) {
-            write_all_data.files++;
-        } else {
-            write_all_data.valid = false;
-            return write_all_data;
-        }
+        std::jthread thr(logic, &m, &write_all_data);
     }
 
-    write_all_data.valid = true;
     return write_all_data;
 }
 

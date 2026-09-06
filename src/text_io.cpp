@@ -58,13 +58,16 @@
     } catch (const fs::filesystem_error&) { return 0; }
 }
 
-[[nodiscard]] WriteData write_to_file(Model* model, std::optional<std::string> filename_input) {
+// NOTE: This can't be made any faster as its perf is mostly holed up in the IO operation
+[[nodiscard]] WriteData write_to_file(Model* model, opt_sv_t filename_input) {
     if (!filename_input.has_value() && (model->filename == "NO NAME" || model->filename == "")) {
         return WriteData();
     }
     if (filename_input.has_value()) { model->filename = filename_input.value(); }
 
     std::ofstream out(model->filename);
+    if (!out) { return WriteData(); }
+
     lines_t lines_to_write = convert_tabs(model->buf, model->tabbed_file);
     for (auto&& line : lines_to_write) {
         rtrim(line);
@@ -76,8 +79,7 @@
 }
 
 void rtrim(std::string& str) {
-    size_t idx = str.find_last_not_of(WHITESPACE);
-    str = str.substr(0, idx + 1);
+    str.erase(str.find_last_not_of(WHITESPACE) + 1);
 }
 
 [[nodiscard]] lines_t lines(const std::string& str) {

@@ -9,7 +9,7 @@
 #include "model.h"
 
 using lines_t = std::vector<std::string>;
-// using opt_lines_t = std::optional<std::vector<std::string>>;
+using opt_sv_t = std::optional<std::string_view>;
 
 struct ReadFile {
     std::vector<std::string> lines;
@@ -46,7 +46,7 @@ struct Response {
 
 [[nodiscard]] ReadFile open_file(const std::string&);
 [[nodiscard]] unsigned int get_file_size(const std::string&);
-[[nodiscard]] WriteData write_to_file(Model*, std::optional<std::string>);
+[[nodiscard]] WriteData write_to_file(Model*, opt_sv_t);
 void rtrim(std::string& str);
 [[nodiscard]] lines_t lines(const std::string&);
 [[nodiscard]] bool is_letter(const char&);
