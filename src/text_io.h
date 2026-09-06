@@ -33,7 +33,7 @@ struct WriteData {
 
 struct WriteAllData {
     int files = 0;
-    bool valid = false;
+    bool valid = true;
 
     WriteAllData() {}
     WriteAllData(int file_count, bool is_valid) : files(file_count), valid(is_valid) {}
