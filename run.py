@@ -158,6 +158,7 @@ def create_symlink() -> None:
     shutil.copytree(f"include/catch2/{src}", location)
 
 
+# TODO: swallow stdout when running tests
 def test(testname: str | None, asan: bool) -> int:
     create_symlink()
     if not os.path.exists("include/catch2/lib64/libCatch2.a"):
@@ -181,13 +182,18 @@ def test(testname: str | None, asan: bool) -> int:
     test_flags: str = "-r compact --order rand"
     shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"
 
-    return run_shell_cmd(
+    ret = run_shell_cmd(
         shell_cmd, env={
             "RAWTERM_DEBUG": "true",
             "ASAN_OPTIONS": "symbolize=1",
             "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer",
         },
     )
+    if ret:
+        return ret
+
+    # Not sure this is a right idea
+    return run_shell_cmd("git restore tests/integration")
 
 
 def get_rawterm_version() -> str:
