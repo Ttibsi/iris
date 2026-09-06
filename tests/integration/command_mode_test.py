@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Final
 
 from setup import setup
@@ -207,6 +208,8 @@ def test_write_all_command(r: TmuxRunner):
 
     r.press("u")
     r.iris_cmd("wa")
+    # NOTE: cannot be removed due to the time needed for IO operation :/
+    time.sleep(0.1)
 
     with open(r.filename, "r") as f:
         first_line = f.readlines()[0]

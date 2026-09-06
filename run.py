@@ -189,11 +189,7 @@ def test(testname: str | None, asan: bool) -> int:
             "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer",
         },
     )
-    if ret:
-        return ret
-
-    # Not sure this is a right idea
-    return run_shell_cmd("git restore tests/integration")
+    return ret
 
 
 def get_rawterm_version() -> str:
