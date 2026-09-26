@@ -9,6 +9,7 @@ include/catch2/lib64
 build/
 venv/
 release/
+include/tracy/
 
 # test temp files
 tests/fixture/temp_file.txt

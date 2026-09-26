@@ -47,6 +47,21 @@ def restore_rawterm_to_main() -> None:
         f.writelines(lines)
 
 
+def remove_tracing_from_main():
+    lines = open("src/main.cpp", "r").readlines()
+    if "#define" not in lines[0]:
+        return
+
+    print("[LOG] Removing tracing header from main")
+    with open("src/main.cpp", "w") as f:
+        for line in lines:
+            # NOTE: Just in case we run main.cpp through a formatter and
+            # the includes get reordered
+            if "tracy" in line.lower():
+                continue
+            f.write(line)
+
+
 def clean() -> int:
     print("Removing build directory")
     shutil.rmtree("build", ignore_errors=True)
@@ -59,6 +74,7 @@ def clean() -> int:
     shutil.rmtree(".pytest_cache", ignore_errors=True)
     shutil.rmtree("release", ignore_errors=True)
     shutil.rmtree("include/catch2/lib64", ignore_errors=True)
+    shutil.rmtree("include/tracy", ignore_errors=True)
 
     files = [
         "src/version.h",
@@ -74,6 +90,7 @@ def clean() -> int:
             os.remove(file)
 
     restore_rawterm_to_main()
+    remove_tracing_from_main()
     return 0
 
 
@@ -141,6 +158,7 @@ def create_symlink() -> None:
     shutil.copytree(f"include/catch2/{src}", location)
 
 
+# TODO: swallow stdout when running tests
 def test(testname: str | None, asan: bool) -> int:
     create_symlink()
     if not os.path.exists("include/catch2/lib64/libCatch2.a"):
@@ -164,13 +182,14 @@ def test(testname: str | None, asan: bool) -> int:
     test_flags: str = "-r compact --order rand"
     shell_cmd: str = f"./build/tests/test_exe {test_flags} {testname}"
 
-    return run_shell_cmd(
+    ret = run_shell_cmd(
         shell_cmd, env={
             "RAWTERM_DEBUG": "true",
             "ASAN_OPTIONS": "symbolize=1",
             "ASAN_SYMBOLIZER_PATH": "/usr/bin/llvm-symbolizer",
         },
     )
+    return ret
 
 
 def get_rawterm_version() -> str:
@@ -231,6 +250,41 @@ def build(release: bool = False) -> int:
     return 0
 
 
+def profile() -> int:
+    ret: int = 0
+
+    # Step 1: clone tracy
+    if not os.path.isdir("include/tracy"):
+        ret = run_shell_cmd(
+            "git clone git@github.com:wolfpld/tracy.git "
+            "--depth 1 "
+            "include/tracy",
+        )
+        if ret:
+            return ret
+
+    # step 2: add header import to main.cpp
+    content = open("src/main.cpp", "r").readlines()
+    if "TRACY_ENABLE" not in content[0]:
+        with open("src/main.cpp", "w") as f:
+            f.seek(0, 0)
+            f.write("#define TRACY_ENABLE\n")
+            f.write("#include \"tracy/public/tracy/Tracy.hpp\"\n\n")
+            [f.write(line) for line in content]
+
+    # step 3: compile with ENABLE_PROFILING
+    cmd: str = "cmake -G Ninja -S . -B build -DENABLE_PROFILING=true"
+    ret = run_shell_cmd(cmd)
+    if ret:
+        return ret
+
+    ret = run_shell_cmd("cmake --build build")
+    if ret:
+        return ret
+
+    return ret
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--release", action="store_true", default=False)
@@ -238,6 +292,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="cmd")
     subparsers.add_parser("clean")
     subparsers.add_parser("loc")
+    subparsers.add_parser("profile")
 
     test_parser = subparsers.add_parser("test")
     test_parser.add_argument("testname", nargs="?", default=None)
@@ -261,6 +316,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             ret = integration_tests(args.testname)
         else:
             ret = test(args.testname, args.asan)
+    elif args.cmd == "profile":
+        ret = profile()
     else:
         ret = build(args.release)
 
