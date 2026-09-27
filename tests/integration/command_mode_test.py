@@ -415,3 +415,9 @@ def test_list_marks(r: TmuxRunner):
     assert "Marks" in title_line
     assert "lorem_ipsum.txt" in title_line
     assert "a | 0:0 " in r.lines()[-10]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_toggle_line_nums(r: TmuxRunner):
+    r.iris_cmd("lineno")
+    assert "\u2502" not in r.lines()[0]
