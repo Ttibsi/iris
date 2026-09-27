@@ -1,5 +1,7 @@
 ### main / head
 
+### v0.0.4 | 27/Sept/2026
+
 * `>` now intends the current line.
 * `<` now dedents current line
 * `<` and `>` now are part of the undo/redo system
@@ -16,6 +18,7 @@ crashes
 * Resolve crash when user tries to switch top or bottom line outside of scope
 * Resolved crash when the user tries to `delete word` past the end of a line
 * Resolved defect that allowed unnamed buffers to be saved as `NO NAME`
+* Improved performance around saving multiple files
 
 ### v0.0.3 | 17/Mar/2026
 * Use `;e` to open a different file from within iris
