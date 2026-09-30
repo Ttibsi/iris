@@ -2,6 +2,7 @@
 import argparse
 import os
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -35,17 +36,14 @@ def loc() -> int:
 def restore_rawterm_to_main() -> None:
     print("[LOG] Restoring rawterm to main branch")
     cmake_file: str = "cmake/version.cmake"
+    pattern = re.compile(r"\"[vV][0-9]\.[0-9]{1,}\.[0-9]{1,}\"")
+
     with open(cmake_file, "r") as f:
-        lines = f.readlines()
+        text = f.read()
 
-    # TODO: could I replace this with a regex?
-    for idx, line in enumerate(lines):
-        if "set(RAWTERM_GIT_TAG" in line and "main" not in line:
-            lines[idx] = "    set(RAWTERM_GIT_TAG \"main\")\n"
-            break
-
-    with open(cmake_file, "w") as f:
-        f.writelines(lines)
+    if pattern.search(text) is not None:
+        with open(cmake_file, "w") as f:
+            f.write(pattern.sub("\"main\"", text))
 
 
 def remove_tracing_from_main():
@@ -212,15 +210,13 @@ def get_rawterm_version() -> str:
 def write_rawterm_version(tag: str) -> None:
     print(f"[LOG] rawterm version: {tag}")
     cmake_file: str = "cmake/version.cmake"
+    pattern = re.compile("\"main\"")
     with open(cmake_file, "r") as f:
-        lines = f.readlines()
+        text = f.read()
 
-    for idx, line in enumerate(lines):
-        if "set(RAWTERM_GIT_TAG" in line and "main" in line:
-            lines[idx] = line.replace("main", tag)
-
-    with open(cmake_file, "w") as f:
-        f.writelines(lines)
+    if pattern.search(text) is not None:
+        with open(cmake_file, "w") as f:
+            f.write(pattern.sub(f"\"{tag}\"", text))
 
 
 def build(release: bool = False) -> int:

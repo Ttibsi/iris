@@ -26,7 +26,7 @@ function(version_setup)
         set(BUILD_MODE ${CMAKE_BUILD_TYPE})
     endif()
 
-    set(RAWTERM_GIT_TAG "v4.0.9")
+    set(RAWTERM_GIT_TAG "main")
     # Needed to propagate value up to src/CMakeLists.txt
     set(RAWTERM_GIT_TAG ${RAWTERM_GIT_TAG} PARENT_SCOPE)
 
