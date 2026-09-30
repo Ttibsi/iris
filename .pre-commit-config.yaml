@@ -13,7 +13,7 @@ repos:
         exclude: "tests/fixture/no_newline_file.txt"
     -   id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v22.1.3
+    rev: v23.1.1
     hooks:
       - id: clang-format
         exclude: ".json"
@@ -23,7 +23,7 @@ repos:
       - id: cmakelint
         exclude: "^include/"
   - repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.16.0
+    rev: v3.17.0
     hooks:
     -   id: reorder-python-imports
         args: [--py310-plus]
@@ -37,11 +37,11 @@ repos:
       - id: autopep8
         args: [--in-place, --max-line-length=100]
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
     - id: flake8
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.0
+    rev: v2.3.1
     hooks:
     - id: mypy
   - repo: https://github.com/rhysd/actionlint
