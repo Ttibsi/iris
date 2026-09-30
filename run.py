@@ -33,19 +33,6 @@ def loc() -> int:
     )
 
 
-def restore_rawterm_to_main() -> None:
-    print("[LOG] Restoring rawterm to main branch")
-    cmake_file: str = "cmake/version.cmake"
-    pattern = re.compile(r"\"[vV][0-9]\.[0-9]{1,}\.[0-9]{1,}\"")
-
-    with open(cmake_file, "r") as f:
-        text = f.read()
-
-    if pattern.search(text) is not None:
-        with open(cmake_file, "w") as f:
-            f.write(pattern.sub("\"main\"", text))
-
-
 def remove_tracing_from_main():
     lines = open("src/main.cpp", "r").readlines()
     if "#define" not in lines[0]:
@@ -88,7 +75,7 @@ def clean() -> int:
             print(f"[LOG] Removing {file}")
             os.remove(file)
 
-    restore_rawterm_to_main()
+    write_rawterm_version()
     remove_tracing_from_main()
     return 0
 
@@ -207,16 +194,24 @@ def get_rawterm_version() -> str:
     return version_tag.strip()
 
 
-def write_rawterm_version(tag: str) -> None:
-    print(f"[LOG] rawterm version: {tag}")
+def write_rawterm_version(tag: str | None = None) -> None:
+    display_tag: str = tag if isinstance(tag, str) else "main"
+    print(f"[LOG] setting rawterm version: {display_tag}")
     cmake_file: str = "cmake/version.cmake"
-    pattern = re.compile("\"main\"")
+
+    main_pattern = re.compile("main")
+    version_pattern = re.compile(r"[vV][0-9]\.[0-9]{1,}\.[0-9]{1,}")
+
     with open(cmake_file, "r") as f:
         text = f.read()
 
-    if pattern.search(text) is not None:
+    if main_pattern.search(text) is not None and tag is not None:
+        assert isinstance(tag, str)
         with open(cmake_file, "w") as f:
-            f.write(pattern.sub(f"\"{tag}\"", text))
+            f.write(main_pattern.sub(tag, text))
+    elif version_pattern.search(text) is not None:
+        with open(cmake_file, "w") as f:
+            f.write(version_pattern.sub("main", text))
 
 
 def build(release: bool = False) -> int:
