@@ -34,16 +34,17 @@ def loc() -> int:
 
 def restore_rawterm_to_main() -> None:
     print("[LOG] Restoring rawterm to main branch")
-    with open("src/CMakeLists.txt", "r") as f:
+    cmake_file: str = "cmake/version.cmake"
+    with open(cmake_file, "r") as f:
         lines = f.readlines()
 
     # TODO: could I replace this with a regex?
     for idx, line in enumerate(lines):
         if "set(RAWTERM_GIT_TAG" in line and "main" not in line:
-            lines[idx] = "set(RAWTERM_GIT_TAG \"main\")\n"
+            lines[idx] = "    set(RAWTERM_GIT_TAG \"main\")\n"
             break
 
-    with open("src/CMakeLists.txt", "w") as f:
+    with open(cmake_file, "w") as f:
         f.writelines(lines)
 
 
@@ -210,14 +211,15 @@ def get_rawterm_version() -> str:
 
 def write_rawterm_version(tag: str) -> None:
     print(f"[LOG] rawterm version: {tag}")
-    with open("src/CMakeLists.txt", "r") as f:
+    cmake_file: str = "cmake/version.cmake"
+    with open(cmake_file, "r") as f:
         lines = f.readlines()
 
     for idx, line in enumerate(lines):
         if "set(RAWTERM_GIT_TAG" in line and "main" in line:
             lines[idx] = line.replace("main", tag)
 
-    with open("src/CMakeLists.txt", "w") as f:
+    with open(cmake_file, "w") as f:
         f.writelines(lines)
 
 
