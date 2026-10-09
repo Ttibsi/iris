@@ -26,6 +26,10 @@ function(version_setup)
         set(BUILD_MODE ${CMAKE_BUILD_TYPE})
     endif()
 
+    set(RAWTERM_GIT_TAG "main")
+    # Needed to propagate value up to src/CMakeLists.txt
+    set(RAWTERM_GIT_TAG ${RAWTERM_GIT_TAG} PARENT_SCOPE)
+
     configure_file(
         "${PROJECT_SOURCE_DIR}/src/version.h.in"
         "${PROJECT_SOURCE_DIR}/src/version.h"
