@@ -5,7 +5,8 @@
 
 #include <rawterm/color.h>
 
-const bool LINE_NUMBERS = true;
+inline bool LINE_NUMBERS = true;
+
 const int TAB_SIZE = 4;
 const std::size_t LINE_BORDER = 100;
 

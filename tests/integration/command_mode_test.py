@@ -28,12 +28,13 @@ def test_quit_with_modified_buffer(r: TmuxRunner):
     assert "255;0;0" in err_line  # red text
 
 
-@setup("tests/fixture/test_file_2.txt", multi_file=True)
+@setup("tests/fixture/temp_file_2.txt", multi_file=True)
 def test_quit_all_with_modified_buffer(r: TmuxRunner):
     r.press("i")
     r.type_str("test")
     r.press("Escape")
     r.iris_cmd("wqa")
+    time.sleep(0.1)
 
     with open(r.filename) as f:
         text = f.read()
@@ -415,3 +416,9 @@ def test_list_marks(r: TmuxRunner):
     assert "Marks" in title_line
     assert "lorem_ipsum.txt" in title_line
     assert "a | 0:0 " in r.lines()[-10]
+
+
+@setup("tests/fixture/test_file_1.txt")
+def test_toggle_line_nums(r: TmuxRunner):
+    r.iris_cmd("lineno")
+    assert "\u2502" not in r.lines()[0]

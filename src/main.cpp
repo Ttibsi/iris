@@ -1,3 +1,4 @@
+#include <iostream>
 #include <memory>
 #include <print>
 #include <string>
@@ -46,6 +47,7 @@ void exit_app() {
     }
 
     log_msg(std::format("\n{}", bt));
+    std::cout.flush();
     std::exit(-1);
 }
 

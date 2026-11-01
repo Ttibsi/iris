@@ -1,10 +1,12 @@
 ### main / head
 
+* `;lineno` command now toggles line numbers
 * Simplified populating version command with rawterm version at build time in
 python script
 
 ### v0.0.4 | 27/Sept/2026
 
+### v0.0.4 | 27/Sept/2026
 * `>` now intends the current line.
 * `<` now dedents current line
 * `<` and `>` now are part of the undo/redo system
