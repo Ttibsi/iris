@@ -7,7 +7,7 @@
     return "Iris version: " "@GIT_VERSION@" "\n"
         "Compiled on date: " "@COMPILE_DATE@" "\n"
         "Build type: " "@BUILD_MODE@" "\n"
-        "Rawterm version: " "@RAWTERM_GIT_TAG@" "\n";
+        "Rawterm version: " "@RAWTERM_GIT_TAG@";
 }
 
 #endif // VERSION_H

@@ -2,6 +2,7 @@
 import argparse
 import os
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -30,21 +31,6 @@ def loc() -> int:
             " --exclude-ext=md,log,pyc",
         ]),
     )
-
-
-def restore_rawterm_to_main() -> None:
-    print("[LOG] Restoring rawterm to main branch")
-    with open("src/CMakeLists.txt", "r") as f:
-        lines = f.readlines()
-
-    # TODO: could I replace this with a regex?
-    for idx, line in enumerate(lines):
-        if "set(RAWTERM_GIT_TAG" in line and "main" not in line:
-            lines[idx] = "set(RAWTERM_GIT_TAG \"main\")\n"
-            break
-
-    with open("src/CMakeLists.txt", "w") as f:
-        f.writelines(lines)
 
 
 def remove_tracing_from_main():
@@ -89,7 +75,7 @@ def clean() -> int:
             print(f"[LOG] Removing {file}")
             os.remove(file)
 
-    restore_rawterm_to_main()
+    write_rawterm_version()
     remove_tracing_from_main()
     return 0
 
@@ -208,17 +194,24 @@ def get_rawterm_version() -> str:
     return version_tag.strip()
 
 
-def write_rawterm_version(tag: str) -> None:
-    print(f"[LOG] rawterm version: {tag}")
-    with open("src/CMakeLists.txt", "r") as f:
-        lines = f.readlines()
+def write_rawterm_version(tag: str | None = None) -> None:
+    display_tag: str = tag if isinstance(tag, str) else "main"
+    print(f"[LOG] setting rawterm version: {display_tag}")
+    cmake_file: str = "cmake/version.cmake"
 
-    for idx, line in enumerate(lines):
-        if "set(RAWTERM_GIT_TAG" in line and "main" in line:
-            lines[idx] = line.replace("main", tag)
+    main_pattern = re.compile("main")
+    version_pattern = re.compile(r"[vV][0-9]\.[0-9]{1,}\.[0-9]{1,}")
 
-    with open("src/CMakeLists.txt", "w") as f:
-        f.writelines(lines)
+    with open(cmake_file, "r") as f:
+        text = f.read()
+
+    if main_pattern.search(text) is not None and tag is not None:
+        assert isinstance(tag, str)
+        with open(cmake_file, "w") as f:
+            f.write(main_pattern.sub(tag, text))
+    elif version_pattern.search(text) is not None:
+        with open(cmake_file, "w") as f:
+            f.write(version_pattern.sub("main", text))
 
 
 def build(release: bool = False) -> int:
