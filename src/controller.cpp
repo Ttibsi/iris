@@ -171,8 +171,9 @@ void Controller::start_action_engine() {
                 }
                 view.draw_line(Draw_Line_dir::None);
             } else {
+                assert(k.value().getCode().has_value());
                 parse_action<char, None>(
-                    &view, Action<char> {ActionType::InsertChar, k.value().code});
+                    &view, Action<char> {ActionType::InsertChar, k.value().getCode().value()});
                 view.draw_line(Draw_Line_dir::None);
             }
 
@@ -200,7 +201,8 @@ void Controller::start_action_engine() {
                 auto k2 = rawterm::wait_for_input();
                 if (!(k2.isCharInput())) { continue; }
 
-                switch (k2.code) {
+                assert(k2.getCode().has_value());
+                switch (k2.getCode().value()) {
                     case 'l':
                         parse_action<void, None>(&view, Action<void> {ActionType::DelCurrentLine});
                         redraw_all = true;
@@ -218,15 +220,19 @@ void Controller::start_action_engine() {
                 // find forward
             } else if (k.value() == rawterm::Key('f')) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
-                    parse_action<char, None>(&view, Action<char> {ActionType::FindNext, k2.code});
+                if (k2.isCharInput() || (k2.isSpace() && k2.getMod() == rawterm::Mod::Space)) {
+                    assert(k2.getCode().has_value());
+                    parse_action<char, None>(
+                        &view, Action<char> {ActionType::FindNext, k2.getCode().value()});
                 }
 
                 // find backward
             } else if (k.value() == rawterm::Key('F', rawterm::Mod::Shift)) {
                 auto k2 = rawterm::wait_for_input();
-                if (k2.isCharInput() || (k2.code == ' ' && k2.getMod() == rawterm::Mod::Space)) {
-                    parse_action<char, None>(&view, Action<char> {ActionType::FindPrev, k2.code});
+                if (k2.isCharInput() || (k2.isSpace() && k2.getMod() == rawterm::Mod::Space)) {
+                    assert(k2.getCode().has_value());
+                    parse_action<char, None>(
+                        &view, Action<char> {ActionType::FindPrev, k2.getCode().value()});
                 }
 
                 // Move to top of file
@@ -295,7 +301,8 @@ void Controller::start_action_engine() {
             } else if (k.value() == rawterm::Key('m')) {
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) {
-                    parse_action<char, None>(&view, Action<char> {ActionType::AddMark, k2.code});
+                    parse_action<char, None>(
+                        &view, Action<char> {ActionType::AddMark, k2.getCode().value()});
                 }
 
                 // TODO: redraw just this line?
@@ -333,7 +340,7 @@ void Controller::start_action_engine() {
                 auto k2 = rawterm::wait_for_input();
                 if (k2.isCharInput()) {
                     parse_action<char, None>(
-                        &view, Action<char> {ActionType::ReplaceChar, k2.code});
+                        &view, Action<char> {ActionType::ReplaceChar, k2.getCode().value()});
                 }
                 view.draw_line(Draw_Line_dir::None);
 
@@ -403,7 +410,7 @@ void Controller::start_action_engine() {
                     // TODO: calculate if the marked line wasn't currently on screen
                     // and only redraw if needed
                     std::optional<const bool> ret = parse_action<char, bool>(
-                        &view, Action<char> {ActionType::GoToMark, k2.code});
+                        &view, Action<char> {ActionType::GoToMark, k2.getCode().value()});
                     if (ret.has_value()) { redraw_all = ret.value(); }
                 }
 
@@ -514,17 +521,20 @@ bool Controller::enter_command_mode() {
             }
 
         } else {
+            assert(in.getCode().has_value());
+
             if (cmd_text_pos == view.command_text.size() - 1) {
-                view.command_text.push_back(in.code);
+                view.command_text.push_back(in.getCode().value());
                 cmd_text_pos++;
             } else {
-                view.command_text.insert(view.command_text.begin() + cmd_text_pos, in.code);
+                view.command_text.insert(
+                    view.command_text.begin() + cmd_text_pos, in.getCode().value());
                 cmd_text_pos++;
             }
 
             // Show live view for searching
             if (view.command_text.size() >= 3 && view.command_text.substr(0, 2) == ";s" &&
-                !isspace(in.code)) {
+                !in.isSpace()) {
                 // If the command isn't a complete find/replace, we don't want to draw the border
                 // yet
                 const long pipes = std::count_if(
