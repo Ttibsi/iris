@@ -289,6 +289,7 @@ def test_open_nonexisting_file_from_cmd(r: TmuxRunner):
 
     r.press("Escape")
     r.iris_cmd("w")
+    time.sleep(0.1)
 
     with open("does_not_exist.txt", "r") as f:
         assert f.read() == "hello world\n"
